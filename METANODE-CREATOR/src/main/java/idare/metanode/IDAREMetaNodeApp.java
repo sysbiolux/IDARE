@@ -1,0 +1,458 @@
+package idare.metanode;
+
+import idare.Properties.IDARESettingsManager;
+import idare.metanode.internal.Data.ValueSetData.ValueSetDataSet;
+import idare.metanode.internal.Data.ValueSetData.GraphData.GraphDataSetProperties;
+import idare.metanode.internal.Data.itemizedData.AbstractItemDataSet;
+import idare.metanode.internal.Data.itemizedData.CircleData.CircleDataSetProperties;
+import idare.metanode.internal.Data.itemizedData.CircleGridData.CircleGridProperties;
+import idare.metanode.internal.Data.itemizedData.RectangleData.RectangleDataSetProperties;
+import idare.metanode.internal.Data.itemizedData.TimeSeriesData.TimeSeriesDataSetProperties;
+import idare.metanode.internal.DataManagement.DataSetFactory;
+import idare.metanode.internal.DataManagement.DataSetManager;
+import idare.metanode.internal.DataManagement.NodeManager;
+import idare.metanode.internal.Debug.PrintFDebugger;
+import idare.metanode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
+import idare.metanode.internal.GUI.DataSetController.CreateNodesTaskFactory;
+import idare.metanode.internal.GUI.DataSetController.DataSetControlPanel;
+import idare.metanode.internal.GUI.Legend.IDARELegend;
+import idare.metanode.internal.GUI.Legend.Tasks.CreateNodeImagesTaskFactory;
+import idare.metanode.internal.ImageManagement.ImageStorage;
+import idare.metanode.internal.Interfaces.DataSet;
+import idare.metanode.internal.Interfaces.DataSetProperties;
+import idare.metanode.internal.Interfaces.IDAREPlugin;
+import idare.metanode.internal.VisualStyle.IDAREVisualStyle;
+import idare.metanode.internal.VisualStyle.StyleManager;
+import idare.metanode.internal.VisualStyle.Tasks.AddNodesToStyleTaskFactory;
+import idare.metanode.internal.VisualStyle.Tasks.RemoveNodesFromStyleTaskFactory;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.swing.JPanel;
+
+import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.AbstractCyAction;
+import org.cytoscape.application.swing.ActionEnableSupport;
+import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.event.CyEventHelper;
+import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
+import org.cytoscape.session.events.SessionAboutToBeSavedListener;
+import org.cytoscape.session.events.SessionLoadedEvent;
+import org.cytoscape.session.events.SessionLoadedListener;
+import org.cytoscape.task.NetworkViewTaskFactory;
+import org.cytoscape.util.swing.FileUtil;
+import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.VisualLexicon;
+import org.cytoscape.view.model.VisualProperty;
+import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
+import org.cytoscape.view.presentation.customgraphics.CyCustomGraphics;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.VisualStyleFactory;
+import org.cytoscape.work.AbstractTaskFactory;
+import org.cytoscape.work.ServiceProperties;
+import org.cytoscape.work.swing.DialogTaskManager;
+/**
+ * The core class of the app, generates necessary objects for the class and provides them to external requests.
+ * @author Thomas Pfau
+ *
+ */
+public class IDAREMetaNodeApp implements SessionAboutToBeSavedListener,SessionLoadedListener{
+	
+	ImageStorage storage;
+	NodeManager nm;
+	DataSetManager dsm;
+	IDARESettingsManager Settings;
+	IDAREVisualStyle ids;
+	IDARELegend legend;
+	DataSetControlPanel dcp; 
+	StyleManager styleManager;
+	HashMap<AbstractTaskFactory,Vector<Properties>> taskFactories = new HashMap<AbstractTaskFactory, Vector<Properties>>();	
+	Vector<AbstractCyAction> cyActions = new  Vector<AbstractCyAction>();
+	Vector<IDAREPlugin> plugins = new Vector<IDAREPlugin>();
+	/**
+	 * Basic constructor that receives all Cytoscape objects necessary for its creation. 
+	 * @param cySwingApp
+	 * @param currentLexicon
+	 * @param util
+	 * @param vSFSR
+	 * @param vmm
+	 * @param vmfFactoryD
+	 * @param vmfFactoryP
+	 * @param eventHelper
+	 * @param nvm
+	 * @param cyAppMgr
+	 */
+	public IDAREMetaNodeApp(CySwingApplication cySwingApp, VisualLexicon currentLexicon, FileUtil util,
+			VisualStyleFactory vSFSR,VisualMappingManager vmm, VisualMappingFunctionFactory vmfFactoryD,
+			VisualMappingFunctionFactory vmfFactoryP,CyEventHelper eventHelper, CyNetworkViewManager nvm,
+			CyApplicationManager cyAppMgr, CyNetworkManager cyNetMgr, DialogTaskManager dtm)
+	{		
+		VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP = (VisualProperty<CyCustomGraphics<CustomGraphicLayer>>)currentLexicon.lookup(CyNode.class, "NODE_CUSTOMGRAPHICS_1");		
+		storage = new ImageStorage(VisualcustomGraphiVP);
+		dsm = new DataSetManager();
+		nm = new NodeManager(cyNetMgr);				
+		storage.setNodeManager(nm);
+		nm.setDataSetManager(dsm);
+		nm.addNodeChangeListener(storage);
+		dsm.addDataSetChangeListener(nm);
+		registerDefaultDataSettypes();
+		ids = new IDAREVisualStyle(vSFSR, vmm, vmfFactoryD, vmfFactoryP, eventHelper, storage, nvm, nm,cyAppMgr);
+		storage.setVisualStyle(ids);
+		Settings = new IDARESettingsManager();
+		legend = new IDARELegend(new JPanel(),nm);
+		nm.addNodeChangeListener(legend);
+		nm.updateNetworkNodes();
+		storage.addImageLayoutChangedListener(ids);
+		styleManager = new StyleManager(storage, vmm, nvm, eventHelper, nm, cyAppMgr);
+		storage.addImageLayoutChangedListener(styleManager);
+		dcp = new DataSetControlPanel(cySwingApp, dsm, util, nm);
+		createActions(dtm, cyAppMgr);
+		createTaskFactories(dtm,util,cySwingApp);
+	}
+	
+	
+	/**
+	 * Obtain the {@link StyleManager} generated by this instance of IDARE.
+	 * @return The {@link StyleManager} used by this instance
+	 */
+	public StyleManager getStyleManager()
+	{
+		return styleManager;
+	}
+	/**
+	 * Obtain the {@link DataSetControlPanel} generated by this instance of IDARE.
+	 * @return The {@link DataSetControlPanel} used by this instance
+	 */
+	public DataSetControlPanel getDataSetPanel()
+	{
+		return dcp;
+	}
+	/**
+	 * Get the {@link IDARELegend} generated by this instance of IDARE.
+	 * @return The {@link IDARELegend} used by this instance
+	 */
+	public IDARELegend getLegend()
+	{
+		return legend;
+	}
+	
+	/**
+	 * Get the {@link IDAREVisualStyle} created by this App
+	 * @return The {@link IDAREVisualStyle} used by this instance
+	 */
+	public IDAREVisualStyle getVisualStyle()
+	{
+		return ids;
+	}
+	
+	/**
+	 * Register the default DataSetTypes. 
+	 */
+	private void registerDefaultDataSettypes()
+	{
+		AbstractItemDataSet ds = new AbstractItemDataSet();		
+		dsm.registerDataSetType(ds.getDataSetTypeName(), ds.getClass().getName());
+		Vector<DataSetProperties> itemProperties = new Vector<DataSetProperties>();
+		itemProperties.add(new CircleDataSetProperties());
+		itemProperties.add(new CircleGridProperties());
+		itemProperties.add(new RectangleDataSetProperties());
+		itemProperties.add(new TimeSeriesDataSetProperties());
+		dsm.registerPropertiesForDataSet(ds.getClass(), itemProperties);
+		ValueSetDataSet vds = new ValueSetDataSet();		
+		dsm.registerDataSetType(vds.getDataSetTypeName(), vds.getClass().getName());
+		dsm.registerPropertiesForDataSet(vds.getClass(), vds.getPropertyOptions());
+		//dsm.registerPropertiesForDataSet(vds.getClass(), new GraphDataSetProperties());
+	}		
+	
+	/**
+	 * Get the {@link ImageStorage} created by this App
+	 * @return The {@link ImageStorage} used by this instance
+	 */
+	public ImageStorage getImageStorage() {
+		return storage;
+	}
+	/**
+	 * Get the {@link NodeManager} created by this App
+	 * @return The {@link NodeManager} used by this instance
+	 */
+	public NodeManager getNodeManager() {
+		return nm;
+	}
+	/**
+	 * Get the {@link DataSetManager} created by this App
+	 * @return The {@link DataSetManager} used by this instance
+	 */
+	public DataSetManager getDatasetManager() {
+		return dsm;
+	}
+	/**
+	 * Register a DataSet Type that can be selected in the DataSet selection.
+	 * @param DataSetClassName - the classname of the new {@link DataSet}
+	 * @return - whether the dataset type could be added
+	 */
+	public boolean registerDataSetType(String DataSetClassName)
+	{
+		try{
+			DataSet ds = DataSetFactory.getDataSet(DataSetClassName);
+			dsm.registerDataSetType(ds.DataSetType, DataSetClassName);
+		}
+		catch(ClassNotFoundException e)
+		{
+			return false;
+		}
+			return true;
+	}
+	
+	/**
+	 * Register DataSetProperties for a DataSet of the given Type.
+	 * @param dataSetClass - the classname of the {@link DataSet}, for which to add the properties
+	 * @param props - The DataSetproperties to make available.
+	 * @return - whether the dataset type could be added
+	 */
+	public boolean registerDataSetProperties(Class dataSetClass, DataSetProperties props)
+	{
+		return dsm.registerPropertiesForDataSet(dataSetClass, props);		
+	}
+	
+	/**
+	 * Register DataSetProperties for a DataSet of the given Type.
+	 * @param dataSetClass - the classname of the {@link DataSet}, for which to add the properties
+ 	 * @param props - The collection of DataSetproperties to make available to this type of dataset.
+	 * @return - A set of Properties that could not be registered
+	 */
+	public Collection<DataSetProperties> registerDataSetProperties(Class dataSetClass, Collection<DataSetProperties> props)
+	{
+		return dsm.registerPropertiesForDataSet(dataSetClass, props);		
+	}
+	
+	/**
+	 * Deregister DataSetProperties from a DataSet of the given Type.
+	 * @param dataSetClass - the classname of the {@link DataSet} to deregister the properties from
+	 * @param props - The properties to deregister.
+	 */
+	public void deRegisterDataSetProperties(Class dataSetClass, DataSetProperties props)
+	{
+		dsm.deregisterPropertiesForDataSet(dataSetClass, props);		
+	}
+	
+	
+	
+	/**
+	 * Unregister all Types of {@link DataSet}, that were before registered. 
+	 * This will reset the {@link NodeManager}, as all Sets have been disabled and will also reset the {@link ImageStorage}. 
+	 */
+	public void unregisterAll()
+	{
+		Vector<IDAREPlugin> currentplugins = new Vector<IDAREPlugin>();
+		currentplugins.addAll(plugins);
+		for(IDAREPlugin plugin : currentplugins)
+		{
+			deRegisterPlugin(plugin);
+		}
+		dsm.clearDataSets();
+		nm.reset();
+		storage.reset();
+		ids.shutdown();
+		styleManager.shutDown();		
+	}
+	/**
+	 * Get the {@link IDARESettingsManager} created by this App
+	 * @return The {@link IDARESettingsManager} used by this instance
+	 */
+	public IDARESettingsManager getSettingsManager()
+	{
+		return Settings;
+	}
+
+	@Override
+	public void handleEvent(SessionLoadedEvent arg0) {
+		//first, see, whether we have datasets. If, we have to reset them, otherwise we will simply load the new ones.
+		PrintFDebugger.Debugging(this, "Loading IDARE Data");
+		if(!dsm.getDataSets().isEmpty())
+		{
+			dsm.reset();
+			nm.reset();
+			storage.reset();			
+		}
+		//Let the ID MAnager handle the IDs
+		Settings.handleSessionLoadedEvent(arg0);;		
+		//first initialize the Dataset manager (i.e. get the datasets set up)		
+		dsm.handleEvent(arg0);
+				
+		//then init the nodemanager (i.e. assign the appropriate layouts) 
+		nm.handleEvent(arg0);
+		
+		
+	}
+
+	@Override
+	public void handleEvent(SessionAboutToBeSavedEvent arg0) {
+		//Save in the correct order.
+		dsm.handleEvent(arg0);
+		nm.handleEvent(arg0);
+	}
+	
+	
+	/**
+	 * Generate the Taskfactories used in the App and register them with the appropriate objects.
+	 * @param dtm - The dialogTaskmanager uses
+	 * @param util - A File Util to use in the Factories
+	 * @param cySwingApp - A reference to the CySwingApp to be used in Factories
+	 * @return
+	 */
+	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp)
+	{
+		//Vector<TaskFactory> factories = new Vector<TaskFactory>();
+		CreateNodesTaskFactory nodeFactory = new CreateNodesTaskFactory(nm, dcp, dtm);
+		Vector<Properties> props = new Vector<Properties>();
+		props.add(new Properties());
+		taskFactories.put(nodeFactory, props);
+		dcp.setNodeFactory(nodeFactory);
+		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm);
+		taskFactories.put(dsatf, props);
+		dcp.setDatasetAdderFactory(dsatf);
+
+		Vector<Properties> nodeImageProps = new Vector<Properties>();
+		
+
+		Properties createNodesImageMenuProperties = new Properties();
+		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		createNodesImageMenuProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		createNodesImageMenuProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");		
+		createNodesImageMenuProperties.setProperty(ServiceProperties.TITLE, "Create Images for current Legend");
+		createNodesImageMenuProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		createNodesImageMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);		
+		CreateNodeImagesTaskFactory nodeImageFactory = new CreateNodeImagesTaskFactory(util, legend, nm, cySwingApp);
+		
+		Properties createNodesImageContextProperties = new Properties();
+		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.APPS_MENU);
+		createNodesImageContextProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		createNodesImageContextProperties.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		createNodesImageContextProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		createNodesImageContextProperties.setProperty(ServiceProperties.TITLE, "Create Node Images for current Legend");		
+		createNodesImageContextProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		createNodesImageContextProperties.put("USE_CLASS", NetworkViewTaskFactory.class);
+
+		nodeImageProps.add(createNodesImageMenuProperties);
+		nodeImageProps.add(createNodesImageContextProperties);
+		
+		taskFactories.put(nodeImageFactory, nodeImageProps);
+		
+	}
+	/**
+	 * Create All Actions, and their associated factories if necessary.
+	 * @param dtm - A DialogTaskmanager for the tasks
+	 * @param cyAppMgr - the CyAppMgr to set the Actions.
+	 */
+	private void createActions(DialogTaskManager dtm, CyApplicationManager cyAppMgr)
+	{
+		AddNodesToStyleTaskFactory addFactory = new AddNodesToStyleTaskFactory(styleManager, dtm); 
+		//AddNodesToStyleAction addAction = new AddNodesToStyleAction(cyAppMgr, addFactory);
+		Vector<Properties> props = new Vector<Properties>();
+		Properties addNodesToStylePropertiesMenu = new Properties();
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.TITLE, "Add IDARE Images to Style");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.TOOLTIP, "Add IDARE Images");
+		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		addNodesToStylePropertiesMenu.put("USE_CLASS",NetworkViewTaskFactory.class);
+		props.add(addNodesToStylePropertiesMenu);
+		Properties addNodesToStylePropertiesTask = new Properties();
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NETWORK_APPS_MENU);
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.TITLE, "Add IDARE Images");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.TOOLTIP, "Add IDARE Images to Style");
+		addNodesToStylePropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
+		addNodesToStylePropertiesTask.put("USE_CLASS", NetworkViewTaskFactory.class);
+		props.add(addNodesToStylePropertiesTask);
+		taskFactories.put(addFactory,props);
+		//cyActions.add(addAction);
+		Vector<Properties> props2 = new Vector<Properties>();
+		RemoveNodesFromStyleTaskFactory remFactory = new RemoveNodesFromStyleTaskFactory(styleManager, dtm); 
+		//RemoveNodesFromStyleAction remAction = new RemoveNodesFromStyleAction(cyAppMgr, remFactory);
+		Properties removeNodesFromStyleProperties = new Properties();
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.TITLE, "Remove IDARE Images from Style");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");		
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.TOOLTIP, "Remove IDARE Images");
+		removeNodesFromStyleProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		removeNodesFromStyleProperties.put("USE_CLASS",NetworkViewTaskFactory.class);
+		Properties removeNodesFromStyleProperties2 = new Properties();
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.PREFERRED_MENU,ServiceProperties.NETWORK_APPS_MENU);
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.TITLE, "Remove IDARE Images ");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.TOOLTIP, "Remove IDARE Images from Style");
+		removeNodesFromStyleProperties2.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
+		removeNodesFromStyleProperties2.put("USE_CLASS",NetworkViewTaskFactory.class);
+		props2.add(removeNodesFromStyleProperties);
+		props2.add(removeNodesFromStyleProperties2);
+		taskFactories.put(remFactory,props2);		
+	}
+	/**
+	 * Get the Task Factories used in the App.
+	 * @return the TaskFactories produced by the IDARE App matched to all properties for which they should eb registered
+	 */
+	public HashMap<AbstractTaskFactory,Vector<Properties>> getFactories()
+	{
+		HashMap<AbstractTaskFactory,Vector<Properties>> factories = new HashMap<AbstractTaskFactory, Vector<Properties>>();
+		factories.putAll(taskFactories);
+		return factories;
+	}
+	
+	
+	/**
+	 * Get the actions used in this app
+	 * @return The Vector of AbstractCyActions generated by this App.
+	 */
+	public Vector<AbstractCyAction> getActions()
+	{
+		Vector<AbstractCyAction> actions = new Vector<AbstractCyAction>();
+		actions.addAll(cyActions);
+		return actions;
+	}
+	
+	/**
+	 * 
+	 * Register a plugin.	 
+	 * @param plugin - the plugin to register
+	 */
+	public void registerPlugin(IDAREPlugin plugin)
+	{
+		plugin.register(this);
+		plugins.add(plugin);		
+	}
+	
+	/**
+	 * UnRegister a plugin.
+	 * @param plugin - the plugin to unregister.
+	 */
+	public void deRegisterPlugin(IDAREPlugin plugin)
+	{
+		if(plugins.contains(plugin))
+		{			
+			plugins.remove(plugin);
+			plugin.deRegister(this);
+		}
+				
+	}
+	
+}
