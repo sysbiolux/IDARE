@@ -1,7 +1,5 @@
 package idare.Properties;
 
-import idare.metanode.internal.Debug.PrintFDebugger;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -119,7 +117,6 @@ public class IDARESettingsManager {
 	 */
 	public void setType(String IDAREType, String targetType)
 	{
-		PrintFDebugger.Debugging(this, "Setting Type for " + IDAREType + " to " + targetType);
 		if(targetType != null)
 		{
 			properties.setType(IDAREType, targetType);
@@ -135,7 +132,6 @@ public class IDARESettingsManager {
 	 */
 	public void setSubNetworkType(String IDAREType, String targetType)
 	{
-		//PrintFDebugger.Debugging(this, "Setting Type for " + IDAREType + " to " + targetType);
 		if(targetType != null)
 		{
 			SubNetworkTypes.put(targetType,IDAREType);
@@ -149,7 +145,6 @@ public class IDARESettingsManager {
 	 */
 	public String getSubNetworkType(String targetType)
 	{
-		//PrintFDebugger.Debugging(this, "Setting Type for " + IDAREType + " to " + targetType);
 			return SubNetworkTypes.get(targetType);
 	}
 	

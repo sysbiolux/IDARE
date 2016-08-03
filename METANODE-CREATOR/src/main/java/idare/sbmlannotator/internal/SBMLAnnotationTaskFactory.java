@@ -1,10 +1,15 @@
 package idare.sbmlannotator.internal;
 
 import idare.Properties.IDAREProperties;
-import idare.metanode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Services.JSBML.Annotation;
+import idare.imagenode.internal.Services.JSBML.CVTerm;
+import idare.imagenode.internal.Services.JSBML.Model;
+import idare.imagenode.internal.Services.JSBML.SBMLDocument;
+import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
+import idare.imagenode.internal.Services.JSBML.Species;
+import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +25,6 @@ import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.task.NetworkViewTaskFactory;
-import org.cytoscape.util.swing.FileChooserFilter;
 import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTaskFactory;
@@ -28,10 +32,6 @@ import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.TaskMonitor.Level;
-import org.sbml.jsbml.SBMLReader;
-
-import idare.metanode.internal.Services.JSBML.*;
-import idare.metanode.internal.Services.JSBML.CVTerm.Qualifier;
 //import org.sbml.jsbml.Annotation;
 //import org.sbml.jsbml.CVTerm;
 //import org.sbml.jsbml.Model;
@@ -109,7 +109,6 @@ public class SBMLAnnotationTaskFactory extends AbstractTaskFactory implements
 	{
 		//Select the current Network
 		//If we want to read Gene nodes check whether there is a specific annotation.
-		PrintFDebugger.Debugging(this, "Trying to ask for the appropriate columns");
 		Vector<String> diffvals = new Vector<String>(); 
 		for(CyColumn col : network.getDefaultNodeTable().getColumns())
 		{

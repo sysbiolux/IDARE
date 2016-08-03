@@ -1,8 +1,6 @@
 package idare.subsystems.internal.GUI;
 
 
-import idare.metanode.internal.Debug.PrintFDebugger;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,7 +18,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.UIDefaults;
@@ -143,7 +140,6 @@ public class SubSystemInteractionAndCompoundChooser extends JPanel {
 		diffvals.remove(null);
 		diffvals.remove("");
 		//and set the choosers accordingly.
-		PrintFDebugger.Debugging(this, "There are " + diffvals.size() + " items");
 		if(diffvals.size() >= 2)
 		{
 				updateChoosersWithTwoOptions();
@@ -314,7 +310,6 @@ public class SubSystemInteractionAndCompoundChooser extends JPanel {
 			}
 			catch(NullPointerException e)
 			{
-				PrintFDebugger.Debugging(this, "Nullpointer found for some reason");
 			}
 		}
 		//add all different items 

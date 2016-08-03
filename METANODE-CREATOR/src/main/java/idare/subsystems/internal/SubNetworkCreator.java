@@ -2,7 +2,7 @@ package idare.subsystems.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
-import idare.metanode.internal.VisualStyle.IDAREVisualStyle;
+import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 import idare.subsystems.internal.GUI.SubSystemColumnChooser;
 
 import java.awt.event.ActionEvent;

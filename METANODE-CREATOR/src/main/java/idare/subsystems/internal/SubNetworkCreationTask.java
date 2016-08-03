@@ -1,5 +1,8 @@
 package idare.subsystems.internal;
 
+import idare.Properties.IDAREProperties;
+import idare.ThirdParty.DelayedVizProp;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +20,6 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
-import org.cytoscape.model.CyTableManager;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.CyServiceRegistrar;
@@ -30,10 +32,6 @@ import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
-
-import idare.Properties.IDAREProperties;
-import idare.ThirdParty.DelayedVizProp;
-import idare.metanode.internal.Debug.PrintFDebugger;
 /**
  * A Task creating Subnetworks for a Network.
  * @author Thomas Pfau
@@ -128,7 +126,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 			}
 			catch(NullPointerException e)
 			{
-				PrintFDebugger.Debugging(this, "Nullpointer found for some reason");
 			}
 		}		
 		//Get the existing Networks (for this SUBNETWORK Column, otherwise we might create LOADS and LOADS of linkers...
@@ -215,7 +212,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 			//At this point, no new nodes have yet been created 
 			//so we should be able to simply check all nodes, whether they are linkers.
 			//and create linkers from those nodes to the current nodes.
-			PrintFDebugger.Debugging(this, "Setting up External Linkers for Network " + subSystem.toString());
 			createLinkersToExternalNetworks(subNetwork,subSystemViews.get(subSystem),subNetworkName,subSystem.toString());
 		}
 			
@@ -288,7 +284,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 			}
 		}		
 				
-		PrintFDebugger.Debugging(this, "There are " + linkerRows.size() + " rows which have a linker set in the network.");
 		//this should only contain rows with linker set.
 		HashMap<CyNetworkView,Vector<DelayedVizProp>> CurrentViewProps = new HashMap<CyNetworkView,Vector<DelayedVizProp>>();		
 		for(CyRow row : linkerRows)
@@ -317,7 +312,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 			{
 				//get the matching node in the target network
 				Collection<CyRow> matchrows = targetNetwork.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_NODE_UID, targetNodeID);
-				PrintFDebugger.Debugging(this, "Trying to find the matching node for " + targetNodeID + " in network " + targetNetworkName + " found a total of " + matchrows.size() + " matching nodes");
 				
 				//There can only be the one item!
 				CyRow targetRow = null;
@@ -355,9 +349,7 @@ public class SubNetworkCreationTask extends AbstractTask{
 						}
 						CurrentViewProps.get(view).add(new DelayedVizProp(linker, BasicVisualLexicon.NODE_X_LOCATION, outNodeView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION) +(int)xmod  ,false));
 						CurrentViewProps.get(view).add(new DelayedVizProp(linker, BasicVisualLexicon.NODE_Y_LOCATION, outNodeView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION) +(int)ymod  ,false));
-						PrintFDebugger.Debugging(this, "Adding a visual property that sets node " + targetnode.getSUID() + " in network " + targetNetworkName + " to position " + (int)xmod + "/" + (int)ymod);
 					}					
-					PrintFDebugger.Debugging(this, "Adding a linker to node " + targetnode.getSUID() + " in network " + targetNetworkName);
 					nvs.addLink(linker, targetNetwork, subnetworkView, subSysTargetView);
 				}
 			}
@@ -511,7 +503,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 				//This is not a reaction or species, so we only add nodes which are not reactions or species!
 				if(!isReaction & !isSpecies) // isProtein || isSpecies || isGene)
 				{
-					PrintFDebugger.Debugging(this, "Found a Non Species, non interaction item. extending.");
 					List<CyEdge> current_edges = net.getAdjacentEdgeList(node, CyEdge.Type.ANY);
 					for(CyEdge edge : current_edges)
 					{												
@@ -545,19 +536,15 @@ public class SubNetworkCreationTask extends AbstractTask{
 						if((isTargetReaction || isTargetSpecies) && subSysNodes.contains(edge.getTarget()))
 						{
 							edges.add(edge);
-							PrintFDebugger.Debugging(this, "Extending to node " + edge.getTarget().getSUID());
 						}
 						if((isSourceSpecies || isSourceReaction) && subSysNodes.contains(edge.getSource()))
 						{
 							edges.add(edge);
-							PrintFDebugger.Debugging(this, "Extending to node " + edge.getSource().getSUID());
 						}
 						// if neither source nor target are reactions, we can add it as well.
 						if (!isSourceReaction && !isTargetReaction && !isSourceSpecies && !isTargetSpecies)
 						{
 							edges.add(edge);
-							PrintFDebugger.Debugging(this, "Extending to Source node " + edge.getSource().getSUID());
-							PrintFDebugger.Debugging(this, "Extending to node target " + edge.getTarget().getSUID());
 						}							
 
 					}
@@ -566,7 +553,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 				else if(isReaction)					
 				{	//this is a Reaction (and part of the network) Thus we can savely add all adjacent nodes.  							
 					edges.addAll(net.getAdjacentEdgeList(node, CyEdge.Type.ANY));
-					PrintFDebugger.Debugging(this, "Adding all edges for node" + node.getSUID());
 				}
 				else if(isSpecies)
 				{
@@ -586,7 +572,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 									(OppositeSite.getRaw(ColName).equals(net.getDefaultNodeTable().getColumn(ColName).getDefaultValue())) || // or its at the default (and therefore again not in another subsystem)
 									OppositeSite.getList(ColName,net.getDefaultNodeTable().getColumn(ColName).getListElementType()).contains(Subsystem)) // or it is in the very same subsystem, we add the edge.
 							{
-								PrintFDebugger.Debugging(this,"Found Adjacent Node in the SubSystem");
 								edges.add(edge);
 							}
 						}
@@ -596,7 +581,6 @@ public class SubNetworkCreationTask extends AbstractTask{
 									OppositeSite.getRaw(ColName).equals(net.getDefaultNodeTable().getColumn(ColName).getDefaultValue()) ||  // or its at the default (and therefore again not in another subsystem)
 									(OppositeSite.getRaw(ColName).equals(Subsystem))) // or it is in the same subsystem.
 							{
-								PrintFDebugger.Debugging(this,"Found Adjacent Node in the SubSystem");
 								edges.add(edge);
 
 							}

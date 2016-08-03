@@ -3,10 +3,6 @@ package idare.Properties;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
-
-import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
-import org.cytoscape.view.presentation.property.values.NodeShape;
 
 /**
  * Class containing all static Fields for the IDARE Columns. Please use only these fields when altering IDARE columns.

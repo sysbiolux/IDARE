@@ -2,25 +2,13 @@ package idare.subsystems.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
-import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Utilities.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOError;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JOptionPane;
 
@@ -30,8 +18,6 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.session.CySession;
-import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
-import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.model.CyNetworkView;
@@ -117,19 +103,16 @@ public class SubSystemsSaver implements SessionLoadedListener{
 							}
 							//This is a Node With an IDARE ID, so it could be linked to, lets store it.
 							IDAREToNode.put(id, node);
-							PrintFDebugger.Debugging(this, "Found a Node with an IDARE id of: " + id);
 						}
 						if(network.getRow(node).get(IDAREProperties.IDARE_NODE_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
 						{
 							//Now, if this is a linker, Lets save it with the network it is in.
 							LinkerNodes.add(new NodeAndNetworkStruct(node, network));
-							PrintFDebugger.Debugging(this, "Found a Linker Node with id: " + id);
 						}
 					}
 					catch (IllegalArgumentException ille)
 					{
 						JOptionPane.showMessageDialog(null,"Duplicate IDs found in the networks... Something went wrong - resetting IDARE Rows");
-						PrintFDebugger.Debugging(this, "Duplicate IDs found. Aborting network connections");
 						IDAREToNode.clear();
 						LinkerNodes.clear();
 						aborted = true;
@@ -177,7 +160,6 @@ public class SubSystemsSaver implements SessionLoadedListener{
 		{
 			//the IDs were fine so far. Lets restore the links...
 			//To do so, we need to look at all linker nodes.
-			PrintFDebugger.Debugging(this, "Looping over linker nodes. There are a total of " + LinkerNodes.size() + " Links to create");
 			
 			for(NodeAndNetworkStruct node : LinkerNodes)
 			{
@@ -185,7 +167,6 @@ public class SubSystemsSaver implements SessionLoadedListener{
 				Long TargetID = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET, Long.class);			
 				String TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class);				
 				CyNode TargetNode = IDAREToNode.get(TargetID);
-				PrintFDebugger.Debugging(this, "Trying to establish a link between node (SUID)" + node.node.getSUID() + " and node (IDAREID)" + TargetID + " in network " + TargetSubSystem);
 				@SuppressWarnings("unused")
 				CyNetworkView LinkView = null;
 				CyNetworkView TargetView = null;
@@ -205,7 +186,6 @@ public class SubSystemsSaver implements SessionLoadedListener{
 					}
 					catch(Exception ex)
 					{
-						PrintFDebugger.Debugging(this, "Caught an exception");
 						ex.printStackTrace(System.out);
 					}
 
@@ -214,13 +194,11 @@ public class SubSystemsSaver implements SessionLoadedListener{
 				//if they are however null, we will add a silent network link since obviously the Network exists, but there is no view for it.
 				if(TargetView != null && TargetView.getNodeView(TargetNode) != null)
 				{
-					PrintFDebugger.Debugging(this, "Creating an active link to node " + TargetID  + " in network " + TargetSubSystem + " from node " + node.network.getRow(node.node).get(IDAREProperties.IDARE_NODE_UID,Long.class)	);
 					nvs.addLink(node.node, node.network, TargetView, TargetView.getNodeView(TargetNode));
 				}
 				else
 				{
 					//create a network link
-					PrintFDebugger.Debugging(this, "Creating an inactive link to node " + TargetID  + " in network " + TargetSubSystem + " from node " + node.network.getRow(node.node).get(IDAREProperties.IDARE_NODE_UID,Long.class)	);
 					nvs.addNetworkLink(node.node, node.network, 
 							NetworkNameToNetwork.get(node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class)) , TargetNode);
 				}
@@ -281,7 +259,6 @@ public class SubSystemsSaver implements SessionLoadedListener{
 //		catch(Exception ex)
 //		{
 //			//"This Should not happen..."
-//			PrintFDebugger.Debugging(this, "Exception during saving the IDARE Subsystem information");
 //		}
 //	}
 //		

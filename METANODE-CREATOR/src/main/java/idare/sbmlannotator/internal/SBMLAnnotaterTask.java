@@ -2,7 +2,13 @@ package idare.sbmlannotator.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.DelayedVizProp;
-import idare.metanode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Services.JSBML.Annotation;
+import idare.imagenode.internal.Services.JSBML.CVTerm;
+import idare.imagenode.internal.Services.JSBML.Model;
+import idare.imagenode.internal.Services.JSBML.Reaction;
+import idare.imagenode.internal.Services.JSBML.SBMLDocument;
+import idare.imagenode.internal.Services.JSBML.Species;
+import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,8 +34,6 @@ import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
-import idare.metanode.internal.Services.JSBML.*;
-import idare.metanode.internal.Services.JSBML.CVTerm.Qualifier;
 //import org.sbml.jsbml.CVTerm.Qualifier;
 
 /*import org.sbml.jsbml.CVTerm;
@@ -92,7 +96,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			JOptionPane.showMessageDialog(null, "Please select a network to apply the SBML annotation to");
 			return;
 		}
-		PrintFDebugger.Debugging(this, "Getting Edge Table");
 
 		//create one column for the GeneEdge Info 
 		CyTable EdgeTable = network.getDefaultEdgeTable();
@@ -101,7 +104,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		}
 		catch(IllegalArgumentException e)
 		{
-			PrintFDebugger.Debugging(this, "Error in database matching");
 			e.printStackTrace(System.out);			
 		}
 
@@ -111,7 +113,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 
 		SBMLDocument sbml = null;
 		System.out.println("Reading SBML");
-		PrintFDebugger.Debugging(this, "Reading SBML");
 		model = SBMLDoc.getModel();
 		
 		
@@ -170,7 +171,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 							}
 							catch(IllegalArgumentException e)
 							{								
-								PrintFDebugger.Debugging(this, "Error in database matching");
 								System.out.println("Column " + NoteType  + " already exists");
 							}
 						}
@@ -178,7 +178,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 				}
 				catch(Exception e)
 				{
-					PrintFDebugger.Debugging(this, "Error in database matching");
 					e.printStackTrace(System.out);
 				}
 			}
@@ -228,10 +227,8 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			System.out.println(e.getMessage());
 		}*/
 		//JOptionPane.showMessageDialog(null, "Finished Checking Species. Added items contain: " + AddedCols.toString());
-		PrintFDebugger.Debugging(this, "Reading Notes of Reactions");
 		for (Reaction reac : model.getListOfReactions())
 		{
-			PrintFDebugger.Debugging(this, "Reading Notes for Reaction" + reac.getId());
 			String NotesString = reac.getNotesString();		
 			if(NotesString == null)
 			{
@@ -257,13 +254,11 @@ public class SBMLAnnotaterTask extends AbstractTask{
 							CyColumn currentcol = Tab.getColumn("COBRA_" + NoteType);
 							if(currentcol == null)
 							{
-								PrintFDebugger.Debugging(this, "Adding new Column");
 								Tab.createListColumn("COBRA_" + NoteType, String.class, true);
 							}
 						}
 						catch(IllegalArgumentException e)
 						{
-							PrintFDebugger.Debugging(this, "Error in database matching");
 							System.out.println("Column " +  "COBRA_" + NoteType  +" already exists");
 						}
 					}
@@ -277,48 +272,38 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		//Only alter rows if we actually added metabolite data
 		for (Species species : model.getListOfSpecies()) 
 		{
-			PrintFDebugger.Debugging(this, "Looking up annotation");
-			PrintFDebugger.Debugging(this, "For species " + species.getId());						
 			if(ProteinAnnotations.containsKey(species.getId()))
 			{
-				PrintFDebugger.Debugging(this, "Species" + species.getId() + " looks like a protein");
 				//if this is a Protein, we need to add the according genes (if present) set the sbml type row 
 				//to protein and also update the "sbml_id" row 
 				Collection<CyRow> proteinrows = Tab.getMatchingRows(sbmlIDCol, species.getId());
 				for(CyRow currentrow : proteinrows)
 				{
-					PrintFDebugger.Debugging(this, "Setting Row Type to protein");
 					currentrow.set(sbmlTypeCol,IDAREProperties.NodeType.IDARE_PROTEIN);
 					//currentrow.set(IDAREProperties.IDARE_NODE_TYPE, IDAREProperties.NodeType.IDARE_PROTEIN);
 					if(ProteinAnnotationDatabase != null)
 					{
 						if(ProteinAnnotationDatabase == sbmlIDCol)
 						{
-							PrintFDebugger.Debugging(this, "Using ID Col as ProteinAnnotDB");
 						//	currentrow.set(IDAREProperties.IDARE_NODE_NAME, currentrow.get(ProteinAnnotationDatabase, String.class));
 						}
 						else
 						{
-							PrintFDebugger.Debugging(this, "Getting Annotation of Species");							
 							Annotation proteinannotation = species.getAnnotation();
-							PrintFDebugger.Debugging(this, "Looping over CVTerms");
 							for(CVTerm cv : proteinannotation.getListOfCVTerms())
 							{
 								
 								if(cv.getBiologicalQualifierType() == Qualifier.BQB_IS)
 								{
-									PrintFDebugger.Debugging(this, "Found A Protein");
 									for(String ressource : cv.getResources())
 									{
 										if(ressource.contains(ProteinAnnotationDatabase))
 										{
 											//We assume, that a ressource either is something like http:// 
-											PrintFDebugger.Debugging(this, "Found a Protein with matching annotation");
 											if(ressource.matches("http://.*/.*/.*"))
 											{											
 												try
 												{
-													PrintFDebugger.Debugging(this, "Overwriting ID Col");
 													String entry = ressource.split("/")[4];
 													currentrow.set(sbmlIDCol, entry);
 												}
@@ -333,7 +318,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 											{
 												try
 												{
-													PrintFDebugger.Debugging(this, "Overwriting ID Col 2");
 													String entry = ressource.split(":")[3];
 													currentrow.set(sbmlIDCol, entry);
 												}
@@ -360,24 +344,18 @@ public class SBMLAnnotaterTask extends AbstractTask{
 							}
 							if(cv.getBiologicalQualifierType() == Qualifier.BQB_IS_ENCODED_BY)
 							{
-								PrintFDebugger.Debugging(this, "Found a protein encoding gene");								
 								for(String ressource : cv.getResources())
 								{
-									PrintFDebugger.Debugging(this, "Checking String " + ressource);
 									if(getDataBase(ressource).equals(geneAnnotationDatabase))
 									{
-										PrintFDebugger.Debugging(this, "Using Ressource");
 										String GeneName = getURIid(ressource);
-										PrintFDebugger.Debugging(this, "Gene NAme is " + GeneName);
 										if(GeneName != null)
 										{
-											PrintFDebugger.Debugging(this, "Adding to GeneAssoc");
 											if(!GeneAssoc.containsKey(GeneName))
 											{
 												GeneAssoc.put(GeneName, new HashSet<Long>());
 											}
 											GeneAssoc.get(GeneName).add(currentrow.get(CyNetwork.SUID, Long.class));
-											PrintFDebugger.Debugging(this, "And Gene Set");
 											GeneSet.add(GeneName);
 										}
 									}
@@ -639,7 +617,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 						//edgetab.getRow(edge.getSUID()).set(IDAREProperties.IDARE_EDGE_PROPERTY, IDAREProperties.GENE_EDGE_ID);
 
 					}
-					PrintFDebugger.Debugging(this, "Adding new Visual properties for node " + newNode + " x = "+ currentx+ " and y = " + currenty);
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_X_LOCATION, currentx, false));
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_Y_LOCATION, currenty, false));
 
@@ -658,7 +635,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 				{
 					if(GeneNode == null)
 					{
-						PrintFDebugger.Debugging(this, "Null Node found for a gene in ReactionNode " + ReacNode.getSUID());
 						continue;
 					}
 					Double x = ReacNodeView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
@@ -667,7 +643,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 					Double NewNodeY = GetYPosition(i, count, y, width);
 
 					i+=1;
-					PrintFDebugger.Debugging(this, "Adding new Visual properties for node " + GeneNode + " x = "+ NewNodeX+ " and y = " + NewNodeY);
 					VizProps.add(new DelayedVizProp(GeneNode, BasicVisualLexicon.NODE_X_LOCATION, NewNodeX, false));
 					VizProps.add(new DelayedVizProp(GeneNode, BasicVisualLexicon.NODE_Y_LOCATION, NewNodeY, false));
 				}
@@ -681,7 +656,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(this, "Some error." + e.getMessage() + " \n-----------");
 			//e.getCause().printStackTrace(System.out);
 			e.printStackTrace(System.out);
 		}
@@ -750,7 +724,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			catch(IndexOutOfBoundsException ex)
 			{
 				//Do Nothing
-				PrintFDebugger.Debugging(this, "Error in database matching");
 			}
 		}
 		if(URI.matches(".*:.*:.*:.*"))
@@ -763,7 +736,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			catch(IndexOutOfBoundsException ex)
 			{
 				//Do Nothing
-				PrintFDebugger.Debugging(this, "Error in database matching");
 			}
 		}
 
@@ -781,7 +753,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			}
 			catch(IndexOutOfBoundsException e)
 			{
-				PrintFDebugger.Debugging(this, "Error in database matching");
 				return entry;
 			}
 
@@ -794,7 +765,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			}
 			catch(IndexOutOfBoundsException e)
 			{
-				PrintFDebugger.Debugging(this, "Error in database matching");
 				return entry;
 			}
 

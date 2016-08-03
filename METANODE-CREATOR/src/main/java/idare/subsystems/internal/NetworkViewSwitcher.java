@@ -1,6 +1,5 @@
 package idare.subsystems.internal;
 import idare.Properties.IDAREProperties;
-import idare.metanode.internal.Debug.PrintFDebugger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -196,7 +195,6 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized Set<String> getSubNetworkNames(CyNetwork parentnetwork)
 	{
 		HashSet<String> subnetworkNames = new HashSet<String>();
-		PrintFDebugger.Debugging(this,"There are " + SubNetworks.size() +  " Subnetworks");
 		// Do a check whether 
 		for(CyNetwork network : SubNetworks.keySet())
 		{
@@ -208,7 +206,6 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 				subnetworkNames.add(SubNetworkName.replace(parentName + SubNetworkCreationTask.subnetworkNameSeparator, ""));
 			}
 		}
-		PrintFDebugger.Debugging(this,subnetworkNames.size() +  " of those belong to the current network");
 		return subnetworkNames;
 	}
 	
@@ -353,7 +350,6 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 					//skip if the changed item is not a network
 					continue;					
 				}		
-				PrintFDebugger.Debugging(this, "Updating Links to network: " + network.getRow(network).get(CyNetwork.NAME, String.class) );
 
 				String newName = rec.getValue().toString(); 
 				

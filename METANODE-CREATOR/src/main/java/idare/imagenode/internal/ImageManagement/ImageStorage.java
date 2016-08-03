@@ -1,0 +1,430 @@
+package idare.imagenode.internal.ImageManagement;
+
+import idare.Properties.IDAREProperties;
+import idare.ThirdParty.BufferedImageTranscoder;
+import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
+import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
+import idare.imagenode.internal.Utilities.LayoutUtils;
+import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.cytoscape.model.CyRow;
+import org.cytoscape.view.model.View;
+import org.cytoscape.view.model.VisualProperty;
+import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
+import org.cytoscape.view.presentation.customgraphics.CyCustomGraphics;
+import org.cytoscape.view.presentation.customgraphics.CyCustomGraphicsFactory;
+import org.cytoscape.view.vizmap.VisualMappingFunction;
+import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
+import org.w3c.dom.svg.SVGDocument;
+/**
+ * The {@link ImageStorage} functions as both {@link CyCustomGraphicsFactory} and management for images used by IDARE.
+ * In addition it provides the mapping function between Strings and the respective IDARE images.
+ * 
+ * @author Thomas Pfau
+ *
+ */
+public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFunction<String,CyCustomGraphics<CustomGraphicLayer>>,DiscreteMapping<String, CyCustomGraphics<CustomGraphicLayer>>,NodeChangedListener {
+	private HashMap<String, BufferedImage> MetaNodes;
+	private NodeManager nodeManager;
+	private HashMap<String,CyCustomGraphics<CustomGraphicLayer>> graphicsmap;
+	private int width;
+	private int height;
+	private Vector<GraphicsChangedListener> listeners;
+	private IDAREVisualStyle visualstyle;
+	
+	VisualProperty costumVP;
+	private boolean setupNeeded;
+	
+	/**
+	 * Default Constructor defining the {@link VisualProperty} that this {@link VisualMappingFunction} maps to. 
+	 * @param VisualcustomGraphiVP
+	 */
+	public ImageStorage(VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP) {
+		//this class is responsible to create the Images and map IDs to the appropriate images.
+		//It does however not work as an interface to the 
+		costumVP = VisualcustomGraphiVP;
+		listeners = new Vector<GraphicsChangedListener>();
+		MetaNodes = new HashMap<String, BufferedImage>();
+		graphicsmap = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
+		this.width = (int)METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
+		this.height = (int)METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+		setupNeeded = false;
+	}
+	
+	/**
+	 * set the {@link IDAREVisualStyle} linked to this {@link ImageStorage}
+	 * @param ids
+	 */
+	public void setVisualStyle(IDAREVisualStyle ids)
+	{
+		visualstyle = ids;
+	}
+	
+	/**
+	 *  Set the {@link NodeManager} linked to this {@link ImageStorage}
+	 */
+	
+	public void setNodeManager(NodeManager nm)
+	{
+		nodeManager = nm;
+	}
+	/**
+	 * Add a listener that listens to changed images (and updates accordingly)
+	 * @param listener
+	 */
+	public void addImageLayoutChangedListener(GraphicsChangedListener listener)
+	{
+		listeners.addElement(listener);
+	}
+	/**
+	 * Reset the images available in this mapping
+	 */
+	public synchronized void reset(){		
+		MetaNodes.clear();
+		Vector<String> imagekeys = new Vector<String>();
+		imagekeys.addAll(graphicsmap.keySet());
+		graphicsmap.clear();		
+		fireLayoutChange(imagekeys);		
+		
+	}
+	/**
+	 * Inform all listeners about the updated IDs (and provide them with the respective Images for those IDs. 
+	 * @param IDs
+	 */
+	private void fireLayoutChange(Collection<String> IDs)
+	{
+		
+		HashMap<String, CyCustomGraphics<CustomGraphicLayer>> newgraphics = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
+		for(String id : IDs)
+		{
+			newgraphics.put(id,graphicsmap.get(id));
+		}
+		Vector<GraphicsChangedListener> clisteners = new Vector<GraphicsChangedListener>();
+		clisteners.addAll(listeners);
+		for(GraphicsChangedListener listener : clisteners)
+		{
+			listener.imageUpdated(new GraphicsChangedEvent(newgraphics));
+		}
+
+	}
+	
+	/**
+	 * Invalidate a specific ID (i.e. remove the ID from the mapping).
+	 * @param id
+	 */
+	public void invalidate(String id)
+	{		
+		MetaNodes.remove(id);
+		graphicsmap.remove(id);
+		setupNeeded = true;		
+		generateGraphicsForID(id, false);	
+		fireLayoutChange(Collections.singleton(id));
+	}
+	/**
+	 * Invalidate all Images associated with the provided Strings.
+	 * @param ids
+	 */
+	public void invalidate(Collection<String> ids)
+	{
+
+		Collection<String> changedIDs = new HashSet<String>();
+		changedIDs.addAll(ids);
+		for(String id : changedIDs)
+		{
+			MetaNodes.remove(id);
+			graphicsmap.remove(id);
+		}
+		setupNeeded = true;
+		generateGraphicsForIDs(changedIDs);
+		fireLayoutChange(changedIDs);
+	}
+	/**
+	 * Get the BufferedImage associated with a specific ID
+	 * The Image will be generated if necessar (and possible)
+	 * @param ID
+	 * @return the requested image, or null if it does not exists, and cannot be generated.
+	 */
+	public BufferedImage getMetaNodeImageForItem(String ID)
+	{	
+		if(!MetaNodes.containsKey(ID) && nodeManager.isNodeLayouted(ID))
+		{
+
+			SVGDocument doc = LayoutUtils.createSVGDoc();
+			SVGGraphics2D g = new SVGGraphics2D(doc);	
+			nodeManager.getLayoutForNode(ID).layoutNode(nodeManager.getNode(ID).getData(), g);
+			LayoutUtils.TransferGRaphicsToDocument(doc, null, g);
+			//Element root = doc.getDocumentElement();
+			//g.getRoot(root);
+			//root.setAttribute("viewBox", "0 0 400 270");
+
+			MetaNodes.put(ID, SVGToBufferedImage(doc, METANODEPROPERTIES.IMAGEWIDTH));
+			
+		}			
+		return MetaNodes.get(ID);
+
+	}
+
+	/**
+	 * Convert a {@link SVGDocument} to a BufferedImage with a specified width.
+	 * @param svg
+	 * @param width
+	 * @return
+	 */
+	private BufferedImage SVGToBufferedImage(SVGDocument svg, int width)
+	{
+		BufferedImageTranscoder t = new BufferedImageTranscoder(); 
+
+		t.addTranscodingHint(PNGTranscoder.KEY_WIDTH,  (float) width);
+		t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, Color.white);		
+		// t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, (float) height); 
+
+		// t.addTranscodingHint(PNGTranscoder.KEY_,  (float) width); 
+
+		TranscoderInput input = new TranscoderInput(svg); 
+		try 
+		{ 
+			t.transcode(input, null); 
+		} catch (TranscoderException e) 
+		{ 
+			throw new RuntimeException(e); 
+		} 
+
+		return t.getBufferedImage(); 
+	} 
+
+	/**
+	 * Generate the Graphics for the respective IDs
+	 * @param IDs - The IDs of the Nodes
+	 */
+	public synchronized void generateGraphicsForIDs(Collection<String> IDs)
+	{
+		for(String id : IDs)
+		{
+			if(nodeManager.isNodeLayouted(id)){
+				//If we are during the loading of NOdes, we replace old ones.
+				graphicsmap.put(id, getInstance(id));
+			}			
+		}
+		setupNeeded = false;
+		//fireLayoutChange(IDs);
+	}
+	
+	
+	/**
+	 * Get the Graphic for the respective ID 
+	 * @param ID - The ID of the Node
+	 * @param Setup - Whether this is an initial setup or a general update
+	 */
+	public synchronized void generateGraphicsForID(String ID, boolean Setup)
+	{
+		if(Setup)
+		{
+			Vector<String> changedIDs = new Vector<String>();
+			for(String id : nodeManager.getLayoutedIDs())
+			{
+				if(nodeManager.isNodeLayouted(id)){
+					//If we are during the loading of NOdes, we replace old ones.
+					//do this only, if its not 
+					if(!graphicsmap.containsKey(id))
+					{
+					graphicsmap.put(id, getInstance(id));
+					changedIDs.add(id);
+					}					
+				}			
+			}
+			if(changedIDs.size() > 0)
+			{
+				fireLayoutChange(nodeManager.getLayoutedIDs());
+			}
+		}
+		else if(ID != null)
+		{			
+			//for now, we will just create these things "on the fly and don't check whether there is a suitable 
+			if(nodeManager.isNodeLayouted(ID)){
+				//If we are during the loading of NOdes, we replace old ones.
+				if(!graphicsmap.containsKey(ID)){
+					graphicsmap.put(ID, getInstance(ID));				
+					fireLayoutChange(Collections.singletonList(ID));
+				}			
+			}			
+		}
+		setupNeeded = false;
+	}
+
+
+	@Override
+	public String getPrefix() {
+		return null;
+	}
+
+	@Override
+	public boolean supportsMime(String mimeType) {
+		return false;
+	}
+
+	@Override
+	public IDARECustomGraphics getInstance(URL url) {
+
+		return getInstance(url.toString());
+	}
+
+	@Override
+	public IDARECustomGraphics getInstance(String input) {    	    	
+		BufferedImage metanode = getMetaNodeImageForItem(input);
+		if(metanode != null)
+		{
+			//Use the image if there is one provided by the imageMatcher
+			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(metanode,width,height);
+			myCustomGraphics.setDisplayName(input);
+			return myCustomGraphics;
+		}
+		else
+		{
+			//There is no image, so we return null
+			return null;
+		}
+	}
+
+	@Override
+	public CyCustomGraphics parseSerializableString(String string) {
+		return null;
+	}
+
+	@Override
+	public Class<? extends CyCustomGraphics> getSupportedClass() {
+		return IDARECustomGraphics.class;
+	}
+	/**
+	 * Set the width of the graphics created by this factory
+	 * @param width - the width to be used
+	 */
+	public void setWidth(int width)
+	{
+		this.width = width;    	
+	}
+	/**
+	 * Set the height of the graphics created by this factory
+	 * @param height - the height to be used
+	 */
+	public void setHeight(int height)
+	{
+		this.height = height;
+	}
+	
+	public void updateStyle()
+	{
+		if(visualstyle != null)
+		{
+			visualstyle.updateRelevantViews();
+		}
+	}
+	
+	
+	@Override
+	public void apply(CyRow arg0, View arg1) {
+		
+		String idareName = arg0.get(IDAREProperties.IDARE_NODE_NAME, String.class);
+		//this will induce an addition of the Costum graphics.
+		if(setupNeeded)
+		{
+			generateGraphicsForID(idareName, false);
+		}
+		//if this idareName is already mapped to a node, use the mapped graphics.
+		if(graphicsmap.containsKey(idareName))
+		{
+			arg1.setVisualProperty(costumVP, graphicsmap.get(idareName));
+		}
+	}
+
+	@Override
+	public CyCustomGraphics<CustomGraphicLayer> getMappedValue(CyRow arg0) {
+		String idareName = arg0.get(IDAREProperties.IDARE_NODE_NAME, String.class);			
+		return getMapValue(idareName);
+	}
+
+	@Override
+	public String getMappingColumnName() {
+		return IDAREProperties.IDARE_NODE_NAME;
+	}
+
+	@Override
+	public Class<String> getMappingColumnType() {
+		return String.class;
+	}
+
+	@Override
+	public VisualProperty getVisualProperty() {
+		return costumVP;
+	}
+
+
+
+
+
+	@Override
+	public Map<String, CyCustomGraphics<CustomGraphicLayer>> getAll() {
+		if(setupNeeded)
+		{
+			generateGraphicsForID("", true);
+		}
+		return graphicsmap;
+	}
+
+
+
+
+
+	@Override
+	public CyCustomGraphics<CustomGraphicLayer> getMapValue(String arg0) {		
+		if(setupNeeded)
+		{
+			generateGraphicsForID(arg0, false);
+		}	
+		return graphicsmap.get(arg0);
+	}
+
+
+
+
+
+	@Override
+	public <T extends CyCustomGraphics<CustomGraphicLayer>> void putAll(
+			Map<String, T> arg0) {
+		graphicsmap.putAll(arg0);
+	}
+
+
+
+
+
+	@Override
+	public <T extends CyCustomGraphics<CustomGraphicLayer>> void putMapValue(
+			String arg0, T arg1) {
+		graphicsmap.put(arg0, arg1);
+	}
+
+	@Override
+	public void handleNodeUpdate(NodeUpdateEvent e) {
+		// TODO Auto-generatd method stub
+		invalidate(e.getupdatedIDs());
+	}
+	
+}
+
+

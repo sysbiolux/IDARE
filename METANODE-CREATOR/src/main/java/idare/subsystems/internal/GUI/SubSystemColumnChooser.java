@@ -3,7 +3,7 @@ package idare.subsystems.internal.GUI;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.metanode.internal.Utilities.GUIUtils;
+import idare.imagenode.internal.Utilities.GUIUtils;
 import idare.subsystems.internal.NoNetworksToCreateException;
 import idare.subsystems.internal.SubNetworkCreator;
 

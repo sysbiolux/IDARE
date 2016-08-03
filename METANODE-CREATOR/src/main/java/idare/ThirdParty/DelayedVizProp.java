@@ -1,11 +1,11 @@
 package idare.ThirdParty;
 
-import idare.metanode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
-import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyIdentifiable;
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.VisualProperty;

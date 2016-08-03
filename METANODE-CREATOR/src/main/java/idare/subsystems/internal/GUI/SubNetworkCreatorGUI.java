@@ -3,7 +3,6 @@ package idare.subsystems.internal.GUI;
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.subsystems.internal.NoNetworksToCreateException;
 import idare.subsystems.internal.SubNetworkCreator;
 
@@ -268,7 +267,6 @@ public class SubNetworkCreatorGUI extends JDialog{
 		{
 			if(!existingSubSystems.contains(subSys) && subSys != null)
 			{
-				PrintFDebugger.Debugging(this, "Adding Subsystem " + subSys.toString());
 				Vector<Object> row = new Vector<Object>();
 				row.add(subSys);
 				row.add(false);
@@ -278,7 +276,6 @@ public class SubNetworkCreatorGUI extends JDialog{
 		
 		//if(subSysSelMod.getRowCount() == 0)
 		//{
-		//	PrintFDebugger.Debugging(this, "No Network To Create with current selection");
 		//	throw new NoNetworksToCreateException();			
 		//}		
 		return subSysSelMod;
@@ -364,18 +361,15 @@ public class SubNetworkCreatorGUI extends JDialog{
 		//	width += FM.stringWidth(s)+5;
 		//}
 		//metSelTab.setPreferredScrollableViewportSize(new Dimension((int)width, 100));
-		PrintFDebugger.Debugging(this,"Looping over Nodes");
 		for(CyNode node : nodes)
 		{
 							
 			
 			CyRow nodeRow = network.getRow(node);
-			PrintFDebugger.Debugging(this,"getting NodeTypeColumn " + creator.getNodeTypeColumn());
 			String TypeEntry = nodeRow.get(creator.getNodeTypeColumn(), String.class);
 			
 			if(TypeEntry != null && TypeEntry.equals(creator.getCompoundName()))
 			{
-				PrintFDebugger.Debugging(this,"Reading Compound Name" + creator.getCompoundName());
 				updateMetaboliteLists(metaboliteNodes,metaboliteList, node, network);
 				//metaboliteNodes.put(node,network.getAdjacentEdgeList(node, CyEdge.Type.ANY).size());
 				//metaboliteList.add(new SortEntry(node,network.getAdjacentEdgeList(node, CyEdge.Type.ANY).size()));
