@@ -1,8 +1,8 @@
 package idare.metanode.internal.Utilities;
 
+import idare.metanode.Properties.LabelGenerator;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Properties.LabelGenerator;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 
 import java.awt.Dimension;
 import java.awt.Font;

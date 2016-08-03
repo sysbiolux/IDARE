@@ -1,7 +1,7 @@
 package idare.metanode.internal.DataManagement.Events;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
 import idare.metanode.internal.DataManagement.DataSetManager;
-import idare.metanode.internal.Interfaces.DataSet;
 /**
  * An Event Indicating that Datasets are changing.
  * @author Thomas Pfau

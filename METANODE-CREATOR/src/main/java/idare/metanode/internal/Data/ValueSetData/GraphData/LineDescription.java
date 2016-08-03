@@ -6,9 +6,9 @@ import java.awt.geom.Line2D;
 
 import javax.swing.JScrollPane;
 
-import idare.metanode.internal.Data.ValueSetData.SetDataDescription;
-import idare.metanode.internal.Data.ValueSetData.SetEntryDescriptionPane;
-import idare.metanode.internal.Data.ValueSetData.SetEntryPanel;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetDataDescription;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetEntryDescriptionPane;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetEntryPanel;
 
 public class LineDescription extends SetDataDescription {
 

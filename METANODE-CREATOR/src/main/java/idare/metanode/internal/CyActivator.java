@@ -2,7 +2,9 @@ package idare.metanode.internal;
 
 
 import idare.Properties.IDARESettingsManager;
-import idare.metanode.IDAREMetaNodeApp;
+import idare.metanode.IDAREMetaNodeAppService;
+import idare.metanode.internal.DataManagement.DataSetProvider;
+import idare.metanode.internal.DataSetReaders.DataSetReaderProvider;
 import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.metanode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.metanode.internal.GUI.Legend.IDARELegend;
@@ -35,6 +37,8 @@ import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.service.util.CyServiceRegistrar;
+import org.cytoscape.session.events.SessionAboutToBeSavedListener;
+import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.task.NodeViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
@@ -124,7 +128,10 @@ public class CyActivator extends AbstractCyActivator {
 
 
 		//initialize and register the app components.
-		app = new IDAREMetaNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager);
+		app = new IDAREMetaNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager);		
+		app.registerPlugin(new DataSetReaderProvider());
+		app.registerPlugin(new DataSetProvider());
+		IDAREMetaNodeAppService appService = new IDAREMetaNodeAppService(app);
 		NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
 		IDARELegend pan = app.getLegend();
 		LegendUpdater up = new LegendUpdater(pan, app.getNodeManager(), cyAppMgr,vmm, app.getStyleManager());		
@@ -168,8 +175,9 @@ public class CyActivator extends AbstractCyActivator {
 		registerAllServices(context, pan, new Properties());
 		registerAllServices(context, up, new Properties());
 		//Register the app as its own service and load and save listener.
-		registerAllServices(context, app, new Properties());
-		registerService(context, app, IDAREMetaNodeApp.class, new Properties());
+		registerService(context, app, SessionAboutToBeSavedListener.class, new Properties());
+		registerService(context, app, SessionLoadedListener.class, new Properties());
+		registerService(context, appService, IDAREMetaNodeAppService.class, new Properties());
 
 		//Register the visual style
 		registerAllServices(context, app.getVisualStyle(), new Properties());

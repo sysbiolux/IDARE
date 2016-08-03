@@ -1,13 +1,13 @@
 package idare.metanode.internal.GUI.DataSetController;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.DataSetManager;
 import idare.metanode.internal.DataManagement.NodeManager;
 import idare.metanode.internal.GUI.DataSetAddition.DataSetAdderGUI;
 import idare.metanode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
-import idare.metanode.internal.Interfaces.DataSet;
 import idare.metanode.internal.Layout.ColorMapDataSetBundle;
 import idare.metanode.internal.Layout.NodeLayout;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.GUIUtils;
 import idare.metanode.internal.Utilities.LayoutUtils;
 import idare.metanode.internal.exceptions.layout.ContainerUnplaceableExcpetion;

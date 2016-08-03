@@ -10,10 +10,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 
-import idare.metanode.internal.DataSetReaders.IDARECell;
-import idare.metanode.internal.DataSetReaders.IDARERow;
-import idare.metanode.internal.DataSetReaders.IDARESheet;
-import idare.metanode.internal.DataSetReaders.IDAREWorkbook;
+import idare.metanode.Interfaces.DataSetReaders.IDARECell;
+import idare.metanode.Interfaces.DataSetReaders.IDARERow;
+import idare.metanode.Interfaces.DataSetReaders.IDARESheet;
+import idare.metanode.Interfaces.DataSetReaders.IDAREWorkbook;
 
 public class POISheet implements IDARESheet {
 

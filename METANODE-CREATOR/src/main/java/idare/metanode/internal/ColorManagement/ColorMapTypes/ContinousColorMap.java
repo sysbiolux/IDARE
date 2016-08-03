@@ -1,9 +1,9 @@
 package idare.metanode.internal.ColorManagement.ColorMapTypes;
 
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.ColorManagement.ColorMap;
 import idare.metanode.internal.ColorManagement.ColorScale;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 
 import java.awt.Color;
 import java.awt.Component;

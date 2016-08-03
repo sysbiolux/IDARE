@@ -1,14 +1,14 @@
 package idare.metanode.internal.Data.ValueSetData.ScatterData;
 
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetDataDescription;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetEntryDescriptionPane;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetEntryPanel;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
+import idare.metanode.Interfaces.DataSets.DataSet;
 import idare.metanode.internal.ColorManagement.ColorMap;
-import idare.metanode.internal.Data.ValueSetData.SetDataDescription;
-import idare.metanode.internal.Data.ValueSetData.SetEntryDescriptionPane;
-import idare.metanode.internal.Data.ValueSetData.SetEntryPanel;
-import idare.metanode.internal.Data.ValueSetData.ValueSetDataSet;
 import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.metanode.internal.GUI.Legend.Utilities.LegendSizeListener;
 import idare.metanode.internal.GUI.Legend.Utilities.SizeAdaptableComponent;
-import idare.metanode.internal.Interfaces.DataSet;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

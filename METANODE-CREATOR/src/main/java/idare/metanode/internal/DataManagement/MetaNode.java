@@ -1,7 +1,7 @@
 package idare.metanode.internal.DataManagement;
 
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.NodeData;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
 
 import java.util.Collection;
 import java.util.Vector;

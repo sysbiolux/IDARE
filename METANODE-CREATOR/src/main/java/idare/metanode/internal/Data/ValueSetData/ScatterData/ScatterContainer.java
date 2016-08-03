@@ -1,9 +1,9 @@
 package idare.metanode.internal.Data.ValueSetData.ScatterData;
 
-import idare.metanode.internal.Data.ValueSetData.ValueSetContainer;
-import idare.metanode.internal.Interfaces.ContainerLayout;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.NodeData;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Interfaces.Layout.ContainerLayout;
 /**
  * Container Class for GraphData
  * @author Thomas Pfau

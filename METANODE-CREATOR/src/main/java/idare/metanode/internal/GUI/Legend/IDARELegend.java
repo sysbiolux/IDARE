@@ -1,15 +1,15 @@
 package idare.metanode.internal.GUI.Legend;
 
 
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.MetaNode;
 import idare.metanode.internal.DataManagement.NodeManager;
 import idare.metanode.internal.DataManagement.Events.NodeChangedListener;
 import idare.metanode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.metanode.internal.GUI.Legend.Utilities.LegendSizeListener;
-import idare.metanode.internal.Interfaces.DataSet;
 import idare.metanode.internal.Layout.NodeLayout;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;

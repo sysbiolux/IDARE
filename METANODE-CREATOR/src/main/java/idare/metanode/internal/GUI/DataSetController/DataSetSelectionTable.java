@@ -1,10 +1,10 @@
 package idare.metanode.internal.GUI.DataSetController;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.Layout.DataSetProperties;
 import idare.metanode.internal.ColorManagement.ColorScalePane;
 import idare.metanode.internal.GUI.DataSetController.DataSetSelectionModel.ColorPaneBox;
 import idare.metanode.internal.GUI.DataSetController.DataSetSelectionModel.ComboBoxRenderer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.DataSetProperties;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;

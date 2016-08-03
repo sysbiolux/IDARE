@@ -1,16 +1,16 @@
 package idare.metanode.internal.DataManagement;
 
 import idare.Properties.IDAREProperties;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.metanode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.metanode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.metanode.internal.DataManagement.Events.NodeChangedListener;
 import idare.metanode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.DataSet;
 import idare.metanode.internal.Layout.ColorMapDataSetBundle;
 import idare.metanode.internal.Layout.NodeLayout;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.EOOMarker;
 import idare.metanode.internal.Utilities.LayoutUtils;
 import idare.metanode.internal.VisualStyle.IDAREVisualStyle;

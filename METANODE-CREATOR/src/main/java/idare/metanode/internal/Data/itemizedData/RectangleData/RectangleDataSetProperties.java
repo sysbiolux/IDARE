@@ -1,11 +1,11 @@
 package idare.metanode.internal.Data.itemizedData.RectangleData;
 
-import idare.metanode.internal.Data.itemizedData.AbstractItemDataSetProperties;
-import idare.metanode.internal.Data.itemizedData.AbstractItemNodeData;
-import idare.metanode.internal.Interfaces.DataContainer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.NodeData;
-import idare.metanode.internal.Properties.Localisation.Position;
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemDataSetProperties;
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.metanode.Interfaces.DataSets.DataContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Properties.Localisation.Position;
 /**
  * Properties for a Dataset with representation as rectangles 
  * It will be termed as HeatMap.

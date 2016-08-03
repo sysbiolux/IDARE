@@ -1,12 +1,12 @@
 package idare.metanode.internal.Data.ValueSetData.GraphData;
 
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetContainerLayout;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetDataValue;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
+import idare.metanode.Interfaces.DataSets.NodeData;
 import idare.metanode.internal.ColorManagement.ColorMap;
-import idare.metanode.internal.Data.ValueSetData.ValueSetContainerLayout;
-import idare.metanode.internal.Data.ValueSetData.ValueSetDataSet;
-import idare.metanode.internal.Data.ValueSetData.ValueSetDataValue;
-import idare.metanode.internal.Data.ValueSetData.ValueSetNodeData;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.NodeData;
 import idare.metanode.internal.Utilities.LayoutUtils;
 import idare.metanode.internal.Utilities.LegendLabel;
 

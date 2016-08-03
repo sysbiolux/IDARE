@@ -1,6 +1,8 @@
 package idare.metanode.internal.GUI.DataSetController;
 
 import idare.ThirdParty.BoundsPopupMenuListener;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.Layout.DataSetProperties;
 import idare.metanode.internal.ColorManagement.ColorMap;
 import idare.metanode.internal.ColorManagement.ColorScalePane;
 import idare.metanode.internal.DataManagement.DataSetManager;
@@ -8,8 +10,6 @@ import idare.metanode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.metanode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.metanode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.DataSetProperties;
 import idare.metanode.internal.Layout.ColorMapDataSetBundle;
 import idare.metanode.internal.Utilities.ColorScalePopupAdjuster;
 

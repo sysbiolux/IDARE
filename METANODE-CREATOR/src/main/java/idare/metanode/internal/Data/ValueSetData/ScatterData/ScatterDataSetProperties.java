@@ -1,23 +1,24 @@
 package idare.metanode.internal.Data.ValueSetData.ScatterData;
 
+import idare.metanode.Data.BasicDataTypes.ValueSetData.SetDataDescription;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
+import idare.metanode.Data.BasicDataTypes.itemizedData.ItemDataDescription;
+import idare.metanode.Interfaces.DataSets.DataContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Interfaces.Layout.DataSetProperties;
+import idare.metanode.Properties.LabelGenerator;
+import idare.metanode.Properties.Localisation.Position;
 import idare.metanode.internal.ColorManagement.ColorMap;
-import idare.metanode.internal.Data.ValueSetData.SetDataDescription;
-import idare.metanode.internal.Data.ValueSetData.ValueSetDataSet;
-import idare.metanode.internal.Data.ValueSetData.ValueSetNodeData;
-import idare.metanode.internal.Data.itemizedData.ItemDataDescription;
 import idare.metanode.internal.GUI.Legend.Utilities.TextPaneResizer;
-import idare.metanode.internal.Interfaces.DataContainer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.DataSetProperties;
-import idare.metanode.internal.Interfaces.NodeData;
-import idare.metanode.internal.Properties.LabelGenerator;
-import idare.metanode.internal.Properties.Localisation.Position;
 import idare.metanode.internal.Utilities.GUIUtils;
 import idare.metanode.internal.exceptions.io.WrongFormat;
 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -130,5 +131,12 @@ public abstract class ScatterDataSetProperties extends DataSetProperties {
 	 */
 	protected abstract int getLabelSize();
 	
+	@Override
+	public Collection<Class<? extends DataSet>> getWorkingClassTypes()
+	{
+		Vector<Class<? extends DataSet>> acceptableclasses = new Vector<Class<? extends DataSet>>();
+		acceptableclasses.add(ValueSetDataSet.class);
+		return acceptableclasses;
+	}
 	
 }

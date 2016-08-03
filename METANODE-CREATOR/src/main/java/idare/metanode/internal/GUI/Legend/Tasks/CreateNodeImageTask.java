@@ -1,11 +1,11 @@
 package idare.metanode.internal.GUI.Legend.Tasks;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.NodeManager;
 import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.metanode.internal.GUI.Legend.IDARELegend;
-import idare.metanode.internal.Interfaces.DataSet;
 import idare.metanode.internal.Layout.NodeLayout;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;

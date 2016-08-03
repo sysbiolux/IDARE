@@ -1,7 +1,7 @@
 package idare.metanode.internal.Data.itemizedData.RectangleData;
 
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemContainerLayout;
 import idare.metanode.internal.ColorManagement.ColorUtils;
-import idare.metanode.internal.Data.itemizedData.AbstractItemContainerLayout;
 import idare.metanode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;

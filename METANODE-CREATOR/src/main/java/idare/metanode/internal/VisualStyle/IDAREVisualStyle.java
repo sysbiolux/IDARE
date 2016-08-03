@@ -3,12 +3,12 @@ package idare.metanode.internal.VisualStyle;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.NodeManager;
 import idare.metanode.internal.Debug.PrintFDebugger;
 import idare.metanode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.metanode.internal.ImageManagement.GraphicsChangedListener;
 import idare.metanode.internal.ImageManagement.ImageStorage;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 
 import java.awt.Color;
 import java.awt.Paint;

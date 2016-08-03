@@ -1,10 +1,10 @@
 package idare.metanode.internal.Data.itemizedData.CircleGridData;
 
-import idare.metanode.internal.Data.itemizedData.AbstractItemContainer;
-import idare.metanode.internal.Data.itemizedData.AbstractItemNodeData;
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemContainer;
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.Layout.ContainerLayout;
 import idare.metanode.internal.Data.itemizedData.CircleData.CircleContainerLayout;
-import idare.metanode.internal.Interfaces.ContainerLayout;
-import idare.metanode.internal.Interfaces.DataSet;
 /**
  * Container for a row of Circles, that can contain empty columns.
  * @author Thomas Pfau

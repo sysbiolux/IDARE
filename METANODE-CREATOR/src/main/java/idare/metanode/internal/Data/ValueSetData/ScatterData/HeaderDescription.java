@@ -1,9 +1,9 @@
 package idare.metanode.internal.Data.ValueSetData.ScatterData;
 
-import idare.metanode.internal.Data.ValueSetData.ValueSetDataSet;
-import idare.metanode.internal.Data.itemizedData.ItemDataDescription;
-import idare.metanode.internal.Interfaces.NodeData;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
+import idare.metanode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
+import idare.metanode.Data.BasicDataTypes.itemizedData.ItemDataDescription;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;

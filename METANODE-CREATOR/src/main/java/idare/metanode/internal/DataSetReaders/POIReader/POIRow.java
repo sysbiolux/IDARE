@@ -8,9 +8,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 
-import idare.metanode.internal.DataSetReaders.IDARECell;
-import idare.metanode.internal.DataSetReaders.IDARERow;
-import idare.metanode.internal.DataSetReaders.IDARESheet;
+import idare.metanode.Interfaces.DataSetReaders.IDARECell;
+import idare.metanode.Interfaces.DataSetReaders.IDARERow;
+import idare.metanode.Interfaces.DataSetReaders.IDARESheet;
 
 public class POIRow implements IDARERow {
 	Row row;

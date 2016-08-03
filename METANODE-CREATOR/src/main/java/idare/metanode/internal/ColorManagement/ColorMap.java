@@ -1,7 +1,7 @@
 package idare.metanode.internal.ColorManagement;
 
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.METANODEPROPERTIES;
 
 import java.awt.Color;
 import java.awt.Dimension;

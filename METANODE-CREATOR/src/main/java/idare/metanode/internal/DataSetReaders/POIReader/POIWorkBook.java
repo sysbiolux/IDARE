@@ -1,16 +1,11 @@
 package idare.metanode.internal.DataSetReaders.POIReader;
 
-import java.util.Collections;
+import idare.metanode.Interfaces.DataSetReaders.IDARESheet;
+import idare.metanode.Interfaces.DataSetReaders.IDAREWorkbook;
+
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
-import idare.metanode.internal.DataSetReaders.IDARESheet;
-import idare.metanode.internal.DataSetReaders.IDAREWorkbook;
 
 public class POIWorkBook implements IDAREWorkbook {
 

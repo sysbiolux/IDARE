@@ -1,10 +1,10 @@
 package idare.metanode.internal.Layout;
 
+import idare.metanode.Interfaces.DataSets.DataContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Properties.Localisation;
+import idare.metanode.Properties.METANODEPROPERTIES.LayoutStyle;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.DataContainer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Properties.Localisation;
-import idare.metanode.internal.Properties.METANODEPROPERTIES.LayoutStyle;
 import idare.metanode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.metanode.internal.exceptions.layout.DimensionMismatchException;
 import idare.metanode.internal.exceptions.layout.TooManyItemsException;

@@ -1,7 +1,6 @@
 /**
- * This package contains readers for different types of input file formats
- */
-/**
+ * This package contains Readers for Excel and CSV File formats implementing the {@link idare.metanode.Interfaces.DataSetReaders.IDAREDatasetReader} interface 
+ * 
  * @author Thomas Pfau
  *
  */

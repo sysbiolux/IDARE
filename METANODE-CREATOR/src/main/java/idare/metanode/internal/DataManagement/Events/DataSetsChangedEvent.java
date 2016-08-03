@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
 import idare.metanode.internal.DataManagement.DataSetManager;
-import idare.metanode.internal.Interfaces.DataSet;
 
 /**
  * An event indicating the change of the state of multiple Datasets. (Either their addition or removal)

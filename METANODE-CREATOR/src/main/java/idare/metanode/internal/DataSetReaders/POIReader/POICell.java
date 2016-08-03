@@ -1,6 +1,6 @@
 package idare.metanode.internal.DataSetReaders.POIReader;
 
-import idare.metanode.internal.DataSetReaders.IDARECell;
+import idare.metanode.Interfaces.DataSetReaders.IDARECell;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;

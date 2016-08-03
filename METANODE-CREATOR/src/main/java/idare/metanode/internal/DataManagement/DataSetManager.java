@@ -1,13 +1,14 @@
 package idare.metanode.internal.DataManagement;
 
+import idare.metanode.Interfaces.DataSetReaders.IDAREDatasetReader;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.Layout.DataSetProperties;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.metanode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.metanode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.metanode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.DataSetProperties;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.IOUtils;
 import idare.metanode.internal.exceptions.io.DuplicateIDException;
 import idare.metanode.internal.exceptions.io.WrongFormat;
@@ -46,8 +47,9 @@ public class DataSetManager{
 	private DataSetIDProvider idprovider;
 	private Vector<DataSetAboutToBeChangedListener> toChangeListener = new Vector<DataSetAboutToBeChangedListener>();
 	private Vector<DataSetChangeListener> changedListener = new Vector<DataSetChangeListener>();
-	private HashMap<String,String> AvailableDataSetTypes = new HashMap<String, String>();
-	private HashMap<String,Collection<DataSetProperties>> DataSetPropertyOptions = new HashMap<String,Collection<DataSetProperties>>();  
+	private HashMap<String,Class<? extends DataSet>> AvailableDataSetTypes = new HashMap<String, Class<? extends DataSet>>();
+	private HashMap<Class<? extends DataSet>,Collection<DataSetProperties>> DataSetPropertyOptions = new HashMap<Class<? extends DataSet>,Collection<DataSetProperties>>();
+	private LinkedList<IDAREDatasetReader> dataSetReaders = new LinkedList<IDAREDatasetReader>();
 	/**
 	 * Default constructor initializing required fields.
 	 */
@@ -77,41 +79,62 @@ public class DataSetManager{
 	}
 	
 	/**
-	 * Add an Entry to the TypeName -> classname translation table.
+	 * Register a DataSetType that can be accessed by the TypeName.
 	 * @param TypeName
-	 * @param className
+	 * @param The Class of the DataSet
 	 */
-	public void registerDataSetType(String TypeName, String className)
+	public void registerDataSetType(String TypeName, Class<? extends DataSet> dataSetClass) throws DuplicateIDException
 	{
-		AvailableDataSetTypes.put(TypeName,className);
+		if(!AvailableDataSetTypes.containsKey(TypeName))
+		{	
+			AvailableDataSetTypes.put(TypeName,dataSetClass);		
+		}
+		else
+		{
+			throw new DuplicateIDException(TypeName, "Duplicate Type Name for DataSet encountered. Not adding the new dataset type.");
+		}
+	}
+
+	/**
+	 * Remove a class from the available Datasetclasses.
+	 * This is skipped, if the class matching to the typename does not match the class provided. 
+	 * @param TypeName
+	 * @param The Class of the DataSet
+	 */
+	public void deRegisterDataSetType(String TypeName, Class<? extends DataSet> dataSetClass)
+	{
+		if(AvailableDataSetTypes.get(TypeName) != null && AvailableDataSetTypes.get(TypeName).equals(dataSetClass))
+		{
+			AvailableDataSetTypes.remove(TypeName);		
+		}
 	}
 	
 	/**
 	 * Add DataSetProperties for a specific dataset
 	 */
-	public boolean registerPropertiesForDataSet(Class datasetclass, DataSetProperties properties )
+	public boolean registerPropertiesForDataSet(Class<? extends DataSet> datasetclass, DataSetProperties properties )
 	{
 		PrintFDebugger.Debugging(this, "Registering " + properties.getTypeName() + " for DataSetType " + datasetclass.getName());
 
 		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(classname))
+		if(AvailableDataSetTypes.values().contains(datasetclass))
 		{
-			if(!DataSetPropertyOptions.containsKey(classname)){
-				DataSetPropertyOptions.put(classname,new Vector<DataSetProperties>());
+			if(!DataSetPropertyOptions.containsKey(datasetclass)){
+				DataSetPropertyOptions.put(datasetclass,new Vector<DataSetProperties>());
 			}
-			if(DataSetPropertyOptions.get(classname).contains(properties))
+			if(DataSetPropertyOptions.get(datasetclass).contains(properties))
 			{
 				PrintFDebugger.Debugging(this, "Properties already present");
 				return false;
 			}
-			DataSetPropertyOptions.get(classname).add(properties);
+			DataSetPropertyOptions.get(datasetclass).add(properties);
 			Vector<DataSet> changedSets = new Vector<DataSet>();
 			for(DataSet ds : DataSets.values())
 			{
 				if(datasetclass.isInstance(ds))
 				{
 					Collection<DataSetProperties> validOptions = new HashSet<DataSetProperties>();
-					for(DataSetProperties props : DataSetPropertyOptions.get(classname))
+					for(DataSetProperties props : DataSetPropertyOptions.get(datasetclass))
 					{
 						try{
 							props.testValidity(ds);
@@ -144,22 +167,22 @@ public class DataSetManager{
 	{
 		Collection<DataSetProperties> presentprops = new Vector<DataSetProperties>();
 		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(classname))
+		if(AvailableDataSetTypes.values().contains(datasetclass))
 		{
-			if(!DataSetPropertyOptions.containsKey(classname)){
-				DataSetPropertyOptions.put(classname,new Vector<DataSetProperties>());
+			if(!DataSetPropertyOptions.containsKey(datasetclass)){
+				DataSetPropertyOptions.put(datasetclass,new Vector<DataSetProperties>());
 			}
 			for(DataSetProperties props : properties)
 			{
 				PrintFDebugger.Debugging(this, "Registering " + props.getTypeName() + " for DataSetType " + datasetclass.getName());
 
-				if(DataSetPropertyOptions.get(classname).contains(properties))
+				if(DataSetPropertyOptions.get(datasetclass).contains(properties))
 				{
 					presentprops.add(props);
 				}
 				else
 				{
-					DataSetPropertyOptions.get(classname).add(props);
+					DataSetPropertyOptions.get(datasetclass).add(props);
 				}
 			}
 			
@@ -170,7 +193,7 @@ public class DataSetManager{
 			if(datasetclass.isInstance(ds))
 			{
 				Collection<DataSetProperties> validOptions = new HashSet<DataSetProperties>();
-				for(DataSetProperties props : DataSetPropertyOptions.get(classname))
+				for(DataSetProperties props : DataSetPropertyOptions.get(datasetclass))
 				{
 					try{
 						props.testValidity(ds);
@@ -195,19 +218,19 @@ public class DataSetManager{
 	 * @param datasetclass - the class of the dataset to deregister items for.
 	 * @param properties - the properties to deregister.
 	 */
-	public void deregisterPropertiesForDataSet(Class datasetclass, DataSetProperties properties )
+	public void deregisterPropertiesForDataSet(Class<? extends DataSet> datasetclass, DataSetProperties properties )
 	{
 		PrintFDebugger.Debugging(this, "DeRegistering " + properties.getTypeName());
 
 		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(classname))
+		if(AvailableDataSetTypes.values().contains(datasetclass))
 		{
-			if(!DataSetPropertyOptions.containsKey(classname)){
+			if(!DataSetPropertyOptions.containsKey(datasetclass)){
 				return;
 			}
 			else
 			{
-				DataSetPropertyOptions.get(classname).remove(properties);
+				DataSetPropertyOptions.get(datasetclass).remove(properties);
 			}
 		}
 		Vector<DataSet> changedSets = new Vector<DataSet>();
@@ -215,7 +238,7 @@ public class DataSetManager{
 		{
 			if(datasetclass.isInstance(ds))
 			{
-				ds.setPropertyOptions(DataSetPropertyOptions.get(classname));
+				ds.setPropertyOptions(DataSetPropertyOptions.get(datasetclass));
 				changedSets.add(ds);				
 			}
 		}
@@ -433,7 +456,8 @@ public class DataSetManager{
 		{
 			DataSet currentSet = tempDS.get(SetName);			
 			try{
-				currentSet.parseFile(FileMap.get(SetName));
+				
+				currentSet.parseFile(FileMap.get(SetName),dataSetReaders);
 				maxsetID = Math.max(maxsetID, currentSet.getID());
 				idprovider.reset(maxsetID);				
 				DataSets.put(currentSet.getID(),currentSet);
@@ -444,10 +468,6 @@ public class DataSetManager{
 				
 			}
 			//If we get any error, the Dataset is not added to the current set of datasets and the maxid is not updated (could still be higher) 
-			catch(InvalidFormatException e)
-			{
-				//This should not happen, as we saved this file 
-			}
 			catch(WrongFormat e)
 			{
 				//This should not happen, as we saved this file
@@ -553,7 +573,7 @@ public class DataSetManager{
 	{
 		try{
 			DataSet ds = DataSetFactory.getDataSet(dataSetClassName);
-			ds.setPropertyOptions(DataSetPropertyOptions.get(dataSetClassName));
+			ds.setPropertyOptions(DataSetPropertyOptions.get(ds.getClass()));
 			ds.setID(SetID);
 			ds.useTwoColHeaders = TwoCols;
 			ds.Description = SetDescription;
@@ -580,14 +600,23 @@ public class DataSetManager{
 	 */
 	public DataSet createDataSet(boolean TwoCols, String DataSetTypeName , String SetDescription, File DataSetFile) throws WrongFormat, InvalidFormatException, DuplicateIDException, IOException, ClassNotFoundException
 	{
-			DataSet ds = DataSetFactory.getDataSet(AvailableDataSetTypes.get(DataSetTypeName));
-			ds.setPropertyOptions(DataSetPropertyOptions.get(AvailableDataSetTypes.get(DataSetTypeName)));
-			ds.setID(idprovider.getNextID());
-			ds.useTwoColHeaders = TwoCols;
-			ds.Description = SetDescription;
-			ds.parseFile(DataSetFile);
-			addDataSet(ds);
-			return ds;		
+			try{
+				DataSet ds = AvailableDataSetTypes.get(DataSetTypeName).newInstance();
+				ds.setPropertyOptions(DataSetPropertyOptions.get(AvailableDataSetTypes.get(DataSetTypeName)));
+				ds.setID(idprovider.getNextID());
+				ds.useTwoColHeaders = TwoCols;
+				ds.Description = SetDescription;
+				ds.parseFile(DataSetFile,dataSetReaders);
+				addDataSet(ds);
+				return ds;
+			}
+			catch(InstantiationException|IllegalAccessException e)
+			{
+				PrintFDebugger.Debugging(this, "Error while instantiating the requested class");
+				return null;
+			}
+			
+					
 	}	
 
 	/**
@@ -666,6 +695,24 @@ public class DataSetManager{
 		return res.toString();
 	}
 	
-		
+	/**
+	 * Register a {@link IDAREDatasetReader} to be available for file reading.
+	 * Readers are used in their reverse order of registration. i.e. the later a reader was registered, the higher its precedence of usage.
+	 * Multiple readers for the same file extensions can be available, and thus the latest registered reader will be tried first.
+	 * @param reader - the reader to add 
+	 */
+	public void registerDataSetReader(IDAREDatasetReader reader)
+	{
+		dataSetReaders.addFirst(reader);
+	}
+	
+	/**
+	 * DeRegister a {@link IDAREDatasetReader}. It will no longer be available for Datsetreading.
+	 * @param reader - the reader to deregister 
+	 */
+	public void deregisterDataSetReader(IDAREDatasetReader reader)
+	{
+		dataSetReaders.remove(reader);
+	}
 }
 

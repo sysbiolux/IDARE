@@ -1,6 +1,6 @@
 package idare.metanode.internal.Utilities;
 
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
+import idare.metanode.Properties.METANODEPROPERTIES;
 
 import java.io.File;
 import java.io.IOException;

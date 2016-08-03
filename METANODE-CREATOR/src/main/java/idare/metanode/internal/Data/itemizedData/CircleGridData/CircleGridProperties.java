@@ -1,11 +1,11 @@
 package idare.metanode.internal.Data.itemizedData.CircleGridData;
 
-import idare.metanode.internal.Data.itemizedData.AbstractItemNodeData;
+import idare.metanode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.metanode.Interfaces.DataSets.DataContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Properties.Localisation.Position;
 import idare.metanode.internal.Data.itemizedData.CircleData.CircleDataSetProperties;
-import idare.metanode.internal.Interfaces.DataContainer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.NodeData;
-import idare.metanode.internal.Properties.Localisation.Position;
 /**
  * Properties of a Gridded Circle Dataset.
  * @author Thomas Pfau

@@ -1,17 +1,17 @@
 package idare.metanode.internal.Layout;
 
+import idare.metanode.Interfaces.DataSets.DataContainer;
+import idare.metanode.Interfaces.DataSets.DataSet;
+import idare.metanode.Interfaces.DataSets.NodeData;
+import idare.metanode.Interfaces.Layout.ContainerLayout;
+import idare.metanode.Properties.LabelGenerator;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.ColorManagement.ColorMap;
 import idare.metanode.internal.DataManagement.DataSetManager;
 import idare.metanode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.metanode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.metanode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Interfaces.ContainerLayout;
-import idare.metanode.internal.Interfaces.DataContainer;
-import idare.metanode.internal.Interfaces.DataSet;
-import idare.metanode.internal.Interfaces.NodeData;
-import idare.metanode.internal.Properties.LabelGenerator;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.EOOMarker;
 import idare.metanode.internal.Utilities.LayoutUtils;
 import idare.metanode.internal.exceptions.layout.ContainerUnplaceableExcpetion;

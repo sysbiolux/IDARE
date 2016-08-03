@@ -1,6 +1,6 @@
 package idare.metanode.internal.DataManagement;
 
-import idare.metanode.internal.Interfaces.DataSet;
+import idare.metanode.Interfaces.DataSets.DataSet;
 /**
  * A Class that loads different DataSets based on their classname
  * @author Thomas Pfau

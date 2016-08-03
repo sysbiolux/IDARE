@@ -1,7 +1,7 @@
 package idare.metanode.internal.Layout;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
 import idare.metanode.internal.ColorManagement.ColorMap;
-import idare.metanode.internal.Interfaces.DataSet;
 
 /**
  * A simple bundle struct for a {@link DataSet} and a {@link ColorMap}

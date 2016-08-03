@@ -1,8 +1,8 @@
 package idare.metanode.internal.GUI.DataSetAddition;
 
+import idare.metanode.Interfaces.DataSets.DataSet;
 import idare.metanode.internal.DataManagement.DataSetManager;
 import idare.metanode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
-import idare.metanode.internal.Interfaces.DataSet;
 import idare.metanode.internal.exceptions.io.DuplicateIDException;
 import idare.metanode.internal.exceptions.io.WrongFormat;
 

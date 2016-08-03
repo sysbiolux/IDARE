@@ -2,11 +2,11 @@ package idare.metanode.internal.ImageManagement;
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BufferedImageTranscoder;
+import idare.metanode.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.DataManagement.NodeManager;
 import idare.metanode.internal.DataManagement.Events.NodeChangedListener;
 import idare.metanode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.metanode.internal.Debug.PrintFDebugger;
-import idare.metanode.internal.Properties.METANODEPROPERTIES;
 import idare.metanode.internal.Utilities.LayoutUtils;
 import idare.metanode.internal.VisualStyle.IDAREVisualStyle;
 

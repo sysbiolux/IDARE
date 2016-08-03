@@ -1,6 +1,6 @@
 package idare.metanode.internal.DataManagement.Events;
 
-import idare.metanode.internal.Interfaces.DataSet;
+import idare.metanode.Interfaces.DataSets.DataSet;
 
 /**
  * A Listener of this type will be informed, if DataSets are about to change.
