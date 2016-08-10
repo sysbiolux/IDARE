@@ -3,7 +3,7 @@ package idare.imagenode.internal.Data.ValueSetData.ScatterData;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataDescription;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;
@@ -70,7 +70,7 @@ public class HeaderDescription extends ItemDataDescription {
 			//first item left aligned, second item right aligned
 			add(pane);
 		}
-		this.setPreferredSize(new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,rows * MINIMAL_FONT_SIZE + (rows -1) * VGAP));
+		this.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,rows * MINIMAL_FONT_SIZE + (rows -1) * VGAP));
 	}
 
 }

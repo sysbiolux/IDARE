@@ -2,7 +2,7 @@ package idare.imagenode.internal.DataManagement;
 
 import idare.Properties.IDAREProperties;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
@@ -48,7 +48,7 @@ import org.cytoscape.work.TaskMonitor;
  */
 public class NodeManager implements DataSetChangeListener{
 
-	private HashMap<String,MetaNode> Nodes = new HashMap<>();
+	private HashMap<String,ImageNodeModel> Nodes = new HashMap<>();
 	private HashMap<String,NodeLayout> activeLayouts = new HashMap<String, NodeLayout>();
 	private Set<String> NetworkIDs = new HashSet<String>();
 	private DataSetManager dsm;
@@ -208,7 +208,7 @@ public class NodeManager implements DataSetChangeListener{
 			{
 				if(!Nodes.containsKey(currentID))
 				{
-					Nodes.put(currentID, new MetaNode(currentID));
+					Nodes.put(currentID, new ImageNodeModel(currentID));
 				}
 				Nodes.get(currentID).addData(ds);
 			}
@@ -244,7 +244,7 @@ public class NodeManager implements DataSetChangeListener{
 	 * @param ID - The ID of the node
 	 * @return - a node, if it exists, or <code>null</code>, if the ID is not linked to a known node.
 	 */
-	public MetaNode getNode(String ID)
+	public ImageNodeModel getNode(String ID)
 	{
 		return Nodes.get(ID);
 	}
@@ -348,21 +348,26 @@ public class NodeManager implements DataSetChangeListener{
 	public void handleEvent(SessionAboutToBeSavedEvent arg0) {
 
 		LinkedList<File> LayoutList = new LinkedList<File>();	
-		File LayoutFile = new File(System.getProperty("java.io.tmpdir") + File.separator + METANODEPROPERTIES.LAYOUT_FILE_NAME);
+		File LayoutFile = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.LAYOUT_FILE_NAME);
 		LayoutList.add(LayoutFile);
 		try{
 			writeNodeLayouts(LayoutFile);
 		}
 		catch(IOException e)
 		{
-			JOptionPane.showMessageDialog(null, "Could not save the Layouts.\n " + e.toString());
+			
+			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
+			e.printStackTrace(System.out);
+			throw new RuntimeException(e);
 		}
 		try{
-			arg0.addAppFiles(METANODEPROPERTIES.LAYOUT_FILES, LayoutList);			
+			arg0.addAppFiles(IMAGENODEPROPERTIES.LAYOUT_FILES, LayoutList);			
 		}
 		catch(Exception e)
 		{
-			JOptionPane.showMessageDialog(null, "Could not save the DataSets.\n " + e.toString());
+			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
+			e.printStackTrace(System.out);
+			throw new RuntimeException(e);			
 		}
 	}
 
@@ -377,7 +382,7 @@ public class NodeManager implements DataSetChangeListener{
 		//First, obtain all nodeids present in the networks in this session. 
 		updateNetworkNodes();
 
-		List<File> LayoutFiles = arg0.getLoadedSession().getAppFileListMap().get(METANODEPROPERTIES.LAYOUT_FILES);		
+		List<File> LayoutFiles = arg0.getLoadedSession().getAppFileListMap().get(IMAGENODEPROPERTIES.LAYOUT_FILES);		
 		if(LayoutFiles == null || LayoutFiles.isEmpty())
 		{
 			//There is nothing to load!
@@ -391,7 +396,9 @@ public class NodeManager implements DataSetChangeListener{
 		}
 		catch(IOException e)
 		{
-			JOptionPane.showMessageDialog(null, "Could not read the Node Layouts.\n " + e.toString());
+			PrintFDebugger.Debugging(this, "Could not read the Layouts.\n " + e.toString());
+			e.printStackTrace(System.out);
+			throw new RuntimeException(e);
 		}
 
 	}

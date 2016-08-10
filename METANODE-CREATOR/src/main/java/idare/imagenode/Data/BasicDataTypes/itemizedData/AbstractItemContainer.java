@@ -4,7 +4,7 @@ import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation;
-import idare.imagenode.Properties.METANODEPROPERTIES.LayoutStyle;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES.LayoutStyle;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;

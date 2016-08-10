@@ -115,7 +115,7 @@ public class RectangleContainerLayout extends AbstractItemContainerLayout{
 		@Override
 		/*
 		 * (non-Javadoc)
-		 * @see idare.metanode.internal.Data.itemizedData.RectangleData.RectangleContainerLayout.RectangleShapePosition#draw(org.apache.batik.svggen.SVGGraphics2D, java.awt.Color)
+		 * @see idare.imagenode.internal.Data.itemizedData.RectangleData.RectangleContainerLayout.RectangleShapePosition#draw(org.apache.batik.svggen.SVGGraphics2D, java.awt.Color)
 		 */
 		public void draw(SVGGraphics2D context, Color fillcolor)
 		{

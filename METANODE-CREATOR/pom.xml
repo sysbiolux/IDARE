@@ -59,24 +59,24 @@
 						${bundle.namespace}.sbmlannotator,						
 						${bundle.namespace}.ThirdParty,
 						${bundle.namespace}.Properties,
-						${bundle.namespace}.metanode.Properties,						
-						${bundle.namespace}.metanode,
-						${bundle.namespace}.metanode.Interfaces.*,
-						${bundle.namespace}.metanode.Data.BasicDataTypes.*,
-						${bundle.namespace}.metanode.Data.BasicDataTypes.itemizedData,
-						${bundle.namespace}.metanode.Data.BasicDataTypes.ValueSetData,
+						${bundle.namespace}.imagenode.Properties,						
+						${bundle.namespace}.imagenode,
+						${bundle.namespace}.imagenode.Interfaces.*,
+						${bundle.namespace}.imagenode.Data.BasicDataTypes.*,
+						${bundle.namespace}.imagenode.Data.BasicDataTypes.itemizedData,
+						${bundle.namespace}.imagenode.Data.BasicDataTypes.ValueSetData,
 						<!-- org.apache.poi.ss.*,-->
-						${bundle.namespace}.metanode.internal.exceptions.io,
-						${bundle.namespace}.metanode.internal.exceptions.layout,
-						${bundle.namespace}.metanode.internal.Utilities,
-						${bundle.namespace}.metanode.internal.GUI.Legend.Utilities,
-						${bundle.namespace}.metanode.internal.ColorManagement,
+						${bundle.namespace}.imagenode.internal.exceptions.io,
+						${bundle.namespace}.imagenode.internal.exceptions.layout,
+						${bundle.namespace}.imagenode.internal.Utilities,
+						${bundle.namespace}.imagenode.internal.GUI.Legend.Utilities,
+						${bundle.namespace}.imagenode.internal.ColorManagement,
 						org.apache.batik.svggen.*,
 						</Export-Package>						
-						<Private-Package>${bundle.namespace}.metanode.internal.*,
+						<Private-Package>${bundle.namespace}.imagenode.internal.*,
 						${bundle.namespace}.subsystems.internal.*,
 						${bundle.namespace}.sbmlannotator.internal.*</Private-Package>
-						<Bundle-Activator>${bundle.namespace}.metanode.internal.CyActivator</Bundle-Activator>
+						<Bundle-Activator>${bundle.namespace}.imagenode.internal.CyActivator</Bundle-Activator>
 						<Embed-Dependency>jsbml;inline=false,
 							poi|poi-ooxml|poi-ooxml-schemas|ooxml-schemas;groupId=org.apache.poi;inline=false,
 							batik-ext|batik-svggen|batik-swing|xmlgraphics-commons|batik-util|batik-awt-util|batik-anim|batik-css|batik-dom|batik-anim|batik-svg-dom|batik-xml|batik-parser|batik-gvt|batik-bridge|batik-script;groupId=batik;inline=false,
@@ -169,6 +169,12 @@
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-util-api</artifactId>
+			<version>3.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.cytoscape</groupId>
+			<artifactId>work-swing-api</artifactId>
 			<version>3.3.0</version>
 			<scope>provided</scope>
 		</dependency>

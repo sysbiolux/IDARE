@@ -4,15 +4,15 @@ import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.NodeShape;
 
 /**
- * Class that stores the Static properties used by METANODES.
+ * Class that stores the Static properties used by imagenodeS.
  * @author Thomas Pfau
  *
  */
-public class METANODEPROPERTIES {
+public class IMAGENODEPROPERTIES {
 	
-	public static String DATASET_FILES = "METANODE_DATASET_FILES";
-	public static String DATASET_PROPERTIES = "METANODE_DATASET_PROPERTIES";
-	public static String METANODE_TEMP_FOLDER = "IDARE_METANODE_TEMP";
+	public static String DATASET_FILES = "IMAGENODE_DATASET_FILES";
+	public static String DATASET_PROPERTIES = "IMAGENODE_DATASET_PROPERTIES";
+	public static String IMAGENODE_TEMP_FOLDER = "IDARE_IMAGENODE_TEMP";
 	
 	
 	/**
@@ -24,8 +24,8 @@ public class METANODEPROPERTIES {
 	/**
 	 * IDS for File Lists to store and save Datasets in cytoscape
 	 */
-	public static String DATASET_PROPERTIES_FILE_NAME = "METANODE_DATASET_PROPERTIES";
-	public static String DATASETCOLLECTION_FILE_NAME = "METANODE_DATASETS";
+	public static String DATASET_PROPERTIES_FILE_NAME = "IMAGENODE_DATASET_PROPERTIES";
+	public static String DATASETCOLLECTION_FILE_NAME = "IMAGENODE_DATASETS";
 	
 	public static String LAYOUT_FILES = "NODE_LAYOUTS";
 	public static String LAYOUT_FILE_NAME = "IDARE_NODE_LAYOUTS";
@@ -36,7 +36,7 @@ public class METANODEPROPERTIES {
 	public static enum LayoutStyle {EDGE, CENTER}; 
 	
 	/**
-	 * Visual Properties of Metanodes
+	 * Visual Properties of IMAGENODEs
 	 */	
 	public static double IDARE_NODE_DISPLAY_WIDTH = 80.; 
 	public static double IDARE_NODE_DISPLAY_HEIGHT = 290./400 * 80;

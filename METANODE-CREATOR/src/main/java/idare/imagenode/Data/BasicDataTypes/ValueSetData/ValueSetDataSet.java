@@ -1,6 +1,7 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
@@ -17,10 +18,11 @@ import idare.imagenode.internal.ColorManagement.ColorScales.LineScale;
 import idare.imagenode.internal.Data.ValueSetData.GraphData.GraphDataSetProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.LargeScatterProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.SmallScatterProperties;
-import idare.imagenode.internal.IO.StringUtils;
+import idare.imagenode.internal.Utilities.StringUtils;
 import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -189,7 +191,7 @@ public class ValueSetDataSet extends DataSet{
 			{
 				throw new WrongFormat("No empty column headers allowed in a ValueSet dataset");
 			}
-			if(current.getCellType() == IDARECell.CELL_TYPE_STRING)				
+			if(current.getCellType() == CellType.STRING)				
 			{
 				if(current.getStringCellValue().equals("")) 
 				{
@@ -198,7 +200,7 @@ public class ValueSetDataSet extends DataSet{
 				stringheaders = true;
 				Header = current.getStringCellValue();
 			}
-			else if(current.getCellType() == IDARECell.CELL_TYPE_NUMERIC || current.getCellType() == IDARECell.CELL_TYPE_FORMULA)
+			else if(current.getCellType() == CellType.NUMERIC || current.getCellType() == CellType.FORMULA)
 			{
 				numericheaders = true;
 				Header = current.getNumericCellValue();
@@ -246,21 +248,21 @@ public class ValueSetDataSet extends DataSet{
 	private ValueSetDataValue getValues(IDARERow row, String SheetName) throws WrongFormat
 	{
 		ValueSetDataValue currentNodeValue = new ValueSetDataValue(SheetName);
-		int currentCellType = row.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getCellType();
+		CellType currentCellType = row.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getCellType();
 		String currentID = "";
 		String label = "";
-		if(currentCellType == IDARECell.CELL_TYPE_STRING)
+		if(currentCellType == CellType.STRING)
 		{		
 			currentID = row.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue();
 			label = row.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue();
 		}
-		else if(currentCellType == IDARECell.CELL_TYPE_NUMERIC)
+		else if(currentCellType == CellType.NUMERIC)
 		{
 			//DataFormatter df = new DataFormatter();
 			currentID = row.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getFormattedCellValue();
 			label = currentID;
 		}
-		else if(currentCellType == IDARECell.CELL_TYPE_BLANK)
+		else if(currentCellType == CellType.BLANK)
 		{
 			//No ID.
 			//Don't do anything, this will be caught in the getNodeValue step.
@@ -273,12 +275,12 @@ public class ValueSetDataSet extends DataSet{
 		if(useTwoColHeaders)
 		{
 			currentCellType = row.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getCellType();
-			if(currentCellType == IDARECell.CELL_TYPE_STRING)
+			if(currentCellType == CellType.STRING)
 			{		
 
 				label = row.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue();
 			}
-			else if(currentCellType == IDARECell.CELL_TYPE_NUMERIC)
+			else if(currentCellType == CellType.NUMERIC)
 			{				
 				//DataFormatter df = new DataFormatter();
 				label = row.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getFormattedCellValue();						
@@ -305,7 +307,7 @@ public class ValueSetDataSet extends DataSet{
 			{
 				LineValues.add(null);
 			}
-			else if(current.getCellType() == IDARECell.CELL_TYPE_STRING)
+			else if(current.getCellType() == CellType.STRING)
 			{
 				//Check for numeric values as strings and convert them if needed.
 				if(StringUtils.isNumeric(current.getStringCellValue()))
@@ -320,7 +322,7 @@ public class ValueSetDataSet extends DataSet{
 					LineValues.add(null);
 				}
 			}
-			else if(current.getCellType() == IDARECell.CELL_TYPE_NUMERIC || current.getCellType() == IDARECell.CELL_TYPE_FORMULA)
+			else if(current.getCellType() == CellType.NUMERIC || current.getCellType() == CellType.FORMULA)
 			{
 				//in case of a formula or a nunmeric value just use that value.
 				Double cvalue = current.getNumericCellValue();
@@ -593,7 +595,7 @@ public class ValueSetDataSet extends DataSet{
 	 * @author Thomas Pfau
 	 *
 	 */
-	private class HeaderPosition implements Comparable<HeaderPosition>
+	private class HeaderPosition implements Comparable<HeaderPosition>, Serializable
 	{
 
 		private Integer linePos;

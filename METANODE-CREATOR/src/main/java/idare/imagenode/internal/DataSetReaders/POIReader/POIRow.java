@@ -46,21 +46,9 @@ public class POIRow implements IDARERow {
 	}
 
 	@Override
-	public short getFirstCellNum() {
-		// TODO Auto-generated method stub
-		return row.getFirstCellNum();
-	}
-
-	@Override
 	public short getLastCellNum() {
 		// TODO Auto-generated method stub
 		return row.getLastCellNum();
-	}
-
-	@Override
-	public int getPhysicalNumberOfCells() {
-		// TODO Auto-generated method stub
-		return row.getPhysicalNumberOfCells();
 	}
 
 	@Override

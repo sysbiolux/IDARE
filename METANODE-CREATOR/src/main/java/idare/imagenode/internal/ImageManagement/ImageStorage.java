@@ -2,7 +2,7 @@ package idare.imagenode.internal.ImageManagement;
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BufferedImageTranscoder;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
@@ -40,7 +40,7 @@ import org.w3c.dom.svg.SVGDocument;
  *
  */
 public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFunction<String,CyCustomGraphics<CustomGraphicLayer>>,DiscreteMapping<String, CyCustomGraphics<CustomGraphicLayer>>,NodeChangedListener {
-	private HashMap<String, BufferedImage> MetaNodes;
+	private HashMap<String, BufferedImage> imagenodes;
 	private NodeManager nodeManager;
 	private HashMap<String,CyCustomGraphics<CustomGraphicLayer>> graphicsmap;
 	private int width;
@@ -60,10 +60,10 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		//It does however not work as an interface to the 
 		costumVP = VisualcustomGraphiVP;
 		listeners = new Vector<GraphicsChangedListener>();
-		MetaNodes = new HashMap<String, BufferedImage>();
+		imagenodes = new HashMap<String, BufferedImage>();
 		graphicsmap = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
-		this.width = (int)METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
-		this.height = (int)METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+		this.width = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
+		this.height = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
 		setupNeeded = false;
 	}
 	
@@ -96,7 +96,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 * Reset the images available in this mapping
 	 */
 	public synchronized void reset(){		
-		MetaNodes.clear();
+		imagenodes.clear();
 		Vector<String> imagekeys = new Vector<String>();
 		imagekeys.addAll(graphicsmap.keySet());
 		graphicsmap.clear();		
@@ -130,7 +130,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 */
 	public void invalidate(String id)
 	{		
-		MetaNodes.remove(id);
+		imagenodes.remove(id);
 		graphicsmap.remove(id);
 		setupNeeded = true;		
 		generateGraphicsForID(id, false);	
@@ -147,7 +147,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		changedIDs.addAll(ids);
 		for(String id : changedIDs)
 		{
-			MetaNodes.remove(id);
+			imagenodes.remove(id);
 			graphicsmap.remove(id);
 		}
 		setupNeeded = true;
@@ -160,9 +160,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 * @param ID
 	 * @return the requested image, or null if it does not exists, and cannot be generated.
 	 */
-	public BufferedImage getMetaNodeImageForItem(String ID)
+	public BufferedImage getimagenodeImageForItem(String ID)
 	{	
-		if(!MetaNodes.containsKey(ID) && nodeManager.isNodeLayouted(ID))
+		if(!imagenodes.containsKey(ID) && nodeManager.isNodeLayouted(ID))
 		{
 
 			SVGDocument doc = LayoutUtils.createSVGDoc();
@@ -173,10 +173,10 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			//g.getRoot(root);
 			//root.setAttribute("viewBox", "0 0 400 270");
 
-			MetaNodes.put(ID, SVGToBufferedImage(doc, METANODEPROPERTIES.IMAGEWIDTH));
+			imagenodes.put(ID, SVGToBufferedImage(doc, IMAGENODEPROPERTIES.IMAGEWIDTH));
 			
 		}			
-		return MetaNodes.get(ID);
+		return imagenodes.get(ID);
 
 	}
 
@@ -286,11 +286,11 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 
 	@Override
 	public IDARECustomGraphics getInstance(String input) {    	    	
-		BufferedImage metanode = getMetaNodeImageForItem(input);
-		if(metanode != null)
+		BufferedImage imagenode = getimagenodeImageForItem(input);
+		if(imagenode != null)
 		{
 			//Use the image if there is one provided by the imageMatcher
-			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(metanode,width,height);
+			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(imagenode,width,height);
 			myCustomGraphics.setDisplayName(input);
 			return myCustomGraphics;
 		}

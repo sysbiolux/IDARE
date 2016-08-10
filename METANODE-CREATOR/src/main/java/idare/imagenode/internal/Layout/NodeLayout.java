@@ -5,7 +5,7 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.LabelGenerator;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
@@ -50,7 +50,7 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	//private Vector<DataContainer> containers = new Vector<>();
 	ImageNodeContainer cont = new ImageNodeContainer();
 	HashMap<DataSet,ContainerLayout> DataSetPositions = new HashMap<>(); 
-	Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,METANODEPROPERTIES.LABELHEIGHT-2);
+	Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,IMAGENODEPROPERTIES.LABELHEIGHT-2);
 	HashMap<DataSet,String> DataSetLabels = new HashMap<DataSet, String>();
 	HashMap<DataSet,ColorMap> DataSetColors = new HashMap<DataSet, ColorMap>();
 	Vector<DataSet> DatasetOrder = new Vector<DataSet>();
@@ -259,7 +259,7 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		{
 			DataSetPositions.get(ds).LayoutDataForNode(ds.getDefaultData(), svg, false, DataSetColors.get(ds));
 		}
-		//Replace by the actual nodelabel (we need a link to the appropriate MetaNode for this
+		//Replace by the actual nodelabel (we need a link to the appropriate imagenode for this
 		drawIdentifier(svg, datacollection.iterator().next().getLabel());
 
 	}
@@ -299,12 +299,12 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	private void drawIdentifier(SVGGraphics2D svg, String identifier)
 	{
 		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(METANODEPROPERTIES.IMAGEWIDTH, METANODEPROPERTIES.LABELHEIGHT),IDFont, svg, identifier));
+		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IDFont, svg, identifier));
 		svg.setColor(Color.black);		
 		FontMetrics fm = svg.getFontMetrics();		
 		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
-		int xpos = (int) ((METANODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
-		int ypos = METANODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
+		int xpos = (int) ((IMAGENODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
+		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
 		svg.drawString(identifier, xpos, ypos);
 		svg.setFont(currentFont);
 	}

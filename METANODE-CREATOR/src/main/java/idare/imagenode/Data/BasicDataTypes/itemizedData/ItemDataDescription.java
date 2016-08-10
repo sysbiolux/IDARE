@@ -3,7 +3,7 @@ package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
 
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
 
 import java.awt.Color;
@@ -121,7 +121,7 @@ public class ItemDataDescription extends JPanel{
 			//first item left aligned, second item right aligned
 			add(pane);
 		}
-		this.setPreferredSize(new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,rows * MINIMAL_FONT_SIZE + (rows -1) * VGAP));
+		this.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,rows * MINIMAL_FONT_SIZE + (rows -1) * VGAP));
 	}
 	/**
 	 * Listener that updates the itemdescriptions based on the width of the enclosing legend.
@@ -144,7 +144,7 @@ public class ItemDataDescription extends JPanel{
 			comp.ComponentLayout.setRows(newgrid.height);
 			int newpadding = getNewPadding(cwidth,newgrid.width,comp.maxitemwidth, comp.HGAP);
 			comp.ComponentLayout.setHgap(newpadding);
-			comp.setPreferredSize(new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,newgrid.height * MINIMAL_FONT_SIZE + (newgrid.height -1) * VGAP));
+			comp.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,newgrid.height * MINIMAL_FONT_SIZE + (newgrid.height -1) * VGAP));
 			comp.redraw();
 
 		}

@@ -2,6 +2,7 @@ package idare.subsystems.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,25 +28,25 @@ import org.cytoscape.view.model.CyNetworkView;
  *
  */
 public class SubSystemsSaver implements SessionLoadedListener{
-	
+
 	private NetworkViewSwitcher nvs;	
-	
+
 	private	IDARESettingsManager IDAREIDMgr;
-	
-	
+
+
 	public SubSystemsSaver(NetworkViewSwitcher nvs, IDARESettingsManager iDAREIDMgr) {
 		super();
 		this.nvs = nvs;
 		IDAREIDMgr = iDAREIDMgr;
 	}
-	
+
 	// restore the networkview links from the CyTables
 	@Override
 	public void handleEvent(SessionLoadedEvent e){
-		
+
 		//First check whether this system is set up for IDARE use.				
 		CySession session = e.getLoadedSession();
-		
+
 		Set<CyNetwork> networks = e.getLoadedSession().getNetworks();
 		//IDARE Networs must have the appropriate Fields in their NODE Tables. so check which Networks are IDARENetworks
 		Set<CyNetwork> IDARENetworks = new HashSet<CyNetwork>();
@@ -73,10 +74,10 @@ public class SubSystemsSaver implements SessionLoadedListener{
 		{
 			NetworkNameToNetwork.put(network.getRow(network).get(CyNetwork.NAME, String.class), network);
 			Collection<CyNode> nodeset = network.getNodeList();
-			
+
 			for(CyNode node: nodeset)
 			{
-				
+
 				if(!NodeList.contains(node))
 				{
 					CyRow row = network.getRow(node);
@@ -112,67 +113,39 @@ public class SubSystemsSaver implements SessionLoadedListener{
 					}
 					catch (IllegalArgumentException ille)
 					{
-						JOptionPane.showMessageDialog(null,"Duplicate IDs found in the networks... Something went wrong - resetting IDARE Rows");
+						PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
+
+						PrintFDebugger.Debugging(this,"Duplicate IDs found in the networks... Something went wrong");						
 						IDAREToNode.clear();
-						LinkerNodes.clear();
+						LinkerNodes.clear();						
 						aborted = true;
-						break;
+						abort(IDARENetworks);
+						throw new RuntimeException("Duplicate IDs found in the networks... Something went wrong");						
 					}
 
 				}
 			}
-			
+
 			NodeList.addAll(network.getNodeList());
 		}
 		//now add all IDs
 
-		if(aborted)
+
+		//the IDs were fine so far. Lets restore the links...
+		//To do so, we need to look at all linker nodes.
+
+		for(NodeAndNetworkStruct node : LinkerNodes)
 		{
-			//reset the ID Manager.
-			IDAREIDMgr.reset();			
-			//
-			for(CyNetwork network : IDARENetworks)
+
+			Long TargetID = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET, Long.class);			
+			String TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class);				
+			CyNode TargetNode = IDAREToNode.get(TargetID);
+			@SuppressWarnings("unused")
+			CyNetworkView LinkView = null;
+			CyNetworkView TargetView = null;
+			for(CyNetworkView view : session.getNetworkViews())
 			{
-				Collection<CyNode> nodeset = network.getNodeList();
-									
-				Set<CyNode> deletedNodes = new HashSet<CyNode>();
-				for(CyNode node : nodeset)
-				{
-				//Delete all Linker Nodes (as they are pointless now....)
-					if(network.getRow(node).get(IDAREProperties.IDARE_NODE_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
-					{
-						List<CyEdge> edges = network.getAdjacentEdgeList(node, CyEdge.Type.ANY);					
-						network.removeEdges(edges);
-						network.removeNodes(Collections.singletonList(node));
-						deletedNodes.add(node);
-					}
-				//and reset the IDAREIds.
-					else
-					{
-					network.getRow(node).set(IDAREProperties.IDARE_NODE_UID, IDAREIDMgr.getNextID());
-					}
-				}
-				NodeList.removeAll(deletedNodes);
-			}
-									
-		}
-		else
-		{
-			//the IDs were fine so far. Lets restore the links...
-			//To do so, we need to look at all linker nodes.
-			
-			for(NodeAndNetworkStruct node : LinkerNodes)
-			{
-				
-				Long TargetID = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET, Long.class);			
-				String TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class);				
-				CyNode TargetNode = IDAREToNode.get(TargetID);
-				@SuppressWarnings("unused")
-				CyNetworkView LinkView = null;
-				CyNetworkView TargetView = null;
-				for(CyNetworkView view : session.getNetworkViews())
-				{
-					try{
+				try{
 					if(view.getModel().getRow(view.getModel()).get(CyNetwork.NAME, String.class).equals(TargetSubSystem))
 					{
 						LinkView = view;
@@ -183,29 +156,59 @@ public class SubSystemsSaver implements SessionLoadedListener{
 							TargetView = view;
 						}
 					}
-					}
-					catch(Exception ex)
-					{
-						ex.printStackTrace(System.out);
-					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace(System.out);
+				}
 
-				}
-				//now we have both views, so we can set up the NetworkSwitcher.
-				//if they are however null, we will add a silent network link since obviously the Network exists, but there is no view for it.
-				if(TargetView != null && TargetView.getNodeView(TargetNode) != null)
-				{
-					nvs.addLink(node.node, node.network, TargetView, TargetView.getNodeView(TargetNode));
-				}
-				else
-				{
-					//create a network link
-					nvs.addNetworkLink(node.node, node.network, 
-							NetworkNameToNetwork.get(node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class)) , TargetNode);
-				}
+			}
+			//now we have both views, so we can set up the NetworkSwitcher.
+			//if they are however null, we will add a silent network link since obviously the Network exists, but there is no view for it.
+			if(TargetView != null && TargetView.getNodeView(TargetNode) != null)
+			{
+				nvs.addLink(node.node, node.network, TargetView, TargetView.getNodeView(TargetNode));
+			}
+			else
+			{
+				//create a network link
+				nvs.addNetworkLink(node.node, node.network, 
+						NetworkNameToNetwork.get(node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, String.class)) , TargetNode);
 			}
 		}
 	}
-	
+
+	/**
+	 * Abort loading and reset all IDARENetworks removing the linkers and linker IDs from these networks.
+	 * @param IDARENetworks
+	 */
+	private void abort(Set<CyNetwork> IDARENetworks)
+	{
+		IDAREIDMgr.reset();			
+		//
+		for(CyNetwork network : IDARENetworks)
+		{
+			Collection<CyNode> nodeset = network.getNodeList();
+
+			Set<CyNode> deletedNodes = new HashSet<CyNode>();
+			for(CyNode node : nodeset)
+			{
+				//Delete all Linker Nodes (as they are pointless now....)
+				if(network.getRow(node).get(IDAREProperties.IDARE_NODE_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
+				{
+					List<CyEdge> edges = network.getAdjacentEdgeList(node, CyEdge.Type.ANY);					
+					network.removeEdges(edges);
+					network.removeNodes(Collections.singletonList(node));
+					deletedNodes.add(node);
+				}
+				//and reset the IDAREIds.
+				else
+				{
+					network.getRow(node).set(IDAREProperties.IDARE_NODE_UID, IDAREIDMgr.getNextID());
+				}
+			}			
+		}
+	}
 	/**
 	 * Check whether this network has all necessary Table Columns for a IDARE Network
 	 * @param network - the network to check
@@ -213,10 +216,10 @@ public class SubSystemsSaver implements SessionLoadedListener{
 	 */
 	private boolean isIDARENetwork(CyNetwork network) {
 		CyTable NodeTable = network.getDefaultNodeTable();
-//		if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) == null)
-//		{
-//			return false;			
-//		}
+		//		if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) == null)
+		//		{
+		//			return false;			
+		//		}
 		if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_TYPE) == null)
 		{
 			return false;			
@@ -233,34 +236,12 @@ public class SubSystemsSaver implements SessionLoadedListener{
 		{
 			return false;			
 		}
-//		if(network.getDefaultEdgeTable().getColumn(IDAREProperties.IDARE_EDGE_PROPERTY) == null)
-//		{
-//			return false;			
-//		}
+		//		if(network.getDefaultEdgeTable().getColumn(IDAREProperties.IDARE_EDGE_PROPERTY) == null)
+		//		{
+		//			return false;			
+		//		}
 		return true;
 	}
 
-//	@Override
-//	public void handleEvent(SessionAboutToBeSavedEvent e) {
-//		// TODO Auto-generated method stub
-//		String NetworkNames = "";
-//		File f =  IOUtils.getTemporaryFile(IDAREProperties.SUBSYSTEMS_SAVE_FILE, "");
-//		List<File> appfilelist = new LinkedList<File>();
-//		appfilelist.add(f);
-//		try{
-//			BufferedWriter br = new BufferedWriter(new FileWriter(f));
-//			for(CyNetwork network : nvs.getExistingNetworks().keySet())
-//			{
-//				br.write(network.getRow(network).get(CyNetwork.NAME, String.class) + "\n");
-//			}
-//			br.close();
-//			e.addAppFiles(IDAREProperties.SUBSYSTEMS_SAVE_ID, appfilelist);
-//		}
-//		catch(Exception ex)
-//		{
-//			//"This Should not happen..."
-//		}
-//	}
-//		
-//	
+
 }

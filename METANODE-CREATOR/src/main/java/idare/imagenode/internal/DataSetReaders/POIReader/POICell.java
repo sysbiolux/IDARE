@@ -15,7 +15,7 @@ public class POICell implements IDARECell {
 	}
 
 	@Override
-	public int getCellType() {		
+	public CellType getCellType() {		
 		return POIToIDARETypes.POIToIDARE.get(cell.getCellType());
 	}
 
@@ -29,13 +29,6 @@ public class POICell implements IDARECell {
 	public double getNumericCellValue() {
 		// TODO Auto-generated method stub
 		return cell.getNumericCellValue();
-	}
-
-
-	@Override
-	public int getRowIndex() {
-		// TODO Auto-generated method stub
-		return cell.getRowIndex();
 	}
 
 	@Override

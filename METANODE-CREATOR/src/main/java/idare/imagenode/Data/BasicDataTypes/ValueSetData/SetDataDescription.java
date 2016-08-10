@@ -64,7 +64,7 @@ public abstract class SetDataDescription extends JPanel implements SizeAdaptable
 	 * Get a Description Pane for the current Entry Description, with the given color and given ID
 	 * @param color - the Color for the description
 	 * @param EntryName - The name of the entry.
-	 * @return
+	 * @return The {@link SetEntryDescriptionPane} that can be used to visualise the entry with the given name and the given color.
 	 */
 	public abstract SetEntryDescriptionPane getDescriptionPane(Color color, String EntryName);
 

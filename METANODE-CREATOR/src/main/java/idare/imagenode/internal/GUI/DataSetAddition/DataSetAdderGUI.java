@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.util.swing.FileChooserFilter;
 import org.cytoscape.util.swing.FileUtil;
+import org.cytoscape.work.Tunable;
 /**
  * A GUI Component which allows the Addition of Datasets.
  * @author Thomas Pfau
@@ -36,7 +37,8 @@ public class DataSetAdderGUI extends JDialog{
 	JTextField DataSetFileLocation;
 	JTextField DataSetDescriptionField;
 	JCheckBox useTwoColCheckBox;
-	JComboBox<String> DataSetTypeSelector;
+	JComboBox<String> DataSetTypeSelector;			
+	
 	DataSetAdderTaskFactory dsatf;
 	public DataSetAdderGUI(CySwingApplication cySwingApp, DataSetManager dsm, FileUtil util, DataSetAdderTaskFactory dsatf) {
 		super(cySwingApp.getJFrame(),"DataSet Property Selection");
@@ -200,7 +202,7 @@ public class DataSetAdderGUI extends JDialog{
 				JOptionPane.showMessageDialog(gui, "Description needed for Dataset", "No Description Set", JOptionPane.ERROR_MESSAGE);
 				return;
 			}				
-			dsatf.addDataset(f, useTwoColHeaders, Description, gui.DataSetTypeSelector.getSelectedItem().toString());
+			//dsatf.addDataset(f, useTwoColHeaders, Description, gui.DataSetTypeSelector.getSelectedItem().toString());
 			//create DataSet with the given properties.
 			gui.dispose();
 		}

@@ -1,13 +1,17 @@
 package idare.imagenode.internal.DataManagement;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetProperties;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
+import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
+import idare.imagenode.internal.Utilities.EOOMarker;
 import idare.imagenode.internal.Utilities.IOUtils;
 import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
@@ -15,9 +19,13 @@ import idare.imagenode.internal.exceptions.io.WrongFormat;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
@@ -28,12 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
 import org.cytoscape.session.events.SessionLoadedEvent;
+import org.cytoscape.work.swing.TunableUIHelper;
 /**
  * A class to manage Datasets
  * @author Thomas Pfau
@@ -403,7 +414,7 @@ public class DataSetManager{
 	 * @param arg0
 	 */
 	public void handleEvent(SessionLoadedEvent arg0) {
-		// First, clear the temporary Folder!. This folder contains data from an old session and thus needs to be reset.
+		// First, clear the temporary Folder!. This folder contains data from an old session and thus needs to be reset.		
 		try{
 			IOUtils.clearTemporaryFolder();
 		}
@@ -411,80 +422,46 @@ public class DataSetManager{
 		{			
 		}
 		
-		List<File> DataSetFiles = arg0.getLoadedSession().getAppFileListMap().get(METANODEPROPERTIES.DATASET_FILES);
-		List<File> DataSetPropertyFiles = arg0.getLoadedSession().getAppFileListMap().get(METANODEPROPERTIES.DATASET_PROPERTIES);
+		List<File> DataSetFiles = arg0.getLoadedSession().getAppFileListMap().get(IMAGENODEPROPERTIES.DATASET_FILES);		
 		
-		if(DataSetPropertyFiles == null || DataSetFiles == null || DataSetPropertyFiles.isEmpty())
+		if(DataSetFiles == null)
 		{
 			//There is nothing to load!
 			return;
 		}
-		//There should only ever be one entry in the properties!
-		File PropertyFile = DataSetPropertyFiles.get(0);
-		//File Format for properties:
-		//File : FileName (duplicates will be moved to a _XY
-		//ID : The internal ID
-		//TwoColumn : 0/1
-		//DataType : Classname
-		HashMap<String, DataSet> tempDS  = new HashMap<String, DataSet>();
-		try
-		{
-		tempDS = readDataSetProperties(PropertyFile);
+		Vector<DataSet> datasets = new Vector<DataSet>();
+		try{
+			ObjectInputStream os = new ObjectInputStream(new FileInputStream(DataSetFiles.get(0)));
+
+			datasets = readDataSets(os);
+			os.close();
 		}
 		catch(IOException e)
 		{
-			JOptionPane.showMessageDialog(null, "Could not read the DataSet Properties.\n " + e.toString());		
-			return;
-		}
-		HashMap<String,File> FileMap = new HashMap<>();
-		DataSets = new HashMap<Integer, DataSet>();
-		for(File f : DataSetFiles)
-		{
-			//System.out.println("Putting File : " + f.getName() );
-			FileMap.put(f.getName(), f);
+			PrintFDebugger.Debugging(this, "Error while reading the Datasets");
+			e.printStackTrace(System.out);
+			throw new RuntimeException(e);
 		}
 		int maxsetID = 0;
-		for(String SetName : tempDS.keySet())
-		{
-			DataSet currentSet = tempDS.get(SetName);			
-			try{
-				
-				currentSet.parseFile(FileMap.get(SetName),dataSetReaders);
-				maxsetID = Math.max(maxsetID, currentSet.getID());
-				idprovider.reset(maxsetID);				
-				DataSets.put(currentSet.getID(),currentSet);
-				fireDataSetAdded(currentSet);
-						
-				//DataSets.put(currentSet.getID(),currentSet);
-				
-				
-			}
-			//If we get any error, the Dataset is not added to the current set of datasets and the maxid is not updated (could still be higher) 
-			catch(WrongFormat e)
-			{
-				//This should not happen, as we saved this file
-			}
-			catch( DuplicateIDException e)
-			{
-				//This should not happen, as we saved this file
-			}
-			catch(IOException e)
-			{
-				//This should not happen neither. 
-			}
-			
+		for(DataSet ds :datasets)
+		{	
+			maxsetID = Math.max(maxsetID, ds.getID());
+			DataSets.put(ds.getID(),ds);
+			idprovider.reset(maxsetID);				
+			fireDataSetAdded(ds);
 			//System.out.println(currentSet.toString());
 		}
 
 
 	}
-	/**
+		
+/*	/**
 	 * Read the property file 
 	 * @param PropertyFile - The Property File
 	 * @return A Map that maps filenames to datasets.
 	 * @throws IOException - IOException, if there is a problem while reading the file
 	 */
-	private HashMap<String,DataSet> readDataSetProperties(File PropertyFile) throws IOException
+/*	private HashMap<String,DataSet> readDataSetProperties(File PropertyFile) throws IOException
 	{
 		HashMap<String,DataSet>  FileNameToSet = new HashMap<String, DataSet>();
 		BufferedReader br = new BufferedReader(new FileReader(PropertyFile));
@@ -560,7 +537,7 @@ public class DataSetManager{
 	 * @param dataSetClassName - Type (i.e. classname) of the set
 	 * @param SetDescription - Description of the set.
 	 * @return the dataset
-	 */
+	 
 	private DataSet createDataSet(int SetID, boolean TwoCols, String dataSetClassName, String SetDescription)
 	{
 		try{
@@ -575,9 +552,17 @@ public class DataSetManager{
 		{		
 			JOptionPane.showMessageDialog(null, "Did not find the class for DataSet with description. " + SetDescription + "\n It is likely that a plugin is missing");
 			e.printStackTrace(System.out);
+			throw new RuntimeException("Did not find the class for the Dataset with description "+ SetDescription +".\n This is likely due to a missing plugin.");
 		}
-		return null;
+	}*/
+	
+	public Vector<IDAREDatasetReader> getAvailableReaders()
+	{
+		Vector<IDAREDatasetReader> readers = new Vector<IDAREDatasetReader>();
+		readers.addAll(dataSetReaders);
+		return readers;
 	}
+	
 	/**
 	 * Create a Dataset based on properties and a DataSetFile. and add it to the manager.
 	 * @param TwoCols - indicator whether to use twoColumn ID Indicators
@@ -590,26 +575,70 @@ public class DataSetManager{
 	 * @throws DuplicateIDException - Depending on the Dataset specific properties have to be matched by the file
 	 * @throws IOException
 	 */
-	public DataSet createDataSet(boolean TwoCols, String DataSetTypeName , String SetDescription, File DataSetFile) throws WrongFormat, InvalidFormatException, DuplicateIDException, IOException, ClassNotFoundException
+	public DataSet createDataSet(boolean TwoCols, String DataSetTypeName , 
+			String SetDescription, IDAREWorkbook dsWorkBook) 
+	throws ExecutionException,WrongFormat, InvalidFormatException, DuplicateIDException, IOException, 
+	ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-			try{
-				DataSet ds = AvailableDataSetTypes.get(DataSetTypeName).newInstance();
-				ds.setPropertyOptions(DataSetPropertyOptions.get(AvailableDataSetTypes.get(DataSetTypeName)));
-				ds.setID(idprovider.getNextID());
-				ds.useTwoColHeaders = TwoCols;
-				ds.Description = SetDescription;
-				ds.parseFile(DataSetFile,dataSetReaders);
-				addDataSet(ds);
-				return ds;
-			}
-			catch(InstantiationException|IllegalAccessException e)
-			{
-				return null;
-			}
-			
-					
+		System.out.println("Generating a dataset with twocolumnheaders set to " + TwoCols);
+		DataSet ds = AvailableDataSetTypes.get(DataSetTypeName).newInstance();				
+		ds.setPropertyOptions(DataSetPropertyOptions.get(AvailableDataSetTypes.get(DataSetTypeName)));
+		ds.setID(idprovider.getNextID());
+		ds.useTwoColHeaders = TwoCols;
+		ds.Description = SetDescription;
+		ds.parseFile(dsWorkBook);
+		addDataSet(ds);
+
+		return ds;
 	}	
 
+	
+	private void writeDataSets(ObjectOutputStream os) throws IOException
+	{
+		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
+		for(DataSet ds : DataSets.values())
+		{				
+			PrintFDebugger.Debugging(this, "Writing Dataset: " + ds.Description);
+			os.writeObject(ds);
+		}
+		PrintFDebugger.Debugging(this, "Finished writing Datasets");
+		os.writeObject(new EOOMarker());
+		//os.close();
+	}
+
+	private Vector<DataSet> readDataSets(ObjectInputStream is) throws IOException
+	{
+		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
+		Object currentObject = null;
+		Vector<DataSet> datasets = new Vector<DataSet>();
+		try{
+			currentObject = is.readObject();
+		}
+		catch(ClassNotFoundException e)
+		{
+			//skip this object;
+			PrintFDebugger.Debugging(this, "Didn't find the datasetclass for the first dataset");
+		}
+		while(!(currentObject instanceof EOOMarker))
+		{
+			if(currentObject instanceof DataSet)
+			{
+				DataSet ds = (DataSet)currentObject;
+				datasets.add(ds);				
+			}
+			try{
+				currentObject = is.readObject();
+			}
+			catch(ClassNotFoundException e)
+			{
+				PrintFDebugger.Debugging(this, "Didn't find the datasetclass for a dataset");
+				currentObject = null;
+			}
+		}
+		PrintFDebugger.Debugging(this, "Finished reading Datasets");
+		return datasets;
+		//os.close();
+	}
 	/**
 	 * Handle A {@link SessionAboutToBeSavedEvent}, ad add data of the DataManger to this Event. 
 	 * Since order is necessary this class does not itself implement the SessionLoaded/Saved mechanism but relies on a managing class to keep the order of actions.
@@ -623,47 +652,64 @@ public class DataSetManager{
 		//Create A Temporary Zip File
 		StringBuffer descriptionbf = new StringBuffer();
 		//Vector<String> existingFileNames = new Vector<>();
-		for(DataSet ds : DataSets.values())
-		{			
-			String SourceFileName = ds.SourceFile.getName();
-			String Extension = SourceFileName.substring(SourceFileName.lastIndexOf("."));
-			String Name = SourceFileName.substring(0,SourceFileName.lastIndexOf(".")-1);			
-			File TempFile = IOUtils.getTemporaryFile(Name,Extension);
-			try{
-				Files.copy(ds.SourceFile.toPath(), TempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				ds.SourceFile = TempFile;
-				
-			}
-			catch(IOException e)
-			{				
-				JOptionPane.showMessageDialog(null, "Could not save the DataSets.\n " + e.toString());
-				return;
-			}
-			descriptionbf.append(writeDataSetProperties(ds));
-			DataFileList.add(ds.SourceFile);
-		}
-		File DataPropertiesFile = new File(System.getProperty("java.io.tmpdir") + File.separator + METANODEPROPERTIES.DATASET_PROPERTIES_FILE_NAME);
-		PropertiesList.add(DataPropertiesFile);
-		try{
-		BufferedWriter bw = new BufferedWriter(new FileWriter(DataPropertiesFile));			
-		bw.write(descriptionbf.toString());
-		bw.close();
-		}
-		catch(IOException e)
+		File DataSetsFile = IOUtils.getTemporaryFile("DataSetFile",".bin");
+		DataFileList.add(DataSetsFile);
+		try
 		{
-			JOptionPane.showMessageDialog(null, "Could not save the DataSet Properties.\n " + e.toString());
+			ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(DataSetsFile));
+			writeDataSets(os);
+			os.close();
 		}
+		catch(Exception e)
+		{
+			PrintFDebugger.Debugging(this, "Error during writing of the Datasets" );
+			e.printStackTrace(System.out);
+		}
+		//for(DataSet ds : DataSets.values())
+		//{			
+			
+			
+			//String SourceFileName = ds.SourceFile.getName();
+			//String Extension = SourceFileName.substring(SourceFileName.lastIndexOf("."));
+			//String Name = SourceFileName.substring(0,SourceFileName.lastIndexOf("."));			
+			//File TempFile = IOUtils.getTemporaryFile(Name,Extension);
+			//try{
+			//	Files.copy(ds.SourceFile.toPath(), TempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			//	ds.SourceFile = TempFile;				
+			//}
+			//catch(IOException e)
+			//{			
+			//	PrintFDebugger.Debugging(this, "Could not save the DataSets.\n");
+			//	e.printStackTrace(System.out);
+			//	throw new RuntimeException("IDAREApp: Could not save the DataSets.\n " + e.toString());				
+			//}
+			//descriptionbf.append(writeDataSetProperties(ds));
+			//DataFileList.add(ds.SourceFile);
+		//}
+		//File DataPropertiesFile = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.DATASET_PROPERTIES_FILE_NAME);
+		//PropertiesList.add(DataPropertiesFile);
+		//try{
+		//BufferedWriter bw = new BufferedWriter(new FileWriter(DataPropertiesFile));			
+		//bw.write(descriptionbf.toString());
+		//bw.close();
+		//}
+		//catch(IOException e)
+		//{
+		//	JOptionPane.showMessageDialog(null, "Could not save the DataSet Properties.\n " + e.toString());
+		//}
 		try{
 			//if the DataFileList is empty, there are no datasets...
 			if(!DataFileList.isEmpty())
 			{
-				arg0.addAppFiles(METANODEPROPERTIES.DATASET_FILES, DataFileList);			
-				arg0.addAppFiles(METANODEPROPERTIES.DATASET_PROPERTIES, PropertiesList);
+				arg0.addAppFiles(IMAGENODEPROPERTIES.DATASET_FILES, DataFileList);			
+		//		arg0.addAppFiles(IMAGENODEPROPERTIES.DATASET_PROPERTIES, PropertiesList);
 			}
 		}
 		catch(Exception e)
 		{
-			JOptionPane.showMessageDialog(null, "Could not save the DataSets.\n " + e.toString());
+			PrintFDebugger.Debugging(this, "Could not save the DataSets.\n ");
+			e.printStackTrace(System.out);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -675,8 +721,8 @@ public class DataSetManager{
 	private String writeDataSetProperties(DataSet set)
 	{
 		StringBuffer res = new StringBuffer();
-		String SourceFileName = set.SourceFile.getName();
-		res.append("File : " + SourceFileName + "\n");
+		//String SourceFileName = set.SourceFile.getName();
+		//res.append("File : " + SourceFileName + "\n");
 		res.append("ID : " + set.getID() + "\n");
 		res.append("TwoColumn : " + set.useTwoColHeaders + "\n");
 		res.append("DataType : " + set.getClass().getCanonicalName() + "\n");
@@ -705,5 +751,6 @@ public class DataSetManager{
 	{
 		dataSetReaders.remove(reader);
 	}
+	
 }
 

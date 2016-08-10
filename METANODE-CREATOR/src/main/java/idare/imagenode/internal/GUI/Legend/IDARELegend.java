@@ -2,8 +2,8 @@ package idare.imagenode.internal.GUI.Legend;
 
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.METANODEPROPERTIES;
-import idare.imagenode.internal.DataManagement.MetaNode;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.internal.DataManagement.ImageNodeModel;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
@@ -157,11 +157,11 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 		//revalidate();
 	}
 	/**
-	 * Set the Legend Data using the given MetaNode for data and the given layout for the node layout. 
+	 * Set the Legend Data using the given imagenode for data and the given layout for the node layout. 
 	 * @param layout
 	 * @param source
 	 */
-	public void setLegendData(NodeLayout layout, MetaNode source)
+	public void setLegendData(NodeLayout layout, ImageNodeModel source)
 	{
 		try{
 		initialize();
@@ -173,7 +173,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 		SVGDocument doc = LayoutUtils.createSVGDoc();
 		SVGGraphics2D g = new SVGGraphics2D(doc);		
 		layout.layoutLegendNode(source.getData(), g);
-		LayoutUtils.TransferGRaphicsToDocument(doc, new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,(int)(METANODEPROPERTIES.IMAGEHEIGHT * ((double)METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH/METANODEPROPERTIES.IMAGEWIDTH))), g);
+		LayoutUtils.TransferGRaphicsToDocument(doc, new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,(int)(IMAGENODEPROPERTIES.IMAGEHEIGHT * ((double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH/IMAGENODEPROPERTIES.IMAGEWIDTH))), g);
 		Node.setAlignmentY(Node.TOP_ALIGNMENT);
 		Node.setSVGDocument(doc);
 		//Node.flush();
@@ -195,15 +195,15 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	{
 		int availablewidth = getViewport().getSize().width-1;
 		Node.setCanUpdatePreferredSize(true);
-		if(availablewidth < METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
+		if(availablewidth < IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
 		{
-			Node.setPreferredSize(new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
-					(int)((METANODEPROPERTIES.IMAGEHEIGHT + METANODEPROPERTIES.LABELHEIGHT) * (double)METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / METANODEPROPERTIES.IMAGEWIDTH)));
+			Node.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
+					(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / IMAGENODEPROPERTIES.IMAGEWIDTH)));
 		}
 		else
 		{
-			int optwidth = Math.min(availablewidth,METANODEPROPERTIES.IMAGEWIDTH); 
-			Node.setPreferredSize(new Dimension(optwidth,(int)((METANODEPROPERTIES.IMAGEHEIGHT + METANODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / METANODEPROPERTIES.IMAGEWIDTH)));
+			int optwidth = Math.min(availablewidth,IMAGENODEPROPERTIES.IMAGEWIDTH); 
+			Node.setPreferredSize(new Dimension(optwidth,(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / IMAGENODEPROPERTIES.IMAGEWIDTH)));
 		}
 		Node.setSize(Node.getPreferredSize());
 		Node.setCanUpdatePreferredSize(false);
@@ -281,15 +281,15 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 			int availablewidth = source.getViewport().getSize().width-1;
 			//these are necessary to update the preferred size.
 			canvas.setCanUpdatePreferredSize(true);
-			if(availablewidth < METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
+			if(availablewidth < IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
 			{
-				canvas.setPreferredSize(new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
-						(int)((METANODEPROPERTIES.IMAGEHEIGHT + METANODEPROPERTIES.LABELHEIGHT) * (double)METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / METANODEPROPERTIES.IMAGEWIDTH)));
+				canvas.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
+						(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / IMAGENODEPROPERTIES.IMAGEWIDTH)));
 			}
 			else
 			{
-				int optwidth = Math.min(availablewidth,METANODEPROPERTIES.IMAGEWIDTH); 
-				canvas.setPreferredSize(new Dimension(optwidth,(int)((METANODEPROPERTIES.IMAGEHEIGHT + METANODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / METANODEPROPERTIES.IMAGEWIDTH)));
+				int optwidth = Math.min(availablewidth,IMAGENODEPROPERTIES.IMAGEWIDTH); 
+				canvas.setPreferredSize(new Dimension(optwidth,(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / IMAGENODEPROPERTIES.IMAGEWIDTH)));
 			}
 			canvas.setCanUpdatePreferredSize(false);
 			

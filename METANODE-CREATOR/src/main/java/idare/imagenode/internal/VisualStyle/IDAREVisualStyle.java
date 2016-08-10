@@ -3,7 +3,7 @@ package idare.imagenode.internal.VisualStyle;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
@@ -116,9 +116,9 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				// Metabolites are circles with a red/orange background
 				// Genes are Squares (which will hopefully be filled by IDARE nodes 
 		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
-		//and the sizes of MetaNodes get adjusted
-		IDAREDependentMapper<Double> MetaNodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> MetaNodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		//and the sizes of imagenodes get adjusted
+		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		
 		
 		PassthroughMapping NameMapping = (PassthroughMapping) this.vmfFactoryP.createVisualMappingFunction(IDAREProperties.IDARE_NODE_NAME, String.class, BasicVisualLexicon.NODE_LABEL);
@@ -168,7 +168,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_GENE, 255);
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_PROTEIN, 255);
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_LINK, 0);
-		//BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_METANODE, 0);
+		//BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_imagenode, 0);
 		
 
 		IDAREDependentMapper<Integer> TransparancyMap = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_TYPE, BasicVisualLexicon.NODE_TRANSPARENCY,nm,0);
@@ -178,16 +178,16 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		TransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_PROTEIN, 255);
 		TransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_LINK, 0);
 
-		//labels of Metanodes don't get displayed
+		//labels of imagenodes don't get displayed
 		//IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,idm,0);
-		//and the sizes of MetaNodes get adjusted
-		//IDAREDependentMapper<Double> MetaNodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		//IDAREDependentMapper<Double> MetaNodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
-		//IDAREDependentMapper<NodeShape> MetaNodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
+		//and the sizes of imagenodes get adjusted
+		//IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		//IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		//IDAREDependentMapper<NodeShape> imagenodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
 		
 		vs.addVisualMappingFunction(LabelTransparency);
-		vs.addVisualMappingFunction(MetaNodeHeight);
-		vs.addVisualMappingFunction(MetaNodeWidth);
+		vs.addVisualMappingFunction(imagenodeHeight);
+		vs.addVisualMappingFunction(imagenodeWidth);
 		vs.addVisualMappingFunction(NameMapping);		
 		vs.addVisualMappingFunction(ShapeMapping);
 		vs.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.TRIANGLE);
@@ -203,7 +203,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		vs.addVisualMappingFunction(imf);
 		//vs.addVisualMappingFunction(BorderColorMapping);
 		vs.addVisualMappingFunction(BorderTransparancyMap);
-		//vs.addVisualMappingFunction(MetaNodeShape);
+		//vs.addVisualMappingFunction(imagenodeShape);
 	}
 	
 	/**
@@ -216,10 +216,10 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		VisualStyle oldstyle = null;
 		
 		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
-		//and the sizes of MetaNodes get adjusted
-		IDAREDependentMapper<Double> MetaNodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> MetaNodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
-		//IDAREDependentMapper<NodeShape> MetaNodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
+		//and the sizes of imagenodes get adjusted
+		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		//IDAREDependentMapper<NodeShape> imagenodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
 		
 
 		while (it.hasNext()){
@@ -229,10 +229,10 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				oldstyle = curVS;
 				curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
 				curVS.addVisualMappingFunction(LabelTransparency);
-				curVS.removeVisualMappingFunction(MetaNodeHeight.getVisualProperty());
-				curVS.addVisualMappingFunction(MetaNodeHeight);
-				curVS.removeVisualMappingFunction(MetaNodeWidth.getVisualProperty());
-				curVS.addVisualMappingFunction(MetaNodeWidth);
+				curVS.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
+				curVS.addVisualMappingFunction(imagenodeHeight);
+				curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
+				curVS.addVisualMappingFunction(imagenodeWidth);
 				curVS.removeVisualMappingFunction(imf.getVisualProperty());
 				curVS.addVisualMappingFunction(imf);
 				return oldstyle;

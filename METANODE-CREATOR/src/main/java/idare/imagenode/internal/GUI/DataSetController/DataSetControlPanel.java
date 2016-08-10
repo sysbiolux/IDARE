@@ -1,7 +1,7 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.DataSetAddition.DataSetAdderGUI;
@@ -290,7 +290,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			//plot the node (either as legend or as normal node)
 			current.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			current.getContentPane().setLayout(new GridBagLayout());
-			current.getContentPane().setPreferredSize(new Dimension(METANODEPROPERTIES.IMAGEWIDTH,METANODEPROPERTIES.IMAGEHEIGHT + METANODEPROPERTIES.LABELHEIGHT));
+			current.getContentPane().setPreferredSize(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT));
 			GridBagConstraints gbc1 = new GridBagConstraints();
 			gbc1.weighty = 1;
 			gbc1.weightx = 1;
@@ -547,8 +547,9 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub			
-			DataSetAdderGUI addergui = new DataSetAdderGUI(app, dsm, util,dsatf);
+			// TODO Auto-generated method stub
+			dsatf.addDataset();//createTaskIterator();
+			//DataSetAdderGUI addergui = new DataSetAdderGUI(app, dsm, util,dsatf);
 		}
 
 	}

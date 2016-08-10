@@ -1,6 +1,6 @@
 package idare.imagenode.internal.ColorManagement.ColorMapTypes;
 
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.ColorManagement.ColorScale;
 
@@ -181,11 +181,11 @@ public abstract class ContinousColorMap extends ColorMap{
 	{
 		if(oddrange)
 		{
-			return new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
+			return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
 
 		}
 		else{
-			return new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,80);
+			return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,80);
 		}
 	}
 

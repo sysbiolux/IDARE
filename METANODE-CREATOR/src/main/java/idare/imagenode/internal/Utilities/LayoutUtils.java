@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Utilities;
 
 import idare.imagenode.Properties.LabelGenerator;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Dimension;
@@ -54,13 +54,13 @@ public class LayoutUtils {
 	{		
 		if(canvasdimension == null)
 		{
-			canvasdimension = new Dimension(METANODEPROPERTIES.IMAGEWIDTH,METANODEPROPERTIES.IMAGEHEIGHT+METANODEPROPERTIES.LABELHEIGHT);
+			canvasdimension = new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT);
 		}
 		g.setSVGCanvasSize(new Dimension(canvasdimension.width,canvasdimension.height));
 		Element root = doc.getDocumentElement();
 		g.getRoot(root);
-		PrintFDebugger.Debugging(root, "Setting property viewbox to: " + "0 0 "+ METANODEPROPERTIES.IMAGEWIDTH +" " + (METANODEPROPERTIES.IMAGEHEIGHT+METANODEPROPERTIES.LABELHEIGHT));
-		root.setAttribute("viewBox", "0 0 "+ METANODEPROPERTIES.IMAGEWIDTH +" " + (METANODEPROPERTIES.IMAGEHEIGHT+METANODEPROPERTIES.LABELHEIGHT) );		
+		PrintFDebugger.Debugging(root, "Setting property viewbox to: " + "0 0 "+ IMAGENODEPROPERTIES.IMAGEWIDTH +" " + (IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT));
+		root.setAttribute("viewBox", "0 0 "+ IMAGENODEPROPERTIES.IMAGEWIDTH +" " + (IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT) );		
 	}
 	
 	/**

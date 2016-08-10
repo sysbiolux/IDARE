@@ -1,4 +1,4 @@
-package idare.imagenode.internal.IO;
+package idare.imagenode.internal.Utilities;
 
 public class StringUtils {
 	/**

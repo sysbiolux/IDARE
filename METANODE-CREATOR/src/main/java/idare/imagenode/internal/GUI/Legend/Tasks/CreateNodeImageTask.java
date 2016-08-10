@@ -1,7 +1,7 @@
 package idare.imagenode.internal.GUI.Legend.Tasks;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.Layout.NodeLayout;
@@ -76,10 +76,10 @@ public class CreateNodeImageTask extends AbstractTask {
 		NodeLayout layout = manager.getLayoutForNode(legend.getCurrentlyUsedNode());
 		JPanel ContentPane = BuildLegendDescriptionFrame(layout, layout.getDatasetsInOrder());
 		layout.layoutLegendNode(manager.getNode(legend.getCurrentlyUsedNode()).getData(), g2);
-		g2.translate(0, METANODEPROPERTIES.IMAGEHEIGHT+METANODEPROPERTIES.LABELHEIGHT);		
+		g2.translate(0, IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT);		
 		descriptionFrame.setVisible(true);
 		int width = ContentPane.getSize().width;
-		int height = ContentPane.getSize().height + METANODEPROPERTIES.IMAGEHEIGHT+METANODEPROPERTIES.LABELHEIGHT;
+		int height = ContentPane.getSize().height + IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT;
 		g2.setSVGCanvasSize(new Dimension(width,height));
 		ContentPane.paint(g2);		
 		descriptionFrame.dispose();
@@ -222,9 +222,9 @@ public class CreateNodeImageTask extends AbstractTask {
 		ContentPane.setBackground(Color.BLACK);
 		ContentPane.setLayout(new BoxLayout(ContentPane,BoxLayout.PAGE_AXIS));
 		//The 32 here is a hack, but I currently don't know how else to get the width to be 400...
-		descriptionFrame.setSize(new Dimension(METANODEPROPERTIES.IMAGEWIDTH+31, 100));
+		descriptionFrame.setSize(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH+31, 100));
 		setDataSetDescriptions(scroller, datasets, layout, ContentPane);
-		descriptionFrame.setSize(new Dimension(METANODEPROPERTIES.IMAGEWIDTH+31, 100));
+		descriptionFrame.setSize(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH+31, 100));
 		return ContentPane;
 	}
 	/**

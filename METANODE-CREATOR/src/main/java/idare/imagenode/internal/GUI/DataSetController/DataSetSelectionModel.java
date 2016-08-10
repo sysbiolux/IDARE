@@ -95,10 +95,12 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	{
 		
 		int dsrow = getRowByDataSet(ds);
-		setValueAt(ds.getNodeIDs().size(), dsrow, 1);
-		
-		setValueAt(ds.getNodeIDs().size(), dsrow, 1);
-		setValueAt(ds.getNodeIDs().size(), dsrow, 1);
+		if(dsrow < 0 || getColumnCount() < 1 )
+		{
+			return;
+		}
+		//Why was this necessary??!?
+		//setValueAt(ds.getNodeIDs().size(), dsrow, 1);		
 		Vector<ColorMap> cmoptions = ds.getColorMapOptions();
 		Vector<ColorScalePane> panes = new Vector<ColorScalePane>();		
 		for(ColorMap map : cmoptions)
@@ -385,6 +387,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 			{
 				colorscaleselection.remove(pane);
 			}
+			colorscaleBoxes.remove(ds);
 			colorscalesperdataset.remove(ds);
 		}
 	}
@@ -406,6 +409,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 				{
 					colorscaleselection.remove(pane);
 				}
+				colorscaleBoxes.remove(ds);
 				colorscalesperdataset.remove(ds);
 			}
 		}

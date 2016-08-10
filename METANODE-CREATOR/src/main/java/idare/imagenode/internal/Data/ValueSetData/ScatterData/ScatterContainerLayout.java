@@ -118,7 +118,21 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 			 }
 			 xmaxval = (double)i;
 		 }
+		 
+		 
 		 xrange = xmaxval - xminval;
+		 if(numericHeaders)
+		 {
+			 //make some room at the edges.
+			 xmaxval = xmaxval + 0.05 * xrange;
+			 xminval = xminval - 0.05 * xrange;
+			 xrange = xmaxval - xminval;
+		 }
+		 if(xrange == 0)
+		 {
+			 xmaxval = xmaxval + 0.1;
+			 xminval = xminval - 0.1;
+		 }
 		 calcNormalLayoutpositions(area);
 		 calcLegendLayoutPositions(area, DataSetLabel);
 	 }

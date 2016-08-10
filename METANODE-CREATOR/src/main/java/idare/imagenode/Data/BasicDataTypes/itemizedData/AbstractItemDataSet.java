@@ -1,6 +1,7 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
@@ -21,6 +22,7 @@ import idare.imagenode.internal.Data.itemizedData.TimeSeriesData.TimeSeriesDataS
 import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,10 +46,10 @@ public class AbstractItemDataSet extends DataSet{
 	public static String DataSetType = "Itemized Dataset";	
 	protected HashMap<String,String> NodeLabels= new HashMap<String,String>();
 	protected HashMap<String,AbstractItemNodeData> Data = new HashMap<>();
-	protected HashMap<Object,Double> DiscreetSet = new HashMap<>();	
+	protected HashMap<Serializable,Double> DiscreetSet = new HashMap<>();	
 	protected AbstractItemNodeData defaultEntry;
 	private Vector<DataSetProperties> propertyOptions = new Vector<DataSetProperties>();
-	protected Collection<ColorMap> colormaps = new Vector<ColorMap>();
+	protected Vector<ColorMap> colormaps = new Vector<ColorMap>();
 
 	/**
 	 * Set the default visualisation options for this type of Data.
@@ -135,11 +137,11 @@ public class AbstractItemDataSet extends DataSet{
 				ColumnLabels.add(null);
 			}
 			//Check the cell type and format accordingly
-			if(cell.getCellType() == IDARECell.CELL_TYPE_NUMERIC)
+			if(cell.getCellType() == CellType.NUMERIC)
 			{
 				ColumnLabels.add(Double.toString(cell.getNumericCellValue()));
 			}
-			else if(cell.getCellType() == IDARECell.CELL_TYPE_STRING)
+			else if(cell.getCellType() == CellType.STRING)
 			{
 				ColumnLabels.add(cell.getStringCellValue());
 			}
@@ -374,19 +376,19 @@ public class AbstractItemDataSet extends DataSet{
 	{
 		AbstractItemNodeData currentNodeData = new AbstractItemNodeData(this);
 		//System.out.println(currentRow.toString());
-		int currentCellType = currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getCellType(); 
-		if(currentCellType == IDARECell.CELL_TYPE_STRING)
+		CellType currentCellType = currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getCellType(); 
+		if(currentCellType == CellType.STRING)
 		{		
 			currentNodeData.setID(currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue());
 			currentNodeData.setLabel(currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue());
 		}
-		else if(currentCellType == IDARECell.CELL_TYPE_NUMERIC)
+		else if(currentCellType == CellType.NUMERIC)
 		{
 			//This is dangerous, as IDs can be screwed up...
 			currentNodeData.setID(currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getFormattedCellValue());
 			currentNodeData.setLabel(currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getFormattedCellValue());
 		}
-		else if(currentCellType == IDARECell.CELL_TYPE_BLANK)
+		else if(currentCellType == CellType.BLANK)
 		{
 			//No ID.
 			return null;
@@ -398,16 +400,16 @@ public class AbstractItemDataSet extends DataSet{
 		if(useTwoColHeaders)
 		{
 			currentCellType = currentRow.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getCellType();
-			if(currentCellType == IDARECell.CELL_TYPE_STRING)
+			if(currentCellType == CellType.STRING)
 			{		
 				currentNodeData.setLabel(currentRow.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getStringCellValue());
 			}
-			else if(currentCellType == IDARECell.CELL_TYPE_NUMERIC)
+			else if(currentCellType == CellType.NUMERIC)
 			{
 				//DataFormatter df = new DataFormatter();
 				currentNodeData.setLabel(currentRow.getCell(1,IDARERow.CREATE_NULL_AS_BLANK).getFormattedCellValue());
 			}
-			else if(currentCellType == IDARECell.CELL_TYPE_BLANK)
+			else if(currentCellType == CellType.BLANK)
 			{
 				//This is not nice... but we will allow a blank label.
 				currentNodeData.setLabel("");
@@ -427,74 +429,7 @@ public class AbstractItemDataSet extends DataSet{
 		return currentNodeData;
 	}
 
-	/**
-	 * Determines whether this is a numeric or a string dataset and sets up the Entry details.
-	 * This will only check whether this is a string or a numeric dataset
-	 * and set the property accordingly
-	 * @param WB
-	 
-	private boolean setupDataSet(Workbook WB)
-	{		
-		Sheet DataSheet = WB.getSheetAt(0);
-		Iterator<Row> rowIterator = DataSheet.iterator();
-		//skip the label row
-		rowIterator.next();
-		boolean uninitialized = true;
-		numericstrings = false;
-		boolean isString = false;
-		while(rowIterator.hasNext() && uninitialized)
-		{
-			Iterator<Cell> cellIterator = rowIterator.next().iterator();
-			//Skip the first (and potentially second column)
-			cellIterator.next();
-			if(useTwoColHeaders)
-				cellIterator.next();
-			while(cellIterator.hasNext())
-			{
-				Cell currentcell = cellIterator.next();
-				if(currentcell.getCellType() == IDARECell.CELL_TYPE_STRING)
-				{
-					if(currentcell.getStringCellValue().equals("") || currentcell.getStringCellValue().trim().equals(""))
-					{
-						//ignore empty cells
-						continue;
-					}
-					else
-					{
-						//Now to avoid stupid things in Excel, like set formatting to String or similar things, check whether this is actually a numeric value.
-						if(StringUtils.isNumeric(currentcell.getStringCellValue()))
-						{
-							//We want at least 2 samples which show this behaviour before we assume this to be numeric.
-							if(numericstrings)
-							{
-								isnumeric = true;
-								uninitialized = false;
-								break;
-							}
-							numericstrings = true;
-							continue;
-						}
-						//This is a plain String! so
-						isString = true;
-						isnumeric = false;
-						uninitialized = false;
-						break;
-					}
-
-				}
-				if(currentcell.getCellType() == IDARECell.CELL_TYPE_NUMERIC)
-				{
-					isnumeric = true;
-					uninitialized = false;
-					break;
-				}
-			}
-		}
-
-
-		return true;
-	}
-*/
+	
 	/*
 	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#setTwoColumnHeaders(boolean)

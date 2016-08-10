@@ -57,6 +57,8 @@ import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.swing.DialogTaskManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * The core class of the app, generates necessary objects for the class and provides them to external requests.
  * @author Thomas Pfau
@@ -76,6 +78,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	Vector<AbstractCyAction> cyActions = new  Vector<AbstractCyAction>();
 	HashMap<IDAREPlugin,Vector<IDAREService>> plugins = new HashMap<IDAREPlugin, Vector<IDAREService>>();
 	DialogTaskManager dtm;
+	Logger logger;
 	/**
 	 * Basic constructor that receives all Cytoscape objects necessary for its creation.
 	 * @param cySwingApp
@@ -96,6 +99,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 			VisualMappingFunctionFactory vmfFactoryP,CyEventHelper eventHelper, CyNetworkViewManager nvm,
 			CyApplicationManager cyAppMgr, CyNetworkManager cyNetMgr, DialogTaskManager dtm)
 	{		
+		logger = LoggerFactory.getLogger(IDAREImageNodeApp.class);
 		VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP = (VisualProperty<CyCustomGraphics<CustomGraphicLayer>>)currentLexicon.lookup(CyNode.class, "NODE_CUSTOMGRAPHICS_1");		
 		storage = new ImageStorage(VisualcustomGraphiVP);
 		dsm = new DataSetManager();
@@ -340,7 +344,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		props.add(new Properties());
 		taskFactories.put(nodeFactory, props);
 		dcp.setNodeFactory(nodeFactory);
-		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm);
+		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm, cySwingApp);
 		taskFactories.put(dsatf, props);
 		dcp.setDatasetAdderFactory(dsatf);
 
@@ -463,8 +467,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	 */
 	public void registerPlugin(IDAREPlugin plugin)
 	{
-		dtm.execute(new TaskIterator(new UpdateTask(plugin,plugin.getServices(),true)));	
-		//updatedServices(plugin, plugin.getServices(), true);
+		
+		dtm.execute(new TaskIterator(new UpdateTask(plugin,plugin.getServices(),true)));			
 		
 	}
 	
@@ -476,21 +480,28 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	{
 		if(plugins.containsKey(plugin))
 		{			
-			dtm.execute(new TaskIterator(new UpdateTask(plugin,plugins.get(plugin),false)));			
+			dtm.execute(new TaskIterator(new UpdateTask(plugin,null,false)));			
 		}
 				
 	}
 	
-	protected void updateServices(IDAREPlugin plugin, Vector<IDAREService> services, boolean registered, TaskMonitor monitor)
-	{
-		Vector<IDAREService> changedservices  = new Vector<IDAREService>();
+	protected void updateServices(IDAREPlugin plugin, Vector<IDAREService> services, boolean registered, TaskMonitor monitor) throws IllegalAccessException,InstantiationException
+	{		
+		Vector<IDAREService> changedservices = new Vector<IDAREService>();
+		
 		if(registered)
 		{
-			monitor.setTitle("Installing plugin");
+			monitor.setTitle("Installing plugin");								
 		}
 		else
 		{
 			monitor.setTitle("Uninstalling plugin");
+			services = plugins.get(plugin);
+		}
+		//this should only happen if there are no services registered for a given plugin.
+		if(services == null)
+		{
+			return;
 		}
 		double service = 0.;
 		for(IDAREService serv : services)

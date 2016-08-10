@@ -1,5 +1,7 @@
 package idare.imagenode.Interfaces.DataSets;
 
+import java.io.Serializable;
+
 
 
 /**
@@ -7,7 +9,7 @@ package idare.imagenode.Interfaces.DataSets;
  * @author Thomas Pfau
  *
  */
-public abstract class NodeData {
+public abstract class NodeData implements Serializable{
 	
 	protected String label;
 	protected String id;

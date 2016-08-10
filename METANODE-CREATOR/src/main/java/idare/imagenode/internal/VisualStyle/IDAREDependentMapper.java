@@ -22,7 +22,7 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	
 	NodeManager nm;
 	boolean active;
-	S metaNodeValue;
+	S imagenodeValue;
 	VisualProperty<S> vp;
 	String mappedColumnName;
 	HashMap<String, S> mappedValues;
@@ -30,13 +30,13 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	 * Standard constructor of the Mapper
 	 * @param MappedColumnName - The column that is mapped from 
 	 * @param vp - the {@link VisualProperty} mapped to by this mapper 
-	 * @param mappedValue - the Value used for MetaNodes.
+	 * @param mappedValue - the Value used for imagenodes.
 	 */
 	public IDAREDependentMapper(String MappedColumnName, VisualProperty<S> vp,NodeManager nm,S mappedValue ) {
 		super();
 		this.nm = nm;
 		active = false;
-		this.metaNodeValue = mappedValue;
+		this.imagenodeValue = mappedValue;
 		this.vp = vp;
 		mappedColumnName = MappedColumnName;
 		mappedValues = new HashMap<String, S>();
@@ -45,22 +45,22 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 
 	@Override
 	public Map<String, S> getAll() {
-		//Return a Map containing the properly mapped values and the MetaNode Value for all MetaNodes. 
+		//Return a Map containing the properly mapped values and the imagenode Value for all imagenodes. 
 		HashMap<String, S> returnVals = new HashMap<String, S>();
 		returnVals.putAll(mappedValues);
 		for(String ID : nm.getLayoutedIDs())
 		{
-			returnVals.put(ID, metaNodeValue);
+			returnVals.put(ID, imagenodeValue);
 		}
 		return returnVals;
 	}
 
 	@Override
 	public S getMapValue(String arg0) {
-		//Return either the properly mapped value OR The MetaNode Value if the requested ID is a valid ID. 
+		//Return either the properly mapped value OR The imagenode Value if the requested ID is a valid ID. 
 		if(nm.isNodeLayouted(arg0))
 		{
-			return metaNodeValue;
+			return imagenodeValue;
 		}
 		else
 		{
@@ -85,11 +85,11 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 
 	@Override
 	public S getMappedValue(CyRow arg0) {
-		//Return either the properly mapped value OR The MetaNode Value if the requested row corresponds to a MetaNode 
+		//Return either the properly mapped value OR The imagenode Value if the requested row corresponds to a imagenode 
 
 		if(nm.isNodeLayouted(arg0.get(mappedColumnName, String.class)))
 		{
-			return metaNodeValue;
+			return imagenodeValue;
 		}
 		else
 		{

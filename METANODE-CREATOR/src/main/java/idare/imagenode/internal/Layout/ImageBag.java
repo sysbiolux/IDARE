@@ -3,7 +3,7 @@ package idare.imagenode.internal.Layout;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.Localisation;
-import idare.imagenode.Properties.METANODEPROPERTIES.LayoutStyle;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES.LayoutStyle;
 import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.internal.exceptions.layout.TooManyItemsException;

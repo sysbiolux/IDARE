@@ -1,6 +1,7 @@
 package idare.imagenode.internal.Utilities;
 
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,16 +22,47 @@ public class IOUtils {
 	 */
 	public static File getTemporaryFile(String FileName, String Extension)
 	{
-		File target = new File(System.getProperty("java.io.tmpdir") + File.separator + METANODEPROPERTIES.METANODE_TEMP_FOLDER + File.separator + FileName + Extension);
+		
+		File TempFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER);
+		try{
+			if(!TempFolder.exists() )
+
+			{
+				FileUtils.forceMkdir(TempFolder);			
+			}
+		}
+		catch(IOException e)
+		{			
+			throw new RuntimeException(e);
+		}
+		
+		File target = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER + File.separator + FileName + Extension);
 		int suffix = 0;
 		while(target.exists())
 		{
-			target = new File(System.getProperty("java.io.tmpdir") + File.separator + METANODEPROPERTIES.METANODE_TEMP_FOLDER + File.separator + FileName + "_" + suffix + Extension);
+			target = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER + File.separator + FileName + "_" + suffix + Extension);
 			suffix++;
 		}
-		
+		PrintFDebugger.Debugging(IOUtils.class, "New temporary File created at:" + target.toPath().toString());
+		PrintFDebugger.Debugging(IOUtils.class, "File exists?:" + target.exists());
 		return target;
 	}
+	
+	/**
+	 * Create the Temporary folder (if it does not exist).
+	 * @throws IOException
+	 */
+	public static void createTemporaryFolder() throws IOException
+	{
+		// Clear this Apps Temporary folder
+		File TempFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER);
+		if(!TempFolder.exists() )
+		{
+			FileUtils.forceMkdir(TempFolder);			
+		}		
+	}
+	
+	
 	/**
 	 * Clear the Temporary folder.
 	 * @throws IOException
@@ -38,7 +70,7 @@ public class IOUtils {
 	public static void clearTemporaryFolder() throws IOException
 	{
 		// Clear this Apps Temporary folder
-		File TempFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + METANODEPROPERTIES.METANODE_TEMP_FOLDER);
+		File TempFolder = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER);
 		if(TempFolder.exists() )
 		{
 			if(TempFolder.isDirectory())

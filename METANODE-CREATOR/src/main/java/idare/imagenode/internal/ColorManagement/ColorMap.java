@@ -1,7 +1,7 @@
 package idare.imagenode.internal.ColorManagement;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,7 +45,7 @@ public abstract class ColorMap implements Serializable{
 	 */
 	public Dimension getPreferredColorScaleSize()
 	{
-		return new Dimension(METANODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
+		return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
 	}	
 	/**
 	 * Provides appropriate (not too long) representations of the values provided.

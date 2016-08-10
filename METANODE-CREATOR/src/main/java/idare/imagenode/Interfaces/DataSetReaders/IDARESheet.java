@@ -11,12 +11,12 @@ public interface IDARESheet extends Iterable<IDARERow>{
 
 	/**
 	 * Get the index of the last Row
-	 * @return
+	 * @return the index of the last non null Row in this Sheet
 	 */
 	public int getLastRowNum();
 	/**
 	 * Get the total number of non null rows in this Sheet.
-	 * @return
+	 * @return the number of non null rows in this sheet
 	 */
 	public int getPhysicalNumberOfRows();
 	/**

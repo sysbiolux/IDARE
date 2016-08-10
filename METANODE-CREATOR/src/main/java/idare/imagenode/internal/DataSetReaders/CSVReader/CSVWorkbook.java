@@ -1,6 +1,6 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
-import idare.imagenode.internal.IO.StringUtils;
+import idare.imagenode.internal.Utilities.StringUtils;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import java.io.BufferedReader;
@@ -43,7 +43,7 @@ public class CSVWorkbook implements Workbook{
 	 * @param separator
 	 * @throws IOException
 	 */
-	public CSVWorkbook(File F, String separator ) throws IOException, WrongFormat
+	public CSVWorkbook(File F, String separator, int idColumnCount ) throws IOException, WrongFormat
 	{
 		
 		//create the sheet
@@ -61,7 +61,8 @@ public class CSVWorkbook implements Workbook{
 			Row currentRow = currentSheet.createRow(currentRowNumber);
 			//and create cells for each entry.
 			String[] Cells = currentline.split(separator);
-			if(Cells.length < 2)
+			//if a line contains less than the id columns than this can't work.
+			if(Cells.length < idColumnCount + 1)
 			{
 				if(started)
 				{

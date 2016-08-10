@@ -11,17 +11,19 @@ public interface IDARECell {
 	/**
 	 * Different Types of Cells that can be available.
 	 */
-	public static int CELL_TYPE_BLANK = 0;
-	public static int CELL_TYPE_NUMERIC = 1;
-	public static int CELL_TYPE_STRING = 2;
-	public static int CELL_TYPE_FORMULA = 3;
-	public static int CELL_TYPE_UNKNOWN = 4;
+	public static enum CellType{
+	BLANK,
+	NUMERIC,
+	STRING, 
+	FORMULA,
+	UNKNOWN
+	}
 	
 	/**
 	 * Get the Cell Type of 
-	 * @return
+	 * @return the Type of the Cell (defined by the static definitions in {@link IDARECell}
 	 */
-	public int getCellType();	
+	public CellType getCellType();	
 	/**
 	 * Get the index of the column of this cell.
 	 * @return the column index
@@ -30,21 +32,18 @@ public interface IDARECell {
 	/**
 	 * Get the Numeric Value of this cell, if it can be converted to numeric. 
 	 * @return the numeric value of this cell
+	 * @throws Exception - Can throw exceptions if the contained value is either not a parsable double or the Cell Type is String.
 	 */
 	public double getNumericCellValue();
 	/**
-	 * get the index of the {@link IDARERow} this Cell is in.
-	 * @return the row index
-	 */
-	public int getRowIndex();
-	/**
 	 * Get the string cell value, if the cell is a string cell.
 	 * @return the string cell value.
+	 * @throws Exception - Can throw exceptions if the cell type is numeric.
 	 */
 	public String getStringCellValue();
 	/**
 	 * Get a string representation of the value of this cell (regardless what this cell actually represents).
-	 * @return
+	 * @return a String representing the value of this cell.
 	 */
 	public String getFormattedCellValue();
 }

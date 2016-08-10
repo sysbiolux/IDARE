@@ -13,7 +13,7 @@ import java.awt.image.ImagingOpException;
 import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
 import org.cytoscape.view.presentation.customgraphics.ImageCustomGraphicLayer;
 /**
- * An implementation of a {@link ImageCustomGraphicLayer} for MetaNode Display
+ * An implementation of a {@link ImageCustomGraphicLayer} for imagenode Display
  * @author Thomas Pfau 
  */
 public class IDARECustomImageLayer implements ImageCustomGraphicLayer {

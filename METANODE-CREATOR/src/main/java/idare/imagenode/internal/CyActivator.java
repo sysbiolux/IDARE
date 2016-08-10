@@ -2,9 +2,11 @@ package idare.imagenode.internal;
 
 
 import idare.Properties.IDARESettingsManager;
+import idare.imagenode.BundleProperties;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.internal.DataManagement.DataSetProvider;
 import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
+import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerFactory;
 import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.LegendUpdater;
@@ -15,6 +17,7 @@ import idare.subsystems.internal.NetworkViewSwitcher;
 import idare.subsystems.internal.SubNetworkCreator;
 import idare.subsystems.internal.SubSystemsSaver;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +25,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import org.cytoscape.application.CyApplicationConfiguration;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.ActionEnableSupport;
 import org.cytoscape.application.swing.CyAction;
@@ -59,6 +63,7 @@ import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.ServiceProperties;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
+import org.cytoscape.work.swing.GUITunableHandlerFactory;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
 
@@ -70,12 +75,21 @@ public class CyActivator extends AbstractCyActivator {
 	SBMLServiceRegistrar SBMLReg;
 	
 	@Override
-	public void start(BundleContext context) throws Exception {		
-		//System.out.println("-----------------------------------------------------------------------------------");
-		//Calendar cal = Calendar.getInstance();
-		//SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		//System.out.println( sdf.format(cal.getTime()) );
+	public void start(BundleContext context) throws Exception {
+		
+		BundleProperties bp = new BundleProperties(context);
 		appcontext = context;
+		CyApplicationConfiguration configuration = getService(context, CyApplicationConfiguration.class);
+		File cyDirectory = configuration.getConfigurationDirectoryLocation();
+		File appDirectory = new File(cyDirectory, bp.getName());
+		
+		if(appDirectory.exists() == false) {
+			appDirectory.mkdir();
+		}
+		// Set the default logging position for the App.
+		File logFile = new File(appDirectory, bp.getInfo() + ".log");
+		System.setProperty("logfile.name", logFile.getAbsolutePath());		
+		
 		//The following lines allow access to the yFiles layouts for subnetwork generation tasks.
 		final NetworkViewTaskFactory organic = getService(context,NetworkViewTaskFactory.class, "(title=Organic)");
 		final NetworkViewTaskFactory orthogonal = getService(context,NetworkViewTaskFactory.class,
@@ -103,13 +117,13 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(context,wrapped3,CyLayoutAlgorithm.class, yproperties);
 		registerService(context,wrapped4,CyLayoutAlgorithm.class, yproperties);		
 		reg = getService(context, CyServiceRegistrar.class);
-		setupMetanodeApp(context);
+		setupimagenodeApp(context);
 		setupNetworkCreatorApp(context);
 		registerSBMLAnnotator(context);
 		
 	}
 
-	private void setupMetanodeApp(BundleContext context)
+	private void setupimagenodeApp(BundleContext context)
 	{
 		//Obtain all services required for the app.
 		CyApplicationManager cyAppMgr = getService(context, CyApplicationManager.class);	
@@ -124,12 +138,17 @@ public class CyActivator extends AbstractCyActivator {
 		VisualLexicon currentLexicon = getService(context,RenderingEngineManager.class).getDefaultVisualLexicon();
 		CyNetworkManager networkManager = getService(context, CyNetworkManager.class);
 		DialogTaskManager dialogTaskManager = getService(context, DialogTaskManager.class);    
-
+		
 
 		//initialize and register the app components.
 		app = new IDAREImageNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager);		
 		app.registerPlugin(new DataSetReaderProvider());
 		app.registerPlugin(new DataSetProvider());
+		
+		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,app.getDatasetManager());		
+		registerService(context, dsctf, GUITunableHandlerFactory.class,   new Properties());
+		
+		
 		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(app);
 		NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
 		IDARELegend pan = app.getLegend();

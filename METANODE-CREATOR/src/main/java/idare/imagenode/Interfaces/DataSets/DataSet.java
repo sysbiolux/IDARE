@@ -1,6 +1,7 @@
 package idare.imagenode.Interfaces.DataSets;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
@@ -9,11 +10,13 @@ import idare.imagenode.Interfaces.Layout.DataSetProperties;
 import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.omg.IOP.CodecPackage.FormatMismatch;
 
 /**
@@ -37,7 +37,7 @@ import org.omg.IOP.CodecPackage.FormatMismatch;
  * @author Thomas Pfau
  *
  */
-public abstract class DataSet implements IDAREService{
+public abstract class DataSet implements IDAREService, Serializable{
 	
 	public static String DATASETCOLORSCALE = "Dataset ColorScale";
 	public static String DATASETDESCRIPTION = "Dataset Description";
@@ -62,7 +62,7 @@ public abstract class DataSet implements IDAREService{
 	/**
 	 * The Source File of this Dataset
 	 */
-	public File SourceFile;
+	//public File SourceFile;
 	/**
 	 * The Description of this Dataset.
 	 */
@@ -80,7 +80,7 @@ public abstract class DataSet implements IDAREService{
 	 * Indicat
 	 */
 	//protected boolean flexibility;
-	protected Position preferredposition;
+	//protected Position preferredposition;
 	protected int columncount = 0;
 	protected boolean[] emptycolumns;
 	protected Vector<Comparable> Valueset;
@@ -131,30 +131,35 @@ public abstract class DataSet implements IDAREService{
 	 * @throws DuplicateIDException - if there are duplicate ids in the files. 
 	 * @throws IOException - if there is a problem with the provided file.
 	 */
-	public boolean parseFile(File DataFile, Collection<IDAREDatasetReader> readers) throws WrongFormat,DuplicateIDException,IOException{
-		SourceFile = DataFile;		
-		IDAREWorkbook wb = null;
+	public boolean parseFile(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException,IOException{
+		//SourceFile = DataFile;		
+		//IDAREWorkbook wb = null;
 		String ErrorMessage = "";
-		for(IDAREDatasetReader reader : readers)
-		{
-			try{
-				if(reader.formatAccepted(DataFile))
-				{
-					wb = reader.readData(DataFile);					
-					break;
-				}
-			}
-			catch(WrongFormat e)
-			{
-				ErrorMessage += reader.getClass().getName() + ": " + e.getMessage() + "\n";
-				continue;
-			}
-		}
-		if(wb == null)
+		//for(IDAREDatasetReader reader : readers)
+		//{
+		//	try{
+		//		if(reader.formatAccepted(DataFile))
+		//		{
+		//			PrintFDebugger.Debugging(this, "Trying to read file with " + reader.getClass().getName());
+//					wb = reader.readData(DataFile,useTwoColHeaders);					
+//					break;
+//				}
+//				else
+//				{
+//					ErrorMessage += reader.getClass().getName() + ": invalid File Extension or Format\n";
+//				}
+//			}
+//			catch(WrongFormat e)
+//			{
+//				ErrorMessage += reader.getClass().getName() + ": " + e.getMessage() + "\n";
+//				continue;
+//			}
+		//}
+		if(WB == null)
 		{		
-			throw new WrongFormat("No Reader available for the file format, or invalid Format, Individual Messages were: \n" + ErrorMessage );
+			throw new WrongFormat("No Reader available for the file format, or invalid Format\n" );
 		}
-		setupWorkBook(wb);
+		setupWorkBook(WB);
 		
 		
 		boolean valid = false;
@@ -247,7 +252,7 @@ public abstract class DataSet implements IDAREService{
 		emptycolumns = new boolean[columncount];
 		for(int i = 0; i < columncount ; i++)
 		{
-			IDARECell current = HeaderRow.getCell(i+labelcolumns, Row.RETURN_BLANK_AS_NULL);
+			IDARECell current = HeaderRow.getCell(i+labelcolumns, IDARERow.RETURN_BLANK_AS_NULL);
 			if(current != null)
 			{
 				emptycolumns[i] = false;
@@ -288,16 +293,20 @@ public abstract class DataSet implements IDAREService{
 			while(cellIterator.hasNext())
 			{
 				IDARECell currentcell = cellIterator.next();
+				if(currentcell == null)
+				{
+					continue;
+				}
 				maxcolumn = Math.max(maxcolumn, currentcell.getColumnIndex());
 				while(emptycolumns.size() <= maxcolumn)
 				{
 					emptycolumns.add(new Boolean(true));
 				}
-				if(currentcell.getCellType() == IDARECell.CELL_TYPE_BLANK)
+				if(currentcell.getCellType() == CellType.BLANK)
 				{
 					continue;
 				}
-				if(currentcell.getCellType() == IDARECell.CELL_TYPE_STRING)
+				if(currentcell.getCellType() == CellType.STRING)
 				{
 					if(currentcell.getStringCellValue().equals("") || currentcell.getStringCellValue().trim().equals(""))
 					{
@@ -331,7 +340,7 @@ public abstract class DataSet implements IDAREService{
 					}
 
 				}
-				if(currentcell.getCellType() == IDARECell.CELL_TYPE_NUMERIC || currentcell.getCellType() == IDARECell.CELL_TYPE_FORMULA)
+				if(currentcell.getCellType() == CellType.NUMERIC || currentcell.getCellType() == CellType.FORMULA)
 				{
 					if(uninitialized)
 					{
@@ -358,13 +367,19 @@ public abstract class DataSet implements IDAREService{
 
 				while(cellIterator.hasNext())
 				{
+					
 					IDARECell current = cellIterator.next();
+					if(current == null)
+					{
+						//skip null Cells 
+						continue;
+					}
 					//blank cells are an NA type.
-					if(current.getCellType() == IDARECell.CELL_TYPE_BLANK)
+					if(current.getCellType() == CellType.BLANK)
 					{
 						entries.add(null);
 					}
-					else if(current.getCellType() == IDARECell.CELL_TYPE_STRING)
+					else if(current.getCellType() == CellType.STRING)
 					{
 						//ignore empty cells with any number of spaces, they are undefined.
 						if(current.getStringCellValue().trim().equals(""))
@@ -417,11 +432,11 @@ public abstract class DataSet implements IDAREService{
 				{
 					IDARECell current = cellIterator.next();
 					//blank cells are NA cells
-					if(current.getCellType() == IDARECell.CELL_TYPE_BLANK)
+					if(current.getCellType() == CellType.BLANK)
 					{
 						entries.add(null);
 					}
-					else if(current.getCellType() == IDARECell.CELL_TYPE_STRING)
+					else if(current.getCellType() == CellType.STRING)
 					{
 						//ignore empty cells with any number of spaces, they are undefined.
 						if(current.getStringCellValue().trim().equals(""))

@@ -57,7 +57,7 @@ public class IDAREProperties {
 		public static final String IDARE_GENE = "gene";
 		public static final String IDARE_SPECIES = "species";
 		public static final String IDARE_REACTION = "reaction";
-		public static final String IDARE_METANODE = "metanode";
+		public static final String IDARE_imagenode = "imagenode";
 		public static final String IDARE_PROTEIN = "protein";
 		public static final String IDARE_LINK = "link";
 	}

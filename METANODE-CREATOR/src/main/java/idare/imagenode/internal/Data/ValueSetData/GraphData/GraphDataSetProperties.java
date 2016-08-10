@@ -17,6 +17,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -25,6 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultCaret;
+
+import org.apache.poi.ss.usermodel.Header;
 
 public class GraphDataSetProperties extends DataSetProperties {
 
@@ -74,6 +78,18 @@ public class GraphDataSetProperties extends DataSetProperties {
 			if(!vds.numericheaders)
 			{				
 				throw new WrongFormat("String headers not allowed in a graph dataset must use numeric values");
+			}
+			else
+			{
+				for(String sheet : vds.getSetNames())
+				{
+					Vector<Comparable> header = vds.getHeadersForSheet(sheet);
+					Set<Comparable> uniqueHeaders = new HashSet<Comparable>(header);
+					if(uniqueHeaders.size() < header.size())
+					{
+						throw new WrongFormat("Graph visualisation is incompatible with non unique headers in a single sheet.");		
+					}					
+				}
 			}
 			
 		}

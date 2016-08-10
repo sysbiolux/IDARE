@@ -5,6 +5,9 @@ import idare.imagenode.internal.exceptions.debug.DebugException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Helper class to provide formatted Output for PrintFDebugging, indicating time, and origin of the printf.
  * @author Thomas Pfau
@@ -22,13 +25,10 @@ public class PrintFDebugger {
 		}
 		catch(DebugException e)
 		{
-	//		if(debug)
-	//		{
-			
+			Logger log = LoggerFactory.getLogger(obj.getClass());
 			Calendar cal = Calendar.getInstance();
 	        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");	        
-			System.out.println(sdf.format(cal.getTime()) + ": "+ e.getObjClassame() + "(" + e.getStackTrace()[1].getLineNumber() + "):" + e.getMessage());
-	//		}
+			log.info(sdf.format(cal.getTime()) + ":" + Message  );
 		}
 	}
 	

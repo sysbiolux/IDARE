@@ -1,5 +1,7 @@
 package idare.imagenode.Interfaces.DataSets;
 
+import java.io.Serializable;
+
 import idare.imagenode.Properties.NodeValueType;
 /**
  * A NodeValue represents the Value at a specific node. 
@@ -7,7 +9,7 @@ import idare.imagenode.Properties.NodeValueType;
  * @author Thomas Pfau
  *
  */
-public class NodeValue implements Comparable<NodeValue>{
+public class NodeValue implements Comparable<NodeValue>,Serializable{
 
 	protected Comparable value = null;
 	protected NodeValueType type;

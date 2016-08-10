@@ -1,8 +1,9 @@
 package idare.imagenode.internal.VisualStyle;
 
 import idare.Properties.IDAREProperties;
-import idare.imagenode.Properties.METANODEPROPERTIES;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
@@ -139,14 +140,14 @@ SessionLoadedListener, GraphicsChangedListener {
 	private void setMappings(VisualStyle currentstyle)
 	{
 		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);		
-		IDAREDependentMapper<Double> MetaNodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
-		IDAREDependentMapper<Double> MetaNodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
+		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
+		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
 		currentstyle.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
 		currentstyle.addVisualMappingFunction(LabelTransparency);
-		currentstyle.removeVisualMappingFunction(MetaNodeHeight.getVisualProperty());
-		currentstyle.addVisualMappingFunction(MetaNodeHeight);
-		currentstyle.removeVisualMappingFunction(MetaNodeWidth.getVisualProperty());
-		currentstyle.addVisualMappingFunction(MetaNodeWidth);
+		currentstyle.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
+		currentstyle.addVisualMappingFunction(imagenodeHeight);
+		currentstyle.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
+		currentstyle.addVisualMappingFunction(imagenodeWidth);
 		currentstyle.removeVisualMappingFunction(imf.getVisualProperty());
 		currentstyle.addVisualMappingFunction(imf);
 	}
@@ -200,7 +201,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	@Override
 	public void handleEvent(SessionLoadedEvent e) {
 		// TODO Auto-generated method stub
-		List<File> StyleNameFiles = e.getLoadedSession().getAppFileListMap().get(METANODEPROPERTIES.STYLE_MAPPINGS_SAVE_NAME);
+		List<File> StyleNameFiles = e.getLoadedSession().getAppFileListMap().get(IMAGENODEPROPERTIES.STYLE_MAPPINGS_SAVE_NAME);
 
 		if(StyleNameFiles != null)
 		{
@@ -223,8 +224,8 @@ SessionLoadedListener, GraphicsChangedListener {
 			while (it.hasNext()){
 				VisualStyle curVS = (VisualStyle)it.next();
 				IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
-				IDAREDependentMapper<Double> MetaNodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
-				IDAREDependentMapper<Double> MetaNodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
+				IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
+				IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
 
 
 				if (VisualStyleTitles.contains(curVS.getTitle()))
@@ -232,10 +233,10 @@ SessionLoadedListener, GraphicsChangedListener {
 					saveProperties(curVS,true);
 					curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
 					curVS.addVisualMappingFunction(LabelTransparency);
-					curVS.removeVisualMappingFunction(MetaNodeHeight.getVisualProperty());
-					curVS.addVisualMappingFunction(MetaNodeHeight);
-					curVS.removeVisualMappingFunction(MetaNodeWidth.getVisualProperty());
-					curVS.addVisualMappingFunction(MetaNodeWidth);
+					curVS.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
+					curVS.addVisualMappingFunction(imagenodeHeight);
+					curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
+					curVS.addVisualMappingFunction(imagenodeWidth);
 					curVS.removeVisualMappingFunction(imf.getVisualProperty());
 					curVS.addVisualMappingFunction(imf);
 				}
@@ -253,18 +254,19 @@ SessionLoadedListener, GraphicsChangedListener {
 		//Create A Temporary Zip File
 
 		Vector<String> existingFileNames = new Vector<>();
-		File TempFile = IOUtils.getTemporaryFile(METANODEPROPERTIES.STYLE_MAPPINGS_SAVE_FILE,"");
+		File TempFile = IOUtils.getTemporaryFile(IMAGENODEPROPERTIES.STYLE_MAPPINGS_SAVE_FILE,"");
 		try{
 			ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(TempFile));
 			os.writeObject(VisualStyleTitles);
 			os.writeObject(lockedenabled);
 			os.close();
 			MappingStyles.add(TempFile);
-			e.addAppFiles(METANODEPROPERTIES.STYLE_MAPPINGS_SAVE_NAME, MappingStyles);
+			e.addAppFiles(IMAGENODEPROPERTIES.STYLE_MAPPINGS_SAVE_NAME, MappingStyles);
 		}
 		catch(Exception ex)
 		{
-			JOptionPane.showMessageDialog(null, "Could not save Style properties.\n " + e.toString());			
+			PrintFDebugger.Debugging(this, "Could not save Style properties.\n ");
+			ex.printStackTrace(System.out);
 		}			
 	}
 	

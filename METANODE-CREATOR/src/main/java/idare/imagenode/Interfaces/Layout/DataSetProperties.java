@@ -8,10 +8,13 @@ import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import org.w3c.tools.resources.serialization.Serializer;
 
 /**
  * Datasetproperties allow the use of a specific class of {@link DataSet}s for multiple different layouts. 
@@ -20,7 +23,7 @@ import javax.swing.JScrollPane;
  * @author Thomas Pfau
  *
  */
-public abstract class DataSetProperties implements IDAREService{
+public abstract class DataSetProperties implements IDAREService,Serializable{
 
 	/**
 	 * Get the preferred Localisation {@link Position}.CENTER, {@link Position}.EDGE, {@link Position}.FREE of this dataset.

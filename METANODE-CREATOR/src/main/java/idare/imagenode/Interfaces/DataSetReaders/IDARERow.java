@@ -23,6 +23,7 @@ public interface IDARERow extends Iterable<IDARECell> {
 	public Iterator<IDARECell> cellIterator();
 	/**
 	 * Get the {@link IDARECell} in the specified column from this Row.
+	 * This is the same as a call to getCell(arg0,IDARERow.RETURN_NULL_AND_BLANK)
 	 * @param arg0 - the column requested
 	 * @return - the {@link IDARECell} at the specified position, or null, if it does not exist 
 	 */
@@ -34,23 +35,13 @@ public interface IDARERow extends Iterable<IDARECell> {
 	 */
 	public IDARECell getCell(int arg0, int arg1);
 	/**
-	 * Get the index of the first non null cell in this row
-	 * @return the index of the first non null column.
-	 */
-	public short getFirstCellNum();
-	/**
 	 * Gets the index of the last cell contained in this row PLUS ONE.!
-	 * @return
+	 * @return the first index of a non null cell in this row
 	 */
 	public short getLastCellNum();
 	/**
-	 * Get the number of non null Cells in this row.
-	 * @return
-	 */
-	public int getPhysicalNumberOfCells();
-	/**
 	 * Get the position of this row in the enclosing {@link IDARESheet};
-	 * @return
+	 * @return the position of this row in the enclosing {@link IDARESheet}
 	 */
 	public int getRowNum();
 	

@@ -11,7 +11,7 @@ import java.util.Vector;
  * @author Thomas Pfau
  *
  */
-public class MetaNode {
+public class ImageNodeModel {
 
 	String ID;
 	private Vector<DataSet> nodeDataEntries;
@@ -19,7 +19,7 @@ public class MetaNode {
 	 * Default constructor using the ID of this Node
 	 * @param ID
 	 */
-	public MetaNode(String ID)
+	public ImageNodeModel(String ID)
 	{
 		this.ID = ID;
 		nodeDataEntries = new Vector<>();
@@ -44,7 +44,7 @@ public class MetaNode {
 	
 	/**
 	 * Get all {@link NodeData} associated with this Node.
-	 * @return the Collection of all {@link NodeData} associated with this MetaNode
+	 * @return the Collection of all {@link NodeData} associated with this imagenode
 	 */
 	public Collection<NodeData> getData()
 	{
@@ -57,7 +57,7 @@ public class MetaNode {
 	}
 	/**
 	 * Check whether this node still has associated DataSets.
-	 * @return whether there is Data in the metanode.
+	 * @return whether there is Data in the imagenode.
 	 */
 	public boolean isValid()
 	{
