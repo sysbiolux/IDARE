@@ -53,6 +53,7 @@ import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.ServiceProperties;
+import org.cytoscape.work.SynchronousTaskManager;
 import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
@@ -336,7 +337,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	 * @param cySwingApp - A reference to the CySwingApp to be used in Factories
 	 * @return
 	 */
-	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp)
+	private void createTaskFactories(DialogTaskManager dtm, SynchronousTaskManager syt, FileUtil util,CySwingApplication cySwingApp)
 	{
 		//Vector<TaskFactory> factories = new Vector<TaskFactory>();
 		CreateNodesTaskFactory nodeFactory = new CreateNodesTaskFactory(nm, dcp, dtm);
@@ -344,7 +345,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		props.add(new Properties());
 		taskFactories.put(nodeFactory, props);
 		dcp.setNodeFactory(nodeFactory);
-		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm, cySwingApp);
+		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, syt, cySwingApp);
 		taskFactories.put(dsatf, props);
 		dcp.setDatasetAdderFactory(dsatf);
 

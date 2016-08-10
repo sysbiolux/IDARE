@@ -20,6 +20,7 @@ public class DataSetAdderTaskFactory extends AbstractTaskFactory {
 	
 	private DataSetManager dsm;
 	DialogTaskManager dtm;
+	DataSetAdderTask dat;
 	public DataSetAdderTaskFactory(DataSetManager dsm, DialogTaskManager dtm,CySwingApplication cySwingApp) {
 		// TODO Auto-generated constructor stub
 		this.dsm = dsm;
@@ -27,7 +28,7 @@ public class DataSetAdderTaskFactory extends AbstractTaskFactory {
 	}
 	@Override
 	public TaskIterator createTaskIterator() {		
-		return new TaskIterator(new DataSetAdderTask(dsm));								
+		return new TaskIterator(dat);								
 		
 	}
 	/**
@@ -39,8 +40,8 @@ public class DataSetAdderTaskFactory extends AbstractTaskFactory {
 	 */
 	public void addDataset()
 	{		
-		
-		dtm.execute(createTaskIterator());
+		dat = new DataSetAdderTask(dsm);
+		dtm.execute(createTaskIterator(),dat);
 	}
 	
 	
