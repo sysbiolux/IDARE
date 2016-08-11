@@ -10,14 +10,14 @@ import java.util.Vector;
  * @author Thomas Pfau
  *
  */
-public class AbstractItemNodeData extends NodeData {
+public class ItemNodeData extends NodeData {
 
 	private Vector<NodeValue> values;
 	/**
 	 * Basic constructor using the dataset this is originating from
 	 * @param origin
 	 */
-	public AbstractItemNodeData(DataSet origin)
+	public ItemNodeData(DataSet origin)
 	{
 		super(origin);		
 	}
@@ -34,7 +34,7 @@ public class AbstractItemNodeData extends NodeData {
 	}
 
 	/**
-	 * Set the Data of this {@link AbstractItemNodeData}. 
+	 * Set the Data of this {@link ItemNodeData}. 
 	 * @param Data
 	 */
 	public void setData(Vector<NodeValue> Data) {
@@ -44,7 +44,7 @@ public class AbstractItemNodeData extends NodeData {
 
 	/**
 	 * Return the number of Elements for one set of Data e.g. number of items (including empty items) in an itemized dataset
-	 * @return the number of values stored in this {@link AbstractItemNodeData} 
+	 * @return the number of values stored in this {@link ItemNodeData} 
 	 */
 	public int getValueCount()
 	{
@@ -58,7 +58,7 @@ public class AbstractItemNodeData extends NodeData {
 	 */
 	public boolean isValueSet(int pos)
 	{
-		return ((AbstractItemDataSet)parent).isColumnSet(pos);
+		return ((ItemDataSet)parent).isColumnSet(pos);
 	}
 
 }

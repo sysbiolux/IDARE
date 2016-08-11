@@ -23,7 +23,7 @@ public class POISheet implements IDARESheet {
 	@Override
 	public Iterator<IDARERow> iterator() {
 		// TODO Auto-generated method stub
-		return new RowIter(sheet.rowIterator());
+		return new RowIter(sheet.iterator());
 	}
 
 	@Override

@@ -1,12 +1,14 @@
 package idare.imagenode.internal.Data.itemizedData.TimeSeriesData;
 
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemDataSetProperties;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.Data.itemizedData.RectangleData.RectangleContainer;
+import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 /**
  * Properties for a Time Series DataSet
@@ -29,12 +31,12 @@ public class TimeSeriesDataSetProperties extends AbstractItemDataSetProperties{
 
 	@Override
 	public DataContainer newContainerInstance(DataSet origin, NodeData data) {
-		return new RectangleContainer(origin, (AbstractItemNodeData) data);
+		return new RectangleContainer(origin, (ItemNodeData) data);
 	}
 
 	@Override
 	public DataContainer newContainerForData(NodeData data) {
-		return new RectangleContainer(data.getDataSet(), (AbstractItemNodeData)data);
+		return new RectangleContainer(data.getDataSet(), (ItemNodeData)data);
 	}
 
 	@Override
@@ -46,5 +48,20 @@ public class TimeSeriesDataSetProperties extends AbstractItemDataSetProperties{
 	public String getTypeName()
 	{
 		return "Time Series";
+	}
+	@Override
+	public void testValidity(DataSet set) throws WrongFormat
+	{
+		try{
+			ItemDataSet ads = (ItemDataSet) set;
+			if(((ItemNodeData)ads.getDefaultData()).getValueCount() >= 12)
+			{
+				throw new WrongFormat("Too many items for layout type " + getTypeName());
+			}
+		}
+		catch(ClassCastException e)
+		{
+			throw new WrongFormat("Invalid dataset type for " + getTypeName());
+		}
 	}
 }

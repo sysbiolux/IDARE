@@ -25,6 +25,7 @@ import org.w3c.tools.resources.serialization.Serializer;
  */
 public abstract class DataSetProperties implements IDAREService,Serializable{
 
+	
 	/**
 	 * Get the preferred Localisation {@link Position}.CENTER, {@link Position}.EDGE, {@link Position}.FREE of this dataset.
 	 * @return the preferred Localisation

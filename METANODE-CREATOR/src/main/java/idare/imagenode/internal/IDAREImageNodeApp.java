@@ -77,7 +77,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	StyleManager styleManager;
 	HashMap<AbstractTaskFactory,Vector<Properties>> taskFactories = new HashMap<AbstractTaskFactory, Vector<Properties>>();	
 	Vector<AbstractCyAction> cyActions = new  Vector<AbstractCyAction>();
-	HashMap<IDAREPlugin,Vector<IDAREService>> plugins = new HashMap<IDAREPlugin, Vector<IDAREService>>();
+	HashMap<IDAREPlugin,Vector<IDAREService>> plugins = new HashMap<IDAREPlugin, Vector<IDAREService>>();	
 	DialogTaskManager dtm;
 	Logger logger;
 	/**
@@ -337,7 +337,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	 * @param cySwingApp - A reference to the CySwingApp to be used in Factories
 	 * @return
 	 */
-	private void createTaskFactories(DialogTaskManager dtm, SynchronousTaskManager syt, FileUtil util,CySwingApplication cySwingApp)
+	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp)
 	{
 		//Vector<TaskFactory> factories = new Vector<TaskFactory>();
 		CreateNodesTaskFactory nodeFactory = new CreateNodesTaskFactory(nm, dcp, dtm);
@@ -345,7 +345,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		props.add(new Properties());
 		taskFactories.put(nodeFactory, props);
 		dcp.setNodeFactory(nodeFactory);
-		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, syt, cySwingApp);
+		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm, cySwingApp);
 		taskFactories.put(dsatf, props);
 		dcp.setDatasetAdderFactory(dsatf);
 
@@ -518,7 +518,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 						if(registerDataSetProperties(clazz, props))
 						{							
 							changedservices.add(props);
-							monitor.setStatusMessage(props.getTypeName() +  " registered");
+							monitor.setStatusMessage(props.getTypeName() +  " registered for class " + clazz.getSimpleName());
 						}
 						else
 						{
@@ -527,8 +527,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 					}
 					else
 					{
+						deRegisterDataSetProperties(clazz, props);
 						monitor.setStatusMessage(props.getTypeName() +  " deregistered");
-						deRegisterDataSetProperties(clazz, props);						
 					}
 				}
 			}
@@ -543,7 +543,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 				else
 				{
 					deRegisterDataSetReader((IDAREDatasetReader) serv);
-					monitor.setStatusMessage(serv.getClass().getTypeName()+  " registered");
+					monitor.setStatusMessage(serv.getClass().getTypeName()+  " unregistered");
 				}
 				
 			}

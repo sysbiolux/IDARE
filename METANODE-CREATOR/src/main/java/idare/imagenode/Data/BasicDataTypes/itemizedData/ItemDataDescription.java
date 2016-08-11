@@ -76,7 +76,7 @@ public class ItemDataDescription extends JPanel{
 		//First, get the size of the maximal Item to determine the number of rows.
 		this.setBackground(Color.white);
 		Legend.addComponentListener(new ItemDescriptionResizeListener(this));		
-		AbstractItemNodeData ndata = (AbstractItemNodeData) currentdata;
+		ItemNodeData ndata = (ItemNodeData) currentdata;
 		Itemdescriptions = new Vector<ItemDescriptionPane>();
 		int itemposition = 1;
 		int maxwidth = 0;
@@ -86,7 +86,7 @@ public class ItemDataDescription extends JPanel{
 			if(ndata.isValueSet(i))
 			{
 				String Label = DataSetLabel + "." + Integer.toString(itemposition) + ":";
-				String ItemLabel = ((AbstractItemDataSet)(ndata.getDataSet())).getColumnLabel(i);
+				String ItemLabel = ((ItemDataSet)(ndata.getDataSet())).getColumnLabel(i);
 				ItemDescriptionPane pane = new ItemDescriptionPane(Label,ItemLabel);
 				maxwidth = Math.max(pane.getMinSize(), maxwidth);
 				Itemdescriptions.add(pane);

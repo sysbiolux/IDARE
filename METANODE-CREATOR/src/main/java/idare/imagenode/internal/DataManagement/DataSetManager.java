@@ -52,19 +52,19 @@ import org.cytoscape.work.swing.TunableUIHelper;
  */
 public class DataSetManager{
 
-	private Map<Integer, DataSet> DataSets;
+	private Map<Integer, DataSet> dataSets;
 	private DataSetIDProvider idprovider;
 	private Vector<DataSetAboutToBeChangedListener> toChangeListener = new Vector<DataSetAboutToBeChangedListener>();
 	private Vector<DataSetChangeListener> changedListener = new Vector<DataSetChangeListener>();
-	private HashMap<String,Class<? extends DataSet>> AvailableDataSetTypes = new HashMap<String, Class<? extends DataSet>>();
-	private HashMap<Class<? extends DataSet>,Collection<DataSetProperties>> DataSetPropertyOptions = new HashMap<Class<? extends DataSet>,Collection<DataSetProperties>>();
+	private HashMap<String,Class<? extends DataSet>> availableDataSetTypes = new HashMap<String, Class<? extends DataSet>>();
+	private HashMap<Class<? extends DataSet>,Collection<DataSetProperties>> dataSetPropertyOptions = new HashMap<Class<? extends DataSet>, Collection<DataSetProperties>>();
 	private LinkedList<IDAREDatasetReader> dataSetReaders = new LinkedList<IDAREDatasetReader>();
 	/**
 	 * Default constructor initializing required fields.
 	 */
 	public DataSetManager()//NodeManager manager )
 	{
-		DataSets = new HashMap<Integer, DataSet>();
+		dataSets = new HashMap<Integer, DataSet>();
 		idprovider = new DataSetIDProvider();		
 	}
 	
@@ -73,10 +73,10 @@ public class DataSetManager{
 	 */
 	public void clearDataSets()
 	{
-		fireDataSetsRemoved(DataSets.values());
-		DataSets.clear();
-		AvailableDataSetTypes.clear();
-		DataSetPropertyOptions.clear();
+		fireDataSetsRemoved(dataSets.values());
+		dataSets.clear();
+		availableDataSetTypes.clear();
+		dataSetPropertyOptions.clear();
 	}
 	/**
 	 * Get the Types of Datasets available to this Manager.
@@ -84,7 +84,7 @@ public class DataSetManager{
 	 */
 	public Collection<String> getAvailableDataSetTypes()
 	{
-		return AvailableDataSetTypes.keySet();
+		return availableDataSetTypes.keySet();
 	}
 	
 	/**
@@ -94,9 +94,9 @@ public class DataSetManager{
 	 */
 	public void registerDataSetType(String TypeName, Class<? extends DataSet> dataSetClass) throws DuplicateIDException
 	{
-		if(!AvailableDataSetTypes.containsKey(TypeName))
+		if(!availableDataSetTypes.containsKey(TypeName))
 		{	
-			AvailableDataSetTypes.put(TypeName,dataSetClass);		
+			availableDataSetTypes.put(TypeName,dataSetClass);		
 		}
 		else
 		{
@@ -112,56 +112,46 @@ public class DataSetManager{
 	 */
 	public void deRegisterDataSetType(String TypeName, Class<? extends DataSet> dataSetClass)
 	{
-		if(AvailableDataSetTypes.get(TypeName) != null && AvailableDataSetTypes.get(TypeName).equals(dataSetClass))
+		if(availableDataSetTypes.get(TypeName) != null && availableDataSetTypes.get(TypeName).equals(dataSetClass))
 		{
-			AvailableDataSetTypes.remove(TypeName);		
+			availableDataSetTypes.remove(TypeName);		
 		}
 	}
 	
 	/**
 	 * Add DataSetProperties for a specific dataset
 	 */
-	public boolean registerPropertiesForDataSet(Class<? extends DataSet> datasetclass, DataSetProperties properties )
+	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetProperties properties )
 	{
-
-		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(datasetclass))
+		if(!dataSetPropertyOptions.containsKey(classType))
 		{
-			if(!DataSetPropertyOptions.containsKey(datasetclass)){
-				DataSetPropertyOptions.put(datasetclass,new Vector<DataSetProperties>());
-			}
-			if(DataSetPropertyOptions.get(datasetclass).contains(properties))
-			{
-				return false;
-			}
-			DataSetPropertyOptions.get(datasetclass).add(properties);
-			Vector<DataSet> changedSets = new Vector<DataSet>();
-			for(DataSet ds : DataSets.values())
-			{
-				if(datasetclass.isInstance(ds))
-				{
-					Collection<DataSetProperties> validOptions = new HashSet<DataSetProperties>();
-					for(DataSetProperties props : DataSetPropertyOptions.get(datasetclass))
-					{
-						try{
-							props.testValidity(ds);
-							validOptions.add(props);
-						}
-						catch(WrongFormat e)
-						{
-							//cannot use these properties.
-							continue;
-						}
-					}
-					ds.setPropertyOptions(validOptions);
-					changedSets.add(ds);
-				}
-			}
-			fireDataSetsChanged(changedSets);
-			
-			return true;
+			dataSetPropertyOptions.put(classType, new Vector<DataSetProperties>());
 		}
-		return false;
+		// if its not yet in, add it.		
+		if(! dataSetPropertyOptions.get(classType).contains(properties))
+		{
+			dataSetPropertyOptions.get(classType).add(properties);
+		}
+		//otherwise do nothing 
+		else
+		{
+			return false;
+		}
+		Vector<DataSet> changedDatasets = new Vector<DataSet>();
+		for(DataSet ds : dataSets.values())
+		{
+			//Check whether the class fits and if it could be added.
+			if(ds.getClass().equals(classType) && ds.addPropertyOption(properties))
+			{
+				changedDatasets.add(ds);
+			}
+		}
+		if(changedDatasets.size() > 0)
+		{
+			fireDataSetsChanged(changedDatasets);
+		}
+
+		return true;
 	}
 	
 	/**
@@ -170,53 +160,40 @@ public class DataSetManager{
 	 * @param properties - the property options for the dataset that should eb registered.
 	 * @return - The properties that were not added because they are already present.
 	 */
-	public Collection<DataSetProperties> registerPropertiesForDataSet(Class datasetclass, Collection<DataSetProperties> properties )
+	public Collection<DataSetProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetProperties> properties )
 	{
-		Collection<DataSetProperties> presentprops = new Vector<DataSetProperties>();
-		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(datasetclass))
+		
+		Vector<DataSetProperties> propertiesToAdd = new Vector<DataSetProperties>();
+		Vector<DataSetProperties> notAddedProperties = new Vector<DataSetProperties>();
+		if(!dataSetPropertyOptions.containsKey(classType))
 		{
-			if(!DataSetPropertyOptions.containsKey(datasetclass)){
-				DataSetPropertyOptions.put(datasetclass,new Vector<DataSetProperties>());
-			}
-			for(DataSetProperties props : properties)
-			{
-
-				if(DataSetPropertyOptions.get(datasetclass).contains(properties))
-				{
-					presentprops.add(props);
-				}
-				else
-				{
-					DataSetPropertyOptions.get(datasetclass).add(props);
-				}
-			}
-			
+			dataSetPropertyOptions.put(classType, new Vector<DataSetProperties>());
 		}
-		Vector<DataSet> changedSets = new Vector<DataSet>();
-		for(DataSet ds : DataSets.values())
+		//add all options 
+		propertiesToAdd.addAll(properties);
+		notAddedProperties.addAll(properties);
+		//and remove all that are already present.
+		propertiesToAdd.removeAll(dataSetPropertyOptions.get(classType));
+		notAddedProperties.removeAll(propertiesToAdd);
+		
+		dataSetPropertyOptions.get(classType).addAll(properties);
+		Vector<DataSet> changedDatasets = new Vector<DataSet>();
+		for(DataSet ds : dataSets.values())
 		{
-			if(datasetclass.isInstance(ds))
+			for(DataSetProperties props : propertiesToAdd)
 			{
-				Collection<DataSetProperties> validOptions = new HashSet<DataSetProperties>();
-				for(DataSetProperties props : DataSetPropertyOptions.get(datasetclass))
+				if(ds.getClass().equals(classType) && ds.addPropertyOption(props))
 				{
-					try{
-						props.testValidity(ds);
-						validOptions.add(props);
-					}
-					catch(WrongFormat e)
-					{
-						//cannot use these properties.
-						continue;
-					}
+					changedDatasets.add(ds);
 				}
-				ds.setPropertyOptions(validOptions);
-				changedSets.add(ds);
 			}
 		}
-		fireDataSetsChanged(changedSets);
-		return presentprops;
+		if(changedDatasets.size() > 0)
+		{
+			fireDataSetsChanged(changedDatasets);
+		}
+		return notAddedProperties;
+		
 	}
 	
 	/**
@@ -224,31 +201,22 @@ public class DataSetManager{
 	 * @param datasetclass - the class of the dataset to deregister items for.
 	 * @param properties - the properties to deregister.
 	 */
-	public void deregisterPropertiesForDataSet(Class<? extends DataSet> datasetclass, DataSetProperties properties )
+	public void deregisterPropertiesForDataSet(Class<? extends DataSet> classType, DataSetProperties properties )
 	{
-
-		String classname = datasetclass.getCanonicalName();
-		if(AvailableDataSetTypes.values().contains(datasetclass))
-		{
-			if(!DataSetPropertyOptions.containsKey(datasetclass)){
-				return;
-			}
-			else
-			{
-				DataSetPropertyOptions.get(datasetclass).remove(properties);
-			}
-		}
-		Vector<DataSet> changedSets = new Vector<DataSet>();
-		for(DataSet ds : DataSets.values())
-		{
-			if(datasetclass.isInstance(ds))
-			{
-				ds.setPropertyOptions(DataSetPropertyOptions.get(datasetclass));
-				changedSets.add(ds);				
-			}
-		}
-		fireDataSetsChanged(changedSets);
+		//if this was an option, we try to remove it from all datasets.
 		
+		if(dataSetPropertyOptions.containsKey(classType) && dataSetPropertyOptions.get(classType).remove(properties))
+		{
+			Vector<DataSet> changedDatasets = new Vector<DataSet>();	
+			for(DataSet ds : dataSets.values())
+			{
+				if(ds.getClass().equals(classType) && ds.removePropertyOption(properties))
+				{
+					changedDatasets.add(ds);
+				}
+			}
+			fireDataSetsChanged(changedDatasets);
+		}				
 	}
 	
 	/**
@@ -286,7 +254,7 @@ public class DataSetManager{
 	}
 	public Collection<DataSet> getDataSets()
 	{
-		return DataSets.values();
+		return dataSets.values();
 	}
 	
 	/**
@@ -375,7 +343,7 @@ public class DataSetManager{
 	public void addDataSet(DataSet newDataSet)
 	{
 		newDataSet.setID(idprovider.getNextID());
-		DataSets.put(newDataSet.getID(),newDataSet);
+		dataSets.put(newDataSet.getID(),newDataSet);
 		fireDataSetAdded(newDataSet);
 	}
 	/**
@@ -384,7 +352,7 @@ public class DataSetManager{
 	 */
 	public void removeDataSet(DataSet setToRemove)
 	{
-		DataSets.remove(setToRemove.getID());		
+		dataSets.remove(setToRemove.getID());		
 		fireDataSetRemoved(setToRemove);
 	}
 	
@@ -396,7 +364,7 @@ public class DataSetManager{
 	 */
 	public DataSet getDataSetForID(Integer id)
 	{
-		return DataSets.get(id);
+		return dataSets.get(id);
 	}
 	/**
 	 * Reset this DataSetManager clearing all datastructures.
@@ -404,9 +372,9 @@ public class DataSetManager{
 	public void reset()
 	{
 		Vector<DataSet> toRemove = new Vector<DataSet>();
-		toRemove.addAll(DataSets.values());		
+		toRemove.addAll(dataSets.values());		
 		fireDataSetsRemoved(toRemove);
-		DataSets.clear();
+		dataSets.clear();
 		idprovider.reset(0);
 	}
 	/**
@@ -446,7 +414,7 @@ public class DataSetManager{
 		for(DataSet ds :datasets)
 		{	
 			maxsetID = Math.max(maxsetID, ds.getID());
-			DataSets.put(ds.getID(),ds);
+			dataSets.put(ds.getID(),ds);
 			idprovider.reset(maxsetID);				
 			fireDataSetAdded(ds);
 			//System.out.println(currentSet.toString());
@@ -454,108 +422,11 @@ public class DataSetManager{
 
 
 	}
-		
-/*	/**
-	 * Read the property file 
-	 * @param PropertyFile - The Property File
-	 * @return A Map that maps filenames to datasets.
-	 * @throws IOException - IOException, if there is a problem while reading the file
-	 */
-/*	private HashMap<String,DataSet> readDataSetProperties(File PropertyFile) throws IOException
-	{
-		HashMap<String,DataSet>  FileNameToSet = new HashMap<String, DataSet>();
-		BufferedReader br = new BufferedReader(new FileReader(PropertyFile));
-		String currentline = br.readLine();
-		String SetFileName = "";
-		int SetID = 0;
-		Boolean Twocolumn = false;;
-		String DataType = "";
-		String SetDescription = "";
-		while(currentline != null)
-		{			
-			String[] items = currentline.split(" : ");
-			if(!currentline.contains(" : "))
-			{
-				DataSet ds = createDataSet(SetID,Twocolumn,DataType,SetDescription);
-				if(ds != null)
-				{
-					FileNameToSet.put(SetFileName,ds);
-				}
-				SetFileName = "";
-				SetDescription = "";
-				SetID = 0;
-				Twocolumn = false;
-				DataType = "";
-			}
-			else
-			{
-				switch(items[0])
-				{
-				case "File":
-				{
-					SetFileName = items[1].trim();
-					break;
-				}
-				case "ID":
-				{
-					SetID = Integer.parseInt(items[1].trim());
-					break;
-				}
-				case "TwoColumn":
-				{
-					Twocolumn = Boolean.parseBoolean(items[1].trim());
-					break;
-				}
-				case "DataType":
-				{
-					DataType = items[1].trim();
-					break;
-				}
-				case "Description":
-				{
-					if(items.length < 2)
-					{
-						SetDescription = "";
-					}
-					else
-					{
-						SetDescription = items[1].trim();
-					}
-					break;
-				}
-				}				
-			}
-			
-			currentline = br.readLine();
-		}
-		return FileNameToSet;
-	}
+
 	/**
-	 * Create a new {@link DataSet} Instance for given properties
-	 * @param SetID - ID of the Set to create
-	 * @param TwoCols - twocolum flag of the set
-	 * @param dataSetClassName - Type (i.e. classname) of the set
-	 * @param SetDescription - Description of the set.
-	 * @return the dataset
-	 
-	private DataSet createDataSet(int SetID, boolean TwoCols, String dataSetClassName, String SetDescription)
-	{
-		try{
-			DataSet ds = DataSetFactory.getDataSet(dataSetClassName);
-			ds.setPropertyOptions(DataSetPropertyOptions.get(ds.getClass()));
-			ds.setID(SetID);
-			ds.useTwoColHeaders = TwoCols;
-			ds.Description = SetDescription;
-			return ds;
-		}
-		catch(ClassNotFoundException e)
-		{		
-			JOptionPane.showMessageDialog(null, "Did not find the class for DataSet with description. " + SetDescription + "\n It is likely that a plugin is missing");
-			e.printStackTrace(System.out);
-			throw new RuntimeException("Did not find the class for the Dataset with description "+ SetDescription +".\n This is likely due to a missing plugin.");
-		}
-	}*/
-	
+	 * Get all {@link IDAREDatasetReader}s currently registered with IDARE.
+	 * @return a {@link Vector} of DataSetReaders in the reverse order of their addition to IDARE.
+	 */
 	public Vector<IDAREDatasetReader> getAvailableReaders()
 	{
 		Vector<IDAREDatasetReader> readers = new Vector<IDAREDatasetReader>();
@@ -566,7 +437,7 @@ public class DataSetManager{
 	/**
 	 * Create a Dataset based on properties and a DataSetFile. and add it to the manager.
 	 * @param TwoCols - indicator whether to use twoColumn ID Indicators
-	 * @param DataSetTypeName - Clas name of the dataset
+	 * @param DataSetTypeName - Class name of the dataset
 	 * @param SetDescription - Description of the Dataset
 	 * @param DataSetFile - File to load into the dataset
 	 * @return - The Created Dataset with the data from the DataSetFile parsed.
@@ -581,14 +452,14 @@ public class DataSetManager{
 	ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		System.out.println("Generating a dataset with twocolumnheaders set to " + TwoCols);
-		DataSet ds = AvailableDataSetTypes.get(DataSetTypeName).newInstance();				
-		ds.setPropertyOptions(DataSetPropertyOptions.get(AvailableDataSetTypes.get(DataSetTypeName)));
+		DataSet ds = availableDataSetTypes.get(DataSetTypeName).newInstance();
+		//here we just supply all options available. The DataSet Class will care about a proper selection later during readWorkBookData 
+		ds.setPropertyOptionsUnchecked(dataSetPropertyOptions.get(availableDataSetTypes.get(DataSetTypeName)));
 		ds.setID(idprovider.getNextID());
 		ds.useTwoColHeaders = TwoCols;
 		ds.Description = SetDescription;
-		ds.parseFile(dsWorkBook);
+		ds.setupWorkBook(dsWorkBook);
 		addDataSet(ds);
-
 		return ds;
 	}	
 
@@ -596,7 +467,7 @@ public class DataSetManager{
 	private void writeDataSets(ObjectOutputStream os) throws IOException
 	{
 		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
-		for(DataSet ds : DataSets.values())
+		for(DataSet ds : dataSets.values())
 		{				
 			PrintFDebugger.Debugging(this, "Writing Dataset: " + ds.Description);
 			os.writeObject(ds);
@@ -665,38 +536,7 @@ public class DataSetManager{
 			PrintFDebugger.Debugging(this, "Error during writing of the Datasets" );
 			e.printStackTrace(System.out);
 		}
-		//for(DataSet ds : DataSets.values())
-		//{			
-			
-			
-			//String SourceFileName = ds.SourceFile.getName();
-			//String Extension = SourceFileName.substring(SourceFileName.lastIndexOf("."));
-			//String Name = SourceFileName.substring(0,SourceFileName.lastIndexOf("."));			
-			//File TempFile = IOUtils.getTemporaryFile(Name,Extension);
-			//try{
-			//	Files.copy(ds.SourceFile.toPath(), TempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			//	ds.SourceFile = TempFile;				
-			//}
-			//catch(IOException e)
-			//{			
-			//	PrintFDebugger.Debugging(this, "Could not save the DataSets.\n");
-			//	e.printStackTrace(System.out);
-			//	throw new RuntimeException("IDAREApp: Could not save the DataSets.\n " + e.toString());				
-			//}
-			//descriptionbf.append(writeDataSetProperties(ds));
-			//DataFileList.add(ds.SourceFile);
-		//}
-		//File DataPropertiesFile = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.DATASET_PROPERTIES_FILE_NAME);
-		//PropertiesList.add(DataPropertiesFile);
-		//try{
-		//BufferedWriter bw = new BufferedWriter(new FileWriter(DataPropertiesFile));			
-		//bw.write(descriptionbf.toString());
-		//bw.close();
-		//}
-		//catch(IOException e)
-		//{
-		//	JOptionPane.showMessageDialog(null, "Could not save the DataSet Properties.\n " + e.toString());
-		//}
+	
 		try{
 			//if the DataFileList is empty, there are no datasets...
 			if(!DataFileList.isEmpty())

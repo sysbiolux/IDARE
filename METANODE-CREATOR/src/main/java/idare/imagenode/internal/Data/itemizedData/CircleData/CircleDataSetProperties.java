@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Data.itemizedData.CircleData;
 
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemDataSetProperties;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
@@ -27,12 +27,12 @@ public class CircleDataSetProperties extends AbstractItemDataSetProperties{
 
 	@Override
 	public DataContainer newContainerInstance(DataSet origin, NodeData data) {
-		return new CircleContainer(origin, (AbstractItemNodeData) data);
+		return new CircleContainer(origin, (ItemNodeData) data);
 	}
 
 	@Override
 	public DataContainer newContainerForData(NodeData data) {
-		return new CircleContainer(data.getDataSet(), (AbstractItemNodeData)data);
+		return new CircleContainer(data.getDataSet(), (ItemNodeData)data);
 	}
 
 	@Override

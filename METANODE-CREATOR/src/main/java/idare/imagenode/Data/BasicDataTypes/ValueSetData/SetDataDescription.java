@@ -1,5 +1,6 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
@@ -8,6 +9,7 @@ import idare.imagenode.internal.GUI.Legend.Utilities.SizeAdaptableComponent;
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.Box;
@@ -39,14 +41,29 @@ public abstract class SetDataDescription extends JPanel implements SizeAdaptable
 	 * @param currentdata
 	 * @param map
 	 */
-	public void setupItemDescription(ValueSetDataSet currentdata,ColorMap map) {
+	public void setupItemDescription(DataSet currentdata,ColorMap map) {
 		//First, get the size of the maximal Item to determine the number of rows.			
 		this.setBackground(Color.white);					
 		//			FontMetrics fm = this.getFontMetrics(new Font(Font.MONOSPACED,Font.PLAIN,20));
-		Itemdescriptions = new Vector<SetEntryDescriptionPane>();		
-		for(String LineName : currentdata.getSetNames())
+		Itemdescriptions = new Vector<SetEntryDescriptionPane>();
+		Vector<String> LineNames = new Vector<String>();
+		HashMap<String,Color> colors = new HashMap<String,Color>();
+		if(currentdata instanceof ValueSetDataSet)
 		{
-			SetEntryDescriptionPane pane = getDescriptionPane(map.getColor(LineName),LineName);															
+			LineNames = ((ValueSetDataSet)currentdata).getSetNames();
+			for(String LineName : LineNames)
+			{
+				colors.put(LineName,map.getColor(LineName));
+			}
+		}
+		if(currentdata instanceof ItemDataSet)
+		{
+			LineNames.add(ItemDataSet.DEFAULT_SERIES_NAME);
+			colors.put(ItemDataSet.DEFAULT_SERIES_NAME,map.getDefaultColor());
+		}
+		for(String LineName : LineNames)
+		{
+			SetEntryDescriptionPane pane = getDescriptionPane(colors.get(LineName),LineName);															
 			Itemdescriptions.add(pane);			
 		}
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));

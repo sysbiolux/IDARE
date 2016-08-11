@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Data.itemizedData.CircleData;
 
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemContainer;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 
@@ -17,7 +17,7 @@ public class CircleContainer extends AbstractItemContainer{
 	 * @param origin
 	 * @param data
 	 */
-	public CircleContainer(DataSet origin, AbstractItemNodeData data)
+	public CircleContainer(DataSet origin, ItemNodeData data)
 	{
 		super(origin,data);
 	}

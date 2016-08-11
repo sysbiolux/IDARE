@@ -11,6 +11,7 @@ import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Utilities.StringUtils;
 import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
@@ -29,7 +30,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.lang3.StringUtils;
 import org.omg.IOP.CodecPackage.FormatMismatch;
 
 /**
@@ -41,12 +41,18 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	public static String DATASETCOLORSCALE = "Dataset ColorScale";
 	public static String DATASETDESCRIPTION = "Dataset Description";
+	public static final String PROPERTYOPTIONSAVAILABLE = "Options Available";
 	//public static String DataSetType = "Default DataSet"; 
+		
+	/**
+	 * An Indicator whether the dataset uses numeric representation
+	 */
+	public boolean isnumeric = false;
 	
 	/**
 	 * An Indicator whether the dataset uses numeric representation
 	 */
-	public boolean isnumeric = true;
+	public boolean isstring = false;
 	/**
 	 * an indicator whether the dataset uses numeric data represented by strings
 	 */
@@ -54,7 +60,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * An Indicator whether this is a discreet data set (i.e. no more than 5 different values)
 	 */
-	public boolean isdiscreet = true;
+	public boolean isdiscreet = false;
 	/**
 	 * An Indicator whether this dataset uses one or two columns to provide label/ID
 	 */
@@ -72,17 +78,9 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * The properties to be used for this dataset, need to be set during reading of data.
 	 */
 	protected DataSetProperties datasetProperties;
-	/**
-	 * A Vector indicating the labels of each column
-	 */
-	protected Vector<String> ColumnLabels = new Vector<String>();
-	/**
-	 * Indicat
-	 */
-	//protected boolean flexibility;
-	//protected Position preferredposition;
-	protected int columncount = 0;
-	protected boolean[] emptycolumns;
+
+
+	protected Vector<DataSetProperties> propertyOptions = new Vector<DataSetProperties>();
 	protected Vector<Comparable> Valueset;
 	protected int dataSetID;
 	protected Double MinValue;
@@ -123,7 +121,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	
 	/**
-	 * Parse a Data file. 
+	 * This function loads calls the implementing classes function setupWorkBook to interpret the Workbook provided and 
+	 * tests, whether there are viable {@link DataSetProperties} in IDARE that can be used with this DataSet and the given Workbook. 
 	 * @param DataFile - the file to be parsed by the DataSet.
 	 * @param readers - a set of readers which can be used to read the file.
 	 * @return whether the parsing was successful
@@ -131,30 +130,10 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @throws DuplicateIDException - if there are duplicate ids in the files. 
 	 * @throws IOException - if there is a problem with the provided file.
 	 */
-	public boolean parseFile(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException,IOException{
+	public final boolean loadWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException,IOException{
 		//SourceFile = DataFile;		
 		//IDAREWorkbook wb = null;
 		String ErrorMessage = "";
-		//for(IDAREDatasetReader reader : readers)
-		//{
-		//	try{
-		//		if(reader.formatAccepted(DataFile))
-		//		{
-		//			PrintFDebugger.Debugging(this, "Trying to read file with " + reader.getClass().getName());
-//					wb = reader.readData(DataFile,useTwoColHeaders);					
-//					break;
-//				}
-//				else
-//				{
-//					ErrorMessage += reader.getClass().getName() + ": invalid File Extension or Format\n";
-//				}
-//			}
-//			catch(WrongFormat e)
-//			{
-//				ErrorMessage += reader.getClass().getName() + ": " + e.getMessage() + "\n";
-//				continue;
-//			}
-		//}
 		if(WB == null)
 		{		
 			throw new WrongFormat("No Reader available for the file format, or invalid Format\n" );
@@ -188,7 +167,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 		}
 		else
 		{
-			setPropertyOptions(possibleprops);
+			setPropertyOptionsUnchecked(possibleprops);
 		}
 		
 		return true;
@@ -199,9 +178,9 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 */
 	protected void reset()
 	{
-		isnumeric = true;
+		isnumeric = false;
 		numericstrings = false;
-		isdiscreet = true;	
+		isdiscreet = false;	
 		Valueset = new Vector<Comparable>();
 	}
 	/**
@@ -219,7 +198,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @throws WrongFormat - if there are problems with the format of the data in the Workbook.
 	 * @throws DuplicateIDException - if there are duplicate IDs in the Workbook (e.g. sheets which have the same identifier twice). 
 	 */
-	protected void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
+	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
 
 		determineDataProperties(WB);
@@ -231,42 +210,6 @@ public abstract class DataSet implements IDAREService, Serializable{
 	}
 
 	
-	/**
-	 * Determine the columns which are non empty, 
-	 * This can be derived from the Header column as all columns which are set have to contain a label. 
-	 */	
-	protected void determineNonEmptyColumns(IDARERow HeaderRow)
-	{
-		Iterator<IDARECell> cellIterator = HeaderRow.iterator();
-		skipLabels(cellIterator);
-		int labelcolumns = 1;
-		if(useTwoColHeaders)
-		{
-			labelcolumns++;
-		}
-		while(cellIterator.hasNext())
-		{
-			IDARECell Currentcell = cellIterator.next();			
-			columncount = Math.max(columncount, Currentcell.getColumnIndex()-labelcolumns + 1);			
-		}
-		emptycolumns = new boolean[columncount];
-		for(int i = 0; i < columncount ; i++)
-		{
-			IDARECell current = HeaderRow.getCell(i+labelcolumns, IDARERow.RETURN_BLANK_AS_NULL);
-			if(current != null)
-			{
-				emptycolumns[i] = false;
-			}
-			else
-			{
-				emptycolumns[i] = true;
-			}
-			
-		}
-		
-		
-	}
-	
 	
 	
 	/**
@@ -275,16 +218,15 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @param WB
 	 * @throws WrongFormat
 	 */
-	private void determineDataProperties(IDAREWorkbook WB) throws WrongFormat
+	private final void determineDataProperties(IDAREWorkbook WB) throws WrongFormat
 	{		
 		IDARESheet DataSheet = WB.getSheetAt(0);
 		Iterator<IDARERow> rowIterator = DataSheet.iterator();
-		
-		//skip the label row
-		determineNonEmptyColumns(rowIterator.next());
+		//Skip the HEader row!
+		rowIterator.next();
+		//skip the label row		
 		boolean uninitialized = true;
 		int maxcolumn = 0;
-		Vector<Boolean> emptycolumns = new Vector<>();			
 		while(rowIterator.hasNext() && uninitialized)
 		{
 			Iterator<IDARECell> cellIterator = rowIterator.next().iterator();
@@ -298,10 +240,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 					continue;
 				}
 				maxcolumn = Math.max(maxcolumn, currentcell.getColumnIndex());
-				while(emptycolumns.size() <= maxcolumn)
-				{
-					emptycolumns.add(new Boolean(true));
-				}
+
 				if(currentcell.getCellType() == CellType.BLANK)
 				{
 					continue;
@@ -315,9 +254,10 @@ public abstract class DataSet implements IDAREService, Serializable{
 					}
 					else
 					{
-						emptycolumns.set(currentcell.getColumnIndex(), false);
+						//emptycolumns.set(currentcell.getColumnIndex(), false);
 						if(uninitialized)
 						{
+							System.out.println("Found a String value: " + currentcell.getStringCellValue());
 							//Now to avoid stupid things in Excel, like set formatting to String or similar things, check whether this is actually a numeric value.
 							if(StringUtils.isNumeric(currentcell.getStringCellValue()))
 							{
@@ -329,29 +269,36 @@ public abstract class DataSet implements IDAREService, Serializable{
 									break;
 								}
 								numericstrings = true;
-								continue;
-							}							
-							//This is a plain String! so
-							isnumeric = false;
-							isdiscreet = true;
-							uninitialized = false;
-							//break;
+							//	continue;
+							}		
+							else
+							{
+								//This is a plain String! so
+								isstring = true;
+								isdiscreet = true;
+								uninitialized = false;
+							}
 						}
 					}
 
 				}
 				if(currentcell.getCellType() == CellType.NUMERIC || currentcell.getCellType() == CellType.FORMULA)
 				{
+					System.out.println("Found a numeric value: " + currentcell.getNumericCellValue());
 					if(uninitialized)
 					{
 						isnumeric = true;
 						uninitialized = false;
 					}
-					emptycolumns.set(currentcell.getColumnIndex(), false);
-					//break;
+
 				}
 			}
 
+		}
+		
+		if(isnumeric && isstring)
+		{
+			throw new WrongFormat("Detected both String and multiple numeric values. Please use either Strings or numeric values as entries.");
 		}
 		//we check whether we have a discreet numeric set.
 		if(isnumeric)
@@ -361,10 +308,10 @@ public abstract class DataSet implements IDAREService, Serializable{
 			//Again skip the first row.
 			rowIterator.next();
 			while(rowIterator.hasNext() && isdiscreet)
-			{
+			{				
 				Iterator<IDARECell> cellIterator = rowIterator.next().iterator();			
 				skipLabels(cellIterator);	
-
+				
 				while(cellIterator.hasNext())
 				{
 					
@@ -388,7 +335,22 @@ public abstract class DataSet implements IDAREService, Serializable{
 						}
 						else
 						{
-							throw new WrongFormat("Expected a Numeric Value or numeric formula. Got " + current.getStringCellValue() + "instead");
+							if(numericstrings)
+							{
+								if(StringUtils.isNumeric(current.getStringCellValue()))
+								{
+									entries.add(Double.parseDouble(current.getStringCellValue()));
+								}
+								else
+								{
+									throw new WrongFormat("Expected a Numeric Value or numeric formula. Got " + current.getStringCellValue() + "instead");	
+								}
+							}
+							else
+							{
+								
+								throw new WrongFormat("Expected a Numeric Value or numeric formula. Got " + current.getStringCellValue() + "instead");
+							}
 						}
 					}
 					else 
@@ -517,6 +479,69 @@ public abstract class DataSet implements IDAREService, Serializable{
 		datasetProperties = properties;
 	}
 	
+	/**
+	 * Get the selection of different properties available for this dataset
+	 * @return - The possible DataSetproperties for this Type of Dataset
+	 */
+	public final Vector<DataSetProperties> getPropertyOptions() {
+		Vector<DataSetProperties> props = new Vector<DataSetProperties>();
+		props.addAll(propertyOptions);
+		return props;
+	}
+	
+	/**
+	 * Sets the Options potentially available to this Dataset.
+	 * This call does not check, whether the options supplied are actually viable options for this dataset!
+	 * @param options - The possible DataSetproperties for this Dataset
+	 */
+	public final void setPropertyOptionsUnchecked(Collection<DataSetProperties> options) {
+		propertyOptions = new Vector<DataSetProperties>();
+		propertyOptions.addAll(options);			
+	}
+	
+	/**
+	 * Add Property options to this Dataset, and indicate whether the addition was successfull. 
+	 * @param propsToAdd
+	 * @return whether the Properties were added. Returns false if either the properties are not valid or are already part of the propertyset
+	 */
+	public final boolean addPropertyOption(DataSetProperties propsToAdd)
+	{
+		try{
+			propsToAdd.testValidity(this);
+			if(!propertyOptions.contains(propsToAdd))
+			{
+				propertyOptions.add(propsToAdd);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch(WrongFormat e)
+		{
+			//Did not fit to this dataset.
+			return false;
+		}
+	}
+	
+	/**
+	 * Get the limits (minimum and maximum value) if this is a numeric dataset. 
+	 * @return if the dataset is numeric, an Array of two doubles with result[0] being the minimum and results[1] being the maximal value. Otherwise null. 
+	 */
+	public Double[] getYAxisLimits()
+	{		
+		if(isnumeric)
+		{
+			return new Double[]{MinValue,MaxValue};
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	
 	
 	/**
 	 * Get the {@link NodeData} for a specific ID.
@@ -539,15 +564,12 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @return the set of node IDs in this {@link DataSet}
 	 */
 	public abstract Set<String> getNodeIDs();
-	
-	
-	
+
 	/**
 	 * Get the {@link ColorMap}s available for this {@link DataSet} 
 	 * @return A collection of {@link ColorMap}s available to this {@link DataSet}
 	 */
 	public abstract Vector<ColorMap> getColorMapOptions();
-
 	
 	/**
 	 * Read the Data for this workbook into the dataset.
@@ -575,16 +597,19 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public abstract NodeData getDefaultData();
 	
 	/**
-	 * Get the selection of different properties available for this dataset
-	 * @return - The possible DataSetproperties for this Type of Dataset
+	 * Get the Headers in this DataSet
+	 * @return
 	 */
-	public abstract Vector<DataSetProperties> getPropertyOptions();
-	
+	public abstract Vector<Comparable> getHeaders();
 	/**
-	 * Set the options available for this specific dataset.
-	 * @param options - The possible DataSetproperties for this Dataset
+	 * Remove the given PropertyOptions from this dataset.
+	 * @param propsToRemove
+	 * @return whether the property was remoed from the set of properties (i.e. if it had been present)
 	 */
-	public abstract void setPropertyOptions(Collection<DataSetProperties> options);
+	public final boolean removePropertyOption(DataSetProperties propsToRemove)
+	{
+		return propertyOptions.remove(propsToRemove);
+	}
 	
 	/**
 	 * Get the general Name for this Type of DataSet

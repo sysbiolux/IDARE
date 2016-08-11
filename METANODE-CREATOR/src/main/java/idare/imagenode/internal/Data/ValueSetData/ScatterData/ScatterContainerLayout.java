@@ -108,7 +108,7 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 		 {		
 			 int i = 0;
 			 xminval = 0.;
-			 Vector<Comparable> headers = dataset.getAllHeaders();
+			 Vector<Comparable> headers = dataset.getHeaders();
 			 HashMap<Comparable,String> HeaderLabels = LayoutUtils.getLabelsForData(headers);			 
 			 for(Comparable header : headers)
 			 {				 

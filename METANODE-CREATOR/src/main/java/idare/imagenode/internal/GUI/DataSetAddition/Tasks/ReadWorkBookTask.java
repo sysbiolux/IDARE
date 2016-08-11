@@ -1,39 +1,44 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
-import java.io.File;
-import java.util.Stack;
-
-import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
-public class ReadWorkBookTask extends IDARETask{
+public class ReadWorkBookTask extends ObservableIDARETask{
 
-	File inputFile;
+
 	IDAREDatasetReader reader;
+	DataSetReadingInfo dsri;
 	
-	public ReadWorkBookTask(File inputFile, IDAREDatasetReader reader) {
-		super();
-		this.inputFile = inputFile;
+	public ReadWorkBookTask(IDAREDatasetReader reader, DataSetReadingInfo dsri) {
 		this.reader = reader;
+		this.dsri = dsri;
 	}
 
 	@Override
-	public void execute(TaskMonitor taskMonitor) throws Exception {
+	public void run(TaskMonitor taskMonitor) throws Exception {
 		System.out.println("Trying to read the Workbook");
-		if(reader.getStatus() == IDAREDatasetReader.IS_SET_UP)
-		{
-			result = reader.readData(inputFile);
-			System.out.println("Success");
+		try{
+			if(reader.getStatusMessage() == IDAREDatasetReader.IS_SET_UP)
+			{
+				IDAREWorkbook wb = reader.readData(dsri.getInputFile());
+				//We add a success message to the Error Stack for this reader, since now its just the DataSetParsing that can go wrong.
+				dsri.addErrorMessage(reader.getClass().getSimpleName() + ": Workbook read successfully");
+				insertTasksAfterCurrentTask(new AddDataSetToManagerTask(wb, dsri));
+				
+				System.out.println("Success");
+			}
+			else
+			{
+				System.out.println("Failed");
+				throw new WrongFormat(reader.getClass().getSimpleName() + ": " + reader.getStatusMessage());
+			}
 		}
-		else
+		catch(Exception e)
 		{
-			System.out.println("Failed");
-			throw new WrongFormat(reader.getClass().getSimpleName() + ": " + reader.getStatus());
+			dsri.addErrorMessage(reader.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 

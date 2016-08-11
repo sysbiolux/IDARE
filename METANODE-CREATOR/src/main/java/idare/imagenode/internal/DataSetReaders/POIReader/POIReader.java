@@ -1,7 +1,7 @@
 package idare.imagenode.internal.DataSetReaders.POIReader;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREReaderSetupTask;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
@@ -11,9 +11,8 @@ import java.io.IOException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-public class POIReader implements IDAREDatasetReader{
+public class POIReader extends IDAREDatasetReader{
 	
-	private String status = IDAREDatasetReader.IS_READY;
 	
 	@Override
 	public IDAREWorkbook readData(File inputfile) throws WrongFormat,IOException {
@@ -28,24 +27,19 @@ public class POIReader implements IDAREDatasetReader{
 
 	@Override
 	public boolean fileTypeAccepted(File inputfile) {
-		return inputfile.getName().endsWith(".xls") | inputfile.getName().endsWith(".xlsx"); 
+		String CaseInsensitiveFileName = inputfile.getName().toLowerCase();
+		return CaseInsensitiveFileName.endsWith(".xls") | CaseInsensitiveFileName.endsWith(".xlsx"); 
 	}
 	
 
 	@Override
-	public IDARETask getSetupTask(File inputfile, boolean twocolumn) {
-		status = IDAREDatasetReader.IS_SET_UP;
+	public IDAREReaderSetupTask getSetupTask(File inputfile, boolean twocolumn) {
 		return null;
 	}
 
-	@Override
-	public String getStatus() {		
-		return status;
-	}
 
 	@Override
-	public void reset() {
-		status = IDAREDatasetReader.IS_READY;
+	public void resetReader() {
 	}
 	
 }

@@ -39,7 +39,6 @@ public class POIRow implements IDARERow {
 
 	@Override
 	public IDARECell getCell(int arg0, int arg1) {
-		// TODO Auto-generated method stub
 		Cell current = row.getCell(arg0,POIToIDARETypes.POIToIDARE_ACCESS_TYPES.get(arg1));
 		
 		return current == null ? null : new POICell(current);

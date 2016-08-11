@@ -1,40 +1,40 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
-import idare.imagenode.internal.DataManagement.DataSetManager;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import org.cytoscape.work.TaskMonitor;
 
-public class AddDataSetToManagerTask extends IDARETask {
+public class AddDataSetToManagerTask extends ObservableIDARETask {
 
 
 	IDAREWorkbook wb;	
-	DataSetManager dsm;
-	String dataSetType;
-	String dataSetDescription;
-	boolean twocolumns;
+	DataSetReadingInfo dsri;
 	
-	public AddDataSetToManagerTask(IDAREWorkbook wb, DataSetManager dsm, String dataSetType, String dataSetDescription,
-			boolean twocolumns) {
+	public AddDataSetToManagerTask(IDAREWorkbook wb,DataSetReadingInfo dsri) {
 		super();
 		this.wb = wb;
-		this.dataSetType = dataSetType;
-		this.dataSetDescription = dataSetDescription;
-		this.twocolumns = twocolumns;
+		this.dsri = dsri;
 	}
 	
 	@Override
-	public void execute(TaskMonitor taskMonitor) throws Exception {
+	public void run(TaskMonitor taskMonitor) throws Exception {
 		taskMonitor.setTitle("Trying to Add DataSet");
 		if(wb == null)
 		{
-			throw new WrongFormat("Workbook was null");
+			dsri.addErrorMessage("When trying to add Dataset: WorkBook was null");
 		}
 		else
 		{			
-			dsm.createDataSet(twocolumns, dataSetType, dataSetDescription, wb);			
+			try{
+				dsri.getDataSetManager().createDataSet(dsri.doUseTwoColumns(), dsri.getDataSetType(), dsri.getDataSetDescription(), wb);
+				dsri.setDataSetAdded();
+			}
+			catch(Exception e)
+			{
+				dsri.addErrorMessage(dsri.getDataSetType() + ": " + e.getMessage() );
+				e.printStackTrace(System.out);
+			}
 		}
 	}
 

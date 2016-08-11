@@ -32,13 +32,7 @@ public abstract class ColorMap implements Serializable{
 		this.cs = cs;		
 	}
 	
-	/**
-	 * Get the {@link Color} that is associated with the {@link Comparable} object provided.
-	 * @param Value - A {@link Comparable} value.
-	 * @return a {@link Color} 
-	 */
-	public abstract Color getColor(Comparable Value);
-	
+		
 	/**
 	 * Get the preferred size of this {@link ColorMap}. This is commonly the size of the optimal Legend Description width.
 	 * @return The preferred {@link Dimension}
@@ -117,13 +111,11 @@ public abstract class ColorMap implements Serializable{
 		return translation;
 		
 	}
-	/**
-	 * Set a specific {@link ColorScale} to be used by this {@link ColorMap}.
-	 * The Colormap will be reset to use the provided ColorScale.
-	 * @param scale - the {@link ColorScale} to be used.
-	 */
-	public abstract void setColorScale(ColorScale scale);
 	
+	public Color getDefaultColor()
+	{
+		return cs.getColor(0);
+	}
 	/**
 	 * Get a visual representation of the {@link ColorScale} used in this map.
 	 * This is in fact, the {@link ColorScalePane} produced by the enclosed {@link ColorScale}  
@@ -133,10 +125,25 @@ public abstract class ColorMap implements Serializable{
 	{
 		return cs.getColorScalePane();
 	}
+	
+	/**
+	 * Set a specific {@link ColorScale} to be used by this {@link ColorMap}.
+	 * The Colormap will be reset to use the provided ColorScale.
+	 * @param scale - the {@link ColorScale} to be used.
+	 */
+	public abstract void setColorScale(ColorScale scale);
+	
 	/**
 	 * Get a Component that represents this {@link ColorMap}
 	 * @return A {@link JComponent} that plots information about this {@link ColorMap}
 	 */
 	public abstract JComponent getColorMapComponent();
 	 
+	/**
+	 * Get the {@link Color} that is associated with the {@link Comparable} object provided.
+	 * @param Value - A {@link Comparable} value.
+	 * @return a {@link Color} 
+	 */
+	public abstract Color getColor(Comparable Value);
+
 }	

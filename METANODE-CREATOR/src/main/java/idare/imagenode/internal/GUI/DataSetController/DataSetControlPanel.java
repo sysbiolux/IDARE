@@ -123,7 +123,6 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		DataSetTable.getColumnModel().getColumn(1).setMinWidth(55);
 		DataSetTable.getColumnModel().getColumn(0).setMinWidth(100);
 		DataSetTable.getSelectionModel().addListSelectionListener(new RowSelectionListener(DataSetTable, moveUp, moveDown));
-
 		//Set up the title
 		JTextPane titleField = GUIUtils.createSelectionDescription("Dataset Management", this.getBackground(), new Font(Font.SANS_SERIF, Font.BOLD, 18));
 

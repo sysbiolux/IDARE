@@ -34,7 +34,7 @@ public abstract class AbstractItemDataSetProperties extends DataSetProperties {
 	public void testValidity(DataSet set) throws WrongFormat
 	{
 		try{
-			AbstractItemDataSet ads = (AbstractItemDataSet) set;
+			ItemDataSet ads = (ItemDataSet) set;
 		}
 		catch(ClassCastException e)
 		{
@@ -82,7 +82,7 @@ public abstract class AbstractItemDataSetProperties extends DataSetProperties {
 	public Collection<Class<? extends DataSet>> getWorkingClassTypes()
 	{
 		Vector<Class<? extends DataSet>> acceptableclasses = new Vector<Class<? extends DataSet>>();
-		acceptableclasses.add(AbstractItemDataSet.class);
+		acceptableclasses.add(ItemDataSet.class);
 		return acceptableclasses;
 	}
 

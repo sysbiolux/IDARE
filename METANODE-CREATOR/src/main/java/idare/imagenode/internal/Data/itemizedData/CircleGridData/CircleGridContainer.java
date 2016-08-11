@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Data.itemizedData.CircleGridData;
 
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemContainer;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.internal.Data.itemizedData.CircleData.CircleContainerLayout;
@@ -17,7 +17,7 @@ public class CircleGridContainer extends AbstractItemContainer{
 	 * @param origin
 	 * @param data
 	 */
-	public CircleGridContainer(DataSet origin, AbstractItemNodeData data)
+	public CircleGridContainer(DataSet origin, ItemNodeData data)
 	{
 		super(origin,data);
 		//System.out.println("Creating new Container for DataSet " + origin.getID() + " with " + data.getValueCount() + " items" );

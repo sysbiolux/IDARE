@@ -1,5 +1,6 @@
 package idare.imagenode.internal.Data.ValueSetData.ScatterData;
 
+import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataProperties;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
@@ -25,7 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultCaret;
 
-public abstract class ScatterDataSetProperties extends DataSetProperties {
+public abstract class ScatterDataSetProperties extends ValueSetDataProperties {
 
 	@Override
 	public Position getLocalisationPreference() {
@@ -72,7 +73,7 @@ public abstract class ScatterDataSetProperties extends DataSetProperties {
 			ValueSetDataSet vds = (ValueSetDataSet) set;
 			if(vds.stringheaders || vds.mixedheaders)
 			{				
-				if(vds.getAllHeaders().size() > 10)
+				if(vds.getHeaders().size() > 10)
 				{
 					throw new WrongFormat("At most 10 Columns are allowed with String Headers");
 				}

@@ -66,13 +66,13 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	 * Create the Positions used in the layout.
 	 * In essence, this function will distribute the available area to fit all the items 
 	 * (according to getValueCount())
-	 * @param data - the {@link AbstractItemNodeData} to use for layout generation
+	 * @param data - the {@link ItemNodeData} to use for layout generation
 	 * @param AreaAndPosition - The area available for the layout
 	 * @param DataSetLabel - The Label of the Dataset for the Legend
 	 * @param storage - a Map to store the Shapelocations to
 	 * @param Legend - indication whether we are creating a legend layout of a non legend layout.
 	 */
-	private void createLayoutPositions(AbstractItemNodeData data, Rectangle AreaAndPosition, String DataSetLabel, HashMap<Integer,ShapePosition> storage, boolean Legend)
+	private void createLayoutPositions(ItemNodeData data, Rectangle AreaAndPosition, String DataSetLabel, HashMap<Integer,ShapePosition> storage, boolean Legend)
 	{
 		
 		//Now, we can simply get the row width and column width by dividing the Rectangle width and height
@@ -118,7 +118,7 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	@Override
 	public void createLayout(NodeData data, Rectangle AreaAndPosition, String DataSetLabel) {
 		//first, determine, whether we have a container with fixed sizes, or a container with flexible sizes
-		AbstractItemNodeData ndata = (AbstractItemNodeData) data;
+		ItemNodeData ndata = (ItemNodeData) data;
 		upperright = new Point(AreaAndPosition.x,AreaAndPosition.y);
 		//get the rows and columns to use.
 		if(data.getDataSet().getLayoutContainer().getLocalisationPreference().Flexible)
@@ -191,7 +191,7 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	public void LayoutDataForNode(NodeData data, SVGGraphics2D context, boolean Legend, ColorMap colors) {
 		//Move to position of this container.
 		context.translate(upperright.x, upperright.y);
-		AbstractItemNodeData ndata = (AbstractItemNodeData) data;
+		ItemNodeData ndata = (ItemNodeData) data;
 		if(Legend)
 		{
 			LayoutDataForLegendNode(ndata, context, colors);
@@ -211,7 +211,7 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	 * @param context - the graphics context to plot to
 	 * @param colors - the Colormap to use.
 	 */
-	private void LayoutDataForImageNode(AbstractItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
+	private void LayoutDataForImageNode(ItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
 	{
 		int itemid = 1;
 		
@@ -233,7 +233,7 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	 * @param context - the graphics context to plot to
 	 * @param colors - the Colormap to use.
 	 */
-	private void LayoutDataForLegendNode(AbstractItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
+	private void LayoutDataForLegendNode(ItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
 	{
 		int itemid = 1;
 		Stroke currentstroke = context.getStroke();

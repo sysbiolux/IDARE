@@ -52,7 +52,6 @@ public class ValueSetDataSet extends DataSet{
 	public boolean stringheaders = false;
 	public boolean numericheaders = false;	
 	public boolean mixedheaders = false;
-	Vector<DataSetProperties> propertyOptions = new Vector<DataSetProperties>();
 	protected ValueSetNodeData defaultData;
 	protected Collection<ColorMap> colormaps = new Vector<ColorMap>();
 	protected Vector<Comparable> allHeaders = new Vector<Comparable>();
@@ -164,7 +163,7 @@ public class ValueSetDataSet extends DataSet{
 				maxheadersize = Math.max(maxheadersize, Headerlines.get(Sheet).size());
 			}
 			//we do not have empty columns in this type of dataset.
-			emptycolumns = new boolean[maxheadersize];					
+//			emptycolumns = new boolean[maxheadersize];					
 		}
 		//Now set the Header order		
 		for(HeaderPosition Header : headerpos)
@@ -472,26 +471,6 @@ public class ValueSetDataSet extends DataSet{
 
 	/*
 	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getPropertyOptions()
-	 */
-	@Override
-	public Vector<DataSetProperties> getPropertyOptions() {
-		Vector<DataSetProperties> props = new Vector<DataSetProperties>();
-		props.addAll(propertyOptions);
-		return props;
-	}
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#setProperties(idare.imagenode.Interfaces.Layout.DataSetProperties)
-	 */
-	@Override
-	public void setProperties(DataSetProperties properties) {
-		// TODO Auto-generated method stub
-		this.datasetProperties = properties;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getDataSetTypeName()
 	 */	
 	@Override
@@ -507,14 +486,6 @@ public class ValueSetDataSet extends DataSet{
 	public JPanel getDataSetDescriptionPane(JScrollPane Legend,
 			String DataSetLabel, ColorMap map) {
 		return datasetProperties.getDataSetDescriptionPane(Legend, DataSetLabel, map, this);
-	}
-	/**
-	 * Get the limits (minimum and maximum value) if this is a numeric dataset. 
-	 * @return A Array of two doubles with result[0] being the minimum and results[1] being the maximal value. 
-	 */
-	public Double[] getYAxisLimits()
-	{		
-		return new Double[]{MinValue,MaxValue};
 	}
 	/**
 	 * Get the names of the Sheets represented in this DataSet
@@ -546,7 +517,7 @@ public class ValueSetDataSet extends DataSet{
 	 * Get all values present in the headers of this DataSet
 	 * @return - a Vector of all headers in this dataset.
 	 */
-	public Vector<Comparable> getAllHeaders()
+	public Vector<Comparable> getHeaders()
 	{
 		Vector<Comparable> headervals = new Vector<Comparable>();
 		headervals.addAll(allHeaders);
@@ -580,15 +551,6 @@ public class ValueSetDataSet extends DataSet{
 		return cms;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#setPropertyOptions(java.util.Collection)
-	 */
-	@Override
-	public void setPropertyOptions(Collection<DataSetProperties> options) {
-		propertyOptions = new Vector<DataSetProperties>();
-		propertyOptions.addAll(options);	
-	}	
 	/**
 	 * This is a small helper class that allows the organisation of Headers 
 	 * using their position and their value to arrange them.

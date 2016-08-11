@@ -1,8 +1,6 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask.Status;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.GUI.DataSetAddition.DataSetGenerationParameters;
@@ -28,7 +26,7 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 	TaskIterator readerTasks;
 	Vector<String> errors = new Vector<String>();
 	private DataSetManager dsm;
-	IDAREWorkbook wb;
+	DataSetReadingInfo dsri;
 	boolean datasetadded = false;
 	private Iterator<IDAREDatasetReader> readeriter;
 	public DataSetAdderTask(DataSetManager dsm) {
@@ -39,19 +37,17 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		taskMonitor.setTitle("Setting up DataSet Addition");
-		readerTasks = new TaskIterator();		
+		readerTasks = new TaskIterator();
+		dsri = new DataSetReadingInfo(dsm,params);
 		readeriter = dsm.getAvailableReaders().iterator();
-		if(!addReaderTask())
-		{
-			readerTasks.append(new FailureTask(errors));
-		}
+		addReaderTask();
+		readerTasks.append(new FailureTask(dsri));		
 		insertTasksAfterCurrentTask(readerTasks);
 	}
 
 
-	private boolean addReaderTask()
+	private void addReaderTask()
 	{
-		boolean readeradded = false;
 		while(readeriter.hasNext())
 		{
 			
@@ -60,16 +56,14 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 			if(reader.fileTypeAccepted(params.inputFile))
 			{
 				System.out.println("Adding Reader task for reader " + reader.getClass().getSimpleName());
-				readerTasks.append(new IDAREReaderTask(reader,params.useTwoColumns,params.inputFile));
-				readeradded = true;
-				break;
+				readerTasks.append(new IDAREReaderTask(reader,dsri));
 			}
 			else
 			{
-				errors.add(reader.getClass().getSimpleName() + ": File extension not accepted"); 
+				dsri.addErrorMessage(reader.getClass().getSimpleName() + ": File extension not accepted"); 
 			}
 		}		
-		return readeradded;
+		
 	}
 
 	@Override
@@ -80,38 +74,7 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 	@Override
 	public void taskFinished(ObservableTask task) {
 		// TODO Auto-generated method stub
-		System.out.println("Yay, we heard of a finished task!!");
-		if(!task.getResults(Status.class).equals(Status.SUCCESS))
-		{
-			//remove all current tasks from the queue and add a new reader task if possible.
-			errors.add(task.getResults(String.class));
-			//clear any remainig tasks, they belong to an old reader.
-			while(readerTasks.hasNext())
-			{
-				readerTasks.next();
-			}
-			//if we don't have a valid additional reader, this will fail.			
-			if(!addReaderTask())
-			{
-				readerTasks.append(new FailureTask(errors));
-			}
-		}
-		else
-		{
-			if (task instanceof ReadWorkBookTask) {
-				System.out.println("Found a Workbook Task");
-				wb = task.getResults(IDAREWorkbook.class);
-				readerTasks.append(new AddDataSetToManagerTask(wb,dsm,params.DataSetType,params.SetDescription,params.useTwoColumns));
-			}
-			if(task instanceof AddDataSetToManagerTask)
-			{
-				datasetadded = true;				
-				while(readerTasks.hasNext())
-				{
-					readerTasks.next();
-				}
-			}
-		}
+		System.out.println("Finshed a " + task.getClass().getSimpleName() + " !!");
 	}
 	@Override
 	public void allFinished(FinishStatus finishStatus) {

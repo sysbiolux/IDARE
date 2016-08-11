@@ -1,5 +1,6 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
+import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
 import idare.imagenode.internal.Utilities.StringUtils;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.PictureData;
@@ -36,7 +38,7 @@ public class CSVWorkbook implements Workbook{
 	 * There will only ever be one sheet in a text delimited file.
 	 */
 	CSVSheet currentSheet;
-	
+
 	/**
 	 * Create a new Workbook using a specific file and a defined separator.
 	 * @param F - The file to read from.
@@ -45,7 +47,7 @@ public class CSVWorkbook implements Workbook{
 	 */
 	public CSVWorkbook(File F, String separator, int idColumnCount ) throws IOException, WrongFormat
 	{
-		
+
 		//create the sheet
 		currentSheet = new CSVSheet(this,F.getName());
 		int currentRowNumber = 0;
@@ -58,6 +60,7 @@ public class CSVWorkbook implements Workbook{
 		while(currentline != null)
 		{
 			//read each row (i.e. line)
+			System.out.println("Creating new row for line:\n " + currentline);
 			Row currentRow = currentSheet.createRow(currentRowNumber);
 			//and create cells for each entry.
 			String[] Cells = currentline.split(separator);
@@ -72,14 +75,16 @@ public class CSVWorkbook implements Workbook{
 				}
 				else
 				{
-					throw new WrongFormat("All rows in a csv must have the same number of separators! Started with rows that indicate no data.");
+					br.close();
+					throw new WrongFormat("All rows in a value separated file must have the same number of separators! Started with rows that indicate no data.");
 				}
 
 			}
 			if(emptyrows)
 			{
 				// We can only reach this point if there are too small rows somewhere in the file.
-				throw new WrongFormat("All rows in a csv must have the same number of separators! No empty rows allowed in between non empty rows.");
+				br.close();
+				throw new WrongFormat("All rows in a value separated file must have the same number of separators! No empty rows allowed in between non empty rows.");
 			}
 			if(!started)
 			{
@@ -90,39 +95,44 @@ public class CSVWorkbook implements Workbook{
 			{
 				if(columncount != Cells.length)
 				{
-					throw new WrongFormat("All rows in a csv must have the same number of separators! " + currentRowNumber + " had " + (Cells.length-1) + " separators, while earlier rows had " + (columncount-1) + " separators");	
+					br.close();
+					throw new WrongFormat("All rows in a value separated file must have the same number of separators! " + currentRowNumber + " had " + (Cells.length-1) + " separators, while earlier rows had " + (columncount-1) + " separators");	
 				} 
 			}
 			int cellpos = 0;
 			for(String cell : Cells)
 			{
-				
+				System.out.println("Creating new Cell for value:" + cell);
 				//Create the cells either as numeric or as string, depending on whether the value is numeric or string.
 				Cell currentcell = currentRow.createCell(cellpos);
 				if(StringUtils.isNumeric(cell))
 				{
+					System.out.println("Creating numeric cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					currentcell.setCellValue(Double.parseDouble(cell));
 				}
 				else if(cell.equals(""))
 				{
+					System.out.println("Creating blank cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_BLANK);
 				}
 				else 
 				{
+					System.out.println("Creating string cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_STRING);
 					currentcell.setCellValue(cell);
 				}
 				cellpos++;
 			}				
+			System.out.println("The created row is: \n" + currentRow.toString());
 			//currentSheet.addRow(currentRow);
 			currentline = br.readLine();
 			currentRowNumber++;
 		}
 		br.close();	
-
+		System.out.println(toString());
 	}	
-	
+
 	@Override
 	public int addPicture(byte[] arg0, int arg1) {
 		// TODO Auto-generated method stub
@@ -132,7 +142,7 @@ public class CSVWorkbook implements Workbook{
 	@Override
 	public void addToolPack(UDFFinder arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -319,110 +329,110 @@ public class CSVWorkbook implements Workbook{
 	@Override
 	public void removeName(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeName(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removePrintArea(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeSheetAt(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setActiveSheet(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setFirstVisibleTab(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setForceFormulaRecalculation(boolean arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setHidden(boolean arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setMissingCellPolicy(MissingCellPolicy arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setPrintArea(int arg0, String arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setPrintArea(int arg0, int arg1, int arg2, int arg3, int arg4) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setRepeatingRowsAndColumns(int arg0, int arg1, int arg2,
 			int arg3, int arg4) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setSelectedTab(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setSheetHidden(int arg0, boolean arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setSheetHidden(int arg0, int arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setSheetName(int arg0, String arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setSheetOrder(String arg0, int arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void write(OutputStream arg0) throws IOException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -437,6 +447,29 @@ public class CSVWorkbook implements Workbook{
 		return 0;
 	}
 
+	public String toString()
+	{
+		StringBuffer res = new StringBuffer();
 
+		try{
+			System.out.println("Generating the WorkBook Representation String");
+
+			for(Row row : currentSheet)
+			{
+				for(int i = 0; i < row.getLastCellNum(); i++)
+				{
+					Cell current = row.getCell(i, Row.CREATE_NULL_AS_BLANK);
+					DataFormatter df = new DataFormatter();
+					res.append(df.formatCellValue(current) + "\t");
+				}
+				res.append("\n");
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace(System.out);
+		}
+		return res.toString();
+	}
 
 }

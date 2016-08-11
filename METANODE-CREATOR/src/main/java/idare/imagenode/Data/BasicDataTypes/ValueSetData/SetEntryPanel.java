@@ -40,10 +40,12 @@ public abstract class SetEntryPanel extends JPanel {
 		Color ccolor= g2d.getColor();
 		Dimension size = getSize();
 		int ext = Math.min(size.height - 2, size.width - 2);
+		//the y offset can be half the height- half the extension
+		int yoffset = size.height > size.width ? size.height/2 - 1 - ext/2 : 0; 
 		g2d.setPaint(ShapeColor);
 		g2d.setColor(ShapeColor);
-		g2d.setStroke(new BasicStroke(3));				
-		Shape shape = getShape(0,0,ext,ext); 
+		g2d.setStroke(new BasicStroke(3));		
+		Shape shape = getShape(0,yoffset,ext,ext); 
 		plotShape(shape,g2d);
 		g2d.setStroke(cstroke);
 		g2d.setColor(ccolor);

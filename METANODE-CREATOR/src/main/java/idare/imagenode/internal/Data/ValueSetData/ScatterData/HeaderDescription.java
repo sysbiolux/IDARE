@@ -31,7 +31,7 @@ public class HeaderDescription extends ItemDataDescription {
 		ValueSetDataSet set = (ValueSetDataSet) currentdata.getDataSet();
 		Itemdescriptions = new Vector<ItemDescriptionPane>();		
 		int maxwidth = 0;
-		Vector<Comparable> headers = set.getAllHeaders();
+		Vector<Comparable> headers = set.getHeaders();
 		HashMap<Comparable,String> headerlabels = LayoutUtils.getLabelsForData(headers);
 		
 		for(Comparable header : headers )

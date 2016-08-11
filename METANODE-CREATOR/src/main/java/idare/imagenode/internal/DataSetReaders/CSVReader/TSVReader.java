@@ -23,7 +23,8 @@ public class TSVReader extends CSVReader {
 	
 	@Override
 	public boolean fileTypeAccepted(File inputfile) {
-		return inputfile.getName().endsWith(".csv") | inputfile.getName().endsWith(".tsv") ; 
+		String CaseInsensitiveFileName = inputfile.getName().toLowerCase();
+		return CaseInsensitiveFileName.endsWith(".csv") | CaseInsensitiveFileName.endsWith(".tsv") ; 
 	}
 	
 	@Override

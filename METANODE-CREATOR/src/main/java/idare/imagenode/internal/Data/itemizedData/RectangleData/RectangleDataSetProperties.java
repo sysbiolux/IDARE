@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Data.itemizedData.RectangleData;
 
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemDataSetProperties;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemNodeData;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
@@ -26,12 +26,12 @@ public class RectangleDataSetProperties extends AbstractItemDataSetProperties{
 
 	@Override
 	public DataContainer newContainerInstance(DataSet origin, NodeData data) {
-		return new RectangleContainer(origin, (AbstractItemNodeData) data);
+		return new RectangleContainer(origin, (ItemNodeData) data);
 	}
 
 	@Override
 	public DataContainer newContainerForData(NodeData data) {
-		return new RectangleContainer(data.getDataSet(), (AbstractItemNodeData)data);
+		return new RectangleContainer(data.getDataSet(), (ItemNodeData)data);
 	}
 
 	@Override

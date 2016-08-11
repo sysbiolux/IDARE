@@ -1,6 +1,7 @@
 package idare.imagenode.internal.Data.ValueSetData.GraphData;
 
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.SetDataDescription;
+import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataProperties;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
@@ -30,7 +31,7 @@ import javax.swing.text.DefaultCaret;
 
 import org.apache.poi.ss.usermodel.Header;
 
-public class GraphDataSetProperties extends DataSetProperties {
+public class GraphDataSetProperties extends ValueSetDataProperties {
 
 	@Override
 	public Position getLocalisationPreference() {
@@ -65,9 +66,7 @@ public class GraphDataSetProperties extends DataSetProperties {
 	public String toString()
 	{
 		return "Graph";
-	}
-	
-	
+	}	
 
 
 	@Override

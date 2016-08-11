@@ -35,22 +35,30 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.poi.ss.usermodel.Workbook;
+
 /**
  * An Abstract basis class for item based datasets.
  * The specific layout can be individually adjusted.
  * @author Thomas Pfau
  *
  */
-public class AbstractItemDataSet extends DataSet{
+public class ItemDataSet extends DataSet{
 	//private static final Logger logger = LoggerFactory.getLogger(AbstractItemDataSet.class);
 	public static String DataSetType = "Itemized Dataset";	
 	protected HashMap<String,String> NodeLabels= new HashMap<String,String>();
-	protected HashMap<String,AbstractItemNodeData> Data = new HashMap<>();
+	protected HashMap<String,ItemNodeData> Data = new HashMap<>();
 	protected HashMap<Serializable,Double> DiscreetSet = new HashMap<>();	
-	protected AbstractItemNodeData defaultEntry;
-	private Vector<DataSetProperties> propertyOptions = new Vector<DataSetProperties>();
+	protected ItemNodeData defaultEntry;
 	protected Vector<ColorMap> colormaps = new Vector<ColorMap>();
+	protected int columncount;
+	protected boolean[] emptycolumns;
+	public static final String DEFAULT_SERIES_NAME = "Dataset Series"; 
 
+	/**
+	 * A Vector indicating the labels of each column
+	 */
+	protected Vector<String> columnLabels = new Vector<String>();
 	/**
 	 * Set the default visualisation options for this type of Data.
 	 */
@@ -81,23 +89,23 @@ public class AbstractItemDataSet extends DataSet{
 	/**
 	 * Basic constructor using the default settings.
 	 */
-	public AbstractItemDataSet()
+	public ItemDataSet()
 	{
 		super(0,true,getDefaultProperties());	
-		defaultEntry = new AbstractItemNodeData(this);
+		defaultEntry = new ItemNodeData(this);
 		setDefaultOptions();
 	}
 	/**
 	 * Basic constructor using a specific DataSetName
 	 * @param DataSetName
 	 */
-	public AbstractItemDataSet(String DataSetName)
+	public ItemDataSet(String DataSetName)
 	{
 		super(0,true,getDefaultProperties());
 		Properties prop = getDefaultProperties();
 		prop.setProperty(DATASETDESCRIPTION, DataSetName);
 		setProperties(prop);
-		defaultEntry = new AbstractItemNodeData(this);
+		defaultEntry = new ItemNodeData(this);
 		setDefaultOptions();
 	}
 	
@@ -107,14 +115,24 @@ public class AbstractItemDataSet extends DataSet{
 	 * @param useTwoCols
 	 * @param properties
 	 */
-	public AbstractItemDataSet(int DataSetID,boolean useTwoCols,Properties properties) {
+	public ItemDataSet(int DataSetID,boolean useTwoCols,Properties properties) {
 		super(DataSetID,useTwoCols,properties);
-		defaultEntry = new AbstractItemNodeData(this);
+		defaultEntry = new ItemNodeData(this);
 		setDefaultOptions();
 	}
 
+	/**
+	 * We also have to determine the Columns and the empty columns.
+	 */
+	@Override
+	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
+	{
+		System.out.println("Lets set up the Workbook properties");
+		determineNonEmptyColumns(WB);
+		super.setupWorkBook(WB);		
+	}
 	
-			
+	
 	/**
 	 * Read the names of the Datapoints (i.e. the header line in the source data.
 	 * @param labelIterator
@@ -131,24 +149,24 @@ public class AbstractItemDataSet extends DataSet{
 		{
 			IDARECell cell = labelIterator.next();
 			int position = cell.getColumnIndex() - offset;
-			while(position > ColumnLabels.size())
+			while(position > columnLabels.size())
 			{
 				//fill empty Headers with null.
-				ColumnLabels.add(null);
+				columnLabels.add(null);
 			}
 			//Check the cell type and format accordingly
 			if(cell.getCellType() == CellType.NUMERIC)
 			{
-				ColumnLabels.add(Double.toString(cell.getNumericCellValue()));
+				columnLabels.add(Double.toString(cell.getNumericCellValue()));
 			}
 			else if(cell.getCellType() == CellType.STRING)
 			{
-				ColumnLabels.add(cell.getStringCellValue());
+				columnLabels.add(cell.getStringCellValue());
 			}
 			else
 			{
 				// We can't read anything but strings and numeric values.
-				ColumnLabels.add(null);
+				columnLabels.add(null);
 			}
 		}
 	}
@@ -156,13 +174,14 @@ public class AbstractItemDataSet extends DataSet{
 	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#reset()
 	 */
+	
 	@Override 
 	protected void reset()
 	{
 		NodeLabels= new HashMap<String,String>();
 		Data = new HashMap<>();
 		DiscreetSet = new HashMap<>();	
-		defaultEntry = new AbstractItemNodeData(this);
+		defaultEntry = new ItemNodeData(this);
 	}
 	/*
 	 * (non-Javadoc)
@@ -257,7 +276,7 @@ public class AbstractItemDataSet extends DataSet{
 		{							
 			Vector<NodeValue> rowData = new Vector<>();
 			IDARERow row = rowIterator.next();
-			AbstractItemNodeData currentData = getNodeData(row);
+			ItemNodeData currentData = getNodeData(row);
 			if(currentData == null)
 			{
 				continue;
@@ -287,6 +306,7 @@ public class AbstractItemDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
+			System.out.println(WB.toString());
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 		if(Stringvalues.size() > 6)
@@ -332,7 +352,7 @@ public class AbstractItemDataSet extends DataSet{
 					
 			Vector<NodeValue> rowData = new Vector<>();
 			IDARERow row = rowIterator.next();
-			AbstractItemNodeData currentData = getNodeData(row);
+			ItemNodeData currentData = getNodeData(row);
 			if(currentData == null)
 			{
 				continue;
@@ -342,12 +362,14 @@ public class AbstractItemDataSet extends DataSet{
 				IDARECell currentCell = row.getCell(i+offset,IDARERow.RETURN_BLANK_AS_NULL);
 				if(currentCell == null)
 				{
+					System.out.println("Adding null Cell");
 					rowData.add(new NodeValue(true));
 					continue;
 				}
 				else
 				{
-					hasentries = true;
+					System.out.println("Adding non null Cell");
+					hasentries = true;					
 					double currentvalue = currentCell.getNumericCellValue();
 					rowData.add(new NodeValue(currentvalue));
 					MinValue = MinValue.compareTo(currentvalue) < 0 ? MinValue : currentvalue;
@@ -363,6 +385,7 @@ public class AbstractItemDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
+			System.out.println(WB.toString());
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 	}
@@ -372,9 +395,9 @@ public class AbstractItemDataSet extends DataSet{
 	 * @param currentRow
 	 * @return an AbstractItemNodeData representing the Row.
 	 */
-	private AbstractItemNodeData getNodeData(IDARERow currentRow) throws WrongFormat
+	private ItemNodeData getNodeData(IDARERow currentRow) throws WrongFormat
 	{
-		AbstractItemNodeData currentNodeData = new AbstractItemNodeData(this);
+		ItemNodeData currentNodeData = new ItemNodeData(this);
 		//System.out.println(currentRow.toString());
 		CellType currentCellType = currentRow.getCell(0,IDARERow.CREATE_NULL_AS_BLANK).getCellType(); 
 		if(currentCellType == CellType.STRING)
@@ -419,10 +442,11 @@ public class AbstractItemDataSet extends DataSet{
 				throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers");
 			}			
 		}
-		
+		System.out.println("Created NodeData with Label " + currentNodeData.getLabel() + " and ID " + currentNodeData.getID());
 		if(currentNodeData.getID().equals(""))
 		{
 			//A Node without ID should not be generated
+			System.out.println("NodeID equals empty String, returning null ");
 			return null;
 		}
 		NodeLabels.put(currentNodeData.getID(), currentNodeData.getLabel());
@@ -498,7 +522,7 @@ public class AbstractItemDataSet extends DataSet{
 		{
 			res.append('\t');
 		}
-		for(String collabel : ColumnLabels)
+		for(String collabel : columnLabels)
 		{
 			res.append('\t');
 			if(collabel != null)
@@ -511,7 +535,7 @@ public class AbstractItemDataSet extends DataSet{
 		//header done
 		for(String ID : Data.keySet())
 		{
-			AbstractItemNodeData data = Data.get(ID);
+			ItemNodeData data = Data.get(ID);
 			res.append(data.getID());
 			if(useTwoColHeaders)
 			{
@@ -567,25 +591,6 @@ public class AbstractItemDataSet extends DataSet{
 	
 	/*
 	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getPropertyOptions()
-	 */
-	@Override
-	public Vector<DataSetProperties> getPropertyOptions() {
-		return propertyOptions;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#setProperties(idare.imagenode.Interfaces.Layout.DataSetProperties)
-	 */
-	@Override
-	public void setProperties(DataSetProperties properties) {
-		// TODO Auto-generated method stub
-		datasetProperties = properties;
-	}
-	
-	/*
-	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getDataSetTypeName()
 	 */
 	@Override
@@ -617,16 +622,6 @@ public class AbstractItemDataSet extends DataSet{
 		return cms;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#setPropertyOptions(java.util.Collection)
-	 */
-	@Override
-	public void setPropertyOptions(Collection<DataSetProperties> options) {
-		propertyOptions = new Vector<DataSetProperties>();
-		propertyOptions.addAll(options);		
-	}
-	
 	/**
 	 * Check whether a specific column is set or empty.
 	 * @param column
@@ -644,7 +639,60 @@ public class AbstractItemDataSet extends DataSet{
 	 */
 	public String getColumnLabel(int column)
 	{
-		return ColumnLabels.get(column);
+		return columnLabels.get(column);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getHeaders()
+	 */
+	@Override
+	public Vector<Comparable> getHeaders() {
+		Vector<Comparable> headers = new Vector<Comparable>();
+		headers.addAll(columnLabels);
+		return headers;
+	}
+	/**
+	 * Determine the columns which are non empty, 
+	 * This can be derived from the Header column as all columns which are set have to contain a label. 
+	 */	
+	protected void determineNonEmptyColumns(IDAREWorkbook WB)
+	{
+		//The Relevant HEader Row for this type of dataset is the first Row in the first (and only) sheet.
+		IDARERow HeaderRow = WB.getSheetAt(0).iterator().next();
+		Iterator<IDARECell> cellIterator = HeaderRow.iterator();
+		
+		skipLabels(cellIterator);
+		
+		int labelcolumns = 1;
+		if(useTwoColHeaders)
+		{
+			labelcolumns++;
+		}
+		System.out.println("Trying to determine the number of columns");
+		while(cellIterator.hasNext())
+		{
+			IDARECell Currentcell = cellIterator.next();			
+			columncount = Math.max(columncount, Currentcell.getColumnIndex()-labelcolumns + 1);			
+		}
+		System.out.println("We have a Workbook with "+ columncount + "Columns");
+		emptycolumns = new boolean[columncount];
+		for(int i = 0; i < columncount ; i++)
+		{
+			IDARECell current = HeaderRow.getCell(i+labelcolumns, IDARERow.RETURN_BLANK_AS_NULL);
+			if(current != null)
+			{
+				emptycolumns[i] = false;
+			}
+			else
+			{
+				emptycolumns[i] = true;
+			}
+			
+		}
+		
+		
+	}	
+	
 }
 

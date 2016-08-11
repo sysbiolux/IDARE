@@ -1,7 +1,7 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREReaderSetupTask;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
 import idare.imagenode.internal.DataSetReaders.POIReader.POIWorkBook;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
@@ -13,10 +13,9 @@ import java.io.IOException;
  * @author Thomas Pfau
  *
  */
-public class CSVReader implements IDAREDatasetReader {
+public class CSVReader extends IDAREDatasetReader {
 
 	private static String separatorString = ",";
-	private String status = IDAREDatasetReader.IS_READY;
 	private Boolean twoColumn;
 	@Override
 	public IDAREWorkbook readData(File inputfile) throws WrongFormat,
@@ -27,7 +26,7 @@ public class CSVReader implements IDAREDatasetReader {
 
 	@Override
 	public boolean fileTypeAccepted(File inputfile) {
-		return inputfile.getName().endsWith(".csv"); 
+		return inputfile.getName().toLowerCase().endsWith(".csv"); 
 	}
 	/**
 	 * Get the column separator used in this reader 
@@ -39,21 +38,15 @@ public class CSVReader implements IDAREDatasetReader {
 	}
 
 	@Override
-	public IDARETask getSetupTask(File inputfile, boolean twocolumn) {
+	public IDAREReaderSetupTask getSetupTask(File inputfile, boolean twocolumn) {
 		twoColumn = twocolumn;
-		status = IDAREDatasetReader.IS_SET_UP;
 		return null;
 	}
 
-	@Override
-	public String getStatus() {
-		return status;
-	}
 
 	@Override
-	public void reset() {
+	public void resetReader() {
 		// TODO Auto-generated method stub
-		status = IDAREDatasetReader.IS_READY;
 		twoColumn = null;
 	}
 

@@ -8,6 +8,9 @@ import idare.imagenode.internal.DataSetReaders.POIReader.POIReader;
 
 import java.util.Vector;
 
+/**
+ * This class provides the basic IDARE File Readers (XLS and TSV/CSV files). 
+ */
 public class DataSetReaderProvider implements IDAREPlugin {
 
 	@Override

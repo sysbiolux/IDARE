@@ -1,26 +1,33 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
-import java.util.Vector;
-
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
 public class FailureTask extends AbstractTask {
 
-	String 	ErrorMessage;
+	DataSetReadingInfo dsri;
 	
-	public FailureTask(Vector<String> errors) {
+	public FailureTask(DataSetReadingInfo dsri) {
 		// TODO Auto-generated constructor stub
-		for(String error : errors)
-		{
-			ErrorMessage += error + "\n";			
-		}
+		this.dsri = dsri;
+		
 	}
 	
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		// TODO Auto-generated method stub
-		throw new Exception(ErrorMessage);
+		System.out.println("Finishing Tasks");
+		if(!dsri.isDataSetAdded())
+		{
+			String ErrorMessage = "";
+			for(String error : dsri.getErrorMessages())
+			{
+				ErrorMessage += error + "\n";
+			}
+			throw new Exception(ErrorMessage);
+
+		}
+
 	}
 
 }

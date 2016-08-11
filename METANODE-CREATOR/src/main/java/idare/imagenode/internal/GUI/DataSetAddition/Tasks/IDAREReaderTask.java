@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Stack;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARETask;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREReaderSetupTask;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
@@ -12,36 +12,45 @@ import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 
-public class IDAREReaderTask extends IDARETask {
+public class IDAREReaderTask extends ObservableIDARETask {
 
 	IDAREDatasetReader reader;
-	boolean twocolumn; 
-	File inputFile;
-
+	DataSetReadingInfo dsri;
 	
-	public IDAREReaderTask(IDAREDatasetReader reader,
-			boolean twocolumn, File inputFile) {
+	public IDAREReaderTask(IDAREDatasetReader reader, DataSetReadingInfo dsri) {
 		super();
 		this.reader = reader;
-		this.twocolumn = twocolumn;
-		this.inputFile = inputFile;
+		this.dsri = dsri;
 	}
 
 	@Override
-	public void execute(TaskMonitor taskMonitor) throws Exception {
+	public void run(TaskMonitor taskMonitor) throws Exception {
 		// TODO Auto-generated method stub
-		if(reader.getStatus() == IDAREDatasetReader.IS_READY)
+		if(dsri.isDataSetAdded())
 		{
-			IDARETask setupTask = null;
-			setupTask = reader.getSetupTask(inputFile, twocolumn);
+			return;
+		}
+		if(reader.getStatusMessage() == IDAREDatasetReader.IS_READY)
+		{
+			IDAREReaderSetupTask setupTask = null;
+			try{
+				setupTask = reader.getSetupTask(dsri.getInputFile(), dsri.doUseTwoColumns());
+			}
+			catch(Exception e)
+			{
+				dsri.addErrorMessage(reader.getClass().getSimpleName() + ": " + e.getMessage());
+				return;
+			}
 			if(setupTask != null)
 			{
 				PrintFDebugger.Debugging(this, "Adding a new SetupTask before the ReadWorkBookTask");
-				this.insertTasksAfterCurrentTask(new TaskIterator(setupTask, new ReadWorkBookTask(inputFile,reader)));
+				this.insertTasksAfterCurrentTask(new TaskIterator(setupTask, new ReadWorkBookTask(reader,dsri)));
 			}
 			else
 			{
-				this.insertTasksAfterCurrentTask(new ReadWorkBookTask(inputFile, reader));				
+				//if we do not have a Setup Task, it is obviously not necessary, so the reader is set up and ready.
+				reader.setStatusMessage(IDAREDatasetReader.IS_SET_UP);
+				this.insertTasksAfterCurrentTask(new ReadWorkBookTask( reader,dsri));				
 			}
 			
 		}

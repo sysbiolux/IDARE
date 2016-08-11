@@ -17,7 +17,7 @@ public abstract class AbstractItemContainer implements DataContainer {
 
 	Localisation loc;
 	DataSet origin;
-	AbstractItemNodeData data;
+	ItemNodeData data;
 	/**
 	 * Basic constructor with a source {@link DataSet} and the data used in this container.
 	 * @param origin - the Dataset represented by this {@link DataContainer}
@@ -25,7 +25,7 @@ public abstract class AbstractItemContainer implements DataContainer {
 	 */
 	public AbstractItemContainer(DataSet origin, NodeData data)
 	{
-		this.data = (AbstractItemNodeData)data;
+		this.data = (ItemNodeData)data;
 		this.origin = origin;
 		loc = new Localisation(origin.getPreferredposition(), origin.isFlexibility());
 	}

@@ -1,7 +1,7 @@
 package idare.imagenode.internal.DataManagement;
 
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
-import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemDataSet;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
 import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.internal.Data.ValueSetData.GraphData.GraphDataSetProperties;
@@ -19,7 +19,7 @@ public class DataSetProvider implements IDAREPlugin {
 	@Override
 	public Vector<IDAREService> getServices() {
 			Vector<IDAREService> datasetservices = new Vector<IDAREService>();
-			datasetservices.add(new AbstractItemDataSet());							
+			datasetservices.add(new ItemDataSet());							
 			datasetservices.add(new CircleDataSetProperties());
 			datasetservices.add(new CircleGridProperties());
 			datasetservices.add(new RectangleDataSetProperties());
