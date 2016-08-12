@@ -2,7 +2,7 @@ package idare.imagenode.internal.DataSetReaders.CSVReader;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREReaderSetupTask;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.internal.DataSetReaders.POIReader.POIWorkBook;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 

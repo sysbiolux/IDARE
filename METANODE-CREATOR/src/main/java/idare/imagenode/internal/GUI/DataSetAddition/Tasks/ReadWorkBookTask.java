@@ -1,7 +1,7 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import org.cytoscape.work.TaskMonitor;

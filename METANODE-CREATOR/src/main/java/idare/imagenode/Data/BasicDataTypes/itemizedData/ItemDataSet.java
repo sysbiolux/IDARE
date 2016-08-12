@@ -1,15 +1,15 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
-import idare.imagenode.Interfaces.DataSetReaders.IDARECell.CellType;
-import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
-import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.DataSets.NodeValue;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.ColorManagement.ColorScale;
 import idare.imagenode.internal.ColorManagement.ColorScaleFactory;

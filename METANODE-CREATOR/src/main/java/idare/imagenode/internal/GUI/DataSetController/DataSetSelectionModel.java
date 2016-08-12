@@ -2,7 +2,7 @@ package idare.imagenode.internal.GUI.DataSetController;
 
 import idare.ThirdParty.BoundsPopupMenuListener;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.ColorManagement.ColorScalePane;
 import idare.imagenode.internal.DataManagement.DataSetManager;
@@ -162,7 +162,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 		for(int i = 0; i < getRowCount(); i++)
 		{
 			DataSet ds = (DataSet) getValueAt(i, 0);					
-			ds.setProperties((DataSetProperties)getValueAt(i,4));
+			ds.setProperties((DataSetLayoutProperties)getValueAt(i,4));
 		}
 	}
 
@@ -224,9 +224,9 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	
 	/**
-	 * Get the Editor for the appropriate {@link DataSetProperties} renderer.
+	 * Get the Editor for the appropriate {@link DataSetLayoutProperties} renderer.
 	 * @param row
-	 * @return get the {@link DefaultCellEditor} for the appropriate {@link DataSetProperties}
+	 * @return get the {@link DefaultCellEditor} for the appropriate {@link DataSetLayoutProperties}
 	 */
 	public DefaultCellEditor getPropertiesEditor(int row)
 	{
@@ -236,7 +236,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 * A Class to Render and adjust the DataSetProperties
 	 * @author Thomas Pfau
 	 */
-	class ComboBoxRenderer extends JComboBox<DataSetProperties> implements TableCellRenderer {
+	class ComboBoxRenderer extends JComboBox<DataSetLayoutProperties> implements TableCellRenderer {
 		public ComboBoxRenderer(Vector items) {
 			super(items);
 		}

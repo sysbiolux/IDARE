@@ -7,7 +7,7 @@ import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.GUI.Legend.Utilities.TextPaneResizer;

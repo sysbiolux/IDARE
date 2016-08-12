@@ -1,7 +1,7 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.ColorManagement.ColorScalePane;
 import idare.imagenode.internal.GUI.DataSetController.DataSetSelectionModel.ColorPaneBox;
 import idare.imagenode.internal.GUI.DataSetController.DataSetSelectionModel.ComboBoxRenderer;
@@ -55,7 +55,7 @@ public class DataSetSelectionTable extends JTable {
 	   Object value = super.getValueAt(row, column);
 	   if(value != null) {
 		   // we need very specific Editors for ColorScales and Dataset Properties.
-	      if(value instanceof DataSetProperties) {
+	      if(value instanceof DataSetLayoutProperties) {
 	           return tablemodel.getPropertiesEditor(row);
 	      }
 	      if(value instanceof ColorScalePane)
@@ -78,7 +78,7 @@ public class DataSetSelectionTable extends JTable {
 	   if(value != null) {
 		   // we need very specific renderers for ColorScales and Dataset Properties.
 
-	      if(value instanceof ComboBoxRenderer || value instanceof DataSetProperties) {
+	      if(value instanceof ComboBoxRenderer || value instanceof DataSetLayoutProperties) {
 	           return tablemodel.getPropertiesRenderer(row);
 	      }
 	      if(value instanceof ColorPaneBox|| value instanceof ColorScalePane) {

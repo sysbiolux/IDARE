@@ -110,8 +110,8 @@ public class SubSystemColumnChooser extends JDialog {
 	{
 		JPanel TypeAndIDSelection = new JPanel();
 		TypeAndIDSelection.setLayout(new BoxLayout(TypeAndIDSelection, BoxLayout.PAGE_AXIS));
-		TypeAndIDSelection.add(createSelectionPanel("Column to determine node types", typeColSelector));
-		TypeAndIDSelection.add(createSelectionPanel("Column to determine node names", IDColSelector));
+		TypeAndIDSelection.add(GUIUtils.createSelectionPanel("Column to determine node types", typeColSelector,background));
+		TypeAndIDSelection.add(GUIUtils.createSelectionPanel("Column to determine node names", IDColSelector,background));
 		//TypeAndIDSelection.add(createCheckBoxPanel("Overwrite existing values", overwrite));
 		return TypeAndIDSelection;
 	}
@@ -169,33 +169,7 @@ public class SubSystemColumnChooser extends JDialog {
 		acceptButton.addActionListener(new TypeSelectionChoiceListener(creator,mgr,this,cySwingApp,ctc));
 		return acceptButton;
 	}
-	/**
-	 * Create the SelecionPanel
-	 * @param SelectionName - The Name for the panel 
-	 * @param selector - the {@link JComboBox} that represents the selection options.
-	 * @return
-	 */
-	private JPanel createSelectionPanel(String SelectionName, JComboBox selector)
-	{
-		JPanel resultingPanel = new JPanel();
-		resultingPanel.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weighty = 1;
-		resultingPanel.add(GUIUtils.createSelectionDescription(SelectionName,background,new Font(Font.SANS_SERIF, Font.BOLD, 16)),gbc);
-		gbc.gridx++;
-		gbc.weightx = 0.5;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		resultingPanel.add(selector,gbc);
-		selector.setPreferredSize(new Dimension(100,selector.getPreferredSize().height));
-		selector.setMinimumSize(new Dimension(100,selector.getMinimumSize().height));
-		//resultingPanel.setPreferredSize(new Dimension(200,40));
-		return resultingPanel;
-	}
-	
+
 	/**
 	 * Get the Column NAme for the Type Columnn
 	 * @return A {@link String} representing the Column name of the Type column.

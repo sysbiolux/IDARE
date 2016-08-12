@@ -1,9 +1,9 @@
 package idare.imagenode.internal.DataManagement;
 
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
@@ -57,7 +57,7 @@ public class DataSetManager{
 	private Vector<DataSetAboutToBeChangedListener> toChangeListener = new Vector<DataSetAboutToBeChangedListener>();
 	private Vector<DataSetChangeListener> changedListener = new Vector<DataSetChangeListener>();
 	private HashMap<String,Class<? extends DataSet>> availableDataSetTypes = new HashMap<String, Class<? extends DataSet>>();
-	private HashMap<Class<? extends DataSet>,Collection<DataSetProperties>> dataSetPropertyOptions = new HashMap<Class<? extends DataSet>, Collection<DataSetProperties>>();
+	private HashMap<Class<? extends DataSet>,Collection<DataSetLayoutProperties>> dataSetPropertyOptions = new HashMap<Class<? extends DataSet>, Collection<DataSetLayoutProperties>>();
 	private LinkedList<IDAREDatasetReader> dataSetReaders = new LinkedList<IDAREDatasetReader>();
 	/**
 	 * Default constructor initializing required fields.
@@ -121,11 +121,11 @@ public class DataSetManager{
 	/**
 	 * Add DataSetProperties for a specific dataset
 	 */
-	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetProperties properties )
+	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
 		if(!dataSetPropertyOptions.containsKey(classType))
 		{
-			dataSetPropertyOptions.put(classType, new Vector<DataSetProperties>());
+			dataSetPropertyOptions.put(classType, new Vector<DataSetLayoutProperties>());
 		}
 		// if its not yet in, add it.		
 		if(! dataSetPropertyOptions.get(classType).contains(properties))
@@ -160,14 +160,14 @@ public class DataSetManager{
 	 * @param properties - the property options for the dataset that should eb registered.
 	 * @return - The properties that were not added because they are already present.
 	 */
-	public Collection<DataSetProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetProperties> properties )
+	public Collection<DataSetLayoutProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetLayoutProperties> properties )
 	{
 		
-		Vector<DataSetProperties> propertiesToAdd = new Vector<DataSetProperties>();
-		Vector<DataSetProperties> notAddedProperties = new Vector<DataSetProperties>();
+		Vector<DataSetLayoutProperties> propertiesToAdd = new Vector<DataSetLayoutProperties>();
+		Vector<DataSetLayoutProperties> notAddedProperties = new Vector<DataSetLayoutProperties>();
 		if(!dataSetPropertyOptions.containsKey(classType))
 		{
-			dataSetPropertyOptions.put(classType, new Vector<DataSetProperties>());
+			dataSetPropertyOptions.put(classType, new Vector<DataSetLayoutProperties>());
 		}
 		//add all options 
 		propertiesToAdd.addAll(properties);
@@ -180,7 +180,7 @@ public class DataSetManager{
 		Vector<DataSet> changedDatasets = new Vector<DataSet>();
 		for(DataSet ds : dataSets.values())
 		{
-			for(DataSetProperties props : propertiesToAdd)
+			for(DataSetLayoutProperties props : propertiesToAdd)
 			{
 				if(ds.getClass().equals(classType) && ds.addPropertyOption(props))
 				{
@@ -201,7 +201,7 @@ public class DataSetManager{
 	 * @param datasetclass - the class of the dataset to deregister items for.
 	 * @param properties - the properties to deregister.
 	 */
-	public void deregisterPropertiesForDataSet(Class<? extends DataSet> classType, DataSetProperties properties )
+	public void deregisterPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
 		//if this was an option, we try to remove it from all datasets.
 		

@@ -3,8 +3,12 @@ package idare.imagenode.internal.Utilities;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.UIDefaults;
 import javax.swing.text.JTextComponent;
@@ -60,4 +64,31 @@ public class GUIUtils {
 		return new Dimension(Math.max(300,cwidth),preferredHeight);
 	}
 
+	/**
+	 * Create a SelecionPanel, with a given String and a JCombobox as selector along with a given backrgound color.
+	 * @param SelectionName - The Name for the panel 
+	 * @param selector - the {@link JComboBox} that represents the selection options.
+	 * @param background The Color to use as background.
+	 * @return a JPanel that contains the Descriptor and selector properly aligned.
+	 */
+
+	public static JPanel createSelectionPanel(String SelectionName, JComboBox selector, Color background)
+	{
+		JPanel resultingPanel = new JPanel();
+		resultingPanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 1;		
+		resultingPanel.add(GUIUtils.createSelectionDescription(SelectionName,background,new Font(Font.SANS_SERIF, Font.BOLD, 16)),gbc);
+		gbc.gridx++;
+		gbc.weightx = 0.5;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		resultingPanel.add(selector,gbc);
+		selector.setPreferredSize(new Dimension(100,selector.getPreferredSize().height));
+		selector.setMinimumSize(new Dimension(100,selector.getMinimumSize().height));
+		return resultingPanel;
+	}
 }

@@ -1,4 +1,4 @@
-package idare.imagenode.Interfaces.DataSetReaders;
+package idare.imagenode.Interfaces.DataSetReaders.WorkBook;
 
 /**
  * An {@link IDAREWorkbook} contains one or multiple sets of data in individual {@link IDARESheet}s

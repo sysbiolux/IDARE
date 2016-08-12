@@ -1,4 +1,4 @@
-package idare.imagenode.Interfaces.DataSetReaders;
+package idare.imagenode.Interfaces.DataSetReaders.WorkBook;
 
 import java.util.Iterator;
 
@@ -8,15 +8,15 @@ import java.util.Iterator;
  * @author Thomas Pfau
  *
  */
-public class IDARECellIterator implements Iterator<IDARECell>{
+public class IDARERowIterator implements Iterator<IDARERow>{
 
 	/**
 	 * Row iteratro implementation to return the rows in the order they are in the sheet.
 	 * @author Thomas Pfau
 	 *
 	 */
-	Iterator<? extends IDARECell> iter;
-			public IDARECellIterator(Iterator<? extends IDARECell> source)
+	Iterator<? extends IDARERow> iter;
+			public IDARERowIterator(Iterator<? extends IDARERow> source)
 			{
 				iter = source;
 			}
@@ -26,7 +26,7 @@ public class IDARECellIterator implements Iterator<IDARECell>{
 			}
 
 			@Override
-			public IDARECell next() {
+			public IDARERow next() {
 				return iter.next();
 			}
 			

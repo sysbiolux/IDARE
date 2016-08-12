@@ -17,14 +17,17 @@ import javax.swing.JScrollPane;
 import org.w3c.tools.resources.serialization.Serializer;
 
 /**
- * Datasetproperties allow the use of a specific class of {@link DataSet}s for multiple different layouts. 
- * The cotain information about localisation preferences and can provide different {@link DataContainer}s (and thus layouts),
- * for a single Class of DataSets. 
+ * {@link DataSetLayoutProperties} allow the use of a specific class of {@link DataSet}s for multiple different layouts. 
+ * They contain information about localisation preferences and can provide different {@link DataContainer}s (and thus layouts).
+ * The DataSetProperties should be independent of the DataSet they are used with.
+ * i.e. they should be able to check, whether a {@link DataSet} can be used with these properties and assume, that any request for a Container
+ * will provide a dataset that matches.  
+ *  
  * @author Thomas Pfau
  *
  */
-public abstract class DataSetProperties implements IDAREService,Serializable{
-
+public abstract class DataSetLayoutProperties implements IDAREService,Serializable{
+	public static final long serialVersionUID = 1L;
 	
 	/**
 	 * Get the preferred Localisation {@link Position}.CENTER, {@link Position}.EDGE, {@link Position}.FREE of this dataset.
@@ -35,17 +38,18 @@ public abstract class DataSetProperties implements IDAREService,Serializable{
 	 * Get information whether this dataset can be layouted flexibly or whether it has to obay the precisoe dimensions provided.
 	 * @return whether this container has a flexible layout.
 	 */
-	public abstract boolean getItemFlexibility();
+	public abstract boolean getItemFlexibility();	
 	/**
 	 * Create a new Container for a specific {@link DataSet} and a given {@link NodeData}.
-	 * @param origin
-	 * @param data
+	 * 
+	 * @param origin the {@link DataSet} a new Container instance is created for. This {@link DataSet} has to pass the testValididty Method, or the behaviour is undefined. 
+	 * @param data a node data 
 	 * @return A new container for the given {@link DataSet} and {@link NodeData}
 	 */
 	public abstract DataContainer newContainerInstance(DataSet origin, NodeData data);
 	/**
 	 * Generate A DataContainer for a specific {@link NodeData} object (obtaining the {@link DataSet} from there.
-	 * @param data
+	 * @param data nodedata that for which to generate a {@link DataContainer}. The {@link DataSet} this {@link NodeData} originates from has to pass the testValididty Method, or the behaviour is undefined.
 	 * @return an empty {@link DataContainer} for the given NodeData entry . 
 	 */
 	public abstract DataContainer newContainerForData(NodeData data);
@@ -88,9 +92,9 @@ public abstract class DataSetProperties implements IDAREService,Serializable{
 			return false;
 		}
 
-		if(o instanceof DataSetProperties)
+		if(o instanceof DataSetLayoutProperties)
 		{			
-			return getTypeName().equals(((DataSetProperties) o).getTypeName());
+			return getTypeName().equals(((DataSetLayoutProperties) o).getTypeName());
 		}
 		else
 		{

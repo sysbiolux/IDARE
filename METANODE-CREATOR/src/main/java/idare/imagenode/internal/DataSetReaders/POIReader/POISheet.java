@@ -1,7 +1,7 @@
 package idare.imagenode.internal.DataSetReaders.POIReader;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
-import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 
 import java.util.HashMap;
 import java.util.Iterator;

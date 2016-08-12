@@ -3,7 +3,7 @@ package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 import java.io.File;
 import java.util.Vector;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.GUI.DataSetAddition.DataSetGenerationParameters;
 

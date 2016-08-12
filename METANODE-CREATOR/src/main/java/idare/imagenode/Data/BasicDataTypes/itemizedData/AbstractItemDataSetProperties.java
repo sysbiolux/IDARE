@@ -1,7 +1,7 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.GUI.Legend.Utilities.TextPaneResizer;
 import idare.imagenode.internal.Utilities.GUIUtils;
@@ -24,7 +24,7 @@ import javax.swing.text.DefaultCaret;
  * @author Thomas Pfau
  *
  */
-public abstract class AbstractItemDataSetProperties extends DataSetProperties {
+public abstract class AbstractItemDataSetProperties extends DataSetLayoutProperties {
 
 	/*
 	 * (non-Javadoc)

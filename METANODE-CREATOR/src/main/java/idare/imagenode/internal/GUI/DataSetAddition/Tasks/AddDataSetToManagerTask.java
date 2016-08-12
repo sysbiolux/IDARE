@@ -1,6 +1,6 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import org.cytoscape.work.TaskMonitor;

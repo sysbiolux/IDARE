@@ -1,6 +1,6 @@
 package idare.imagenode.internal.DataSetReaders.POIReader;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
 import idare.imagenode.internal.Services.POI.POIToIDARETypes;
 
 import org.apache.poi.ss.usermodel.Cell;

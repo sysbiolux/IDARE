@@ -1,12 +1,12 @@
 package idare.imagenode.Interfaces.DataSets;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARECell;
-import idare.imagenode.Interfaces.DataSetReaders.IDARECell.CellType;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
-import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
-import idare.imagenode.Interfaces.DataSetReaders.IDARESheet;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREWorkbook;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
@@ -77,10 +77,10 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * The properties to be used for this dataset, need to be set during reading of data.
 	 */
-	protected DataSetProperties datasetProperties;
+	protected DataSetLayoutProperties datasetProperties;
 
 
-	protected Vector<DataSetProperties> propertyOptions = new Vector<DataSetProperties>();
+	protected Vector<DataSetLayoutProperties> propertyOptions = new Vector<DataSetLayoutProperties>();
 	protected Vector<Comparable> Valueset;
 	protected int dataSetID;
 	protected Double MinValue;
@@ -122,7 +122,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * This function loads calls the implementing classes function setupWorkBook to interpret the Workbook provided and 
-	 * tests, whether there are viable {@link DataSetProperties} in IDARE that can be used with this DataSet and the given Workbook. 
+	 * tests, whether there are viable {@link DataSetLayoutProperties} in IDARE that can be used with this DataSet and the given Workbook. 
 	 * @param DataFile - the file to be parsed by the DataSet.
 	 * @param readers - a set of readers which can be used to read the file.
 	 * @return whether the parsing was successful
@@ -143,8 +143,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 		
 		boolean valid = false;
 		HashMap<String,WrongFormat> formatmismatchInfo = new HashMap<String, WrongFormat>();
-		Vector<DataSetProperties> possibleprops = new Vector<DataSetProperties>(); 
-		for(DataSetProperties props : getPropertyOptions())
+		Vector<DataSetLayoutProperties> possibleprops = new Vector<DataSetLayoutProperties>(); 
+		for(DataSetLayoutProperties props : getPropertyOptions())
 		{
 			try{
 				props.testValidity(this);
@@ -474,7 +474,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Set the properties for this dataset
 	 */
-	public void setProperties(DataSetProperties properties)
+	public void setProperties(DataSetLayoutProperties properties)
 	{
 		datasetProperties = properties;
 	}
@@ -483,8 +483,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * Get the selection of different properties available for this dataset
 	 * @return - The possible DataSetproperties for this Type of Dataset
 	 */
-	public final Vector<DataSetProperties> getPropertyOptions() {
-		Vector<DataSetProperties> props = new Vector<DataSetProperties>();
+	public final Vector<DataSetLayoutProperties> getPropertyOptions() {
+		Vector<DataSetLayoutProperties> props = new Vector<DataSetLayoutProperties>();
 		props.addAll(propertyOptions);
 		return props;
 	}
@@ -494,8 +494,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * This call does not check, whether the options supplied are actually viable options for this dataset!
 	 * @param options - The possible DataSetproperties for this Dataset
 	 */
-	public final void setPropertyOptionsUnchecked(Collection<DataSetProperties> options) {
-		propertyOptions = new Vector<DataSetProperties>();
+	public final void setPropertyOptionsUnchecked(Collection<DataSetLayoutProperties> options) {
+		propertyOptions = new Vector<DataSetLayoutProperties>();
 		propertyOptions.addAll(options);			
 	}
 	
@@ -504,7 +504,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @param propsToAdd
 	 * @return whether the Properties were added. Returns false if either the properties are not valid or are already part of the propertyset
 	 */
-	public final boolean addPropertyOption(DataSetProperties propsToAdd)
+	public final boolean addPropertyOption(DataSetLayoutProperties propsToAdd)
 	{
 		try{
 			propsToAdd.testValidity(this);
@@ -606,7 +606,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @param propsToRemove
 	 * @return whether the property was remoed from the set of properties (i.e. if it had been present)
 	 */
-	public final boolean removePropertyOption(DataSetProperties propsToRemove)
+	public final boolean removePropertyOption(DataSetLayoutProperties propsToRemove)
 	{
 		return propertyOptions.remove(propsToRemove);
 	}

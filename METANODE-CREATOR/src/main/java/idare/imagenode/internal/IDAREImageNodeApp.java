@@ -3,7 +3,7 @@ package idare.imagenode.internal;
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetProperties;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
 import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.internal.DataManagement.DataSetManager;
@@ -230,7 +230,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	 * @param props - The DataSetproperties to make available.
 	 * @return - whether the dataset type could be added
 	 */
-	public boolean registerDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetProperties props)
+	public boolean registerDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetLayoutProperties props)
 	{
 		return dsm.registerPropertiesForDataSet(dataSetClass, props);		
 	}
@@ -241,7 +241,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
  	 * @param props - The collection of DataSetproperties to make available to this type of dataset.
 	 * @return - A set of Properties that could not be registered
 	 */
-	public Collection<DataSetProperties> registerDataSetProperties(Class<? extends DataSet> dataSetClass, Collection<DataSetProperties> props)
+	public Collection<DataSetLayoutProperties> registerDataSetProperties(Class<? extends DataSet> dataSetClass, Collection<DataSetLayoutProperties> props)
 	{
 		return dsm.registerPropertiesForDataSet(dataSetClass, props);		
 	}
@@ -251,7 +251,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	 * @param dataSetClass - the classname of the {@link DataSet} to deregister the properties from
 	 * @param props - The properties to deregister.
 	 */
-	public void deRegisterDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetProperties props)
+	public void deRegisterDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetLayoutProperties props)
 	{
 		dsm.deregisterPropertiesForDataSet(dataSetClass, props);		
 	}
@@ -508,9 +508,9 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		for(IDAREService serv : services)
 		{		
 		
-			if( serv instanceof DataSetProperties)
+			if( serv instanceof DataSetLayoutProperties)
 			{
-				DataSetProperties props = (DataSetProperties)serv;
+				DataSetLayoutProperties props = (DataSetLayoutProperties)serv;
 				for(Class clazz : props.getWorkingClassTypes())
 				{
 					if(registered)

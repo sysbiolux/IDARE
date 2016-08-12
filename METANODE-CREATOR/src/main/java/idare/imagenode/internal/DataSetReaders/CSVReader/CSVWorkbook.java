@@ -1,6 +1,6 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
-import idare.imagenode.Interfaces.DataSetReaders.IDARERow;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.internal.Utilities.StringUtils;
 import idare.imagenode.internal.exceptions.io.WrongFormat;
 
