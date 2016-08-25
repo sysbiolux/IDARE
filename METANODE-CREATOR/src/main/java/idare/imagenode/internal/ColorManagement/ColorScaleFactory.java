@@ -32,7 +32,7 @@ public class ColorScaleFactory {
 	
 	/**
 	 * Get a ColorScale based on a given class name
-	 * @param ColorScaleClass - The java canonical class name of the {@link ColorScale}
+	 * @param ColorScaleClass The java canonical class name of the {@link ColorScale}
 	 * @return an instance of the requested {@link ColorScale} or a {@link BlueWhiteRedScale} if the class could not be found.
 	 */
 	public static ColorScale getColorScale(String ColorScaleClass)

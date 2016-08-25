@@ -18,11 +18,25 @@ import java.awt.Rectangle;
 public class ValueSetContainer implements DataContainer {
 
 	
-
+	/**
+	 * The localisation information of this {@link DataContainer}
+	 */
 	protected Localisation loc;
+	/**
+	 * The {@link DataSet} this container is associated with
+	 */
 	protected DataSet origin;
+	/**
+	 * The {@link NodeData} this container is associated with 
+	 */
 	protected ValueSetNodeData data;
+	/**
+	 * The minimal width (out of 10) of the container
+	 */
 	protected static int minwidth = 10;
+	/**
+	 * The minimal height (out of 10) of the container.
+	 */
 	protected static int minheight = 4;
 	/**
 	 * Standard Constructor using the Source Dataset and a NodeData

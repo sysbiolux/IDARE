@@ -28,7 +28,7 @@ public class CSVCell implements Cell {
 	//private int columnindex = 0;
 	/**
 	 * Create a new cell with of a specific type and in a specific row. 
-	 * @param type
+	 * @param type 
 	 * @param row
 	 */
 	public CSVCell(int type, CSVRow row)

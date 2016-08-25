@@ -20,9 +20,9 @@ public class DataSetsChangedEvent {
 	private boolean setChanged;
 	/**
 	 * Create a New Event with the changing sets, the {@link DataSetManager} this event originates from and an indicator whether the sets are added or removed. 
-	 * @param source - The {@link DataSetManager} this event originates from
-	 * @param setschanged - The Sets that are changing
-	 * @param added - whether the sets are added or removed.
+	 * @param source The {@link DataSetManager} this event originates from
+	 * @param setschanged The Sets that are changing
+	 * @param added whether the sets are added or removed.
 	 */
 	public DataSetsChangedEvent(DataSetManager source, Collection<DataSet> setschanged, boolean added, boolean removed, boolean changed)
 	{

@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
-import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECellIterator;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 /**
@@ -174,7 +173,7 @@ public class BasicIDARERow implements IDARERow {
 	
 	/**
 	 * Get the position/index of a given Cell
-	 * @param cell - the cell for which the index is requested
+	 * @param cell the cell for which the index is requested
 	 * @return the 0-based index of the cell.
 	 */
 	public int getCellIndex(BasicIDARECell cell)

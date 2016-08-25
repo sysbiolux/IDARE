@@ -95,13 +95,19 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	{
 		
 		int dsrow = getRowByDataSet(ds);
-		if(dsrow < 0 || getColumnCount() < 1 )
+		if(dsrow < 0 || getColumnCount() < 1)
 		{
 			return;
 		}
 		//Why was this necessary??!?
 		//setValueAt(ds.getNodeIDs().size(), dsrow, 1);		
 		Vector<ColorMap> cmoptions = ds.getColorMapOptions();
+		if(cmoptions.size() == 0)
+		{
+			colorscalesperdataset.put(ds,null);
+			renderers.put(ds, null);
+			return;
+		}
 		Vector<ColorScalePane> panes = new Vector<ColorScalePane>();		
 		for(ColorMap map : cmoptions)
 		{
@@ -114,7 +120,16 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 		ComboBoxRenderer box = new ComboBoxRenderer(ds.getPropertyOptions());
 		box.addPopupMenuListener(new BoundsPopupMenuListener(true,false));
 		renderers.put(ds, box);
-		setValueAt(ds.getPropertyOptions().get(0),dsrow,4);
+		if(ds.getPropertyOptions().size() == 0)
+		{
+			colorscalesperdataset.put(ds,null);
+			renderers.put(ds, null);
+			return;
+		}
+		if(dsrow < getRowCount())
+		{
+			setValueAt(ds.getPropertyOptions().get(0),dsrow,4);
+		}
 	}
 	
 	@Override

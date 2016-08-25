@@ -17,7 +17,7 @@ public class DiscreteColorScalePane extends ColorScalePane{
 	/**
 	 * A Basic {@link DiscreteColorScalePane}.
 	 * It assumes, that the colors are spaced equally in the {@link ColorScale} provided.  
-	 * @param cs
+	 * @param cs the colorscale to use
 	 */
 	public DiscreteColorScalePane(ColorScale cs) {
 		super(cs);

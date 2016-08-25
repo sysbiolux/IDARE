@@ -35,6 +35,10 @@ public abstract class AbstractItemDataSetProperties extends DataSetLayoutPropert
 	{
 		try{
 			ItemDataSet ads = (ItemDataSet) set;
+			if(ads.columncount > 60)
+			{
+				throw new WrongFormat("Maximal number of elements for an itemized dataset exceeded: " + ads.columncount + " > " + 60);
+			}
 		}
 		catch(ClassCastException e)
 		{
@@ -48,8 +52,10 @@ public abstract class AbstractItemDataSetProperties extends DataSetLayoutPropert
 	@Override 
 	public JPanel getDataSetDescriptionPane(JScrollPane Legend, String DataSetLabel, ColorMap map, DataSet set)
 	{
-		Insets InnerInsets = new Insets(0,0,0,0);
 		JPanel DataSetPane = new JPanel();
+
+		try{
+		Insets InnerInsets = new Insets(0,0,0,0);
 		BoxLayout Layout = new BoxLayout(DataSetPane, BoxLayout.PAGE_AXIS);
 		DataSetPane.setLayout(Layout);		
 		JTextPane area = new JTextPane();
@@ -69,8 +75,15 @@ public abstract class AbstractItemDataSetProperties extends DataSetLayoutPropert
 		ItemDataDescription idd = new ItemDataDescription();
 		idd.setupItemDescription(set.getDefaultData(), DataSetLabel,Legend);
 		DataSetPane.add(idd);
-		DataSetPane.add(Box.createVerticalGlue());
-		DataSetPane.add(map.getColorMapComponent());
+		DataSetPane.add(Box.createRigidArea(new Dimension(0,2)));//ContentPane.add(Box.createVerticalGlue());
+		//DataSetPane.add(Box.createVerticalGlue());
+		DataSetPane.add(map.getColorMapComponent(Legend));
+		
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace(System.out);
+		}
 		return DataSetPane;
 	}
 	

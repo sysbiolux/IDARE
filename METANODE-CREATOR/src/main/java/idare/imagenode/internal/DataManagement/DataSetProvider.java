@@ -14,8 +14,17 @@ import idare.imagenode.internal.Data.itemizedData.TimeSeriesData.TimeSeriesDataS
 
 import java.util.Vector;
 
+/**
+ * A Simple Plugin that adds the Default properties and DataSets to IDARE
+ * @author Thomas Pfau
+ *
+ */
 public class DataSetProvider implements IDAREPlugin {
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.Interfaces.Plugin.IDAREPlugin#getServices()
+	 */
 	@Override
 	public Vector<IDAREService> getServices() {
 			Vector<IDAREService> datasetservices = new Vector<IDAREService>();

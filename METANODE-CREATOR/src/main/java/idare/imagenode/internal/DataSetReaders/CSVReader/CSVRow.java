@@ -31,7 +31,6 @@ public class CSVRow implements Row {
 		this.sheet = sheet;
 		cellpositions = new Vector<Integer>();
 		datapos = new HashMap<Cell, Integer>();
-		//this.rownumber = rownumber;
 	}
 	
 	

@@ -20,8 +20,8 @@ public abstract class AbstractItemContainer implements DataContainer {
 	ItemNodeData data;
 	/**
 	 * Basic constructor with a source {@link DataSet} and the data used in this container.
-	 * @param origin - the Dataset represented by this {@link DataContainer}
-	 * @param data - the data to be used in this {@link DataContainer}
+	 * @param origin the Dataset represented by this {@link DataContainer}
+	 * @param data the data to be used in this {@link DataContainer}
 	 */
 	public AbstractItemContainer(DataSet origin, NodeData data)
 	{

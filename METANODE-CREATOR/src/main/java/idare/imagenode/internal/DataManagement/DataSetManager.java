@@ -52,17 +52,39 @@ import org.cytoscape.work.swing.TunableUIHelper;
  */
 public class DataSetManager{
 
+	/**
+	 * A Map that maps the ID of the DataSet to the DataSet Objects.
+	 */
 	private Map<Integer, DataSet> dataSets;
+	/**
+	 * An IDProvider to use unique ids for the datasets controlled by this manager.
+	 */
 	private DataSetIDProvider idprovider;
-	private Vector<DataSetAboutToBeChangedListener> toChangeListener = new Vector<DataSetAboutToBeChangedListener>();
-	private Vector<DataSetChangeListener> changedListener = new Vector<DataSetChangeListener>();
+	/**
+	 * Listeners that are informed when a dataset is about to be altered.
+	 */
+	private Vector<DataSetAboutToBeChangedListener> datasetsAboutToChangeListeners = new Vector<DataSetAboutToBeChangedListener>();
+	/**
+	 * Listeners that are informed when a dataset is altered.
+	 */
+	private Vector<DataSetChangeListener> datasetsChangedListeners = new Vector<DataSetChangeListener>();
+	/**
+	 * The Available types (classes) of datasets.
+	 * The class Names are matched to a class representative
+	 */
 	private HashMap<String,Class<? extends DataSet>> availableDataSetTypes = new HashMap<String, Class<? extends DataSet>>();
+	/**
+	 * {@link DataSetLayoutProperties} that are available for a specific {@link DataSet} Class
+	 */
 	private HashMap<Class<? extends DataSet>,Collection<DataSetLayoutProperties>> dataSetPropertyOptions = new HashMap<Class<? extends DataSet>, Collection<DataSetLayoutProperties>>();
+	/**
+	 * The set of available {@link IDAREDatasetReader}s.
+	 */
 	private LinkedList<IDAREDatasetReader> dataSetReaders = new LinkedList<IDAREDatasetReader>();
 	/**
 	 * Default constructor initializing required fields.
 	 */
-	public DataSetManager()//NodeManager manager )
+	public DataSetManager()
 	{
 		dataSets = new HashMap<Integer, DataSet>();
 		idprovider = new DataSetIDProvider();		
@@ -120,6 +142,8 @@ public class DataSetManager{
 	
 	/**
 	 * Add DataSetProperties for a specific dataset
+	 * @param classType The class to register the properties for
+	 * @param properties The properties to make available for the given class
 	 */
 	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
@@ -156,9 +180,9 @@ public class DataSetManager{
 	
 	/**
 	 * Register a set of properties for a datasetclass.
-	 * @param datasetclass - the class of the dataset which to register the properties for.
-	 * @param properties - the property options for the dataset that should eb registered.
-	 * @return - The properties that were not added because they are already present.
+	 * @param datasetclass the class of the dataset which to register the properties for.
+	 * @param properties the property options for the dataset that should eb registered.
+	 * @return The properties that were not added because they are already present.
 	 */
 	public Collection<DataSetLayoutProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetLayoutProperties> properties )
 	{
@@ -198,8 +222,8 @@ public class DataSetManager{
 	
 	/**
 	 * Deregister Properties for a DataSet
-	 * @param datasetclass - the class of the dataset to deregister items for.
-	 * @param properties - the properties to deregister.
+	 * @param datasetclass the class of the dataset to deregister items for.
+	 * @param properties the properties to deregister.
 	 */
 	public void deregisterPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
@@ -221,36 +245,36 @@ public class DataSetManager{
 	
 	/**
 	 * Add a Listener that needs to be informed, if a dataset state is about to be changed, before the change actually happened 
-	 * @param listener - the {@link DataSetAboutToBeChangedListener} that listens
+	 * @param listener the {@link DataSetAboutToBeChangedListener} that listens
 	 */
 	public void addDataSetAboutToBeChangedListener(DataSetAboutToBeChangedListener listener)
 	{
-		toChangeListener.add(listener);
+		datasetsAboutToChangeListeners.add(listener);
 	}
 	/**
 	 * Remove a {@link DataSetAboutToBeChangedListener} listening to changes in {@link DataSet}s 
-	 * @param listener - the {@link DataSetAboutToBeChangedListener} that listens
+	 * @param listener the {@link DataSetAboutToBeChangedListener} that listens
 	 */	
 	public void removeDataSetAboutToBeChangedListener(DataSetAboutToBeChangedListener listener)
 	{
-		toChangeListener.remove(listener);
+		datasetsAboutToChangeListeners.remove(listener);
 	}	
 	
 	/**
 	 * Add a Listener that needs to be informed, if a dataset state was changed 
-	 * @param listener - the {@link DataSetChangeListener} that listens
+	 * @param listener the {@link DataSetChangeListener} that listens
 	 */
 	public void addDataSetChangeListener(DataSetChangeListener listener)
 	{
-		changedListener.add(listener);
+		datasetsChangedListeners.add(listener);
 	}
 	/**
 	 * Remove a Listener that needs to be informed, if a dataset state was changed 
-	 * @param listener - the {@link DataSetChangeListener} that listens
+	 * @param listener the {@link DataSetChangeListener} that listens
 	 */	
 	public void removeDataSetChangeListener(DataSetChangeListener listener)
 	{
-		changedListener.remove(listener);
+		datasetsChangedListeners.remove(listener);
 	}
 	public Collection<DataSet> getDataSets()
 	{
@@ -259,18 +283,18 @@ public class DataSetManager{
 	
 	/**
 	 * Inform all listeners that a set of {@link DataSet}s has been changed.
-	 * @param added
+	 * @param changed The set of Datasets that were changed
 	 */
 	private void fireDataSetsChanged(Collection<DataSet> changed)
 	{
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
-		calisteners.addAll(toChangeListener);
+		calisteners.addAll(datasetsAboutToChangeListeners);
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
 			listener.datasetsChanged(new DataSetsChangedEvent(this, changed, false,false,true));
 		}		
 		Set<DataSetChangeListener> clisteners = new HashSet();
-		clisteners.addAll(changedListener);
+		clisteners.addAll(datasetsChangedListeners);
 		for(DataSetChangeListener listener : clisteners)
 		{
 			listener.datasetsChanged(new DataSetsChangedEvent(this, changed, false,false,true));
@@ -280,19 +304,19 @@ public class DataSetManager{
 	
 	/**
 	 * Inform all listeners that a {@link DataSet} has been added.
-	 * @param added
+	 * @param added The Datasets that were added
 	 */
 	private void fireDataSetAdded(DataSet added)
 	{
 		
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
-		calisteners.addAll(toChangeListener);
+		calisteners.addAll(datasetsAboutToChangeListeners);
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, added, true,false,false));
 		}		
 		Set<DataSetChangeListener> clisteners = new HashSet();
-		clisteners.addAll(changedListener);
+		clisteners.addAll(datasetsChangedListeners);
 		for(DataSetChangeListener listener : clisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, added, true,false,false));
@@ -300,18 +324,18 @@ public class DataSetManager{
 	}
 	/**
 	 * Inform all listeners that a dataset has been removed
-	 * @param removed
+	 * @param removed The dataset that was removed
 	 */
 	private void fireDataSetRemoved(DataSet removed)
 	{
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
-		calisteners.addAll(toChangeListener);
+		calisteners.addAll(datasetsAboutToChangeListeners);
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, removed, false,true,false));
 		}
 		Set<DataSetChangeListener> clisteners = new HashSet();
-		clisteners.addAll(changedListener);
+		clisteners.addAll(datasetsChangedListeners);
 		for(DataSetChangeListener listener : clisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, removed, false,true,false));
@@ -319,18 +343,18 @@ public class DataSetManager{
 	}
 	/**
 	 * Inform all listeners, that datasets have been removed.
-	 * @param sets
+	 * @param sets The datasets that was removed
 	 */
 	private void fireDataSetsRemoved(Collection<DataSet> sets)
 	{
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
-		calisteners.addAll(toChangeListener);
+		calisteners.addAll(datasetsAboutToChangeListeners);
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
 			listener.datasetsChanged(new DataSetsChangedEvent(this, sets, false,true,false));
 		}
 		Set<DataSetChangeListener> clisteners = new HashSet();
-		clisteners.addAll(changedListener);
+		clisteners.addAll(datasetsChangedListeners);
 		for(DataSetChangeListener listener : clisteners)
 		{
 			listener.datasetsChanged(new DataSetsChangedEvent(this, sets, false,true,false));
@@ -338,7 +362,7 @@ public class DataSetManager{
 	}
 	/**
 	 * Add a Dataset to this Manager.
-	 * @param newDataSet - The Dataset to add
+	 * @param newDataSet The Dataset to add
 	 */
 	public void addDataSet(DataSet newDataSet)
 	{
@@ -359,7 +383,7 @@ public class DataSetManager{
 
 	/**
 	 * Get the dataset with the specified ID from this manager.
-	 * @param id - the requested ID
+	 * @param id the requested ID
 	 * @return the requested {@link DataSet} or <code>null</code> if no set has this id.
 	 */
 	public DataSet getDataSetForID(Integer id)
@@ -436,14 +460,14 @@ public class DataSetManager{
 	
 	/**
 	 * Create a Dataset based on properties and a DataSetFile. and add it to the manager.
-	 * @param TwoCols - indicator whether to use twoColumn ID Indicators
-	 * @param DataSetTypeName - Class name of the dataset
-	 * @param SetDescription - Description of the Dataset
-	 * @param DataSetFile - File to load into the dataset
-	 * @return - The Created Dataset with the data from the DataSetFile parsed.
-	 * @throws WrongFormat - Depending on the Dataset specific properties have to be matched by the file
-	 * @throws InvalidFormatException - Depending on the Dataset specific properties have to be matched by the file
-	 * @throws DuplicateIDException - Depending on the Dataset specific properties have to be matched by the file
+	 * @param TwoCols indicator whether to use twoColumn ID Indicators
+	 * @param DataSetTypeName Class name of the dataset
+	 * @param SetDescription Description of the Dataset
+	 * @param DataSetFile File to load into the dataset
+	 * @return The Created Dataset with the data from the DataSetFile parsed.
+	 * @throws WrongFormat Depending on the Dataset specific properties have to be matched by the file
+	 * @throws InvalidFormatException Depending on the Dataset specific properties have to be matched by the file
+	 * @throws DuplicateIDException Depending on the Dataset specific properties have to be matched by the file
 	 * @throws IOException
 	 */
 	public DataSet createDataSet(boolean TwoCols, String DataSetTypeName , 
@@ -463,10 +487,13 @@ public class DataSetManager{
 		return ds;
 	}	
 
-	
+	/**
+	 * Write The current datasets to the given outputstream
+	 * @param os The {@link ObjectOutputStream} to write to
+	 * @throws IOException If there is a problem with writing
+	 */
 	private void writeDataSets(ObjectOutputStream os) throws IOException
 	{
-		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
 		for(DataSet ds : dataSets.values())
 		{				
 			PrintFDebugger.Debugging(this, "Writing Dataset: " + ds.Description);
@@ -474,12 +501,17 @@ public class DataSetManager{
 		}
 		PrintFDebugger.Debugging(this, "Finished writing Datasets");
 		os.writeObject(new EOOMarker());
-		//os.close();
+		
 	}
 
+	/**
+	 * Read {@link DataSet}s form an {@link ObjectInputStream}.
+	 * @param is the inputstream to read from
+	 * @return a vector of {@link DataSet}s obtained from the given inputstream
+	 * @throws IOException if there is a problem with the stream
+	 */
 	private Vector<DataSet> readDataSets(ObjectInputStream is) throws IOException
 	{
-		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
 		Object currentObject = null;
 		Vector<DataSet> datasets = new Vector<DataSet>();
 		try{
@@ -513,7 +545,7 @@ public class DataSetManager{
 	/**
 	 * Handle A {@link SessionAboutToBeSavedEvent}, ad add data of the DataManger to this Event. 
 	 * Since order is necessary this class does not itself implement the SessionLoaded/Saved mechanism but relies on a managing class to keep the order of actions.
-	 * @param arg0
+	 * @param arg0 a {@link SessionAboutToBeSavedEvent}
 	 */	
 	public void handleEvent(SessionAboutToBeSavedEvent arg0) {		
 		
@@ -555,7 +587,7 @@ public class DataSetManager{
 
 	/**
 	 * Write DataSet Properties to a string (which can be read by <code>readDataSetProperties()</code>
-	 * @param set - the set to obtain the properties from.
+	 * @param set the set to obtain the properties from.
 	 * @return the string representing the properties of the provided set
 	 */
 	private String writeDataSetProperties(DataSet set)
@@ -576,7 +608,7 @@ public class DataSetManager{
 	 * Register a {@link IDAREDatasetReader} to be available for file reading.
 	 * Readers are used in their reverse order of registration. i.e. the later a reader was registered, the higher its precedence of usage.
 	 * Multiple readers for the same file extensions can be available, and thus the latest registered reader will be tried first.
-	 * @param reader - the reader to add 
+	 * @param reader the reader to add 
 	 */
 	public void registerDataSetReader(IDAREDatasetReader reader)
 	{
@@ -585,7 +617,7 @@ public class DataSetManager{
 	
 	/**
 	 * DeRegister a {@link IDAREDatasetReader}. It will no longer be available for Datsetreading.
-	 * @param reader - the reader to deregister 
+	 * @param reader the reader to deregister 
 	 */
 	public void deregisterDataSetReader(IDAREDatasetReader reader)
 	{

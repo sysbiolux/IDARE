@@ -12,6 +12,10 @@ import java.util.Vector;
  */
 public class ItemNodeData extends NodeData {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Vector<NodeValue> values;
 	/**
 	 * Basic constructor using the dataset this is originating from
@@ -54,7 +58,7 @@ public class ItemNodeData extends NodeData {
 	/**
 	 * Check whether the element at a specific position is set.
 	 * @param pos
-	 * @return - true, if the item is not <code>null</code>
+	 * @return true, if the item is not <code>null</code>
 	 */
 	public boolean isValueSet(int pos)
 	{

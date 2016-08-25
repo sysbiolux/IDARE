@@ -24,8 +24,8 @@ import javax.swing.UIDefaults;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyRow;
 /**
- * ColumnTypeChoose is a JPanel that Provides multiple comboboxes depending on the number of options provided by a selected column. 
- * selected column
+ * ColumnTypeChoose is a JPanel that Provides multiple comboboxes depending on the number of options provided by a 
+ * selected column. 
  * @author Thomas Pfau
  *
  */
@@ -118,7 +118,7 @@ public class ColumnTypeChooser extends JPanel{
 		{
 			diffvals.add(row.getRaw(SelectedColName));
 		}
-		Set<Object> choices = getSelectedItems(null);
+		Set<Object> choices = getSelectedItems();
 		int selectedVals = getSelectionCount();
 		if(selectedObjects.get(compoundTypeSelector) == null || selectedObjects.get(reactionTypeSelector) == null)
 		{
@@ -131,7 +131,7 @@ public class ColumnTypeChooser extends JPanel{
 	}
 	/**
 	 * Get the number of non null entries of selected items.
-	 * @return
+	 * @return the number of objects that were selected
 	 */
 	private int getSelectionCount()
 	{
@@ -149,7 +149,8 @@ public class ColumnTypeChooser extends JPanel{
 	/**
 	 * Update the Choose ComboBoxes according to a selected Column.
 	 * The Items of the selected columns  will be investigated for options.
-	 * @param colSelected
+	 * @param colSelected the seleted index from the generating column vector
+	 * @throws ArrayIndexOutOfBoundsException If the provided argument is larger than the vector used to initialize this Chooser
 	 */
 	public void updateChoosers(int colSelected)
 	{
@@ -267,32 +268,8 @@ public class ColumnTypeChooser extends JPanel{
 			}
 			selectedObjects.put(geneTypeSelector, geneTypeSelector.getSelectedItem());
 		}
-/*		ComboBoxModel<String> proteinTypeModel = createBipartitionModel(network,SelectedColName);
-		proteinTypeSelector.setModel(proteinTypeModel);
-		if(proteinTypeModel.getSize() > 0)
-		{
-			proteinTypeSelector.setSelectedIndex(0);
-			if(proteinTypeModel.getSize() > 3)
-			{
-				proteinTypeSelector.setSelectedIndex(3);	
-			}
-			selectedObjects.put(proteinTypeSelector, proteinTypeSelector.getSelectedItem());
-		}*/
-		/*GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 4;
-		this.add(geneDesc,gbc);
-		gbc.gridy = 6;
-		this.add(proteinDesc,gbc);		
-		gbc.gridx = 1;
-		gbc.gridy = 4;		
-		this.add(geneTypeSelector,gbc);
-		gbc.gridy = 6;
-		this.add(proteinTypeSelector,gbc);*/
-		//this.proteinTypeSelector.setVisible(true);
+
 		this.geneTypeSelector.setVisible(true);
-		//this.proteinDesc.setVisible(true);
 		this.geneDesc.setVisible(true);
 		
 	}
@@ -319,18 +296,7 @@ public class ColumnTypeChooser extends JPanel{
 			}
 			selectedObjects.put(proteinTypeSelector, proteinTypeSelector.getSelectedItem());
 		}
-		/*GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 4;
-		this.add(geneDesc,gbc);
-		gbc.gridy = 6;
-		this.add(proteinDesc,gbc);		
-		gbc.gridx = 1;
-		gbc.gridy = 4;		
-		this.add(geneTypeSelector,gbc);
-		gbc.gridy = 6;
-		this.add(proteinTypeSelector,gbc);*/
+
 		this.proteinTypeSelector.setVisible(true);
 		this.proteinDesc.setVisible(true);
 		
@@ -338,8 +304,8 @@ public class ColumnTypeChooser extends JPanel{
 	
 	/**
 	 * Create a Selection description based on a given string
-	 * @param DescriptionString
-	 * @return
+	 * @param DescriptionString the String to use for this description
+	 * @return A formatted {@link JTextPane} that contains the string.
 	 */
 	private JTextPane createSelectionDescription(String DescriptionString)
 	{
@@ -362,18 +328,13 @@ public class ColumnTypeChooser extends JPanel{
 	}
 	/**
 	 * Get the items used in the comboboxes, excluding those provided. 
-	 * @param excluded
 	 * @return a set of the selected Items from the choosers
 	 */
-	public Set<Object> getSelectedItems(JComboBox<String> excluded)
+	public Set<Object> getSelectedItems()
 	{
 		HashSet<Object> usedItems = new HashSet<Object>();
 		for(JComboBox<String> box : selectedObjects.keySet())
 		{
-			if(box.equals(excluded))
-			{
-				continue;
-			}
 			if(selectedObjects.get(box) == null)
 			{
 				continue;
@@ -395,6 +356,10 @@ public class ColumnTypeChooser extends JPanel{
 	{
 
 		ColumnTypeChooser ctc;
+		/**
+		 * 
+		 * @param ctc
+		 */
 		public SelectionChoiceListener(ColumnTypeChooser ctc)
 		{
 			this.ctc = ctc;
@@ -407,12 +372,6 @@ public class ColumnTypeChooser extends JPanel{
 
 				JComboBox<String> box = (JComboBox<String>)e.getSource();
 				Object selected = box.getSelectedItem();
-				Set<Object> taken = ctc.getSelectedItems(box);
-				//if(taken.contains(selected))
-				//{
-				//	JOptionPane.showMessageDialog(ctc, "Value already used", "Warning",
-				//			JOptionPane.WARNING_MESSAGE);
-				//}
 				ctc.selectedObjects.put(box, selected);
 			}
 		}
@@ -468,8 +427,10 @@ public class ColumnTypeChooser extends JPanel{
 	}
 	
 	/**
-	 * Create a Comboboxmodel with one element per different string present in the Column in the network. 
-	 * @return
+	 * Create a Comboboxmodel with one element per different string present in the Column in the network.
+	 * @param network The Network for which to create the bipartitionModel
+	 * @param ColName The Network Column Name to use for bipartition selection 
+	 * @return a ComboboxModel that allows the bipartition
 	 */
 	private ComboBoxModel<String> createBipartitionModel(CyNetwork network,String ColName)
 	{

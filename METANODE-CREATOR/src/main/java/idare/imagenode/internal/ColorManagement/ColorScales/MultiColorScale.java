@@ -20,9 +20,9 @@ public abstract class MultiColorScale implements ColorScale {
 	/**
 	 * General constructor using a set of colors, a float array for the positions of the colors on a 0-1 scale and the number of discrete colors to generate.
 	 * Colors and fractions have to be of equal size. 
-	 * @param Colors - the colors to use
-	 * @param fractions - the positions of these colors on the scale
-	 * @param colorcount - the number of colors generated
+	 * @param Colors the colors to use
+	 * @param fractions the positions of these colors on the scale
+	 * @param colorcount the number of colors generated
 	 */
 	public MultiColorScale(Color[] Colors, float[] fractions, int colorcount)
 	{
@@ -34,8 +34,8 @@ public abstract class MultiColorScale implements ColorScale {
 	}
 	/**
 	 * A Constructor generating a colorscale using the given colors and the given fractions. The colorscale will use 100 colors.
-	 * @param Colors - the colors to use
-	 * @param fractions - the positions of these colors on the scale
+	 * @param Colors the colors to use
+	 * @param fractions the positions of these colors on the scale
 	 */
 	public MultiColorScale(Color[] Colors, float[] fractions) {
 		//We will throw an error if the sizes are not equal.
@@ -61,6 +61,10 @@ public abstract class MultiColorScale implements ColorScale {
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#getColor(double)
+	 */
 	@Override
 	public Color getColor(double value)
 	{
@@ -74,6 +78,11 @@ public abstract class MultiColorScale implements ColorScale {
 		return usedColors[entry];
 	}
 	
+	/**
+	 * Get the color associated with the provided value
+	 * @param value The Value to obtain a color for
+	 * @return The Color assigned to the given value.
+	 */
 	protected Color getColorForValue(double value) {
 		// TODO Auto-generated method stub
 		Color sourceColor = ColorSteps[0];
@@ -113,31 +122,50 @@ public abstract class MultiColorScale implements ColorScale {
 		return new Color(r,g,b,alph);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#getColorScaleProperties()
+	 */
 	@Override
 	public ColorScaleProperties getColorScaleProperties() {
 		return new ColorScaleProperties(ColorSteps, fractions);
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#getColorScalePane()
+	 */
 	@Override
 	public ColorScalePane getColorScalePane()
 	{
 		return new ColorScalePane(this);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#setColorScaleProperties(idare.imagenode.internal.ColorManagement.ColorScales.ColorScaleProperties)
+	 */
 	@Override
 	public void setColorScaleProperties(ColorScaleProperties props) {
 		this.fractions = props.fractions;
 		this.ColorSteps = props.ColorSteps;
 		initColors();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#setColorCount(int)
+	 */
 	@Override
 	public void setColorCount(int count)
 	{
 		//Do nothing.
 	};
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScale#movePointOnScale(float, float)
+	 */
 	@Override
 	public void movePointOnScale(float origval, float targetval)
 	{
@@ -162,7 +190,7 @@ public abstract class MultiColorScale implements ColorScale {
 	
 	/**
 	 * Get a discrete Version of this color scale.
-	 * @param colorcount - the number of colors requested for this colorscale. 
+	 * @param colorcount the number of colors requested for this colorscale. 
 	 * @return a discrete color scale built from this {@link MultiColorScale}
 	 */
 	public DiscreteColorScale getDiscreteColorScale(int colorcount)

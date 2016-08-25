@@ -123,12 +123,11 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * This function loads calls the implementing classes function setupWorkBook to interpret the Workbook provided and 
 	 * tests, whether there are viable {@link DataSetLayoutProperties} in IDARE that can be used with this DataSet and the given Workbook. 
-	 * @param DataFile - the file to be parsed by the DataSet.
-	 * @param readers - a set of readers which can be used to read the file.
+	 * @param WB The Workbook this DataSet should use to obtain data
 	 * @return whether the parsing was successful
-	 * @throws WrongFormat - if none of the readers can read the file properly.
-	 * @throws DuplicateIDException - if there are duplicate ids in the files. 
-	 * @throws IOException - if there is a problem with the provided file.
+	 * @throws WrongFormat if none of the readers can read the file properly.
+	 * @throws DuplicateIDException if there are duplicate ids in the files. 
+	 * @throws IOException if there is a problem with the provided file.
 	 */
 	public final boolean loadWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException,IOException{
 		//SourceFile = DataFile;		
@@ -194,9 +193,9 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Set up the data properties from the provided workbook and read the data into this dataset.
-	 * @param WB - The WorkBook 
-	 * @throws WrongFormat - if there are problems with the format of the data in the Workbook.
-	 * @throws DuplicateIDException - if there are duplicate IDs in the Workbook (e.g. sheets which have the same identifier twice). 
+	 * @param WB The WorkBook 
+	 * @throws WrongFormat if there are problems with the format of the data in the Workbook.
+	 * @throws DuplicateIDException if there are duplicate IDs in the Workbook (e.g. sheets which have the same identifier twice). 
 	 */
 	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
@@ -231,10 +230,19 @@ public abstract class DataSet implements IDAREService, Serializable{
 		{
 			Iterator<IDARECell> cellIterator = rowIterator.next().iterator();
 			//Skip the first (and potentially second column)
-			skipLabels(cellIterator);			
+			IDARECell startingCell = skipLabels(cellIterator);			
 			while(cellIterator.hasNext())
 			{
-				IDARECell currentcell = cellIterator.next();
+				IDARECell currentcell;
+				if(startingCell != null)
+				{
+					currentcell = startingCell;
+					startingCell = null;
+				}
+				else
+				{
+					currentcell = cellIterator.next();
+				}
 				if(currentcell == null)
 				{
 					continue;
@@ -284,7 +292,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 				}
 				if(currentcell.getCellType() == CellType.NUMERIC || currentcell.getCellType() == CellType.FORMULA)
 				{
-					System.out.println("Found a numeric value: " + currentcell.getNumericCellValue());
+					//System.out.println("Found a numeric value: " + currentcell.getNumericCellValue());
 					if(uninitialized)
 					{
 						isnumeric = true;
@@ -440,13 +448,30 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Skip the Cells containing the labels from a cell iterator 
-	 * @param currentiterator - the Celliterator for a specific row.
+	 * @param currentiterator the Celliterator for a specific row.
 	 */
-	public void skipLabels(Iterator<IDARECell> currentiterator)
+	public IDARECell skipLabels(Iterator<IDARECell> currentiterator)
 	{
-		currentiterator.next();
-		if(useTwoColHeaders)
-			currentiterator.next();			
+		System.out.println("Skipping a column");
+		IDARECell currentCell = currentiterator.next();
+		int offset = useTwoColHeaders ? 2 : 1;
+		while(currentiterator.hasNext())
+		{
+			if(currentCell != null)
+			{
+				if(currentCell.getColumnIndex() >= offset)
+				{
+					return currentCell;
+				}
+			}
+			else
+			{
+				currentCell = currentiterator.next();
+			}
+			currentCell = currentiterator.next();
+		}
+		return null;
+		
 	}
 	
 	/**
@@ -472,7 +497,9 @@ public abstract class DataSet implements IDAREService, Serializable{
 		return Description;
 	}
 	/**
-	 * Set the properties for this dataset
+	 * Set the {@link DataSetLayoutProperties} currently used for this dataset
+	 * @param properties The {@link DataSetLayoutProperties} to use for layout of this {@link DataSet} 
+	 * 
 	 */
 	public void setProperties(DataSetLayoutProperties properties)
 	{
@@ -481,7 +508,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Get the selection of different properties available for this dataset
-	 * @return - The possible DataSetproperties for this Type of Dataset
+	 * @return The possible DataSetproperties for this Type of Dataset
 	 */
 	public final Vector<DataSetLayoutProperties> getPropertyOptions() {
 		Vector<DataSetLayoutProperties> props = new Vector<DataSetLayoutProperties>();
@@ -492,7 +519,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Sets the Options potentially available to this Dataset.
 	 * This call does not check, whether the options supplied are actually viable options for this dataset!
-	 * @param options - The possible DataSetproperties for this Dataset
+	 * @param options The possible DataSetproperties for this Dataset
 	 */
 	public final void setPropertyOptionsUnchecked(Collection<DataSetLayoutProperties> options) {
 		propertyOptions = new Vector<DataSetLayoutProperties>();
@@ -541,17 +568,30 @@ public abstract class DataSet implements IDAREService, Serializable{
 		}
 	}
 	
-	
+	/**
+	 * Get a Description of this DataSet in the form of a {@link JPanel}.
+	 * The function provides the Legend this is associated with (to be able to adjust the size of components for proper scaling).	 
+	 * @param Legend The scroll pane to use for width adjustments
+	 * @param DataSetLabel the label assigned to this dataset for description generation
+	 * @param map the colormap assigned to this dataset for layouting
+	 * @return the JPanel representing the DataDescription. 
+	 */
+	public JPanel getDataSetDescriptionPane(JScrollPane Legend, String DataSetLabel, ColorMap map)
+	{		
+		//we simply obtain the pane produced by the LayoutProperties.
+		return datasetProperties.getDataSetDescriptionPane(Legend, DataSetLabel, map, this);
+	}
+
 	
 	/**
 	 * Get the {@link NodeData} for a specific ID.
-	 * @param NodeID
+	 * @param NodeID The ID of the {@link NodeData} requested.
 	 * @return the requested NodeData (if it is not present an appropriate empty entry should be returned.
 	 */
 	public abstract NodeData getDataForID(String NodeID);
 	/**
 	 * Set the ID of this DataSet
-	 * @param id 
+	 * @param id The ID assigned to this {@link DataSet}
 	 */
 	public abstract void setID(int id);
 	/**
@@ -586,7 +626,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Get a sample container for Layout purposes
-	 * @return - a sample container using Default data. 
+	 * @return a sample container using Default data. 
 	 */
 	public abstract DataContainer getLayoutContainer();
 	
@@ -616,14 +656,4 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 */
 	public abstract String getDataSetTypeName();
 	
-	/**
-	 * 
-	 * Get a Description of this DataSet in the form of a {@link JPanel}.
-	 * The function provides the Legend this is associated with (to be able to adjust the size of components for proper scaling).	 
-	 * @param Legend
-	 * @param DataSetLabel
-	 * @param map
-	 * @return the JPanel representing the DataDescription. 
-	 */
-	public abstract JPanel getDataSetDescriptionPane(JScrollPane Legend, String DataSetLabel, ColorMap map);	
 }

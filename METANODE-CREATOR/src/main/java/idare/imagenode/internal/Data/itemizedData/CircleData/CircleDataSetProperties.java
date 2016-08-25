@@ -13,6 +13,10 @@ import idare.imagenode.Properties.Localisation.Position;
  */
 public class CircleDataSetProperties extends AbstractItemDataSetProperties{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public Position getLocalisationPreference() {
 		// TODO Auto-generated method stub

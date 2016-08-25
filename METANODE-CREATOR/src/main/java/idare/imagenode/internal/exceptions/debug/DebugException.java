@@ -16,7 +16,10 @@ public class DebugException extends Exception
 		super(Message);
 		source = obj;
 	}
-	
+	/**
+	 * Get the class name of the Object
+	 * @return
+	 */
 	public String getObjClassame()
 	{
 		return source.getClass().getSimpleName();

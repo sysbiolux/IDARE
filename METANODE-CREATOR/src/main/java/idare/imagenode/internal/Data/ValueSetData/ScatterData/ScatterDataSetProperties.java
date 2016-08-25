@@ -6,7 +6,6 @@ import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.GUI.Legend.Utilities.TextPaneResizer;
@@ -27,6 +26,8 @@ import javax.swing.JTextPane;
 import javax.swing.text.DefaultCaret;
 
 public abstract class ScatterDataSetProperties extends ValueSetDataProperties {
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Position getLocalisationPreference() {

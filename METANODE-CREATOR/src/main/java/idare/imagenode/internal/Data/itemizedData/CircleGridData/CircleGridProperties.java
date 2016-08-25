@@ -15,6 +15,10 @@ import idare.imagenode.internal.exceptions.io.WrongFormat;
  */
 public class CircleGridProperties extends CircleDataSetProperties {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public Position getLocalisationPreference() {
 		return Position.CENTER;

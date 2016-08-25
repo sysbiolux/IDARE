@@ -73,7 +73,7 @@ public class ItemDataSet extends DataSet{
 	
 	/**
 	 * Get the Default Properties (Description/Colorscale etc) for this dataset.
-	 * @return
+	 * @return The default properties of this Dataset
 	 */
 	protected static Properties getDefaultProperties()
 	{
@@ -97,7 +97,7 @@ public class ItemDataSet extends DataSet{
 	}
 	/**
 	 * Basic constructor using a specific DataSetName
-	 * @param DataSetName
+	 * @param DataSetName The name of the Dataset
 	 */
 	public ItemDataSet(String DataSetName)
 	{
@@ -111,9 +111,9 @@ public class ItemDataSet extends DataSet{
 	
 	/**
 	 * Constructor using an ID, indication for twoColumn use in the datafile, and a properties collection
-	 * @param DataSetID
-	 * @param useTwoCols
-	 * @param properties
+	 * @param DataSetID The ID of the {@link ItemDataSet}
+	 * @param useTwoCols Whether to use individual columns for label and ID or use one column for both
+	 * @param properties properties of this {@link ItemDataSet}
 	 */
 	public ItemDataSet(int DataSetID,boolean useTwoCols,Properties properties) {
 		super(DataSetID,useTwoCols,properties);
@@ -123,49 +123,71 @@ public class ItemDataSet extends DataSet{
 
 	/**
 	 * We also have to determine the Columns and the empty columns.
+	 * @param WB The {@link IDAREWorkbook} from which to obtain properties for setup 
 	 */
 	@Override
 	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
-		System.out.println("Lets set up the Workbook properties");
+		//System.out.println("Lets set up the Workbook properties");
 		determineNonEmptyColumns(WB);
+		//readDataPointNames(WB.getSheetAt(0).rowIterator().next().cellIterator());
 		super.setupWorkBook(WB);		
 	}
 	
 	
 	/**
 	 * Read the names of the Datapoints (i.e. the header line in the source data.
-	 * @param labelIterator
+	 * @param labelIterator The iterator for the first row, to obtain the headers
 	 */
 	private void readDataPointNames(Iterator<IDARECell> labelIterator)
 	{
-
+		
+		
+		System.out.println("Reading Header row");
 		int offset = 1;
 		if(useTwoColHeaders)
 		{
 			offset++;
 		}
+		//skipLabels(labelIterator);
+		IDARECell CurrentCell = skipLabels(labelIterator);
+		
 		while (labelIterator.hasNext())
 		{
-			IDARECell cell = labelIterator.next();
+			IDARECell cell;
+			if(CurrentCell != null)
+			{
+				cell = CurrentCell;
+				CurrentCell = null;
+			}
+			else
+			{
+				cell = labelIterator.next();	
+			}
+			
 			int position = cell.getColumnIndex() - offset;
+			System.out.println("The offset is " + offset + " and the Cell type is " + cell.getCellType() + " while the index is " + cell.getColumnIndex());
 			while(position > columnLabels.size())
 			{
 				//fill empty Headers with null.
+				System.out.println("Adding automatic null header at position" + (cell.getColumnIndex()-offset));
 				columnLabels.add(null);
 			}
 			//Check the cell type and format accordingly
 			if(cell.getCellType() == CellType.NUMERIC)
 			{
 				columnLabels.add(Double.toString(cell.getNumericCellValue()));
+				System.out.println("Adding header " + Double.toString(cell.getNumericCellValue()) + " at position" + (cell.getColumnIndex()-offset));
 			}
 			else if(cell.getCellType() == CellType.STRING)
 			{
 				columnLabels.add(cell.getStringCellValue());
+				System.out.println("Adding header " + cell.getStringCellValue() + " at position" + (cell.getColumnIndex()-offset));
 			}
 			else
 			{
 				// We can't read anything but strings and numeric values.
+				System.out.println("Adding null header at position" + (cell.getColumnIndex()-offset));
 				columnLabels.add(null);
 			}
 		}
@@ -198,7 +220,7 @@ public class ItemDataSet extends DataSet{
 		IDARERow labelRow = rowIterator.next();
 		Iterator<IDARECell> labelIterator = labelRow.cellIterator();
 		//skip the first row.
-		skipLabels(labelIterator);
+		System.out.println("Skipping Labels for Header Row");
 		readDataPointNames(labelIterator);	
 
 		//read the data with the appropriate settings.
@@ -253,9 +275,9 @@ public class ItemDataSet extends DataSet{
 	
 	/**
 	 * Read String data
-	 * @param WB - the workbook to read the data from.
-	 * @throws WrongFormat
-	 * @throws DuplicateIDException
+	 * @param WB the workbook to read the data from.
+	 * @throws WrongFormat If there is a format problem
+	 * @throws DuplicateIDException If duplicate item IDs (i.e. two rows with the same ID entry) are found
 	 */
 	private void readStringData(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
@@ -327,9 +349,9 @@ public class ItemDataSet extends DataSet{
 	}
 	/**
 	 * Read numeric data, and indicate whether this si stringdata (i.e. numbers that wer fgormatted to be strings)
-	 * @param WB
-	 * @param StringData
-	 * @throws DuplicateIDException
+	 * @param WB The Workbook to read
+	 * @param StringData Whether StringData is used (i.e. strings that represent numeric values)
+	 * @throws DuplicateIDException If duplicate id are encountered
 	 */
 	private void readNumericData(IDAREWorkbook WB, boolean StringData) throws DuplicateIDException, WrongFormat
 	{
@@ -392,7 +414,7 @@ public class ItemDataSet extends DataSet{
 
 	/**
 	 * Read the data for a single Row
-	 * @param currentRow
+	 * @param currentRow The {@link IDARERow} to read the data from.
 	 * @return an AbstractItemNodeData representing the Row.
 	 */
 	private ItemNodeData getNodeData(IDARERow currentRow) throws WrongFormat
@@ -442,11 +464,11 @@ public class ItemDataSet extends DataSet{
 				throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers");
 			}			
 		}
-		System.out.println("Created NodeData with Label " + currentNodeData.getLabel() + " and ID " + currentNodeData.getID());
+		//System.out.println("Created NodeData with Label " + currentNodeData.getLabel() + " and ID " + currentNodeData.getID());
 		if(currentNodeData.getID().equals(""))
 		{
 			//A Node without ID should not be generated
-			System.out.println("NodeID equals empty String, returning null ");
+			//System.out.println("NodeID equals empty String, returning null ");
 			return null;
 		}
 		NodeLabels.put(currentNodeData.getID(), currentNodeData.getLabel());
@@ -601,17 +623,6 @@ public class ItemDataSet extends DataSet{
 	
 	/*
 	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getDataSetDescriptionPane(javax.swing.JScrollPane, java.lang.String, idare.imagenode.internal.ColorManagement.ColorMap)
-	 */
-	@Override
-	public JPanel getDataSetDescriptionPane(JScrollPane Legend, String DataSetLabel, ColorMap map)
-	{
-		
-		return datasetProperties.getDataSetDescriptionPane(Legend, DataSetLabel, map, this);
-	}
-	
-	/*
-	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getColorMapOptions()
 	 */
 	@Override
@@ -624,7 +635,7 @@ public class ItemDataSet extends DataSet{
 	
 	/**
 	 * Check whether a specific column is set or empty.
-	 * @param column
+	 * @param column the index of the column to check (this index excludes the ID and label columns and starts with the first data column as 0) 
 	 * @return whether the given column has values
 	 */
 	public boolean isColumnSet(int column)
@@ -633,12 +644,13 @@ public class ItemDataSet extends DataSet{
 	}
 	
 	/**
-	 * Get the Label for a specific Column in the data, or null if it does not exist, or there sis no clear label.
-	 * @param column
-	 * @return the label for the requested Column
+	 * Get the Label for a specific Column in the data, or null if it does not exist, or there is no clear label.
+	 * @param column get the label for the requested column index. if isColumnSet(column) returns false, getColumnLabel(column) will return null
+	 * @return the label for the requested Column, or null if the header is not set.
 	 */
 	public String getColumnLabel(int column)
 	{
+		System.out.println("The Column Label for column " + column + " is " + columnLabels.get(column));
 		return columnLabels.get(column);
 	}
 	
@@ -654,7 +666,8 @@ public class ItemDataSet extends DataSet{
 	}
 	/**
 	 * Determine the columns which are non empty, 
-	 * This can be derived from the Header column as all columns which are set have to contain a label. 
+	 * This can be derived from the Header column as all columns which are set have to contain a label.
+	 * @param WB The {@link IDAREWorkbook} to determine empty columns from. 
 	 */	
 	protected void determineNonEmptyColumns(IDAREWorkbook WB)
 	{
@@ -662,18 +675,23 @@ public class ItemDataSet extends DataSet{
 		IDARERow HeaderRow = WB.getSheetAt(0).iterator().next();
 		Iterator<IDARECell> cellIterator = HeaderRow.iterator();
 		
-		skipLabels(cellIterator);
+		IDARECell CurrentCell = skipLabels(cellIterator);
 		
 		int labelcolumns = 1;
 		if(useTwoColHeaders)
 		{
 			labelcolumns++;
 		}
+		if(CurrentCell != null)
+		{
+			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
+		}
+		
 		System.out.println("Trying to determine the number of columns");
 		while(cellIterator.hasNext())
-		{
-			IDARECell Currentcell = cellIterator.next();			
-			columncount = Math.max(columncount, Currentcell.getColumnIndex()-labelcolumns + 1);			
+		{						
+			CurrentCell= cellIterator.next();
+			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
 		}
 		System.out.println("We have a Workbook with "+ columncount + "Columns");
 		emptycolumns = new boolean[columncount];

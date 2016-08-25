@@ -54,8 +54,8 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	 * Generate a {@link ShapePosition} from a Rectangle and a given Shape.
 	 * The Shape must be compatible with BATIK or implement its own {@link DefaultExtensionHandler}. see
 	 * https://xmlgraphics.apache.org/batik/using/svg-generator.html
-	 * @param currentShape - the shape to be used for this {@link ShapePosition}
-	 * @param position - the position the shape should occupy
+	 * @param currentShape the shape to be used for this {@link ShapePosition}
+	 * @param position the position the shape should occupy
 	 * @return The generated ShapePosition
 	 */
 	protected ShapePosition getShapePosition(Shape currentShape, Rectangle2D position)
@@ -66,11 +66,11 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	 * Create the Positions used in the layout.
 	 * In essence, this function will distribute the available area to fit all the items 
 	 * (according to getValueCount())
-	 * @param data - the {@link ItemNodeData} to use for layout generation
-	 * @param AreaAndPosition - The area available for the layout
-	 * @param DataSetLabel - The Label of the Dataset for the Legend
-	 * @param storage - a Map to store the Shapelocations to
-	 * @param Legend - indication whether we are creating a legend layout of a non legend layout.
+	 * @param data the {@link ItemNodeData} to use for layout generation
+	 * @param AreaAndPosition The area available for the layout
+	 * @param DataSetLabel The Label of the Dataset for the Legend
+	 * @param storage a Map to store the Shapelocations to
+	 * @param Legend indication whether we are creating a legend layout of a non legend layout.
 	 */
 	private void createLayoutPositions(ItemNodeData data, Rectangle AreaAndPosition, String DataSetLabel, HashMap<Integer,ShapePosition> storage, boolean Legend)
 	{
@@ -171,14 +171,14 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 
 	/**
 	 * Get the Shape to be used for individual items in the specified area.
-	 * @param Area - The size of the shape to be returned.
+	 * @param Area The size of the shape to be returned.
 	 * @return A Shape with appropriate dimension
 	 */
 	public abstract Shape getShape(Dimension Area);
 	/**
 	 * Get the ShapePosition representing the current Legend using the label indicated, and the Dimension provided.
-	 * @param Area - Area to put the legend shape into
-	 * @param itemid - The Label for the {@link ShapePosition}.
+	 * @param Area Area to put the legend shape into
+	 * @param itemid The Label for the {@link ShapePosition}.
 	 * @return A shapeposition, that can draw itself using the provided area and d
 	 */
 	public abstract ShapePosition getLegendShape(Rectangle2D Area, String itemid);
@@ -207,9 +207,9 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	
 	/**
 	 * plot the information to a standard node (not a lgend)
-	 * @param ndata - the data to use for color indication
-	 * @param context - the graphics context to plot to
-	 * @param colors - the Colormap to use.
+	 * @param ndata  the data to use for color indication
+	 * @param context the graphics context to plot to
+	 * @param colors the Colormap to use.
 	 */
 	private void LayoutDataForImageNode(ItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
 	{
@@ -229,9 +229,9 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	}
 	/**
 	 * Plot the information to a Legend node 
-	 * @param ndata - the data to use for color indication
-	 * @param context - the graphics context to plot to
-	 * @param colors - the Colormap to use.
+	 * @param ndata the data to use for color indication
+	 * @param context the graphics context to plot to
+	 * @param colors the Colormap to use.
 	 */
 	private void LayoutDataForLegendNode(ItemNodeData ndata, SVGGraphics2D context, ColorMap colors)
 	{
@@ -261,9 +261,9 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 	}
 	/**
 	 * Calc the rows and columns used for layouting, based on width heights and the number of items.
-	 * @param width - the available width
-	 * @param height - the available height
-	 * @param itemcount - the number of items to distribute.
+	 * @param width the available width
+	 * @param height the available height
+	 * @param itemcount the number of items to distribute.
 	 */
 	private void calcRowsAndCols(int width, int height, int itemcount)
 	{
@@ -337,8 +337,8 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 		}
 		/**
 		 * Draw the shape in the given {@link SVGGraphics2D} context with the provided color
-		 * @param context - the context to draw in
-		 * @param fillcolor - the {@link Color} to use to fill the shape.
+		 * @param context the context to draw in
+		 * @param fillcolor the {@link Color} to use to fill the shape.
 		 */
 		public void draw(SVGGraphics2D context, Color fillcolor)
 		{
@@ -367,11 +367,11 @@ public abstract class AbstractItemContainerLayout extends ContainerLayout {
 		 * Create a {@link LegendShapePosition}. In additon to the shape and Position information for the ShapePosition,  
 		 * we need the label, the position of the label and the labelfont.
 		 * THe labelposition is necessary to avoid recalculations during every plot. 
-		 * @param shape - The shape to use
-		 * @param position - the position at which the shape will be plotted
-		 * @param ItemID - the LAbel used 
-		 * @param FontPosition - the postition the label will be plotted at
-		 * @param labelfont - The font used for the label.
+		 * @param shape The shape to use
+		 * @param position the position at which the shape will be plotted
+		 * @param ItemID the LAbel used 
+		 * @param FontPosition the postition the label will be plotted at
+		 * @param labelfont The font used for the label.
 		 */
 		public LegendShapePosition(Shape shape, Rectangle2D position, String ItemID, Point2D FontPosition, Font labelfont)
 		{

@@ -16,9 +16,9 @@ public class DataSetFactory {
 	}
 	/**
 	 * Generate a new instance for a class of a specific classname.
-	 * @param DataSetClass - the classname for which an instance is requested
+	 * @param DataSetClass the classname for which an instance is requested
 	 * @return an empty instance of the respective class.
-	 * @throws ClassNotFoundException - IF the class is not found.
+	 * @throws ClassNotFoundException IF the class is not found.
 	 */
 	public static DataSet getDataSet(String DataSetClass) throws ClassNotFoundException
 	{		

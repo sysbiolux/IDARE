@@ -1,11 +1,10 @@
 package idare.imagenode.internal.GUI.NetworkSetup;
 
 import idare.Properties.IDAREProperties;
-import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupProperties;
 import idare.imagenode.internal.Utilities.GUIUtils;
-import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,64 +12,52 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Collection;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
-/**
- * GUI to setup Network Properties to fit to the needs of the IDARE app. 
- * @author Thomas Pfau
- *
- */
-public class NetworkSetupGUI extends JDialog{
+
+public class NetworkSetupTunableGUI extends JPanel {
 	
-	private CySwingApplication cySwingApp;
-	private IDARESettingsManager mgr;
+	//private IDARESettingsManager mgr;
 	private Color background;
 	private JComboBox<String> typeColSelector = new JComboBox<String>();
 	private JComboBox<String> IDColSelector = new JComboBox<String>();
 	private JCheckBox overwrite = new JCheckBox();
 	private ColumnTypeChooser ctc;
-	private JButton acceptButton = new JButton("Accept");
-	private CyNetwork network; 
+	boolean overwriteData;
 	public String IDCol;
 	public String TypeCol;
-	NodeManager nm;
 	/**
-	 * A Constructor requiring the column names to select the columns for the different properties from,
-	 * In addition, the current network is needed, along with the cySwingApp (for hierarchy reference), the {@link IDARESettingsManager} for 
-	 * idare specific settings, and a nodemanager to be informed of the updated nodes.  
-	 * @param ColumnNames
+	 * Generate the Requesting fields using the given network  
 	 * @param network
-	 * @param cySwingApp
-	 * @param mgr
-	 * @param nm
 	 */
-	public NetworkSetupGUI( Vector<String> ColumnNames,  CyNetwork network, 
-			CySwingApplication cySwingApp, IDARESettingsManager mgr, NodeManager nm){
-		super(cySwingApp.getJFrame(),"Select fields and names for network setup");
-		background = this.getContentPane().getBackground();
-		ctc = new ColumnTypeChooser(network, ColumnNames);
-		this.network = network;
-		this.mgr = mgr;		
-		this.nm = nm;
-		JPanel ContentPane = new JPanel();
-		this.setContentPane(ContentPane);
-		ContentPane.setLayout(new GridBagLayout());
+	public NetworkSetupTunableGUI(CyNetwork network){
+		PrintFDebugger.Debugging(this, "Setting up new GUI");
+		background = getBackground();
+		Collection<CyColumn> cols = network.getDefaultNodeTable().getColumns();
+		Vector<String> columnNames = new Vector<String>();
+		for( CyColumn col : cols)
+		{
+			String colName = col.getName();
+			if(!(columnNames.contains(colName)))
+			{
+				columnNames.add(colName);
+			}
+		}
+		ctc = new ColumnTypeChooser(network, columnNames);
+
+		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;		
 		gbc.gridx = 0;
@@ -78,18 +65,18 @@ public class NetworkSetupGUI extends JDialog{
 		gbc.weightx = 1;
 		gbc.weighty = 1;
 		gbc.gridwidth = 2;		
-		ContentPane.add(createTitle(),gbc);
+		this.add(createTitle(),gbc);
 		gbc.gridwidth = 1;
 		gbc.weighty = 4;
 		gbc.insets = new Insets(0,0,0,5);
 		gbc.gridy++;
-		setupSelectors(ColumnNames);
-		ContentPane.add(createTypeAndIDSelection(),gbc);
+		setupSelectors(columnNames);
+		this.add(createTypeAndIDSelection(),gbc);
 		gbc.gridx = 1;
 		//gbc.gridy = 1;
 		gbc.insets = new Insets(0,5,0,0);
 		gbc.anchor = GridBagConstraints.NORTHWEST;
-		ContentPane.add(ctc,gbc);
+		this.add(ctc,gbc);
 		ctc.updateChoosersWithFourOptions();
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.gridx = 0;
@@ -98,9 +85,9 @@ public class NetworkSetupGUI extends JDialog{
 		gbc.weighty = 1;
 		gbc.gridy++;
 		gbc.insets = new Insets(5 ,  0 , 0 , 0);
-		ContentPane.add(createAcceptButton(),gbc);
+		//this.add(createAcceptButton(),gbc);
 		this.setSize(new Dimension(400,300));
-		this.pack();
+		//this.pack();
 		ctc.updateChoosers(typeColSelector.getSelectedIndex());
 		//this.setResizable(false);
 		this.setVisible(true);		
@@ -161,18 +148,6 @@ public class NetworkSetupGUI extends JDialog{
 		
 		return TitlePanel;
 	}
-	
-	/**
-	 * Create the Accept Button.
-	 * @return
-	 */
-	private JButton createAcceptButton()
-	{
-		acceptButton.setPreferredSize(new Dimension(100,30));		
-		acceptButton.setText("Accept");
-		acceptButton.addActionListener(new TypeSelectionChoiceListener(mgr,this,cySwingApp,ctc));
-		return acceptButton;
-	}
 
 	/**
 	 * Create a general checkbox panel
@@ -199,25 +174,36 @@ public class NetworkSetupGUI extends JDialog{
 		return resultingPanel;
 	}
 	
-	/**
-	 * Set the properties of the IDAREProperties according to the selection. 
-	 */
-	public void setNetworkProperties()
-	{
-		mgr.setType(IDAREProperties.NodeType.IDARE_SPECIES, ctc.getCompoundID());
-		mgr.setType(IDAREProperties.NodeType.IDARE_GENE, ctc.getGeneID());
-		mgr.setType(IDAREProperties.NodeType.IDARE_REACTION, ctc.getReactionID());
-		mgr.setType(IDAREProperties.NodeType.IDARE_PROTEIN, ctc.getProteinID());
-	}	
+
 	
 	/**
 	 * Setup the Network (using the default methodology from the Visualstyle
 	 */
 	public void setupNetwork()
 	{
-		IDAREVisualStyle.SetNetworkData(network, mgr, typeColSelector.getSelectedItem().toString(), IDColSelector.getSelectedItem().toString(), overwrite.isSelected(),nm);
+	//	IDAREVisualStyle.SetNetworkData(network, mgr, typeColSelector.getSelectedItem().toString(), IDColSelector.getSelectedItem().toString(), overwrite.isSelected(),nm);
 	}
 	
+	
+	public NetworkSetupProperties getNetworkSetupProperties()
+	{
+		if(ctc.acceptable())
+		{
+			NetworkSetupProperties props = new NetworkSetupProperties();
+			props.CompoundID = ctc.getCompoundID();
+			props.GeneID = ctc.getGeneID();
+			props.InteractionID = ctc.getReactionID();
+			props.ProteinID = ctc.getProteinID();
+			props.IDColID = IDColSelector.getSelectedItem().toString();
+			props.TypeColID = typeColSelector.getSelectedItem().toString();
+			props.overwrite = overwriteData;
+			return props;
+		}
+		else
+		{
+			return null;
+		}
+	}
 	/**
 	 * Listen to the choice of the columns
 	 * @author Thomas Pfau
@@ -226,9 +212,9 @@ public class NetworkSetupGUI extends JDialog{
 	private class ColumChoiceListener implements ItemListener
 	{
 
-		NetworkSetupGUI snc;
+		NetworkSetupTunableGUI snc;
 		ColumnTypeChooser ctc;
-		public ColumChoiceListener(NetworkSetupGUI snc, ColumnTypeChooser ctc)
+		public ColumChoiceListener(NetworkSetupTunableGUI snc, ColumnTypeChooser ctc)
 		{
 			this.snc = snc;
 			this.ctc = ctc;
@@ -246,40 +232,5 @@ public class NetworkSetupGUI extends JDialog{
 		}
 
 	}
-	
-	/**
-	 * Listen to the choice of the Selection and apply it to the network.
-	 * @author Thomas Pfau
-	 *
-	 */
-	private class TypeSelectionChoiceListener implements ActionListener
-	{
-		private NetworkSetupGUI chooser;
-		private CySwingApplication cySwingApp;
-		ColumnTypeChooser ctc;
-		public TypeSelectionChoiceListener(IDARESettingsManager mgr,NetworkSetupGUI nsg, CySwingApplication cySwingApp, ColumnTypeChooser ctc)
-		{
-			chooser = nsg;
-			this.cySwingApp = cySwingApp;
-			this.ctc= ctc;
-		}
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if(!ctc.acceptable())
-			{
-				JOptionPane.showMessageDialog(chooser, "Selection invalid. No element may be choosen twice and both compound and reaction have to be selected", "Warning",
-				        JOptionPane.WARNING_MESSAGE);
-				}
-			else{
-				chooser.setNetworkProperties();
-				chooser.setupNetwork();
-				chooser.IDCol = IDColSelector.getSelectedItem().toString();
-				chooser.TypeCol = typeColSelector.getSelectedItem().toString();
-				chooser.dispose();
-			}
-			
-		}
-		
-	}
 }

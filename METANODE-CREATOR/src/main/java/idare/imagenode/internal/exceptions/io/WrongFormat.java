@@ -5,6 +5,7 @@ package idare.imagenode.internal.exceptions.io;
  *
  */
 public class WrongFormat extends Exception {	
+	
 	public WrongFormat(String Information) {
 		// TODO Auto-generated constructor stub
 		super(Information);			

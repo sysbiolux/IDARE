@@ -1,7 +1,6 @@
 package idare.imagenode.Interfaces.DataSetReaders.WorkBook.BasicImplementation;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
-import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERowIterator;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 
 import java.util.Iterator;

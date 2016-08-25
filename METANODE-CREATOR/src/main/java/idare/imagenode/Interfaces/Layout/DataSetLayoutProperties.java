@@ -67,11 +67,11 @@ public abstract class DataSetLayoutProperties implements IDAREService,Serializab
 	
 	/**
 	 * Plot the Legend for this Dataset.
-	 * @param Legend - The Legend the returned Panel will be added to (to listen to resize events.
-	 * @param DataSetLabel - the Label of the DataSet these properties are used for
-	 * @param map - the colormap used for the corresponding dataset
-	 * @param set - the dataset for which to generate a DescriptionPane
-	 * @return - a JPanel that contains descriptive information about the provided dataset and its visualisation.
+	 * @param Legend The Legend the returned Panel will be added to (to listen to resize events.
+	 * @param DataSetLabel the Label of the DataSet these properties are used for
+	 * @param map the colormap used for the corresponding dataset
+	 * @param set the dataset for which to generate a DescriptionPane
+	 * @return a JPanel that contains descriptive information about the provided dataset and its visualisation.
 	 */
 	public abstract JPanel getDataSetDescriptionPane(JScrollPane Legend, String DataSetLabel, ColorMap map, DataSet set);
 	

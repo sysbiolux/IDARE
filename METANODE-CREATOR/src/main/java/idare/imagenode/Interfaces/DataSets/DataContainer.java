@@ -39,8 +39,8 @@ public interface DataContainer {
 	 * Get the preferred size (as a rectangle with Integer width and height, based on the available area provided
 	 * The resulting {@link Rectangle} width must be smaller or equal to the provided {@link Rectangle}. The same applies to 
 	 * its height.  
-	 * @param availablearea - The area available to generate the layout
-	 * @param style - the localisation (either CENTER or EDGE).
+	 * @param availablearea The area available to generate the layout
+	 * @param style the localisation (either CENTER or EDGE).
 	 * @return the preferred size within the provided rectangle
 	 */
 	public Dimension getPreferredSize(Dimension availablearea, LayoutStyle style );

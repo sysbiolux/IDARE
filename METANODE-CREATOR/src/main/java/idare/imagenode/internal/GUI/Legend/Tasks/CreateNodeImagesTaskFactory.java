@@ -69,7 +69,7 @@ public class CreateNodeImagesTaskFactory extends AbstractTaskFactory implements 
 		}
 		/**
 		 * Get the string to use  for this option.
-		 * @return
+		 * @return the string used to generate the displaystring
 		 */
 		public String getUseString()
 		{
@@ -77,6 +77,7 @@ public class CreateNodeImagesTaskFactory extends AbstractTaskFactory implements 
 		}
 		/**
 		 * Get the Display String for this option
+		 * @return The Displaystring associated with the useString
 		 */
 		public String toString()
 		{

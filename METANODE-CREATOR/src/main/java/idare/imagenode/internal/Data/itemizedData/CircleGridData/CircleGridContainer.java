@@ -20,7 +20,6 @@ public class CircleGridContainer extends AbstractItemContainer{
 	public CircleGridContainer(DataSet origin, ItemNodeData data)
 	{
 		super(origin,data);
-		//System.out.println("Creating new Container for DataSet " + origin.getID() + " with " + data.getValueCount() + " items" );
 	}
 	@Override
 	public ContainerLayout createEmptyLayout()

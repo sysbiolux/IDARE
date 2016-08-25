@@ -24,7 +24,6 @@ public class RectangleContainerLayout extends AbstractItemContainerLayout{
 	private static final long serialVersionUID = 1001;
 	public RectangleContainerLayout() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

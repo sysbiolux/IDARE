@@ -37,9 +37,9 @@ public class ColorScalePane extends JPanel{
 	/**
 	 * This helper function paints a {@link LinearGradientPaint} on a graphics object.
 	 * Unfortunately directly printing it to a panel will mess up the size, so we print it to a image instead in paintComponent 
-	 * @param g
-	 * @param w
-	 * @param h
+	 * @param g The graphics object to paint to
+	 * @param w The width of the gradient
+	 * @param h the height of the gradient
 	 */
 	private void paintGradient(Graphics g, int w, int h)
 	{

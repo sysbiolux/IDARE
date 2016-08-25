@@ -1,7 +1,9 @@
 package idare.sbmlannotator.internal;
 
 import idare.Properties.IDAREProperties;
+import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
+import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.Services.JSBML.Annotation;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
 import idare.imagenode.internal.Services.JSBML.Model;
@@ -34,16 +36,7 @@ import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
-//import org.sbml.jsbml.CVTerm.Qualifier;
 
-/*import org.sbml.jsbml.CVTerm;
-import org.sbml.jsbml.Model;
-import org.sbml.jsbml.Reaction;
-import org.sbml.jsbml.SBMLDocument;
-//import org.sbml.jsbml.SBMLReader;
-//import org.sbml.jsbml.SBMLWriter;
-import org.sbml.jsbml.Species;
-*/
 
 public class SBMLAnnotaterTask extends AbstractTask{
 
@@ -60,6 +53,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 	private String sbmlIDCol;
 	private String sbmlCompCol;
 	private String sbmlInteractionCol;
+	private IDAREImageNodeApp app;
 	/**
 	 * A Task reading in an SBML File and parsing its Notes fields adding the information to the Nodes of the current network. 
 	 * @param cymanager 
@@ -68,7 +62,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 	 * @param eventHelper
 	 */
 	public SBMLAnnotaterTask(CyApplicationManager cymanager,SBMLDocument SBMLDoc, boolean GenerateGeneNodes,	CyEventHelper eventHelper, CySwingApplication cySwingApp, String GeneAnnotDB,
-			String ProtAnnotDB,Map<String,Set<CVTerm>> ProtAnnot, Model model,String sbmlTypeCol,String sbmlIDCol, String sbmlCompCol, String SBMLInteractionCol)
+			String ProtAnnotDB,Map<String,Set<CVTerm>> ProtAnnot, Model model,String sbmlTypeCol,String sbmlIDCol, String sbmlCompCol, String SBMLInteractionCol, IDAREImageNodeApp app)
 	{
 		this.geneAnnotationDatabase = GeneAnnotDB;
 		this.ProteinAnnotationDatabase = ProtAnnotDB;
@@ -82,6 +76,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		this.sbmlTypeCol= sbmlTypeCol;
 		this.sbmlIDCol = sbmlIDCol;
 		this.sbmlCompCol = sbmlCompCol;
+		this.app = app;
 		sbmlInteractionCol = SBMLInteractionCol;
 	}
 
@@ -553,6 +548,11 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			}
 			//now we can create the new CyNodes
 			CyTable nodetab = cymanager.getCurrentNetwork().getDefaultNodeTable();
+			boolean setIDAREColumns = false;
+			if(nodetab.getColumn(IDAREProperties.IDARE_NODE_TYPE) != null)
+			{
+				setIDAREColumns = true;
+			}
 			CyTable edgetab = cymanager.getCurrentNetwork().getDefaultEdgeTable();
 			Collection<CyColumn> cols = edgetab.getColumns();
 			//			for(CyColumn col : cols)
@@ -570,20 +570,35 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			//CyNetwork network = cymanager.getCurrentNetwork();
 
 			HashMap<CyNode, Set<CyNode>> ReacToGene = new HashMap<CyNode, Set<CyNode>>();
+			boolean IDARENetwork = false;
 			for(String gene: GeneSet)
 			{
 				CyNode newNode = network.addNode();				
 				CyRow cRow = nodetab.getRow(newNode.getSUID());
+				
 				//if this network is set up, we will also fill in the IDARE Fields 
-//				if(Tab.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
-//				{
-//					cRow.set(IDAREProperties.IDARE_NODE_NAME, gene);
-//				}
-//				if(Tab.getColumn(IDAREProperties.IDARE_NODE_TYPE) != null)
-//				{
-//					cRow.set(IDAREProperties.IDARE_NODE_TYPE, IDAREProperties.NodeType.IDARE_GENE);
-//				}
+				if(Tab.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
+				{
+					cRow.set(IDAREProperties.IDARE_NODE_NAME, gene);
+				}
+				
+				if(Tab.getColumn(IDAREProperties.IDARE_NODE_TYPE) != null)
+				{
+					cRow.set(IDAREProperties.IDARE_NODE_TYPE, IDAREProperties.NodeType.IDARE_GENE);
+				}
+				
+				if(Tab.getColumn(IDAREProperties.IDARE_NODE_UID) != null)
+				{
+					IDARENetwork = true;
+					cRow.set(IDAREProperties.IDARE_NODE_UID, app.getSettingsManager().getNextID());
+				}
+				
 				cRow.set(sbmlTypeCol, IDAREProperties.SBML_GENE_STRING);
+				if(setIDAREColumns)
+				{
+					cRow.set(IDAREProperties.IDARE_NODE_TYPE, IDAREProperties.NodeType.IDARE_GENE);
+					
+				}
 				cRow.set(sbmlIDCol, gene);
 				// if it is a single Gene Association, add it to the ReacToGeneMap of the corresponding node. 
 				if(singleGenes.contains(gene))
@@ -621,7 +636,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_Y_LOCATION, currenty, false));
 
 				}
-			}
+			}			
 			//position all Genes with multiple places
 			for(CyNode ReacNode : ReacToGene.keySet())
 			{
@@ -651,7 +666,11 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			eventHelper.flushPayloadEvents();			
 			DelayedVizProp.applyAll(cymanager.getCurrentNetworkView(), VizProps);
 			eventHelper.flushPayloadEvents();
-			cymanager.getCurrentNetworkView().updateView();			
+			cymanager.getCurrentNetworkView().updateView();
+			if(IDARENetwork)
+			{
+				app.getNodeManager().updateNetworkNodes();
+			}
 		}
 		}
 		catch(Exception e)

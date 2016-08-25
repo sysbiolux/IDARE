@@ -17,6 +17,11 @@ import javax.swing.JScrollPane;
 public class HeaderDescription extends ItemDataDescription {
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Set up the Description for a specific set of data and a given DataSetLabel.
 	 * Adjust the size accoring to changes in the Legend provided.
 	 * @param currentdata

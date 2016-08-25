@@ -2,7 +2,6 @@ package idare.imagenode.internal;
 
 
 import idare.Properties.IDARESettingsManager;
-import idare.imagenode.BundleProperties;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.internal.DataManagement.DataSetProvider;
 import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
@@ -10,7 +9,7 @@ import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerF
 import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.LegendUpdater;
-import idare.imagenode.internal.GUI.NetworkSetup.NetworkSetup;
+import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
 import idare.imagenode.internal.Services.JSBML.SBMLServiceRegistrar;
 import idare.sbmlannotator.internal.SBMLAnnotationTaskFactory;
 import idare.subsystems.internal.NetworkViewSwitcher;
@@ -77,18 +76,11 @@ public class CyActivator extends AbstractCyActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		
-		BundleProperties bp = new BundleProperties(context);
 		appcontext = context;
 		CyApplicationConfiguration configuration = getService(context, CyApplicationConfiguration.class);
 		File cyDirectory = configuration.getConfigurationDirectoryLocation();
-		File appDirectory = new File(cyDirectory, bp.getName());
-		
-		if(appDirectory.exists() == false) {
-			appDirectory.mkdir();
-		}
+
 		// Set the default logging position for the App.
-		File logFile = new File(appDirectory, bp.getInfo() + ".log");
-		System.setProperty("logfile.name", logFile.getAbsolutePath());		
 		
 		//The following lines allow access to the yFiles layouts for subnetwork generation tasks.
 		final NetworkViewTaskFactory organic = getService(context,NetworkViewTaskFactory.class, "(title=Organic)");
@@ -143,26 +135,23 @@ public class CyActivator extends AbstractCyActivator {
 		//initialize and register the app components.
 		app = new IDAREImageNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager);		
 		app.registerPlugin(new DataSetReaderProvider());
-		app.registerPlugin(new DataSetProvider());
+		app.registerPlugin(new DataSetProvider());				
 		
-		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,app.getDatasetManager());		
-		registerService(context, dsctf, GUITunableHandlerFactory.class,   new Properties());
-		
-		
+		//Generate the Externally available sErvice
 		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(app);
-		NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
+		
+		//NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
+		
+		//Set up the Legend Panel
 		IDARELegend pan = app.getLegend();
 		LegendUpdater up = new LegendUpdater(pan, app.getNodeManager(), cyAppMgr,vmm, app.getStyleManager());		
 		up.activate();
-		DataSetControlPanel dcp = app.getDataSetPanel();
-		//MenuAction action = new MenuAction(cyAppMgr, "Manage datasets for image nodes",app,cySwingApp,util,pan);
-		//ImageCreator painter = new ImageCreator(app.getLegend(), cyAppMgr, util, cySwingApp, app.getNodeManager());
-		//AddNodesToStyleAction addnodes = new AddNodesToStyleAction(cyAppMgr, app.getStyleManager());
-		//RemoveNodesFromStyleAction removenodes = new RemoveNodesFromStyleAction(cyAppMgr, app.getStyleManager());
-		//registerAllServices(context, painter, new Properties());
-		//Start up the Menuaction...
-		//action.actionPerformed(new ActionEvent(this, 1, "1"));
-
+		DataSetControlPanel dcp = app.getDataSetPanel();	
+		
+		//Generate he TunableHandlers
+		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,app.getDatasetManager());		
+		NetworkSetupGUIHandlerFactory nsghf = new NetworkSetupGUIHandlerFactory(app.getNodeManager(), app.getSettingsManager(), cyAppMgr);
+		
 		//Register the Actions of the App.
 		for(CyAction cyAct : app.getActions())
 		{
@@ -184,13 +173,13 @@ public class CyActivator extends AbstractCyActivator {
 				}
 			}
 		}
-		//registerAllServices(context, addnodes, new Properties());
-		//registerAllServices(context, removenodes, new Properties());
 		registerAllServices(context, app.getStyleManager(), new Properties());
-		//DataSetManager.clearTemporaryFolder();
-		//Register the Legend Panel and its updater.
 		registerAllServices(context, pan, new Properties());
 		registerAllServices(context, up, new Properties());
+		//Register the tunable Handlers
+		registerService(context, nsghf, GUITunableHandlerFactory.class, new Properties());
+		registerService(context, dsctf, GUITunableHandlerFactory.class, new Properties());
+
 		//Register the app as its own service and load and save listener.
 		registerService(context, app, SessionAboutToBeSavedListener.class, new Properties());
 		registerService(context, app, SessionLoadedListener.class, new Properties());
@@ -201,7 +190,7 @@ public class CyActivator extends AbstractCyActivator {
 		//Register the DatasetControlPanel
 		registerAllServices(context, dcp, new Properties());
 		//Register the Network Setup Menu item.
-		registerAllServices(context, nsa, new Properties());
+		//registerAllServices(context, nsa, new Properties());
 	}	
 	private void registerSBMLAnnotator(BundleContext context)
 	{
@@ -232,7 +221,7 @@ public class CyActivator extends AbstractCyActivator {
 		//		cytoscapePropertiesServiceRef,eventHelper,FileUtilService,cySwingApp);
 		SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
 		context.addServiceListener(SBMLReg);
-		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder());
+		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app);
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
 	

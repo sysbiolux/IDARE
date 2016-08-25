@@ -14,6 +14,10 @@ import idare.imagenode.Properties.Localisation.Position;
  */
 public class RectangleDataSetProperties extends AbstractItemDataSetProperties{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public Position getLocalisationPreference() {
 		return Position.EDGE;

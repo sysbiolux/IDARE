@@ -2,6 +2,8 @@ package idare.imagenode.Interfaces.DataSets;
 
 import java.io.Serializable;
 
+import com.thoughtworks.xstream.io.json.JsonWriter.Node;
+
 
 
 /**
@@ -49,7 +51,7 @@ public abstract class NodeData implements Serializable{
 	}
 	/**
 	 * Set the Label of this {@link NodeData}
-	 * @param id
+	 * @param id The Label to assign to this {@link NodeData}  
 	 */
 	public void setLabel(String id)
 	{
@@ -57,7 +59,7 @@ public abstract class NodeData implements Serializable{
 	}
 	/**
 	 * Set the ID of this {@link NodeData}
-	 * @param id
+	 * @param id The ID to assign to this {@link NodeData}
 	 */
 	public void setID(String id)
 	{

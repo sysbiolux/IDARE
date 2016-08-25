@@ -28,7 +28,7 @@ public class PrintFDebugger {
 			Logger log = LoggerFactory.getLogger(obj.getClass());
 			Calendar cal = Calendar.getInstance();
 	        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");	        
-			log.info(sdf.format(cal.getTime()) + ":" + Message  );
+			System.out.println(sdf.format(cal.getTime()) + "(" + obj.getClass().getSimpleName() + " " + e.getStackTrace()[1].getLineNumber()  + ":" + Message  );
 		}
 	}
 	

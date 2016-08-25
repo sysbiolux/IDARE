@@ -16,6 +16,8 @@ import idare.imagenode.internal.GUI.DataSetController.CreateNodesTaskFactory;
 import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.Tasks.CreateNodeImagesTaskFactory;
+import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
+import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupTaskFactory;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 import idare.imagenode.internal.VisualStyle.StyleManager;
@@ -120,9 +122,9 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		storage.addImageLayoutChangedListener(ids);
 		styleManager = new StyleManager(storage, vmm, nvm, eventHelper, nm, cyAppMgr);
 		storage.addImageLayoutChangedListener(styleManager);
-		dcp = new DataSetControlPanel(cySwingApp, dsm, util, nm);
-		createActions(dtm, cyAppMgr);
-		createTaskFactories(dtm,util,cySwingApp);
+		dcp = new DataSetControlPanel(cySwingApp, dsm, nm);
+		createActions(dtm, cyAppMgr);		
+		createTaskFactories(dtm,util,cySwingApp,cyAppMgr);
 		this.dtm = dtm;
 	}
 	
@@ -204,10 +206,10 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	}
 	/**
 	 * Register a DataSet Type that can be selected in the DataSet selection.
-	 * @param DataSetClass - the class of the new {@link DataSet}
-	 * @throws IllegalAccessException - if there was an illegal access to the dataset class.
-	 * @throws InstantiationException - if things went wrong in the Instantiation of the class
-	 * @throws DuplicateIDException - if there are two datasets with the same type name
+	 * @param DataSetClass the class of the new {@link DataSet}
+	 * @throws IllegalAccessException if there was an illegal access to the dataset class.
+	 * @throws InstantiationException if things went wrong in the Instantiation of the class
+	 * @throws DuplicateIDException if there are two datasets with the same type name
 	 */
 	public void registerDataSetType(DataSet ds) throws DuplicateIDException 
 	{		
@@ -216,8 +218,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Deregister a DataSet Type that can from the available selection.
-	 * @param DataSetClassName - the classname of the new {@link DataSet}
-	 * @return - whether the dataset type could be added
+	 * @param DataSetClassName the classname of the new {@link DataSet}
+	 * @return whether the dataset type could be added
 	 */
 	public void deregisterDataSetType(DataSet ds)  
 	{				
@@ -226,9 +228,9 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Register DataSetProperties for a DataSet of the given Type.
-	 * @param dataSetClass - the classname of the {@link DataSet}, for which to add the properties
-	 * @param props - The DataSetproperties to make available.
-	 * @return - whether the dataset type could be added
+	 * @param dataSetClass the classname of the {@link DataSet}, for which to add the properties
+	 * @param props The DataSetproperties to make available.
+	 * @return whether the dataset type could be added
 	 */
 	public boolean registerDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetLayoutProperties props)
 	{
@@ -237,9 +239,9 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Register DataSetProperties for a DataSet of the given Type.
-	 * @param dataSetClass - the classname of the {@link DataSet}, for which to add the properties
- 	 * @param props - The collection of DataSetproperties to make available to this type of dataset.
-	 * @return - A set of Properties that could not be registered
+	 * @param dataSetClass the classname of the {@link DataSet}, for which to add the properties
+ 	 * @param props The collection of DataSetproperties to make available to this type of dataset.
+	 * @return A set of Properties that could not be registered
 	 */
 	public Collection<DataSetLayoutProperties> registerDataSetProperties(Class<? extends DataSet> dataSetClass, Collection<DataSetLayoutProperties> props)
 	{
@@ -248,8 +250,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Deregister DataSetProperties from a DataSet of the given Type.
-	 * @param dataSetClass - the classname of the {@link DataSet} to deregister the properties from
-	 * @param props - The properties to deregister.
+	 * @param dataSetClass the classname of the {@link DataSet} to deregister the properties from
+	 * @param props The properties to deregister.
 	 */
 	public void deRegisterDataSetProperties(Class<? extends DataSet> dataSetClass, DataSetLayoutProperties props)
 	{
@@ -259,7 +261,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Deregister an {@link IDAREDatasetReader} from being available in the app.
-	 * @param reader - the {@link IDAREDatasetReader} to deregister.
+	 * @param reader the {@link IDAREDatasetReader} to deregister.
 	 */
 	public void deRegisterDataSetReader(IDAREDatasetReader reader)
 	{
@@ -268,7 +270,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Register an {@link IDAREDatasetReader} to be available in the app.
-	 * @param reader - the {@link IDAREDatasetReader} to register.
+	 * @param reader the {@link IDAREDatasetReader} to register.
 	 */
 	public void registerDataSetReader(IDAREDatasetReader reader)
 	{
@@ -332,14 +334,13 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * Generate the Taskfactories used in the App and register them with the appropriate objects.
-	 * @param dtm - The dialogTaskmanager uses
-	 * @param util - A File Util to use in the Factories
-	 * @param cySwingApp - A reference to the CySwingApp to be used in Factories
+	 * @param dtm The dialogTaskmanager uses
+	 * @param util A File Util to use in the Factories
+	 * @param cySwingApp A reference to the CySwingApp to be used in Factories
 	 * @return
 	 */
-	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp)
+	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp, CyApplicationManager cyAppMgr)
 	{
-		//Vector<TaskFactory> factories = new Vector<TaskFactory>();
 		CreateNodesTaskFactory nodeFactory = new CreateNodesTaskFactory(nm, dcp, dtm);
 		Vector<Properties> props = new Vector<Properties>();
 		props.add(new Properties());
@@ -347,11 +348,36 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		dcp.setNodeFactory(nodeFactory);
 		DataSetAdderTaskFactory dsatf = new DataSetAdderTaskFactory(dsm, dtm, cySwingApp);
 		taskFactories.put(dsatf, props);
-		dcp.setDatasetAdderFactory(dsatf);
-
-		Vector<Properties> nodeImageProps = new Vector<Properties>();
+		dcp.setDatasetAdderFactory(dsatf);	
+		
+		//The Network Setup Task Factory 
+		NetworkSetupTaskFactory nstf = new NetworkSetupTaskFactory(cyAppMgr);
+		Properties setupNetworkMenuProperties = new Properties();
+		setupNetworkMenuProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		setupNetworkMenuProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		setupNetworkMenuProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		setupNetworkMenuProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");		
+		setupNetworkMenuProperties.setProperty(ServiceProperties.TITLE, "Setup Network For IDARE");
+		setupNetworkMenuProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		setupNetworkMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);			
+		Properties setupNetworkContextProperties = new Properties();
+		setupNetworkContextProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		setupNetworkContextProperties.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.APPS_MENU);
+		setupNetworkContextProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		setupNetworkContextProperties.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		setupNetworkContextProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		setupNetworkContextProperties.setProperty(ServiceProperties.TITLE, "Setup Network For IDARE");		
+		setupNetworkContextProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		setupNetworkContextProperties.put("USE_CLASS", NetworkViewTaskFactory.class);
+		Vector<Properties> networkSetupProps = new Vector<Properties>();		
+		networkSetupProps.add(setupNetworkContextProperties);
+		networkSetupProps.add(setupNetworkMenuProperties);
+		taskFactories.put(nstf, networkSetupProps);
+		
 		
 
+		
+		CreateNodeImagesTaskFactory nodeImageFactory = new CreateNodeImagesTaskFactory(util, legend, nm, cySwingApp);
 		Properties createNodesImageMenuProperties = new Properties();
 		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
 		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
@@ -359,9 +385,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		createNodesImageMenuProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");		
 		createNodesImageMenuProperties.setProperty(ServiceProperties.TITLE, "Create Images for current Legend");
 		createNodesImageMenuProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		createNodesImageMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);		
-		CreateNodeImagesTaskFactory nodeImageFactory = new CreateNodeImagesTaskFactory(util, legend, nm, cySwingApp);
-		
+		createNodesImageMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);			
 		Properties createNodesImageContextProperties = new Properties();
 		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
 		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.APPS_MENU);
@@ -371,7 +395,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		createNodesImageContextProperties.setProperty(ServiceProperties.TITLE, "Create Node Images for current Legend");		
 		createNodesImageContextProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
 		createNodesImageContextProperties.put("USE_CLASS", NetworkViewTaskFactory.class);
-
+		Vector<Properties> nodeImageProps = new Vector<Properties>();		
 		nodeImageProps.add(createNodesImageMenuProperties);
 		nodeImageProps.add(createNodesImageContextProperties);
 		
@@ -380,8 +404,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	}
 	/**
 	 * Create All Actions, and their associated factories if necessary.
-	 * @param dtm - A DialogTaskmanager for the tasks
-	 * @param cyAppMgr - the CyAppMgr to set the Actions.
+	 * @param dtm A DialogTaskmanager for the tasks
+	 * @param cyAppMgr the CyAppMgr to set the Actions.
 	 */
 	private void createActions(DialogTaskManager dtm, CyApplicationManager cyAppMgr)
 	{
@@ -464,7 +488,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	/**
 	 * 
 	 * Register a plugin.	 
-	 * @param plugin - the plugin to register
+	 * @param plugin the plugin to register
 	 */
 	public void registerPlugin(IDAREPlugin plugin)
 	{
@@ -475,7 +499,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	
 	/**
 	 * UnRegister a plugin.
-	 * @param plugin - the plugin to unregister.
+	 * @param plugin the plugin to unregister.
 	 */
 	public void deRegisterPlugin(IDAREPlugin plugin)
 	{

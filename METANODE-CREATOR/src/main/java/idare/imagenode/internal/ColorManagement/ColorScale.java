@@ -15,7 +15,7 @@ public interface ColorScale extends Serializable{
 
 	/**
 	 * get a color
-	 * @param value - a value between 0 and 1.
+	 * @param value a value between 0 and 1.
 	 * @return the appropriate color on the scale.
 	 */
 	public Color getColor(double value);
@@ -34,7 +34,7 @@ public interface ColorScale extends Serializable{
 	 * Set the {@link ColorScaleProperties} used by this {@link ColorScale}
 	 * This can e.g. adapt a certain color to a specific point in the scale (e.g. for 0 balancing) but can also be used to stretch
 	 * specific parts of the {@link ColorScale}.
-	 * @param props - The {@link ColorScaleProperties} to be used.
+	 * @param props The {@link ColorScaleProperties} to be used.
 	 */
 	public void setColorScaleProperties(ColorScaleProperties props);
 	/**
@@ -47,8 +47,8 @@ public interface ColorScale extends Serializable{
 	/**
  	 * Move a point in the 0-1 scale to the target value.
 	 * If Either origval or targetval are outside the 0-1 range, nothing will happen.
-	 * @param origval - A value in the range of [0.0,1.0]. that should be moved 
-	 * @param targetval - The value the origval shall be moved to in the range of [0.0,1.0]. 
+	 * @param origval A value in the range of [0.0,1.0]. that should be moved 
+	 * @param targetval The value the origval shall be moved to in the range of [0.0,1.0]. 
 	 */
 	public void movePointOnScale(float origval, float targetval);
 }

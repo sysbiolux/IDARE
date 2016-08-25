@@ -21,18 +21,18 @@ public interface IDARESheet extends Iterable<IDARERow>{
 	public int getPhysicalNumberOfRows();
 	/**
 	 * Get the Row with the provided row index 
-	 * @param arg0 - the index for which a {@link IDARERow} is requested
-	 * @return - the requested Row or null, if it does not exist.
+	 * @param arg0 the index for which a {@link IDARERow} is requested
+	 * @return the requested Row or null, if it does not exist.
 	 */
 	public IDARERow getRow(int arg0);
 	/**
 	 * Get the Name of this Sheet.
-	 * @return - the name of this sheet.
+	 * @return the name of this sheet.
 	 */
 	public String getSheetName();	
 	/**
 	 * Get an Iterator over all rows in this Sheet.
-	 * @return - The iterator iterating over all Rows in this sheet. 
+	 * @return The iterator iterating over all Rows in this sheet. 
 	 */
 	public Iterator<IDARERow> rowIterator();	
 

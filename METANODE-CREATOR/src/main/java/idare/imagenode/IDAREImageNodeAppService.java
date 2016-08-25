@@ -1,7 +1,5 @@
 package idare.imagenode;
 
-import java.io.File;
-
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
 import idare.imagenode.internal.IDAREImageNodeApp;
 /**
@@ -27,7 +25,7 @@ public class IDAREImageNodeAppService {
 	
 	/**
 	 * Register a plugin to the IDARE App;
-	 * @param plugin
+	 * @param plugin The plugin to register
 	 */
 	public void registerPlugin(IDAREPlugin plugin)
 	{
@@ -36,19 +34,11 @@ public class IDAREImageNodeAppService {
 	
 	/**
 	 * Deregister a plugin from the IDARE App;
-	 * @param plugin
+	 * @param plugin The plugin to deregister
 	 */
 	public void deRegisterPlugin(IDAREPlugin plugin)
 	{
 		app.deRegisterPlugin(plugin);
-	}
-	/**
-	 * Get the location of the log file used for the IDARE Application, to write PLugin logging information to that file.
-	 * @return
-	 */
-	public String getlogFileName()
-	{
-		return System.getProperty("logfile.name");
 	}
 	
 }

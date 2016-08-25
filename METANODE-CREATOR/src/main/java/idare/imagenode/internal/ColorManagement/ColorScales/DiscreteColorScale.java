@@ -22,8 +22,8 @@ public class DiscreteColorScale extends MultiColorScale{
 	
 	/**
 	 * Create a color array given a number of colors necessary and the {@link Color}s available
-	 * @param count - how many colors shoudl be generated
-	 * @param availablecolors - which colors shall be used to generate the array
+	 * @param count how many colors shoudl be generated
+	 * @param availablecolors which colors shall be used to generate the array
 	 * @return a {@link Color} array containing exactly count {@link Color}s
 	 */
 	protected static Color[] createColors(int count,Color[] availablecolors)
@@ -38,7 +38,7 @@ public class DiscreteColorScale extends MultiColorScale{
 	 * Get a equally distanced array between 0 and 1.
 	 * If only one color is requested, a zero will be returned.
 	 * Otherwise the resulting array contains 0 at position 0, 1 at the last position, and n-2 equally distanced entries between 0 and 1 in ascending order.   
-	 * @param len - how many fractions. Has to be > 0
+	 * @param len how many fractions. Has to be > 0
 	 * @return an array of fractions
 	 */
 	private static float[] getFractions(int len)
@@ -59,7 +59,7 @@ public class DiscreteColorScale extends MultiColorScale{
 	
 	/**
 	 * Basic constructors using a set of colors and initializing the scale with as many colors.
-	 * @param availablecolors - the {@link Color} array to use for color generation
+	 * @param availablecolors the {@link Color} array to use for color generation
 	 */
 	public DiscreteColorScale(Color[] availablecolors)
 	{
@@ -70,8 +70,8 @@ public class DiscreteColorScale extends MultiColorScale{
 	
 	/**
 	 * A constructor for a scale with colorcount colors using the availablecolors array to generate these colors.
-	 * @param availablecolors - the colors to use for scale generation
-	 * @param colorcount - the number of colors available from this scale
+	 * @param availablecolors the colors to use for scale generation
+	 * @param colorcount the number of colors available from this scale
 	 */
 	public DiscreteColorScale(Color[] availablecolors, int colorcount)
 	{
@@ -79,7 +79,10 @@ public class DiscreteColorScale extends MultiColorScale{
 		this.availablecolors = availablecolors;
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScales.MultiColorScale#getColorForValue(double)
+	 */
 	@Override
 	protected Color getColorForValue(double value) {
 		int colorpos = 0;
@@ -90,7 +93,10 @@ public class DiscreteColorScale extends MultiColorScale{
 		return ColorSteps[colorpos];
 	}
 	
-
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScales.MultiColorScale#setColorCount(int)
+	 */
 	@Override
 	public void setColorCount(int count)
 	{
@@ -100,6 +106,10 @@ public class DiscreteColorScale extends MultiColorScale{
 		initColors();
 	};
 	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorScales.MultiColorScale#getColorScalePane()
+	 */
 	@Override
 	public ColorScalePane getColorScalePane()
 	{

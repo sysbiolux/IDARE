@@ -11,7 +11,7 @@ public class ColorUtils {
 	/**
 	 * Obtain the contrasting black/white color for a original color.
 	 * The grey value will be computed and white or black will be returned depending on its value.  
-	 * @param origcolor - The original color
+	 * @param origcolor The original color
 	 * @return The contrasting colo on a black/white scale
 	 */
     public static Color getContrastingColor(Color origcolor)

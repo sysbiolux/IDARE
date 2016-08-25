@@ -24,14 +24,14 @@ public interface IDARERow extends Iterable<IDARECell> {
 	/**
 	 * Get the {@link IDARECell} in the specified column from this Row.
 	 * This is the same as a call to getCell(arg0,IDARERow.RETURN_NULL_AND_BLANK)
-	 * @param arg0 - the column requested
-	 * @return - the {@link IDARECell} at the specified position, or null, if it does not exist 
+	 * @param arg0 the column requested
+	 * @return the {@link IDARECell} at the specified position, or null, if it does not exist 
 	 */
 	public IDARECell getCell(int arg0);	
 	/**
 	 * Get the {@link IDARECell} in the specified column from this Row, using the specified policy to handle non existing or blank cells.
-	 * @param arg0 - the column requested
-	 * @return - the {@link IDARECell} at the specified position (blank or nulls will be handled according to the provided policy. 
+	 * @param arg0 the column requested
+	 * @return the {@link IDARECell} at the specified position (blank or nulls will be handled according to the provided policy. 
 	 */
 	public IDARECell getCell(int arg0, int arg1);
 	/**

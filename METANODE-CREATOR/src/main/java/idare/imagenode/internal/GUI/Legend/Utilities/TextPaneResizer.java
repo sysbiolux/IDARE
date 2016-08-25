@@ -20,9 +20,9 @@ public class TextPaneResizer extends ComponentAdapter implements LegendSizeListe
 	int offset;
 	/**
 	 * Default constructor with a provided minimal width, an offset to adjust the width coming in and the Pane to resize.
-	 * @param pane
-	 * @param minsize
-	 * @param offset
+	 * @param pane The textpane this resizer will be added to
+	 * @param minsize The minimal size to use 
+	 * @param offset The remaining space between this component and the width
 	 */
 	public TextPaneResizer(JTextPane pane, int minsize, int offset)
 	{
@@ -32,13 +32,17 @@ public class TextPaneResizer extends ComponentAdapter implements LegendSizeListe
 	}
 	/**
 	 * Default parameters will be used for the given pane (300 width, 2 offset)
-	 * @param pane
+	 * @param pane The pane to use this Resizer for
 	 */
 	public TextPaneResizer(JTextPane pane)
 	{
 		this(pane, 300, 2);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.ComponentAdapter#componentResized(java.awt.event.ComponentEvent)
+	 */
 	@Override
 	public void componentResized(ComponentEvent e) {
 		Dimension dim = e.getComponent().getSize();

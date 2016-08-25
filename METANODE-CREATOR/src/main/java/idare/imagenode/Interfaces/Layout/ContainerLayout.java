@@ -20,18 +20,18 @@ public abstract class ContainerLayout implements Serializable{
 	
 	/**
 	 * Create the Layout for a given set of data, in a specified area using a specified Label for the underlying Dataset.
-	 * @param data - The nodeData to use to set up the layout.
-	 * @param area - the area in which to create the layout
-	 * @param DataSetLabel - the label of the corresponding Dataset to display somewhere in the area.
+	 * @param data The nodeData to use to set up the layout.
+	 * @param area the area in which to create the layout
+	 * @param DataSetLabel the label of the corresponding Dataset to display somewhere in the area.
 	 */
 	public abstract void createLayout(NodeData data, Rectangle area, String DataSetLabel);
 	
 	/**
 	 * Layout the Data according to the previously generated layout  
-	 * @param data - the data to layout
-	 * @param context - the graphics context in which to draw the layout 
-	 * @param Legend - whether this is a layout for the legend or not.
-	 * @param coloring - The ColorMap to use for the layout
+	 * @param data the data to layout
+	 * @param context the graphics context in which to draw the layout 
+	 * @param Legend whether this is a layout for the legend or not.
+	 * @param coloring The ColorMap to use for the layout
 	 */
 	public abstract void LayoutDataForNode(NodeData data, SVGGraphics2D context,  boolean Legend, ColorMap coloring );
 		
@@ -62,8 +62,8 @@ public abstract class ContainerLayout implements Serializable{
 	 * e.g. 5 rounded up is 10;
 	 * 101 rounded up is 200
 	 * etc.
-	 * @param value - the value to round
-	 * @param up - whether to round up or down.
+	 * @param value the value to round
+	 * @param up whether to round up or down.
 	 * @return the rounded values.
 	 */
 	public static final Double roundToOrder(Double value, boolean up)

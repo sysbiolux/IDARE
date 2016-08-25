@@ -30,7 +30,7 @@ public class CSVReader extends IDAREDatasetReader {
 	}
 	/**
 	 * Get the column separator used in this reader 
-	 * @return - he string representing the column separator
+	 * @return he string representing the column separator
 	 */
 	protected String getSeparator()
 	{

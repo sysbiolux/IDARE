@@ -4,6 +4,7 @@ package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
 
 import java.awt.Color;
@@ -68,9 +69,9 @@ public class ItemDataDescription extends JPanel{
 	/**
 	 * Set up the Itemdescription for a specific set of data and a given DatasetLabel.
 	 * Adjust the size accoring to changes in the Legend provided.
-	 * @param currentdata
-	 * @param DataSetLabel
-	 * @param Legend
+	 * @param currentdata The {@link NodeData} to create the description from
+	 * @param DataSetLabel The label of the dataset, to provide for clarification which set this description is referring to
+	 * @param Legend The {@link JScrollPane} that encloses the legend this description is part of (for resizing events).
 	 */
 	public void setupItemDescription(NodeData currentdata, String DataSetLabel, JScrollPane Legend) {
 		//First, get the size of the maximal Item to determine the number of rows.
@@ -88,6 +89,7 @@ public class ItemDataDescription extends JPanel{
 				String Label = DataSetLabel + "." + Integer.toString(itemposition) + ":";
 				String ItemLabel = ((ItemDataSet)(ndata.getDataSet())).getColumnLabel(i);
 				ItemDescriptionPane pane = new ItemDescriptionPane(Label,ItemLabel);
+				System.out.println("Created a new Pane with ID: " + Label + " and Label " + ItemLabel);
 				maxwidth = Math.max(pane.getMinSize(), maxwidth);
 				Itemdescriptions.add(pane);
 				itemposition++;
@@ -151,11 +153,11 @@ public class ItemDataDescription extends JPanel{
 		/**
 		 * Get the new padding based on  the current width, the number of columns used, the maximal item width
 		 * and the minimal padding size. 
-		 * @param width
-		 * @param columncount
-		 * @param maxitemwidth
-		 * @param minGap
-		 * @return
+		 * @param width The currently available width 
+		 * @param columncount the number of columns used
+		 * @param maxitemwidth The maximal width of an individual item
+		 * @param minGap The minimal Gap between two items
+		 * @return The new padding based on the provided information
 		 */
 		private int getNewPadding(int width, int columncount,int maxitemwidth, int minGap)
 		{
@@ -177,12 +179,16 @@ public class ItemDataDescription extends JPanel{
 	 */
 	protected class ItemDescriptionPane extends JPanel
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel ID;
 		private JLabel Description;
 		/**
-		 * Set up the Descriptionpane using a IDString and adescription string.
-		 * @param IDString
-		 * @param DescriptionString
+		 * Set up the Descriptionpane using a IDString and a description string.
+		 * @param IDString The id of the item this pane describes 
+		 * @param DescriptionString The description of the item.
 		 */
 		public ItemDescriptionPane(String IDString, String DescriptionString)
 		{
@@ -203,7 +209,7 @@ public class ItemDataDescription extends JPanel{
 		}
 		/**
 		 * Get the minimal width necessary for this item.
-		 * @return
+		 * @return the minimal size of this item
 		 */
 		public int getMinSize()
 		{			
@@ -211,8 +217,8 @@ public class ItemDataDescription extends JPanel{
 		}
 		/**
 		 * Get the minimial width necessary for a specific JLabel.
-		 * @param label
-		 * @return
+		 * @param Label the label for which to determine the minimal size
+		 * @return The size (in pixels) this label would need, with its current font 
 		 */
 		public int getMinSize(JLabel label)
 		{

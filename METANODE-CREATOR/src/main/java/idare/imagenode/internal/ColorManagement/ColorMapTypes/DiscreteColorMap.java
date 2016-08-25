@@ -1,8 +1,10 @@
 package idare.imagenode.internal.ColorManagement.ColorMapTypes;
 
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.ColorManagement.ColorScale;
 import idare.imagenode.internal.ColorManagement.ColorUtils;
+import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,15 +12,19 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.geom.Ellipse2D;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 /**
  * A Colormap that can provide colors for a discrete number of values (i.e. a limited well defined number of items)
@@ -30,14 +36,18 @@ public class DiscreteColorMap extends ColorMap{
 	private static final long serialVersionUID = 1001;
 	HashMap<Comparable,Color> colors; 
 	//Put at max 3 items per row and fill the first row first.	
-	private GridLayout layout;
-	//int maxitemwidth;
-	final int HGAP = 20;
+	//private GridLayout layout;
+//	int maxitemwidth;
+	final int HGAP = 5;
+	final int VGAP = 6;
+	final int MINIMAL_FONT_SIZE = 20;
+
 	/**
 	 * Generate a Colormap based on a set of values and a given colorscale.
 	 * The Values will be used in the order provided by the collection iterator.
-	 * @param values
-	 * @param cs
+	 * The map will only provide valid colors for the values provided during setup.
+	 * @param values the discrete values to use
+	 * @param cs The {@link ColorScale} to use
 	 */
 	public DiscreteColorMap(Collection<Comparable> values, ColorScale cs)
 	{
@@ -46,7 +56,10 @@ public class DiscreteColorMap extends ColorMap{
 		
 	}
 	
-	
+	/**
+	 * setup using a Collection of discrete values.
+	 * @param values The Values to use
+	 */
 	private void setup(Collection<Comparable> values)
 	{
 		//clear the container.
@@ -67,14 +80,18 @@ public class DiscreteColorMap extends ColorMap{
 		{
 			Comparable val = valuecopy.get(i);
 			colors.put(val,cs.getColor(i/maxval));
-			//ColorItemDescription desc = new ColorItemDescription(colors.get(val), ": " + val.toString());
-			//add(desc);
+			
+//			ColorItemDescription desc = new ColorItemDescription(colors.get(val), ": " + val.toString());
+//			maxitemwidth = Math.max(maxitemwidth, desc.getMinWidth());
 						
 		}		
-		//add(desc);				
+
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorMap#getColor(java.lang.Comparable)
+	 */
 	@Override
 	public Color getColor(Comparable Value) {
 		
@@ -86,14 +103,18 @@ public class DiscreteColorMap extends ColorMap{
 		return colors.get(Value);
 	}
 	
-	
+	/**
+	 * An itemized Color Description, assigning colors to the provided values.
+	 * @author Thomas Pfau
+	 *
+	 */
 	private class ColorItemDescription extends JPanel
 	{
 		private JLabel Name;
 		private JPanel ColorItem;
 		public ColorItemDescription(Color itemcolor,String labelName) {
 			// TODO Auto-generated constructor stub
-			this.setLayout(new GridLayout(1,2));			
+			this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
 			setBackground(Color.WHITE);
 			Name = new JLabel(labelName);
 			Name.setBackground(Color.white);
@@ -101,17 +122,17 @@ public class DiscreteColorMap extends ColorMap{
 			Name.setFont(Name.getFont().deriveFont(20f));
 			ColorItem = new ShapePanel(itemcolor);
 			ColorItem.setBackground(Color.white);
-			//ColorItem.setHorizontalAlignment(SwingConstants.RIGHT);
-			//Description.setFont(Description.getFont().deriveFont(20f));
-			//ID.addComponentListener(new FontResizeListener());
-			//Description.addComponentListener(new FontResizeListener());
 			add(ColorItem);
 			add(Name);
 		}
+		/**
+		 * get the minimal width of this description. (which is the  minimal size of the color indicator + the minimal size of the Label)
+		 * @return The minimal width of this description in pixels
+		 */
 		public int getMinWidth()
 		{
 			FontMetrics fm = Name.getFontMetrics(Name.getFont());
-			return fm.stringWidth(Name.getText()) + 11; //the minimum size of the rectangle should be 10
+			return fm.stringWidth(Name.getText()) + MINIMAL_FONT_SIZE + 1; 
 		}
 	}
 	/**
@@ -123,6 +144,10 @@ public class DiscreteColorMap extends ColorMap{
 	{
 		private Color ShapeColor;
 		
+		/**
+		 * Basic constructor using a given color. 
+		 * @param ShapeColor
+		 */
 		public ShapePanel(Color ShapeColor)
 		{
 			super();
@@ -147,6 +172,10 @@ public class DiscreteColorMap extends ColorMap{
 		
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorMap#setColorScale(idare.imagenode.internal.ColorManagement.ColorScale)
+	 */
 	@Override
 	public void setColorScale(ColorScale scale) {
 		// TODO Auto-generated method stub
@@ -156,35 +185,135 @@ public class DiscreteColorMap extends ColorMap{
 		setup(colorvalues);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorMap#getColorMapComponent()
+	 */
 	@Override
-	public JComponent getColorMapComponent() {
-		JComponent colordesc = new JComponent() {
-		};
+	public JComponent getColorMapComponent(JScrollPane Legend) {
+		ColorComponent colordesc = new ColorComponent();
+		colordesc.HGAP = this.HGAP;
+		colordesc.setBackground(Color.WHITE);
 		int maxitemwidth = Integer.MIN_VALUE;
 		colordesc.setBorder(null); 
 		int rows = (colors.keySet().size()) / 3 + 1;
 		int columns = Math.max(colors.keySet().size()+1,3);
-		layout = new GridLayout(rows,columns);
+		GridLayout layout = new GridLayout(rows,columns);
 		colordesc.setLayout(layout);
 		Vector<Comparable> valuecopy = new Vector<Comparable>();
 		valuecopy.addAll(colors.keySet());
 		Collections.sort(valuecopy);
-		double maxval = valuecopy.size()-1;
+		//double maxval = valuecopy.size()-1;
 		for(int i = 0; i < valuecopy.size(); i++)
 		{
 			
 			Comparable val = valuecopy.get(i);
 			//colors.put(val,cs.getColor(i/maxval));
 			ColorItemDescription desc = new ColorItemDescription(colors.get(val), ": " + val.toString());
-			colordesc.add(desc);
+			colordesc.addColorComp(desc);
 			maxitemwidth = Math.max(maxitemwidth,desc.getMinWidth());			
 		}
-		ColorItemDescription desc = new ColorItemDescription(new Color(0.9f,0.9f,0.9f), ": NA");
-		colordesc.add(desc);		
-		maxitemwidth = Math.max(maxitemwidth,desc.getMinWidth());
 		
-		// TODO Auto-generated method stub
+		ColorItemDescription desc = new ColorItemDescription(new Color(0.9f,0.9f,0.9f), ": NA");
+		colordesc.addColorComp(desc);		
+		maxitemwidth = Math.max(maxitemwidth,desc.getMinWidth());
+		colordesc.maxitemwidth = maxitemwidth;
+		colordesc.componentLayout = layout;
+		ColorScaleResizer resizer = new ColorScaleResizer(colordesc);
+		Legend.addComponentListener(resizer);
+		resizer.componentResized(new ComponentEvent(Legend, ComponentEvent.COMPONENT_RESIZED));
+		
 		return colordesc;
+	}
+	
+	private class ColorComponent extends JPanel
+	{
+		public GridLayout componentLayout;
+		public int maxitemwidth;
+		public int itemcount = 0;
+		public int HGAP;
+		private Vector<ColorItemDescription> Itemdescriptions = new Vector<ColorItemDescription>();
+		private Dimension getRowsAndCols(int width)
+		{
+			int columns =  Math.min(Math.max(width /(maxitemwidth+HGAP),1),3);
+			while(columns * maxitemwidth + (columns-1) * HGAP > width & columns > 1)
+			{
+				columns--;
+			}
+			int rows = (itemcount -1 ) / columns + 1;
+			System.out.println("For a width of " + width + " we calculated " + columns + " columns and " + rows + " rows with a max item width of " + maxitemwidth);
+			return new Dimension(columns,rows);
+		}
+		
+		/**
+		 * Redraw this panel.
+		 */
+		public void redraw()
+		{
+			this.removeAll();
+			for(ColorItemDescription pane : Itemdescriptions)
+			{
+				//first item left aligned, second item right aligned
+				add(pane);
+			}
+		}
+		/**
+		 * Add the given {@link ColorItemDescription} to this {@link ColorMap}.
+		 * @param comp
+		 */
+		public void addColorComp(ColorItemDescription comp)
+		{
+			Itemdescriptions.add(comp);
+			itemcount++;
+			add(comp);			
+		}
+		
+	}
+	
+	private class ColorScaleResizer extends ComponentAdapter implements LegendSizeListener
+	{
+		ColorComponent comp;
+		
+		public ColorScaleResizer(ColorComponent comp)
+		{
+			this.comp = comp;
+		}
+		public void componentResized(ComponentEvent e) {
+			//Get the width of the current component 			
+			JScrollPane scroller = (JScrollPane) e.getComponent();
+			int cwidth =  scroller.getViewport().getWidth()-2;
+			//get the new Arrangement			
+			
+			Dimension newgrid = comp.getRowsAndCols(scroller.getViewport().getWidth()-2);
+			comp.componentLayout.setColumns(newgrid.width);
+			comp.componentLayout.setRows(newgrid.height);
+			int newpadding = getNewPadding(cwidth,newgrid.width,comp.maxitemwidth, comp.HGAP);
+			System.out.println("The new padding is " + newpadding + " at a width of " + cwidth + " with a maximal item width of " + comp.maxitemwidth + " and a Gap-Size of " + comp.HGAP + " and " + newgrid.width + " columns");
+			comp.componentLayout.setHgap(newpadding);
+			comp.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,newgrid.height * MINIMAL_FONT_SIZE + (newgrid.height -1) * VGAP));
+			comp.redraw();
+		}
+		
+		/**
+		 * Get the new padding based on  the current width, the number of columns used, the maximal item width
+		 * and the minimal padding size. 
+		 * @param width The currently available width 
+		 * @param columncount the number of columns used
+		 * @param maxitemwidth The maximal width of an individual item
+		 * @param minGap The minimal Gap between two items
+		 * @return The new padding based on the provided information
+		 */
+		private int getNewPadding(int width, int columncount,int maxitemwidth, int minGap)
+		{
+			if(columncount <= 1)
+			{
+				return minGap;
+			}
+			else
+			{
+				return Math.max(minGap,((width - columncount * maxitemwidth)-10) / (columncount-1));
+			}
+		}
 	}
 
 }

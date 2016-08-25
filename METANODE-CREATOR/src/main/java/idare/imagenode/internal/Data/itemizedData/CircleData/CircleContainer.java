@@ -14,7 +14,7 @@ public class CircleContainer extends AbstractItemContainer{
 
 	/**
 	 * Basic Constructor using the source dataset and an instance of the data.
-	 * @param origin
+	 * @param origin 
 	 * @param data
 	 */
 	public CircleContainer(DataSet origin, ItemNodeData data)

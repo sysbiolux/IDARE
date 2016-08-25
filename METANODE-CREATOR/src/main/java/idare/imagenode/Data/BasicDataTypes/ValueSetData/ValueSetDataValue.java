@@ -8,13 +8,22 @@ import java.util.Vector;
 
 /**
  * A DataSetValue for ValueSetDataSets
+ * The Value of a DataSetValue is always the String representing the Sheet it is contained in.
  * @author Thomas Pfau
  *
  */
 public class ValueSetDataValue extends NodeValue {
 
-	private Vector<Double> graphlocations = new Vector<Double>();	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Vector<Double> yvalues = new Vector<Double>();	
 	
+	/**
+	 * Generate a new NodeValue based on a specific ColorValue (likely the sheet name).
+	 * @param ColorValue
+	 */
 	public ValueSetDataValue(Comparable ColorValue) {
 		super(false);
 		type = NodeValueType.vector; 
@@ -28,8 +37,8 @@ public class ValueSetDataValue extends NodeValue {
 	 */
 	public void setEntryData(Vector<Double> yValues)
 	{
-		graphlocations.clear();
-		graphlocations.addAll(yValues);
+		yvalues.clear();
+		yvalues.addAll(yValues);
 	}
 	/**
 	 * Get the Line Data stored in this value
@@ -38,7 +47,7 @@ public class ValueSetDataValue extends NodeValue {
 	public Vector<Double> getEntryData()
 	{
 		Vector<Double> yValues = new Vector<Double>();
-		yValues.addAll(graphlocations);
+		yValues.addAll(yvalues);
 		return yValues;
 	}
 	

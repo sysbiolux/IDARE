@@ -79,8 +79,8 @@ public abstract class SetEntryDescriptionPane extends JPanel{
 	}
 	/**
 	 * Get the description height of this LineDescriptions textual description.
-	 * @param width - the width to obtain a height for.
-	 * @return - the height for the given width.
+	 * @param width the width to obtain a height for.
+	 * @return the height for the given width.
 	 */
 	private int getDescriptionHeight(int width)
 	{

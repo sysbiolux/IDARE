@@ -28,7 +28,7 @@ public class DataSetIDProvider {
 	
 	/**
 	 * Reset the IDs, with the provided id being the highest ID already used.
-	 * @param newID
+	 * @param newID maximal ID already used.
 	 */
 	public void reset(int newID)
 	{

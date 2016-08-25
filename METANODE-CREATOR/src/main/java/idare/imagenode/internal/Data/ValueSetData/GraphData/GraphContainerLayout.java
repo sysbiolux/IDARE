@@ -288,11 +288,14 @@ public class GraphContainerLayout extends ValueSetContainerLayout {
 		 g2d.translate(area.getX(), area.getY());
 		 for(String name : ((ValueSetDataSet)data.getDataSet()).getSetNames())
 		 {
+//			 System.out.println("Plotting Line for Sheet " + name); 
 			 ValueSetDataValue vsd = nd.getData(name);
 			 if(vsd != null)
 			 {
-				 Vector<Double> LineYValues = vsd.getEntryData();
+				 
+				 Vector<Double> LineYValues = vsd.getEntryData();				 
 				 Vector<Double> LineXValues = LineHeaders.get(name);
+//				 System.out.println("Found the Data for the Sheet with a length of " + LineYValues.size() + " while the X values have a size of " + LineXValues.size());
 				 Color linecolor = colors.getColor(name);
 				 Path2D currentpath = getPath(LineXValues, LineYValues, area);
 				 g2d.setPaint(linecolor);

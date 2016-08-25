@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 /**
  * A {@link ColorMap} provides an interface to a {@link DataSet} to obtain colors for specific values present in the {@link DataSet}.
  * @author Thomas Pfau
@@ -32,15 +33,6 @@ public abstract class ColorMap implements Serializable{
 		this.cs = cs;		
 	}
 	
-		
-	/**
-	 * Get the preferred size of this {@link ColorMap}. This is commonly the size of the optimal Legend Description width.
-	 * @return The preferred {@link Dimension}
-	 */
-	public Dimension getPreferredColorScaleSize()
-	{
-		return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
-	}	
 	/**
 	 * Provides appropriate (not too long) representations of the values provided.
 	 * The input values have to be ordered from smallest to largest and it is assumed, that values[0] is the minimum and values[last] is the largest value.
@@ -129,19 +121,20 @@ public abstract class ColorMap implements Serializable{
 	/**
 	 * Set a specific {@link ColorScale} to be used by this {@link ColorMap}.
 	 * The Colormap will be reset to use the provided ColorScale.
-	 * @param scale - the {@link ColorScale} to be used.
+	 * @param scale the {@link ColorScale} to be used.
 	 */
 	public abstract void setColorScale(ColorScale scale);
 	
 	/**
 	 * Get a Component that represents this {@link ColorMap}
+	 * @param Legend The legend this component is part of (to obtain resize events).
 	 * @return A {@link JComponent} that plots information about this {@link ColorMap}
 	 */
-	public abstract JComponent getColorMapComponent();
+	public abstract JComponent getColorMapComponent(JScrollPane Legend);
 	 
 	/**
 	 * Get the {@link Color} that is associated with the {@link Comparable} object provided.
-	 * @param Value - A {@link Comparable} value.
+	 * @param Value A {@link Comparable} value.
 	 * @return a {@link Color} 
 	 */
 	public abstract Color getColor(Comparable Value);

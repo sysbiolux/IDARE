@@ -34,12 +34,11 @@ public class ImageNodeModel {
 	}
 	/**
 	 * Add a {@link DataSet} to this node.
-	 * @param newData
+	 * @param newData the DataSet to add to the node
 	 */
 	public void addData(DataSet newData)
 	{
 		nodeDataEntries.add(newData);
-		//nodeClassID += newData.getID();
 	}
 	
 	/**

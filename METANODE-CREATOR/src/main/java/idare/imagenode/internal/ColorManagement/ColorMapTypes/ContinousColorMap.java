@@ -21,8 +21,9 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 /**
- * An Abstract class representing general continous color maps and providing some functionality for such maps.
+ * An Abstract class representing general continuous color maps and providing some functionality for such maps.
  * @author Thomas Pfau
  *
  */
@@ -38,9 +39,9 @@ public abstract class ContinousColorMap extends ColorMap{
 	protected Color[] ColorScaleColors;	
 	/**
 	 * Generate a continous color map based on a color scale and a minimal and maximal value.
-	 * @param maxvalue - the maximum value this map shall be able to map
-	 * @param minvalue - the minimum this map shall be able to map
-	 * @param cs - the colorscale this map should use for color generation.
+	 * @param maxvalue the maximum value this map shall be able to map
+	 * @param minvalue the minimum this map shall be able to map
+	 * @param cs the colorscale this map should use for color generation.
 	 */
 	public ContinousColorMap(double maxvalue, double minvalue, ColorScale cs) {
 		super(cs);
@@ -66,7 +67,7 @@ public abstract class ContinousColorMap extends ColorMap{
 	protected void setup()
 	{
 		HashMap<Double,Double> fractionToValue = new HashMap<Double, Double>();
-		float[] vals;
+		//float[] vals;
 		//If this is a continous color map, than we will simlply use min and maxval if its an odd range.
 		if(!oddrange)
 		{
@@ -81,15 +82,16 @@ public abstract class ContinousColorMap extends ColorMap{
 
 		}				
 		//Get labels associated with the Higher and lower value.
-		HashMap<Double,String> translate = GetLabelForNumbers(fractionToValue);
+		//HashMap<Double,String> translate = GetLabelForNumbers(fractionToValue);
 		
 	}
 	
 	/**
 	 * Generate the Color Scale Layout and visual representation based on the Labels used for the respective positions.
 	 * @param translate
+	 * @param Legend The Legend to build this ColorMap Visualisation for (to listen to resize events).
 	 */
-	protected JComponent buildColorMapVisualisation(HashMap<Double,String> translate)
+	protected JComponent buildColorMapVisualisation(HashMap<Double,String> translate, JScrollPane Legend)
 	{
 		JComponent colordesc = new JComponent() {
 		};
@@ -137,7 +139,7 @@ public abstract class ContinousColorMap extends ColorMap{
 	/**
 	 * Create Strings Representations for the values in a Map which are Doubles. 
 	 * This is a helper function to allow the generation of sensible numbers for legends. 
-	 * @param fractions - A Translation between double keys to double values. The values will be used to generate strings.
+	 * @param fractions A Translation between double keys to double values. The values will be used to generate strings.
 	 * 	@return a Map, that maps the keys of the input to the string representation of the values of the input.
 	 */
 	protected HashMap<Double,String> GetLabelForNumbers(HashMap<Double, Double> fractions)	
@@ -155,6 +157,11 @@ public abstract class ContinousColorMap extends ColorMap{
 		}
 		return rv;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.ColorManagement.ColorMap#getColor(java.lang.Comparable)
+	 */
 	@Override
 	public Color getColor(Comparable Value)
 	{
@@ -168,25 +175,6 @@ public abstract class ContinousColorMap extends ColorMap{
 
 		double entry = (DoubleValue - minval) / (maxval - minval);
 		return cs.getColor(entry);
-	}
-
-
-	/**
-	 * Get the preferred size to be used by this color scale.
-	 * Commonly this is 60 px heigh and 300 px wide, but, if we have an odd range of values, 
-	 * the map might need more space to display the appropriate labels, thus it will demand more room (80px height)
-	 * @return the preferred Dimension for visualisation.
-	 */
-	public Dimension getPreferredColorScaleSize()
-	{
-		if(oddrange)
-		{
-			return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,60);
-
-		}
-		else{
-			return new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,80);
-		}
 	}
 
 	/**
@@ -217,12 +205,20 @@ public abstract class ContinousColorMap extends ColorMap{
 			// TODO Auto-generated constructor stub
 			xpositions = fractions;
 		}
-
+		/*
+		 * (non-Javadoc)
+		 * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
+		 */
 		@Override
 		public void addLayoutComponent(String name, Component comp) {
 			// TODO Auto-generated method stub
 
 		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
+		 */
 		@Override
 		public void layoutContainer(Container parent) {
 			//Determine the maximal dimensions and the number of components present in the container.
@@ -292,7 +288,11 @@ public abstract class ContinousColorMap extends ColorMap{
 				}	        
 			}
 		}
-
+		
+		/*
+		 * (non-Javadoc)
+		 * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
+		 */
 		@Override
 		public Dimension minimumLayoutSize(Container parent) {
 			int nComps = parent.getComponentCount();
@@ -309,6 +309,11 @@ public abstract class ContinousColorMap extends ColorMap{
 				return new Dimension(0,0);
 			}
 		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
+		 */
 		@Override
 		public Dimension preferredLayoutSize(Container parent) {
 			int nComps = parent.getComponentCount();

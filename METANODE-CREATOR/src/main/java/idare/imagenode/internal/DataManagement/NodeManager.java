@@ -30,8 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
+import java.util.prefs.NodeChangeListener;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
@@ -52,18 +51,17 @@ public class NodeManager implements DataSetChangeListener{
 	private HashMap<String,NodeLayout> activeLayouts = new HashMap<String, NodeLayout>();
 	private Set<String> NetworkIDs = new HashSet<String>();
 	private DataSetManager dsm;
-	private int generatedLayouts;	
+	
 	private Vector<NodeChangedListener> listeners = new Vector<NodeChangedListener>();
 	private CyNetworkManager cyNetMgr;
 	public NodeManager(CyNetworkManager cyNetMgr)
 	{
-		generatedLayouts = 0;			
 		this.cyNetMgr = cyNetMgr;
 	}
 
 	/**
 	 * Add a listener that listens to changes in nodes in this manager.
-	 * @param listener
+	 * @param listener the {@link NodeChangeListener} to add
 	 */
 	public void addNodeChangeListener(NodeChangedListener listener)
 	{
@@ -72,7 +70,7 @@ public class NodeManager implements DataSetChangeListener{
 
 	/**
 	 * Remove a listener that had listened to changes in nodes in this manager.
-	 * @param listener
+	 * @param listener the {@link NodeChangeListener} to remove
 	 */
 	public void removeNodeChangeListener(NodeChangedListener listener)
 	{
@@ -80,9 +78,9 @@ public class NodeManager implements DataSetChangeListener{
 	}
 
 	/**
-	 * Set the DatasetManager used by this nodemanager.
+	 * Set the DatasetManager used by this {@link NodeManager}.
 	 * This is mainly to allow nodelayouts to listen to changes in Datasets.
-	 * @param dsm
+	 * @param dsm the {@link DataSetManager} to assign
 	 */
 	public void setDataSetManager(DataSetManager dsm)
 	{
@@ -96,7 +94,6 @@ public class NodeManager implements DataSetChangeListener{
 	{
 		activeLayouts.clear();
 		Nodes.clear();
-		generatedLayouts = 0;
 		NetworkIDs.clear();
 	}
 	/**
@@ -130,7 +127,7 @@ public class NodeManager implements DataSetChangeListener{
 	}
 	/**
 	 * Update nodes to to a change in the network nodes.
-	 * @param updatedNodeIDs
+	 * @param updatedNodeIDs The nodeIds that were Updated
 	 */
 	private void fireNetworkNodesChanged(Collection<String> updatedNodeIDs)
 	{		
@@ -148,7 +145,7 @@ public class NodeManager implements DataSetChangeListener{
 	}
 	/**
 	 * update nodes due to a change in the Nodes set.
-	 * @param updatedNodeIDs
+	 * @param updatedNodeIDs The nodeIds that were Updated
 	 */
 	private void fireNodesChanged(Collection<String> updatedNodeIDs)
 	{		
@@ -165,6 +162,10 @@ public class NodeManager implements DataSetChangeListener{
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.DataManagement.Events.DataSetChangeListener#datasetChanged(idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent)
+	 */
 	@Override
 	public void datasetChanged(DataSetChangedEvent e)
 	{
@@ -178,7 +179,10 @@ public class NodeManager implements DataSetChangeListener{
 		}
 	}
 
-
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.DataManagement.Events.DataSetChangeListener#datasetsChanged(idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent)
+	 */
 	@Override
 	public void datasetsChanged(DataSetsChangedEvent e)
 	{
@@ -241,8 +245,8 @@ public class NodeManager implements DataSetChangeListener{
 
 	/**
 	 * Get the Node corresponding to the given ID
-	 * @param ID - The ID of the node
-	 * @return - a node, if it exists, or <code>null</code>, if the ID is not linked to a known node.
+	 * @param ID The ID of the node
+	 * @return a node, if it exists, or <code>null</code>, if the ID is not linked to a known node.
 	 */
 	public ImageNodeModel getNode(String ID)
 	{
@@ -253,8 +257,8 @@ public class NodeManager implements DataSetChangeListener{
 	/**
 	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link ColorMapDataSetBundle}s provided.
 	 * This version is to be used if the created nodes are created by a {@link Task}.
-	 * @param datasets - The datasets to create nodes for 
-	 * @param monitor - The TaskMonitor that keeps track of progress.
+	 * @param datasets The datasets to create nodes for 
+	 * @param monitor The TaskMonitor that keeps track of progress.
 	 * @throws TooManyItemsException
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException

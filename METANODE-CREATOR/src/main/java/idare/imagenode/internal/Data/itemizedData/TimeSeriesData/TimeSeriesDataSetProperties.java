@@ -17,6 +17,10 @@ import idare.imagenode.internal.exceptions.io.WrongFormat;
  */
 public class TimeSeriesDataSetProperties extends AbstractItemDataSetProperties{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Override
 	public Position getLocalisationPreference() {
 		// TODO Auto-generated method stub

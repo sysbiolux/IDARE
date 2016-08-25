@@ -4,7 +4,6 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.GUI.DataSetAddition.DataSetAdderGUI;
 import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
 import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
 import idare.imagenode.internal.Layout.NodeLayout;
@@ -69,10 +68,9 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	 * The Constructor for a DataSetControlPanel.
 	 * @param cySwingApp - The App which this Panel will become a part of.
 	 * @param dsm - The {@link DataSetManager}, this panel will represent
-	 * @param util - A {@link FileUtil} to obtain files.
 	 * @param nmr - The {@link NodeManager} used for node preview
 	 */
-	public DataSetControlPanel(CySwingApplication cySwingApp, DataSetManager dsm, FileUtil util, NodeManager nmr) {
+	public DataSetControlPanel(CySwingApplication cySwingApp, DataSetManager dsm, NodeManager nmr) {
 		//initialize the fields;
 		this.dsm = dsm;
 		this.setLayout(new GridBagLayout());
@@ -86,7 +84,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 
 		//Set up the DataSetAdder Button
 		JButton addDSButton = new JButton("Add Dataset");		
-		addDSButton.addActionListener(new DataSetAdderGuiAction(cySwingApp,dsm,util));
+		addDSButton.addActionListener(new DataSetAdderGuiAction());
 
 
 
@@ -527,22 +525,12 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	private class DataSetAdderGuiAction extends AbstractAction
 	{
 
-		CySwingApplication app;
-		DataSetManager dsm;
-		FileUtil util;
 		/**
-		 * The Basic constructor needs a {@link FileUtil}, and the {@link DataSetManager} to allow loading of files and 
-		 * addition of DataSets to the System. 
-		 * The {@link CySwingApplication} is mainly to keep the component hierarchy in order.
-		 * @param cyapp
-		 * @param dsm
-		 * @param util
+		 * The Basic constructor
 		 */
-		public DataSetAdderGuiAction(CySwingApplication cyapp, DataSetManager dsm, FileUtil util) {
+		public DataSetAdderGuiAction() {
 			// TODO Auto-generated constructor stub
-			this.app = cyapp;
-			this.dsm = dsm;
-			this.util = util;
+
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {

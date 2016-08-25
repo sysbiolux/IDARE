@@ -2,6 +2,8 @@ package idare.imagenode.internal.Data.ValueSetData.ScatterData;
 
 public class SmallScatterProperties extends ScatterDataSetProperties {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected int getLabelSize() {
 		// TODO Auto-generated method stub

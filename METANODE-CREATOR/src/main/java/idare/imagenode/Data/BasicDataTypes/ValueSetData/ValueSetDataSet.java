@@ -1,15 +1,14 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
-import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.DataSets.NodeValue;
-import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.ColorManagement.ColorMap;
 import idare.imagenode.internal.ColorManagement.ColorScale;
 import idare.imagenode.internal.ColorManagement.ColorScaleFactory;
@@ -39,18 +38,33 @@ import javax.swing.JScrollPane;
 /**
  * Class to provide a basic setting for ValueSet Datasets.
  * This class will read in multiple sheets from a sourcefile, and generate Data structures accordingly.
- * 
+ * If the headers of such a sheet are numeric values, the corresponding layouts have to treat the data quite differently to
+ * to a string header based dataset, as numeric values indicate continous data, while string headers indicate discrete steps.
  * @author Thomas Pfau
  *
  */
 
 public class ValueSetDataSet extends DataSet{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	protected HashMap<String,ValueSetNodeData> Data = new HashMap<>();
 	protected HashMap<String,Vector<Comparable>> Headerlines = new HashMap<String, Vector<Comparable>>();	
 	protected Vector<String> SheetNames = new Vector<String>();
+	/**
+	 * Indicator whether String headers are used
+	 */
 	public boolean stringheaders = false;
+	/**
+	 * Indicator whether numeric headers are used
+	 */
 	public boolean numericheaders = false;	
+	/**
+	 * Mixed headers can appear due to e.g. numeric strings
+	 */
 	public boolean mixedheaders = false;
 	protected ValueSetNodeData defaultData;
 	protected Collection<ColorMap> colormaps = new Vector<ColorMap>();
@@ -69,7 +83,7 @@ public class ValueSetDataSet extends DataSet{
 
 	/**
 	 * Get the default properties for a valueset.
-	 * @return
+	 * @return The default properties of a ValueSetDataSet
 	 */
 	protected static Properties getDefaultProperties()
 	{
@@ -91,9 +105,9 @@ public class ValueSetDataSet extends DataSet{
 	}
 	/**
 	 * Constructor using an id, a two column indicator and the dataset properties.
-	 * @param DataSetID
-	 * @param useTowColHeaders
-	 * @param DataSetProperties
+	 * @param DataSetID The ID of the Dataset
+	 * @param useTowColHeaders Whether to use two columns for label and id or only one for both
+	 * @param DataSetProperties some properties of the dataset
 	 */
 	public ValueSetDataSet(int DataSetID, boolean useTowColHeaders,
 			Properties DataSetProperties) {
@@ -139,7 +153,7 @@ public class ValueSetDataSet extends DataSet{
 	/**
 	 * Set up the Header data for the different sheets.
 	 * @param WB the workbook form which to obtain the sheets.
-	 * @throws WrongFormat
+	 * @throws WrongFormat If there is a problem e.g. with strings instead of numeric values, or odd values.
 	 */
 	private void setupSheetData(IDAREWorkbook WB) throws WrongFormat
 	{
@@ -157,13 +171,12 @@ public class ValueSetDataSet extends DataSet{
 			SheetNames.add(sheet.getSheetName());
 			IDARERow HeaderRow = sheet.getRow(0);
 			readHeaders(sheet.getSheetName(), HeaderRow, i);
-			int maxheadersize = 0;
-			for(String Sheet : Headerlines.keySet())
-			{
-				maxheadersize = Math.max(maxheadersize, Headerlines.get(Sheet).size());
-			}
+			//int maxheadersize = 0;
+			//for(String Sheet : Headerlines.keySet())
+			//{
+			//	maxheadersize = Math.max(maxheadersize, Headerlines.get(Sheet).size());
+			//}
 			//we do not have empty columns in this type of dataset.
-//			emptycolumns = new boolean[maxheadersize];					
 		}
 		//Now set the Header order		
 		for(HeaderPosition Header : headerpos)
@@ -173,9 +186,9 @@ public class ValueSetDataSet extends DataSet{
 	}
 	/**
 	 * Read the Header row of a Sheet with a specific sheet name.
-	 * @param SheetName - the name of the current sheet
-	 * @param HeaderRow - The HEader Row of the current Sheet
-	 * @throws WrongFormat - Only the same headers are allowed for each sheet if they are string headers, and no mixing of string and Numeric headers are allowed. 
+	 * @param SheetName the name of the current sheet
+	 * @param HeaderRow The HEader Row of the current Sheet
+	 * @throws WrongFormat Only the same headers are allowed for each sheet if they are string headers, and no mixing of string and Numeric headers are allowed. 
 	 *  
 	 */
 	private void readHeaders(String SheetName, IDARERow HeaderRow, int SheetNumber) throws WrongFormat
@@ -221,8 +234,8 @@ public class ValueSetDataSet extends DataSet{
 	}
 	/**
 	 * Get the Data item corresponding to the ID, or create it using label and ID if it does not exist.
-	 * @param ID - the id for which to retrieve a {@link ValueSetNodeData} object
-	 * @param label - potentially the label for initialization purposes // will be ignored, if the ID is already present.
+	 * @param ID the id for which to retrieve a {@link ValueSetNodeData} object
+	 * @param label potentially the label for initialization purposes // will be ignored, if the ID is already present.
 	 * @return the {@link ValueSetNodeData} corresponding to the given ID.
 	 */
 	private ValueSetNodeData getNodeData(String ID, String label)
@@ -240,9 +253,10 @@ public class ValueSetDataSet extends DataSet{
 
 	/**
 	 * generate the ValueDataSetValue for a given Row in a given Sheet.
-	 * @param row
-	 * @param SheetName
-	 * @return
+	 * @param row the {@link IDARERow} to extract the values rom
+	 * @param SheetName The name of the sheet containing the row.
+	 * @return a {@link ValueSetDataValue} that contains all values of the given row.
+	 * @throws WrongFormat if the row does contain odd values
 	 */
 	private ValueSetDataValue getValues(IDARERow row, String SheetName) throws WrongFormat
 	{
@@ -333,19 +347,14 @@ public class ValueSetDataSet extends DataSet{
 				LineValues.add(null);
 			}
 		}
-		String Line = "";
-		for(Double i : LineValues)
-		{
-			Line += i + "\t";
-		}
-
+//		System.out.println("Setting LineValues for " + currentID + " in Sheet " + SheetName + " to a Vector of size " + LineValues.size()); 
 		currentNodeValue.setEntryData(LineValues);
 		return currentNodeValue;
 	}
 
 	/**
 	 * update minimum and maximum values, given a new value.
-	 * @param newval
+	 * @param newval the new value that could change MinValue and MaxValue
 	 */
 	private void updateMinMaxVals(Double newval)
 	{	
@@ -354,10 +363,10 @@ public class ValueSetDataSet extends DataSet{
 	}
 	/**
 	 * Read numeric Data 
-	 * @param WB - The Workbook to read from
-	 * @param StringData - whether this is a workbook that uses numeric strings.
-	 * @throws DuplicateIDException - if there are duplicate IDs
-	 * @throws WrongFormat - if there is a problem with the Workbook format
+	 * @param WB The Workbook to read from
+	 * @param StringData whether this is a workbook that uses numeric strings.
+	 * @throws DuplicateIDException if there are duplicate IDs
+	 * @throws WrongFormat if there is a problem with the Workbook format
 	 */
 	private void readNumericData(IDAREWorkbook WB, boolean StringData) throws DuplicateIDException,WrongFormat
 	{
@@ -390,7 +399,9 @@ public class ValueSetDataSet extends DataSet{
 					continue;
 				}
 				hasentries = true;
+				//System.out.println("Setting Data for Sheet " + DataSheet.getSheetName() + " to currentValue with a size of " + currentValue.getEntryData().size());
 				currentNodeData.addData(currentValue, DataSheet.getSheetName());
+				//currentNodeData.printSheetsContained();
 			}
 
 		}
@@ -478,15 +489,6 @@ public class ValueSetDataSet extends DataSet{
 		return "Valueset Dataset";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getDataSetDescriptionPane(javax.swing.JScrollPane, java.lang.String, idare.imagenode.internal.ColorManagement.ColorMap)
-	 */
-	@Override
-	public JPanel getDataSetDescriptionPane(JScrollPane Legend,
-			String DataSetLabel, ColorMap map) {
-		return datasetProperties.getDataSetDescriptionPane(Legend, DataSetLabel, map, this);
-	}
 	/**
 	 * Get the names of the Sheets represented in this DataSet
 	 * @return a {@link Vector} of Strings with the names of the Sheets in this DataSet
@@ -500,7 +502,7 @@ public class ValueSetDataSet extends DataSet{
 	/**
 	 * Get the Headers (Either String or Double, so handle with care)
 	 * for a specific sheet in this Dataset, based on the sheet name.
-	 * @param SheetName
+	 * @param SheetName the Sheetname for which to obtain headers
 	 * @return the HeaderColumn for the requested Sheet
 	 */
 	public Vector<Comparable> getHeadersForSheet(String SheetName)
@@ -515,7 +517,7 @@ public class ValueSetDataSet extends DataSet{
 	
 	/**
 	 * Get all values present in the headers of this DataSet
-	 * @return - a Vector of all headers in this dataset.
+	 * @return a Vector of all headers in this dataset.
 	 */
 	public Vector<Comparable> getHeaders()
 	{

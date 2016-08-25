@@ -11,12 +11,16 @@ import idare.imagenode.Properties.NodeValueType;
  */
 public class NodeValue implements Comparable<NodeValue>,Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Comparable value = null;
 	protected NodeValueType type;
 
 	/**
 	 * Create a {@link NodeValue} using a Double value.
-	 * @param value
+	 * @param value - the value this NodeValue represents
 	 */
 	public NodeValue(Double value)
 	{
@@ -25,7 +29,7 @@ public class NodeValue implements Comparable<NodeValue>,Serializable{
 	}
 	/**
 	 * Create a NodeValue indicating whether it is a numeric or non numeric value.
-	 * @param isnumeric
+	 * @param isnumeric whether this {@link NodeValue} is a numeric value (i.e. type double).
 	 */
 	public NodeValue(boolean isnumeric)
 	{
@@ -42,7 +46,7 @@ public class NodeValue implements Comparable<NodeValue>,Serializable{
 
 	/**
 	 * Create a NodeValue as a String.
-	 * @param value
+	 * @param value The string value this Node contains
 	 */
 	public NodeValue(String value)
 	{

@@ -12,6 +12,11 @@ import javax.swing.JScrollPane;
 
 public class LineDescription extends SetDataDescription {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public LineDescription(JScrollPane Parent) {
 		// TODO Auto-generated constructor stub
 		super(Parent);
@@ -27,6 +32,11 @@ public class LineDescription extends SetDataDescription {
 	
 	private class LineEntryDescriptionPane extends SetEntryDescriptionPane
 	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public LineEntryDescriptionPane(Color entryColor,
 				String descriptionString) {
@@ -44,6 +54,11 @@ public class LineDescription extends SetDataDescription {
 	
 	private class LineEntryPanel extends SetEntryPanel
 	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public LineEntryPanel(Color ShapeColor) {
 			super(ShapeColor);

@@ -382,7 +382,6 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 	 private void plotItems(String SheetName, Vector<Comparable> xvalues, Vector<Double> yvalues, Rectangle2D area, SVGGraphics2D g2d)
 	 {
 		 Path2D result = new Path2D.Double();
-		 boolean pathstarted = false; 
 		 for(int i = 0; i < xvalues.size(); i++)
 		 {
 			 if(yvalues.get(i) != null)
@@ -401,7 +400,6 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 				 Path2D marker = createMarker(SheetName, loc, labelSize);
 				 g2d.draw(marker);
 				 result.append(new Line2D.Double(loc,loc), false);
-				 pathstarted = true;
 			 }
 		 }
 	 }
@@ -586,8 +584,6 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 		 Path2D diamondpath = new Path2D.Double();
 		 double radius = cross/2.;
 		 //rotate to the left.
-		 double alpha = -0.5 * Math.PI ;
-		 double oldalpha = alpha;
 		 diamondpath.append(new Line2D.Double(centerx, centery - radius,
 				 centerx + radius,centery),false);
 		 diamondpath.append(new Line2D.Double(centerx + radius,centery,
