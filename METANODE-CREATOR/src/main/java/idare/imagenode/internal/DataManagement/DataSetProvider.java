@@ -3,7 +3,7 @@ package idare.imagenode.internal.DataManagement;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
+import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.Data.ValueSetData.GraphData.GraphDataSetProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.LargeScatterProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.SmallScatterProperties;

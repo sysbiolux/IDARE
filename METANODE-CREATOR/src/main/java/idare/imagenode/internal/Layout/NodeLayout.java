@@ -1,22 +1,22 @@
 package idare.imagenode.internal.Layout;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
-import idare.imagenode.Properties.LabelGenerator;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.internal.ColorManagement.ColorMap;
+import idare.imagenode.Properties.LabelGenerator;
+import idare.imagenode.Utilities.EOOMarker;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Utilities.EOOMarker;
-import idare.imagenode.internal.Utilities.LayoutUtils;
-import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.internal.exceptions.layout.TooManyItemsException;
 
 import java.awt.Color;
 import java.awt.Dimension;

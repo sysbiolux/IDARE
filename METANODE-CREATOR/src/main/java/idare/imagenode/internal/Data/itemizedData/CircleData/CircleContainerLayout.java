@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Data.itemizedData.CircleData;
 
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemContainerLayout;
-import idare.imagenode.internal.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LayoutUtils;
 
 import java.awt.Dimension;
 import java.awt.Font;

@@ -2,10 +2,10 @@ package idare.imagenode.internal.GUI.Legend.Tasks;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.Layout.NodeLayout;
-import idare.imagenode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;

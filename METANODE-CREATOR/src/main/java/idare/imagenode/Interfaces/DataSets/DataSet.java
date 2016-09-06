@@ -1,19 +1,19 @@
 package idare.imagenode.Interfaces.DataSets;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.Properties.Localisation.Position;
-import idare.imagenode.internal.ColorManagement.ColorMap;
+import idare.imagenode.Utilities.StringUtils;
+import idare.imagenode.exceptions.io.DuplicateIDException;
+import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Utilities.StringUtils;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -200,11 +200,13 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
 
+		PrintFDebugger.Debugging(this,"Determining Data Properties");
 		determineDataProperties(WB);
 		//now we can go on to read the data appropriately.  
 		//up until this point it was onyl determined, whether the data is discreet (i.e. less than 6 different entries excluding null)
 		// or whether we have continous data. Also the type of data was determined.
 		//readWorkbookdata should also set up the Colormaps, as this is the first time that all items are being looked at.
+		PrintFDebugger.Debugging(this,"reading Data");
 		readWorkBookData(WB);
 	}
 
@@ -265,7 +267,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 						//emptycolumns.set(currentcell.getColumnIndex(), false);
 						if(uninitialized)
 						{
-							System.out.println("Found a String value: " + currentcell.getStringCellValue());
+//							System.out.println("Found a String value: " + currentcell.getStringCellValue());
 							//Now to avoid stupid things in Excel, like set formatting to String or similar things, check whether this is actually a numeric value.
 							if(StringUtils.isNumeric(currentcell.getStringCellValue()))
 							{
@@ -452,7 +454,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 */
 	public IDARECell skipLabels(Iterator<IDARECell> currentiterator)
 	{
-		System.out.println("Skipping a column");
+//		System.out.println("Skipping a column");
 		IDARECell currentCell = currentiterator.next();
 		int offset = useTwoColHeaders ? 2 : 1;
 		while(currentiterator.hasNext())
@@ -638,7 +640,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Get the Headers in this DataSet
-	 * @return
+	 * @return return all headers (either Double or String) in this {@link DataSet}.
 	 */
 	public abstract Vector<Comparable> getHeaders();
 	/**

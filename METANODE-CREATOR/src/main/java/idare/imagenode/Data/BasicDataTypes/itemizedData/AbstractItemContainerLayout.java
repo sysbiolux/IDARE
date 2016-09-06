@@ -1,11 +1,11 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.ColorManagement.ColorUtils;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.ColorManagement.ColorUtils;
-import idare.imagenode.internal.Utilities.LayoutUtils;
-import idare.imagenode.internal.Utilities.LegendLabel;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LegendLabel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

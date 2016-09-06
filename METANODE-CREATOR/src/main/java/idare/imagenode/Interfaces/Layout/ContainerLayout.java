@@ -1,7 +1,7 @@
 package idare.imagenode.Interfaces.Layout;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.internal.ColorManagement.ColorMap;
 
 import java.awt.Rectangle;
 import java.io.Serializable;

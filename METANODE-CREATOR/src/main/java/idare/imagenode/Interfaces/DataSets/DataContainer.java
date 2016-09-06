@@ -2,8 +2,8 @@ package idare.imagenode.Interfaces.DataSets;
 
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.Localisation;
-import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES.LayoutStyle;
+import idare.imagenode.Properties.Localisation.Position;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;

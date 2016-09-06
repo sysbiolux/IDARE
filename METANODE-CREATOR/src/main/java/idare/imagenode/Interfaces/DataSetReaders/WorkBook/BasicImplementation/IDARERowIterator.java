@@ -15,8 +15,6 @@ public class IDARERowIterator implements Iterator<IDARERow>{
 
 	/**
 	 * Row iterator implementation to return the {@link IDARERow}s in the order they are in the {@link IDARESheet}.
-	 * @author Thomas Pfau
-	 *
 	 */
 	Iterator<? extends IDARERow> iter;
 			public IDARERowIterator(Iterator<? extends IDARERow> source)

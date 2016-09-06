@@ -61,7 +61,7 @@ public class NetworkSetupGUIHandler extends AbstractGUITunableHandler {
 				props.network = network;
 				
 			}
-			System.out.println(props.toString());
+//			System.out.println(props.toString());
 			setValue(props);
 		}
 		catch(IllegalAccessException| InvocationTargetException e)

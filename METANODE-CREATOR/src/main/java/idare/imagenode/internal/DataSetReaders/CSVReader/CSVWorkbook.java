@@ -1,8 +1,8 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
-import idare.imagenode.internal.Utilities.StringUtils;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.Utilities.StringUtils;
+import idare.imagenode.exceptions.io.WrongFormat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -60,7 +60,7 @@ public class CSVWorkbook implements Workbook{
 		while(currentline != null)
 		{
 			//read each row (i.e. line)
-			System.out.println("Creating new row for line:\n " + currentline);
+//			System.out.println("Creating new row for line:\n " + currentline);
 			Row currentRow = currentSheet.createRow(currentRowNumber);
 			//and create cells for each entry.
 			String[] Cells = currentline.split(separator);
@@ -102,35 +102,35 @@ public class CSVWorkbook implements Workbook{
 			int cellpos = 0;
 			for(String cell : Cells)
 			{
-				System.out.println("Creating new Cell for value:" + cell);
+//				System.out.println("Creating new Cell for value:" + cell);
 				//Create the cells either as numeric or as string, depending on whether the value is numeric or string.
 				Cell currentcell = currentRow.createCell(cellpos);
 				if(StringUtils.isNumeric(cell))
 				{
-					System.out.println("Creating numeric cell for value: " + cell);
+//					System.out.println("Creating numeric cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					currentcell.setCellValue(Double.parseDouble(cell));
 				}
 				else if(cell.equals(""))
 				{
-					System.out.println("Creating blank cell for value: " + cell);
+//					System.out.println("Creating blank cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_BLANK);
 				}
 				else 
 				{
-					System.out.println("Creating string cell for value: " + cell);
+//					System.out.println("Creating string cell for value: " + cell);
 					currentcell.setCellType(Cell.CELL_TYPE_STRING);
 					currentcell.setCellValue(cell);
 				}
 				cellpos++;
 			}				
-			System.out.println("The created row is: \n" + currentRow.toString());
+//			System.out.println("The created row is: \n" + currentRow.toString());
 			//currentSheet.addRow(currentRow);
 			currentline = br.readLine();
 			currentRowNumber++;
 		}
 		br.close();	
-		System.out.println(toString());
+//		System.out.println(toString());
 	}	
 
 	@Override
@@ -452,7 +452,7 @@ public class CSVWorkbook implements Workbook{
 		StringBuffer res = new StringBuffer();
 
 		try{
-			System.out.println("Generating the WorkBook Representation String");
+//			System.out.println("Generating the WorkBook Representation String");
 
 			for(Row row : currentSheet)
 			{

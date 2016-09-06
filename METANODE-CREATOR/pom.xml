@@ -55,7 +55,7 @@
 						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace},
-						${bundle.namespace}.subsystems,
+						${bundle.namespace}.subsystems,						
 						${bundle.namespace}.sbmlannotator,						
 						${bundle.namespace}.ThirdParty,
 						${bundle.namespace}.Properties,
@@ -65,17 +65,20 @@
 						${bundle.namespace}.imagenode.Data.BasicDataTypes.*,
 						${bundle.namespace}.imagenode.Data.BasicDataTypes.itemizedData,
 						${bundle.namespace}.imagenode.Data.BasicDataTypes.ValueSetData,
-						<!-- org.apache.poi.ss.*,-->
-						${bundle.namespace}.imagenode.internal.exceptions.io,
-						${bundle.namespace}.imagenode.internal.exceptions.layout,
-						${bundle.namespace}.imagenode.internal.Utilities,
-						${bundle.namespace}.imagenode.internal.GUI.Legend.Utilities,
-						${bundle.namespace}.imagenode.internal.ColorManagement,
+						${bundle.namespace}.imagenode.exceptions.io,
+						${bundle.namespace}.imagenode.exceptions.layout,
+						${bundle.namespace}.imagenode.Utilities,
+						${bundle.namespace}.imagenode.GUI.Legend.Utilities,
+						${bundle.namespace}.imagenode.ColorManagement.*,
 						org.apache.batik.svggen.*,
 						</Export-Package>						
 						<Private-Package>${bundle.namespace}.imagenode.internal.*,
 						${bundle.namespace}.subsystems.internal.*,
-						${bundle.namespace}.sbmlannotator.internal.*</Private-Package>
+						${bundle.namespace}.sbmlannotator.internal.*,
+						${bundle.namespace}.imagenode.ColorManagement.*,
+						${bundle.namespace}.imagenode.*,
+						${bundle.namespace}.internal.*
+						</Private-Package>
 						<Bundle-Activator>${bundle.namespace}.imagenode.internal.CyActivator</Bundle-Activator>
 						<Embed-Dependency>jsbml;inline=false,
 							poi|poi-ooxml|poi-ooxml-schemas|ooxml-schemas;groupId=org.apache.poi;inline=false,

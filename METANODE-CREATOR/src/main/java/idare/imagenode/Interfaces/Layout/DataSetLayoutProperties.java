@@ -1,12 +1,12 @@
 package idare.imagenode.Interfaces.Layout;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
 import idare.imagenode.Properties.Localisation.Position;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.internal.IDAREService;
 
 import java.io.Serializable;
 import java.util.Collection;

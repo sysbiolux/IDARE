@@ -1,6 +1,7 @@
 package idare.imagenode.internal.GUI.NetworkSetup.Tasks;
 
 import idare.Properties.IDAREProperties;
+import idare.Properties.IDARESettingsManager;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import org.cytoscape.work.AbstractTask;
@@ -19,7 +20,7 @@ public class NetworkSetupTask extends AbstractTask implements RequestsUIHelper{
 
 	
 	public NetworkSetupTask() {
-		System.out.println("Task generated");		
+//		System.out.println("Task generated");		
 	}
 	
 	@Override
@@ -29,14 +30,14 @@ public class NetworkSetupTask extends AbstractTask implements RequestsUIHelper{
 			throw new DuplicateTypeException("Cannot use the same type twice, or an empty entry as a type identifier");
 		}
 		try{
-			System.out.println("Running Task");
+//			System.out.println("Running Task");
 			params.mgr.setType(IDAREProperties.NodeType.IDARE_SPECIES, params.CompoundID);
 			params.mgr.setType(IDAREProperties.NodeType.IDARE_GENE, params.GeneID);
 			params.mgr.setType(IDAREProperties.NodeType.IDARE_REACTION, params.InteractionID);
 			params.mgr.setType(IDAREProperties.NodeType.IDARE_PROTEIN, params.ProteinID);
-			System.out.println("manager set up");
-			IDAREVisualStyle.SetNetworkData(params.network, params.mgr, params.TypeColID, params.IDColID, params.overwrite, params.nm);
-			System.out.println("Network set up");
+//			System.out.println("manager set up");
+			IDARESettingsManager.SetNetworkData(params.network, params.mgr, params.TypeColID, params.IDColID, params.overwrite, params.nm);
+//			System.out.println("Network set up");
 		}
 		catch(Exception e)
 		{

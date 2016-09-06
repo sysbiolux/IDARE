@@ -14,7 +14,7 @@ public class BasicIDARECell implements IDARECell {
 	
 	/**
 	 * Basic Constructor indicating the containing row and the type of the cell
-	 * @param type the {@link CellType} of the cell
+	 * @param type the CellType of the cell
 	 * @param containingRow The Row containing this cell
 	 */
 	public BasicIDARECell(CellType type, BasicIDARERow containingRow)
@@ -32,7 +32,7 @@ public class BasicIDARECell implements IDARECell {
 	}
 	/**
 	 * Basic Constructor indicating the containing row and the type of the cell, along with the value to be stored.
-	 * @param type the {@link CellType} of this cell
+	 * @param type the CellType of this cell
 	 * @param value the value of this cell
 	 * @param containingRow the row containing this cell
 	 */

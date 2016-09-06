@@ -2,12 +2,12 @@ package idare.imagenode.internal.VisualStyle;
 
 import idare.Properties.IDAREProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.IOUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
-import idare.imagenode.internal.Utilities.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

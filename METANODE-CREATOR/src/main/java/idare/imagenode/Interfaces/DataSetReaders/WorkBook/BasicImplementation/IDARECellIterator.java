@@ -15,8 +15,6 @@ public class IDARECellIterator implements Iterator<IDARECell>{
 
 	/**
 	 * Cell iterator implementation to return the {@link IDARECell}s in the order they are in the {@link IDARERow}.
-	 * @author Thomas Pfau
-	 *
 	 */
 	Iterator<? extends IDARECell> iter;
 			public IDARECellIterator(Iterator<? extends IDARECell> source)

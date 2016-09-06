@@ -1,17 +1,18 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
+import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.GUIUtils;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
 import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
 import idare.imagenode.internal.Layout.NodeLayout;
-import idare.imagenode.internal.Utilities.GUIUtils;
-import idare.imagenode.internal.Utilities.LayoutUtils;
-import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.internal.exceptions.layout.TooManyItemsException;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -22,6 +23,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -295,13 +297,40 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);
+			//select a non empty node
+			String NodeID = "";
+			for(int i = 0; i < builder.dssm.getSelectedDataSets().size(); i++)
+			{
+				DataSet currentds = builder.dssm.getSelectedDataSets().get(i).dataset;
+				Iterator<String> iditer = currentds.getNodeIDs().iterator();
+				while(iditer.hasNext())
+				{
+					String cid = iditer.next();
+					for(NodeData data : nm.getNode(cid).getData())
+					{
+						if(!data.isempty())
+						{
+							NodeID = cid;
+							break;
+						}
+					}
+					if(NodeID != "")
+					{
+						break;
+					}
+				}
+				if(NodeID != "")
+				{
+					break;
+				}
+			}			
 			if(legend)
 			{
-				layout.layoutLegendNode(nm.getNode(builder.dssm.getSelectedDataSets().get(0).dataset.getNodeIDs().iterator().next()).getData(), g);
+				layout.layoutLegendNode(nm.getNode(NodeID).getData(), g);
 			}
 			else
 			{
-				layout.layoutNode(nm.getNode(builder.dssm.getSelectedDataSets().get(0).dataset.getNodeIDs().iterator().next()).getData(), g);
+				layout.layoutNode(nm.getNode(NodeID).getData(), g);
 			}
 			LayoutUtils.TransferGRaphicsToDocument(doc, null, g);
 			JSVGCanvas canvas = new JSVGCanvas();

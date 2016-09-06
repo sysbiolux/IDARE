@@ -3,7 +3,7 @@ package idare.subsystems.internal.GUI;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.imagenode.internal.Utilities.GUIUtils;
+import idare.imagenode.Utilities.GUIUtils;
 import idare.subsystems.internal.NoNetworksToCreateException;
 import idare.subsystems.internal.SubNetworkCreator;
 
@@ -287,6 +287,8 @@ public class SubSystemColumnChooser extends JDialog {
 //				creator.IDAREIdmgr.setType(IDAREProperties.NodeType.IDARE_SPECIES, chooser.getCompoundName());
 				creator.setCompoundName(ctc.getCompoundID());
 				creator.setInteractionName(ctc.getReactionID());
+				//clear the Subnetwork Types.
+				creator.IDAREIdmgr.resetSubNetworkTypes();
 				creator.IDAREIdmgr.setSubNetworkType(IDAREProperties.NodeType.IDARE_REACTION, ctc.getReactionID());
 				creator.IDAREIdmgr.setSubNetworkType(IDAREProperties.NodeType.IDARE_SPECIES, ctc.getCompoundID());
 				creator.setupNetworkForSubNetworkCreation(network, creator.IDAREIdmgr, chooser.getTypeCol());;

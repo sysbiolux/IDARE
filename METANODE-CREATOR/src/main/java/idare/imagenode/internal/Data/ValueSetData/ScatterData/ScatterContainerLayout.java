@@ -1,13 +1,13 @@
 package idare.imagenode.internal.Data.ValueSetData.ScatterData;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetContainerLayout;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataValue;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.Utilities.LayoutUtils;
-import idare.imagenode.internal.Utilities.LegendLabel;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LegendLabel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -112,7 +112,7 @@ public class ScatterContainerLayout extends ValueSetContainerLayout {
 			 HashMap<Comparable,String> HeaderLabels = LayoutUtils.getLabelsForData(headers);			 
 			 for(Comparable header : headers)
 			 {				 
-				 System.out.println(header);
+//				 System.out.println(header);
 				 itemxPositions.put(header,new LabelAndPosition(0.5 + i, HeaderLabels.get(header)));
 				 i++;
 			 }

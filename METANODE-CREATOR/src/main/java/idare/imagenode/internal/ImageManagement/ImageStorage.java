@@ -3,10 +3,10 @@ package idare.imagenode.internal.ImageManagement;
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BufferedImageTranscoder;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
-import idare.imagenode.internal.Utilities.LayoutUtils;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import java.awt.Color;

@@ -6,8 +6,8 @@ import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation.Position;
+import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.Data.itemizedData.CircleData.CircleDataSetProperties;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
 /**
  * Properties of a Gridded Circle Dataset.
  * @author Thomas Pfau

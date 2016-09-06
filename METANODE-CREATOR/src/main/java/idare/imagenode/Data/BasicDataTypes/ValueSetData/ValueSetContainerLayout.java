@@ -1,8 +1,8 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
-import idare.imagenode.internal.ColorManagement.ColorMap;
 
 import java.awt.Rectangle;
 

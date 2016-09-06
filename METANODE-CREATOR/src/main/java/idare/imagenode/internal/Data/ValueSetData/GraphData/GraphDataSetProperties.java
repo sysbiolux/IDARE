@@ -1,17 +1,17 @@
 package idare.imagenode.internal.Data.ValueSetData.GraphData;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.SetDataDescription;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataProperties;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
+import idare.imagenode.GUI.Legend.Utilities.TextPaneResizer;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation.Position;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.GUI.Legend.Utilities.TextPaneResizer;
-import idare.imagenode.internal.Utilities.GUIUtils;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.Utilities.GUIUtils;
+import idare.imagenode.exceptions.io.WrongFormat;
 
 import java.awt.Dimension;
 import java.awt.Font;

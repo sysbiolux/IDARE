@@ -1,16 +1,17 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
 import idare.ThirdParty.BoundsPopupMenuListener;
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.ColorManagement.ColorScalePane;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.ColorManagement.ColorScalePane;
+import idare.imagenode.Utilities.ColorScalePopupAdjuster;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
-import idare.imagenode.internal.Utilities.ColorScalePopupAdjuster;
 
 import java.awt.Component;
 import java.util.Collection;
@@ -391,8 +392,8 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 * @param ds
 	 */
 	private void datasetRemoved(DataSet ds) {
-		// TODO Auto-generated method stub
 		int rowindex = getRowByDataSet(ds);
+		PrintFDebugger.Debugging(this, "Removing dataset in row " + rowindex);
 		if(rowindex >=0)
 		{
 			removeRow(rowindex);

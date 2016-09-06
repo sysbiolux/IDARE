@@ -16,9 +16,10 @@ public class FailureTask extends AbstractTask {
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("Finishing Tasks");
+//		System.out.println("Finishing Tasks");
 		if(!dsri.isDataSetAdded())
 		{
+			taskMonitor.setStatusMessage("Dataset addition failed");
 			String ErrorMessage = "";
 			for(String error : dsri.getErrorMessages())
 			{

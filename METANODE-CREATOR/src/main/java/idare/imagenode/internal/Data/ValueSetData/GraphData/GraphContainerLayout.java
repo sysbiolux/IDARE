@@ -1,13 +1,13 @@
 package idare.imagenode.internal.Data.ValueSetData.GraphData;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetContainerLayout;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataValue;
 import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetNodeData;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.Utilities.LayoutUtils;
-import idare.imagenode.internal.Utilities.LegendLabel;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LegendLabel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

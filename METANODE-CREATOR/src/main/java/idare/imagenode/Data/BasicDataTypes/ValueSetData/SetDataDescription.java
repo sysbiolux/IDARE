@@ -1,10 +1,10 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
+import idare.imagenode.GUI.Legend.Utilities.LegendSizeListener;
+import idare.imagenode.GUI.Legend.Utilities.SizeAdaptableComponent;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
-import idare.imagenode.internal.GUI.Legend.Utilities.SizeAdaptableComponent;
 
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;

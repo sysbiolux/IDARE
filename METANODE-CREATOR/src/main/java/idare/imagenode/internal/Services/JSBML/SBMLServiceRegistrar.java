@@ -21,7 +21,7 @@ public class SBMLServiceRegistrar implements
 		ref = context.getServiceReference("org.cy3sbml.SBMLManager");
 		if(ref != null)
 		{
-			System.out.println("SBMLServiceReg: Found a SBMLMAnager, using it");
+//			System.out.println("SBMLServiceReg: Found a SBMLMAnager, using it");
 			holder.setObject(appContext.getService(ref));
 		}
 	}
@@ -49,7 +49,7 @@ public class SBMLServiceRegistrar implements
 		{
 			if(objectclass[0] == "org.cy3sbml.SBMLManager")
 			{	
-				System.out.println("SBMLServiceReg:  Found a SBMLMAnager, registering it");
+//				System.out.println("SBMLServiceReg:  Found a SBMLMAnager, registering it");
 				ref = event.getServiceReference();
 				Object mgr = appContext.getService(ref);
 				holder.setObject(mgr);					
@@ -59,7 +59,7 @@ public class SBMLServiceRegistrar implements
 		{
 				if(objectclass[0] == "org.cy3sbml.SBMLManager")
 				{
-					System.out.println("SBMLServiceReg: SBMLManager deregistered, removing it");									
+//					System.out.println("SBMLServiceReg: SBMLManager deregistered, removing it");									
 					holder.setObject(null);					
 				}
 			

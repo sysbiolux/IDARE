@@ -5,16 +5,16 @@ import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.EOOMarker;
+import idare.imagenode.Utilities.IOUtils;
+import idare.imagenode.exceptions.io.DuplicateIDException;
+import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
-import idare.imagenode.internal.Utilities.EOOMarker;
-import idare.imagenode.internal.Utilities.IOUtils;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -311,12 +311,16 @@ public class DataSetManager{
 		
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
 		calisteners.addAll(datasetsAboutToChangeListeners);
+		PrintFDebugger.Debugging(this,"Onforming early listeners");
+
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, added, true,false,false));
 		}		
 		Set<DataSetChangeListener> clisteners = new HashSet();
 		clisteners.addAll(datasetsChangedListeners);
+		PrintFDebugger.Debugging(this,"Informing late listeners");
+
 		for(DataSetChangeListener listener : clisteners)
 		{
 			listener.datasetChanged(new DataSetChangedEvent(this, added, true,false,false));
@@ -368,6 +372,7 @@ public class DataSetManager{
 	{
 		newDataSet.setID(idprovider.getNextID());
 		dataSets.put(newDataSet.getID(),newDataSet);
+		PrintFDebugger.Debugging(this,"Fireig update event");
 		fireDataSetAdded(newDataSet);
 	}
 	/**
@@ -475,14 +480,18 @@ public class DataSetManager{
 	throws ExecutionException,WrongFormat, InvalidFormatException, DuplicateIDException, IOException, 
 	ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-		System.out.println("Generating a dataset with twocolumnheaders set to " + TwoCols);
-		DataSet ds = availableDataSetTypes.get(DataSetTypeName).newInstance();
-		//here we just supply all options available. The DataSet Class will care about a proper selection later during readWorkBookData 
+		PrintFDebugger.Debugging(this,"Generating a dataset with twocolumnheaders set to " + TwoCols);
+		DataSet ds = availableDataSetTypes.get(DataSetTypeName).newInstance();		
+		//here we just supply all options available. The DataSet Class will care about a proper selection later during readWorkBookData
+		PrintFDebugger.Debugging(this,"Setting Property options");
 		ds.setPropertyOptionsUnchecked(dataSetPropertyOptions.get(availableDataSetTypes.get(DataSetTypeName)));
-		ds.setID(idprovider.getNextID());
+		PrintFDebugger.Debugging(this,"obtaining new id" );
+		ds.setID(idprovider.getNextID());		
 		ds.useTwoColHeaders = TwoCols;
 		ds.Description = SetDescription;
+		PrintFDebugger.Debugging(this,"setting up workbook");
 		ds.setupWorkBook(dsWorkBook);
+		PrintFDebugger.Debugging(this,"Adding Dataset");
 		addDataSet(ds);
 		return ds;
 	}	

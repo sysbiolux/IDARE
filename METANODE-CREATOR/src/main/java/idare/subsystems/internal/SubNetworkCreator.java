@@ -54,15 +54,13 @@ public class SubNetworkCreator extends AbstractCyAction{
 	private CySwingApplication cySwingApp;
 	private final CyRootNetworkManager rootManager;
 	private final NetworkViewSwitcher nvs;
-	public IDARESettingsManager IDAREIdmgr;
-	//private NodeManager nm;
+	public IDARESettingsManager IDAREIdmgr;	
 	
 	
 	private boolean accepted = false;
 	private String choosenAlgorithm;
 	private int choosenColumn = 0;
 	private HashMap<String,CyLayoutAlgorithm> algorithms;
-	private Vector<String> algoNames;
 	private Vector<String> NetworkColumns;
 	private Vector<Object> subSystems;
 	private Set<CyNode> ignoredMetas;
@@ -71,7 +69,6 @@ public class SubNetworkCreator extends AbstractCyAction{
 	private String compoundName;
 	private String interactionName;
 	private String IDColName;
-	//private boolean overwriteTypes;
 	/**
 	 * Default Constructor
 	 * @param rootManager
@@ -113,7 +110,6 @@ public class SubNetworkCreator extends AbstractCyAction{
 		subSystems= new Vector<Object>();
 		ignoredMetas = new HashSet<CyNode>();
 		noBranchMetas = new HashSet<CyNode>();
-		algoNames = new Vector<String>();
 	}
 	
 	/**
@@ -175,7 +171,7 @@ public class SubNetworkCreator extends AbstractCyAction{
 	 * @param ColName - The String identifying the Column to look up the different subsystem identifiers 
 	 * @return a {@link Vector} of column Identifiers
 	 */
-	public Vector<Object> getDifferentSubSystems(CyTable table, String ColName)
+	public static Vector<Object> getDifferentSubSystems(CyTable table, String ColName)
 	{
 		Vector<Object> SubsystemTypes = new Vector<Object>();		
 		List<CyRow> rows = table.getAllRows();
@@ -249,7 +245,7 @@ public class SubNetworkCreator extends AbstractCyAction{
 		if(accepted)
 		{			
 			SubNetworkCreatorTaskFactory SATF = new SubNetworkCreatorTaskFactory(rootManager,networkViewManager,networkViewFactory,
-				eventHelper,applicationManager,networkManager,algorithms.get(choosenAlgorithm),NetworkColumns.get(choosenColumn),vmm,nvs,subSystems,ignoredMetas,noBranchMetas);
+				eventHelper,applicationManager,networkManager,algorithms.get(choosenAlgorithm),NetworkColumns.get(choosenColumn),vmm,nvs,subSystems,ignoredMetas,noBranchMetas, IDAREIdmgr);
 			dtm.execute(SATF.createTaskIterator());
 		}
 	}
@@ -385,9 +381,9 @@ public class SubNetworkCreator extends AbstractCyAction{
 	 * Get the Names of already existing subsystems (to avoid duplication).
 	 * @return a {@link Set} of {@link String}s of Existing SubSystem Names
 	 */
-	public Set<String> getExistingSubSystemNames(CyNetwork selectednetwork)
+	public Set<String> getExistingSubSystemNames(CyNetwork selectednetwork, String ColumnName)
 	{
-		return nvs.getSubNetworkNames(selectednetwork);
+		return nvs.getSubNetworkWorksForNetwork(selectednetwork,ColumnName);
 	}
 
 	/**
@@ -400,9 +396,9 @@ public class SubNetworkCreator extends AbstractCyAction{
 	{
 	CyTable NodeTable = network.getDefaultNodeTable();
 	CyTable EdgeTable = network.getDefaultEdgeTable();
-	if(!IDAREVisualStyle.isSetupNetwork(network))
+	if(!IDARESettingsManager.isSetupNetwork(network))
 	{
-		IDAREVisualStyle.initNetwork(network);
+		IDARESettingsManager.initNetwork(network);
 	}
 	List<CyRow> NodeRows = NodeTable.getAllRows();
 	for(CyRow row : NodeRows)
@@ -411,7 +407,7 @@ public class SubNetworkCreator extends AbstractCyAction{
 		//furthermore we can initialize the IDARE_TARGET_ID property for save/restore functionality
 		if(!row.isSet(IDAREProperties.IDARE_NODE_UID))
 		{
-			Long id = Idmgr.getNextID();
+			Long id = Idmgr.getNextNodeID();
 			row.set(IDAREProperties.IDARE_NODE_UID, id);
 		}			
 		//Always update to the current value!

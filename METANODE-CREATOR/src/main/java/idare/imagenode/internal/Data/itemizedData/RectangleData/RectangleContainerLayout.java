@@ -1,8 +1,8 @@
 package idare.imagenode.internal.Data.itemizedData.RectangleData;
 
+import idare.imagenode.ColorManagement.ColorUtils;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemContainerLayout;
-import idare.imagenode.internal.ColorManagement.ColorUtils;
-import idare.imagenode.internal.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LayoutUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;

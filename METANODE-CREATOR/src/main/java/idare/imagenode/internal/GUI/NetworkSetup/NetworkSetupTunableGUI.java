@@ -2,9 +2,9 @@ package idare.imagenode.internal.GUI.NetworkSetup;
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BoundsPopupMenuListener;
+import idare.imagenode.Utilities.GUIUtils;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupProperties;
-import idare.imagenode.internal.Utilities.GUIUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;

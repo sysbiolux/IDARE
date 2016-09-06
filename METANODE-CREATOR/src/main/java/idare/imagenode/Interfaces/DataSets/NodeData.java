@@ -65,6 +65,11 @@ public abstract class NodeData implements Serializable{
 	{
 		this.id = id;
 	}
-
+	
+	/**
+	 * Check whether this Data is empty (i.e. has only null values)
+	 * @return true, if it is empty, or fals eif there are non zero values.
+	 */
+	public abstract boolean isempty();
 	
 }

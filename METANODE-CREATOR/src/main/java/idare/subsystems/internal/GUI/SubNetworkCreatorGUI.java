@@ -92,10 +92,10 @@ public class SubNetworkCreatorGUI extends JDialog{
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setContentPane(new JPanel());
 		this.getContentPane().setLayout(new GridBagLayout());
-		System.out.println("Calling Pack");
+//		System.out.println("Calling Pack");
 		this.pack();
 		GridBagConstraints outerConst = new GridBagConstraints();
-		System.out.println("Getting Color");
+//		System.out.println("Getting Color");
 		bgcolor = this.getContentPane().getBackground();
 		SimpleAttributeSet attribs = new SimpleAttributeSet();  
 		StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
@@ -112,11 +112,11 @@ public class SubNetworkCreatorGUI extends JDialog{
 		outerConst.weighty = 1;
 		outerConst.gridwidth = GridBagConstraints.REMAINDER;
 		outerConst.fill = GridBagConstraints.HORIZONTAL;
-		System.out.println("Adding Title");
+//		System.out.println("Adding Title");
 		this.getContentPane().add(titleField,outerConst);
 		
 		
-		System.out.println("Creating Middle Section");
+//		System.out.println("Creating Middle Section");
 		outerConst.fill = GridBagConstraints.HORIZONTAL;
 	    outerConst.anchor = GridBagConstraints.CENTER;
 	    outerConst.weightx = 1;
@@ -139,7 +139,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 		outerConst.fill = GridBagConstraints.HORIZONTAL;	
 		outerConst.gridy++;		
 		//Create the selection panel for Subsystems
-		System.out.println("Creating Metabolite Selection");
+//		System.out.println("Creating Metabolite Selection");
 		try{
 			createMetaboliteSelection(network,outerConst,this.getContentPane());
 		}
@@ -148,7 +148,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 			e.printStackTrace(System.out);
 		}
 //		
-		System.out.println("Creating Subsystem Selection");
+//		System.out.println("Creating Subsystem Selection");
 		outerConst.gridx = 0;		
 		outerConst.weighty = 1;
 		outerConst.gridwidth = GridBagConstraints.REMAINDER;
@@ -262,7 +262,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 		subSysSelMod.setColumnIdentifiers(ColIds);
 		Vector<Object> subSysNames = creator.getDifferentSubSystems(network.getDefaultNodeTable(), colSelector.getSelectedItem().toString());
 
-		Set<String> existingSubSystems = creator.getExistingSubSystemNames(network);
+		Set<String> existingSubSystems = creator.getExistingSubSystemNames(network, colSelector.getSelectedItem().toString());
 		for(Object subSys : subSysNames)
 		{
 			if(!existingSubSystems.contains(subSys) && subSys != null)
@@ -425,12 +425,12 @@ public class SubNetworkCreatorGUI extends JDialog{
 				row.add(false);
 			}			
 			row.add(entry.key);
-			System.out.println("Trying to add row: " + entry.key.toString());
-			for(Object item : row)
-			{
-				System.out.print(item + "\t");
-			}
-			System.out.println("");
+//			System.out.println("Trying to add row: " + entry.key.toString());
+//			for(Object item : row)
+//			{
+//				System.out.print(item + "\t");
+//			}
+//			System.out.println("");
 			metSelMod.addRow(row);
 		}
 		metSelTab.setModel(metSelMod);

@@ -1,5 +1,7 @@
 package idare.imagenode.Interfaces.Plugin;
 
+import idare.imagenode.internal.IDAREService;
+
 import java.util.Vector;
 
 public interface IDAREPlugin{

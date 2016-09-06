@@ -252,7 +252,7 @@ NetworkViewTaskFactory {
 						}
 
 
-						System.out.println("The selected Database is : " + GeneAnnotDB);
+//						System.out.println("The selected Database is : " + GeneAnnotDB);
 						if(GeneAnnotDB == null)
 						{
 							return null;
@@ -276,7 +276,7 @@ NetworkViewTaskFactory {
 						}
 
 
-						System.out.println("The selected Database is : " + ProtAnnotDB);
+//						System.out.println("The selected Database is : " + ProtAnnotDB);
 						if(ProtAnnotDB == null)
 						{
 							return null;

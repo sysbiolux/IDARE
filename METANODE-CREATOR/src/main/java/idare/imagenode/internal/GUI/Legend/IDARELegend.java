@@ -1,16 +1,16 @@
 package idare.imagenode.internal.GUI.Legend;
 
 
+import idare.imagenode.GUI.Legend.Utilities.LegendSizeListener;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.internal.DataManagement.ImageNodeModel;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
 import idare.imagenode.internal.Layout.NodeLayout;
-import idare.imagenode.internal.Utilities.LayoutUtils;
 
 import java.awt.Color;
 import java.awt.Component;

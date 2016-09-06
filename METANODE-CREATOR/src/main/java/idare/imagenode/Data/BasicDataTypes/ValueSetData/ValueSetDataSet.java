@@ -1,25 +1,25 @@
 package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.ColorManagement.ColorScale;
+import idare.imagenode.ColorManagement.ColorScaleFactory;
+import idare.imagenode.ColorManagement.ColorMapTypes.DiscreteColorMap;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
-import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.DataSets.NodeValue;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.ColorManagement.ColorScale;
-import idare.imagenode.internal.ColorManagement.ColorScaleFactory;
-import idare.imagenode.internal.ColorManagement.ColorMapTypes.DiscreteColorMap;
+import idare.imagenode.Utilities.StringUtils;
+import idare.imagenode.exceptions.io.DuplicateIDException;
+import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.ColorManagement.ColorScales.LineScale;
 import idare.imagenode.internal.Data.ValueSetData.GraphData.GraphDataSetProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.LargeScatterProperties;
 import idare.imagenode.internal.Data.ValueSetData.ScatterData.SmallScatterProperties;
-import idare.imagenode.internal.Utilities.StringUtils;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -143,7 +143,7 @@ public class ValueSetDataSet extends DataSet{
 		Vector<Comparable> items = new Vector<Comparable>();
 		items.addAll(SheetNames);
 		//use discrete color scales
-		Collection<ColorScale> scales = ColorScaleFactory.getDiscreetColorScales(items.size());
+		Collection<ColorScale> scales = ColorScaleFactory.getNonWhiteDiscreteColorScales(items.size());
 		for(ColorScale scale : scales)
 		{
 			scale.setColorCount(items.size());

@@ -65,4 +65,16 @@ public class ItemNodeData extends NodeData {
 		return ((ItemDataSet)parent).isColumnSet(pos);
 	}
 
+	@Override
+	public boolean isempty() {
+		for(NodeValue val : values)
+		{
+			if(val != null && val.getValue() != null)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

@@ -15,6 +15,7 @@ public class NodeViewLink {
 	private CyNode targetNode;
 	private CyNetworkView targetNetworkView;
 	private CyNetwork targetNetwork;
+	private CyNetwork sourceNetwork;
 	/**
 	 * Default Constructor to Combine the {@link View} of a target {@link CyNode} wth the respective {@link CyNetwork}, {@link CyNetworkView} and the {@link CyNode} 
 	 * @param targetNodeView
@@ -22,11 +23,12 @@ public class NodeViewLink {
 	 * @param targetnetwork
 	 * @param targetnode
 	 */
-	public NodeViewLink(View<CyNode> targetNodeView, CyNetworkView targetNetworkView,CyNetwork targetnetwork, CyNode targetnode) {
+	public NodeViewLink(View<CyNode> targetNodeView, CyNetworkView targetNetworkView,CyNetwork targetnetwork, CyNode targetnode, CyNetwork sourceNetwork) {
 		this.targetNodeView = targetNodeView;
 		this.targetNetworkView = targetNetworkView;
 		this.targetNetwork = targetnetwork;
 		this.targetNode = targetnode;
+		this.sourceNetwork = sourceNetwork;
 	}
 	/**
 	 * Get the View of the Node
@@ -42,13 +44,8 @@ public class NodeViewLink {
 	public CyNode getTargetNode() {
 		return targetNode;
 	}
-//	/**
-//	 * Set the target {@link CyNode};
-//	 * @param node
-//	 */
-//	public void setTargetNode(CyNode node) {
-//		this.targetNode = node;
-//	}
+	
+	
 	/**
 	 * Get the target {@link CyNetwork}
 	 * @return the target {@link CyNetwork}
@@ -57,9 +54,16 @@ public class NodeViewLink {
 		return targetNetwork;
 	}
 
-//	public void setTargetNetwork(CyNetwork network) {
-//		this.targetNetwork = network;
-//	}
+	
+	/**
+	 * Get the source {@link CyNetwork}
+	 * @return the source {@link CyNetwork}
+	 */
+	public CyNetwork getSourceNetwork() {
+		return sourceNetwork;
+	}	
+
+	
 	/**
 	 * Set the target {@link View} for the node of this Link.
 	 * @param nodeView

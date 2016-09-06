@@ -11,10 +11,11 @@ import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.LegendUpdater;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
 import idare.imagenode.internal.Services.JSBML.SBMLServiceRegistrar;
+import idare.internal.IDAREApp;
 import idare.sbmlannotator.internal.SBMLAnnotationTaskFactory;
 import idare.subsystems.internal.NetworkViewSwitcher;
 import idare.subsystems.internal.SubNetworkCreator;
-import idare.subsystems.internal.SubSystemsSaver;
+import idare.subsystems.internal.SubSystemSessionManager;
 
 import java.io.File;
 import java.util.Collection;
@@ -68,7 +69,7 @@ import org.osgi.framework.BundleContext;
 
 public class CyActivator extends AbstractCyActivator {
 
-	IDAREImageNodeApp app;
+	IDAREApp app;
 	CyServiceRegistrar reg;
 	BundleContext appcontext;
 	SBMLServiceRegistrar SBMLReg;
@@ -79,6 +80,8 @@ public class CyActivator extends AbstractCyActivator {
 		appcontext = context;
 		CyApplicationConfiguration configuration = getService(context, CyApplicationConfiguration.class);
 		File cyDirectory = configuration.getConfigurationDirectoryLocation();
+		app = new IDAREApp();
+		registerAllServices(context, app, new Properties());
 
 		// Set the default logging position for the App.
 		
@@ -133,32 +136,33 @@ public class CyActivator extends AbstractCyActivator {
 		
 
 		//initialize and register the app components.
-		app = new IDAREImageNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager);		
-		app.registerPlugin(new DataSetReaderProvider());
-		app.registerPlugin(new DataSetProvider());				
+		IDAREImageNodeApp imageapp = new IDAREImageNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager, app.getSettingsManager());
+		app.setImageApp(imageapp);
+		imageapp.registerPlugin(new DataSetReaderProvider());
+		imageapp.registerPlugin(new DataSetProvider());				
 		
 		//Generate the Externally available sErvice
-		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(app);
+		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(imageapp);
 		
 		//NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
 		
 		//Set up the Legend Panel
-		IDARELegend pan = app.getLegend();
-		LegendUpdater up = new LegendUpdater(pan, app.getNodeManager(), cyAppMgr,vmm, app.getStyleManager());		
+		IDARELegend pan = imageapp.getLegend();
+		LegendUpdater up = new LegendUpdater(pan, imageapp.getNodeManager(), cyAppMgr,vmm, imageapp.getStyleManager());		
 		up.activate();
-		DataSetControlPanel dcp = app.getDataSetPanel();	
+		DataSetControlPanel dcp = imageapp.getDataSetPanel();	
 		
 		//Generate he TunableHandlers
-		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,app.getDatasetManager());		
-		NetworkSetupGUIHandlerFactory nsghf = new NetworkSetupGUIHandlerFactory(app.getNodeManager(), app.getSettingsManager(), cyAppMgr);
+		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,imageapp.getDatasetManager());		
+		NetworkSetupGUIHandlerFactory nsghf = new NetworkSetupGUIHandlerFactory(imageapp.getNodeManager(), imageapp.getSettingsManager(), cyAppMgr);
 		
 		//Register the Actions of the App.
-		for(CyAction cyAct : app.getActions())
+		for(CyAction cyAct : imageapp.getActions())
 		{
 			registerAllServices(context, cyAct, new Properties());
 		}
 		// Register the TaskFactories of the App.
-		HashMap<AbstractTaskFactory, Vector<Properties>> facs = app.getFactories();
+		HashMap<AbstractTaskFactory, Vector<Properties>> facs = imageapp.getFactories();
 		for(AbstractTaskFactory fac : facs.keySet())
 		{
 			for(Properties prop : facs.get(fac))
@@ -173,7 +177,7 @@ public class CyActivator extends AbstractCyActivator {
 				}
 			}
 		}
-		registerAllServices(context, app.getStyleManager(), new Properties());
+		registerAllServices(context, imageapp.getStyleManager(), new Properties());
 		registerAllServices(context, pan, new Properties());
 		registerAllServices(context, up, new Properties());
 		//Register the tunable Handlers
@@ -181,12 +185,11 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(context, dsctf, GUITunableHandlerFactory.class, new Properties());
 
 		//Register the app as its own service and load and save listener.
-		registerService(context, app, SessionAboutToBeSavedListener.class, new Properties());
-		registerService(context, app, SessionLoadedListener.class, new Properties());
+		registerService(context, imageapp, SessionAboutToBeSavedListener.class, new Properties());
 		registerService(context, appService, IDAREImageNodeAppService.class, new Properties());
 
 		//Register the visual style
-		registerAllServices(context, app.getVisualStyle(), new Properties());
+		registerAllServices(context, imageapp.getVisualStyle(), new Properties());
 		//Register the DatasetControlPanel
 		registerAllServices(context, dcp, new Properties());
 		//Register the Network Setup Menu item.
@@ -221,7 +224,7 @@ public class CyActivator extends AbstractCyActivator {
 		//		cytoscapePropertiesServiceRef,eventHelper,FileUtilService,cySwingApp);
 		SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
 		context.addServiceListener(SBMLReg);
-		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app);
+		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app.getImageNodeApp());
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
 	
@@ -263,28 +266,29 @@ public class CyActivator extends AbstractCyActivator {
 		NetworkViewSwitcher nvs = new NetworkViewSwitcher(reg);
 		SubNetworkCreator snc = new SubNetworkCreator(rootManager, cyApplicationManager, "SubNetworkCreator", networkViewManager,
 				networkViewFactory, eventHelper, networkFactory, networkManager,LayoutManager,dialogTaskManager,vmm, nvs,iDAREIDMgr,cySwingApp);
-		SubSystemsSaver SubSysSave = new SubSystemsSaver(nvs, iDAREIDMgr);
+		SubSystemSessionManager SubSysSave = new SubSystemSessionManager(nvs, iDAREIDMgr);
 		Properties properties = new Properties();
 		Properties doubleClickProperties = new Properties();
 		doubleClickProperties.setProperty(ServiceProperties.PREFERRED_ACTION, NetworkViewSwitcher.PREFERRED_OPTION);
 		doubleClickProperties.setProperty(ServiceProperties.TITLE, "Switch To Network");
-		//registerService(context,SubSysSave,SessionLoadedListener.class, new Properties());		
-		registerAllServices(context, SubSysSave, new Properties());
+		//registerService(context,SubSysSave,SessionLoadedListener.class, new Properties());
+		app.setSubsysManager(SubSysSave);
 		registerAllServices(context, snc, properties);
-
+		
 		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
 		registerService(context,nvs,RowsSetListener.class, new Properties());
 		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, doubleClickProperties);
 		registerService(context,nvs,NetworkAddedListener.class, new Properties());
 		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, doubleClickProperties);
 		registerService(context,nvs,NetworkViewAddedListener.class, doubleClickProperties);
+		registerService(context,nvs,SessionAboutToBeSavedListener.class, new Properties());
 	}
 
 	@Override
 	public void shutDown()
 	{
 		super.shutDown();
-		app.unregisterAll();		
+		app.getImageNodeApp().unregisterAll();		
 		if(SBMLReg != null)
 		{
 			appcontext.removeServiceListener(SBMLReg);

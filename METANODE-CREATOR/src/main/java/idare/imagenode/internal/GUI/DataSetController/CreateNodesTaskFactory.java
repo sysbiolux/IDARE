@@ -1,9 +1,9 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.internal.exceptions.layout.TooManyItemsException;
 
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.AbstractTaskFactory;

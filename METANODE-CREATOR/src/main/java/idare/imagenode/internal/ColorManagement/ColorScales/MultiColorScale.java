@@ -1,7 +1,7 @@
 package idare.imagenode.internal.ColorManagement.ColorScales;
 
-import idare.imagenode.internal.ColorManagement.ColorScale;
-import idare.imagenode.internal.ColorManagement.ColorScalePane;
+import idare.imagenode.ColorManagement.ColorScale;
+import idare.imagenode.ColorManagement.ColorScalePane;
 
 import java.awt.Color;
 /**

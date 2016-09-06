@@ -52,7 +52,7 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 		{
 			
 			IDAREDatasetReader reader = readeriter.next();
-			System.out.println("Looping over readers. Currentreader is " + reader.getClass().getSimpleName());
+//			System.out.println("Looping over readers. Currentreader is " + reader.getClass().getSimpleName());
 			if(reader.fileTypeAccepted(params.inputFile))
 			{
 				System.out.println("Adding Reader task for reader " + reader.getClass().getSimpleName());
@@ -78,7 +78,7 @@ public class DataSetAdderTask extends AbstractTask implements RequestsUIHelper, 
 	}
 	@Override
 	public void allFinished(FinishStatus finishStatus) {
-		System.out.println("Everything is finished.");
+//		System.out.println("Everything is finished.");
 		for(IDAREDatasetReader reader : dsm.getAvailableReaders())
 		{
 			reader.reset();

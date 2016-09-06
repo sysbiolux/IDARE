@@ -1,11 +1,11 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.GUI.Legend.Utilities.TextPaneResizer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.GUI.Legend.Utilities.TextPaneResizer;
-import idare.imagenode.internal.Utilities.GUIUtils;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.Utilities.GUIUtils;
+import idare.imagenode.exceptions.io.WrongFormat;
 
 import java.awt.Dimension;
 import java.awt.Font;

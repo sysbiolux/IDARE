@@ -1,7 +1,7 @@
 package idare.imagenode.internal.Layout;
 
+import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.internal.ColorManagement.ColorMap;
 
 /**
  * A simple bundle struct for a {@link DataSet} and a {@link ColorMap}

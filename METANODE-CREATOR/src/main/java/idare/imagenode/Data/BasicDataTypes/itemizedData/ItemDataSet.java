@@ -1,5 +1,10 @@
 package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.ColorManagement.ColorScale;
+import idare.imagenode.ColorManagement.ColorScaleFactory;
+import idare.imagenode.ColorManagement.ColorMapTypes.ContinousZeroBalancedMap;
+import idare.imagenode.ColorManagement.ColorMapTypes.DiscreteColorMap;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
@@ -10,17 +15,13 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.DataSets.NodeValue;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.internal.ColorManagement.ColorMap;
-import idare.imagenode.internal.ColorManagement.ColorScale;
-import idare.imagenode.internal.ColorManagement.ColorScaleFactory;
-import idare.imagenode.internal.ColorManagement.ColorMapTypes.ContinousZeroBalancedMap;
-import idare.imagenode.internal.ColorManagement.ColorMapTypes.DiscreteColorMap;
+import idare.imagenode.exceptions.io.DuplicateIDException;
+import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.Data.itemizedData.CircleData.CircleDataSetProperties;
 import idare.imagenode.internal.Data.itemizedData.CircleGridData.CircleGridProperties;
 import idare.imagenode.internal.Data.itemizedData.RectangleData.RectangleDataSetProperties;
 import idare.imagenode.internal.Data.itemizedData.TimeSeriesData.TimeSeriesDataSetProperties;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -143,7 +144,7 @@ public class ItemDataSet extends DataSet{
 	{
 		
 		
-		System.out.println("Reading Header row");
+//		System.out.println("Reading Header row");
 		int offset = 1;
 		if(useTwoColHeaders)
 		{
@@ -166,28 +167,28 @@ public class ItemDataSet extends DataSet{
 			}
 			
 			int position = cell.getColumnIndex() - offset;
-			System.out.println("The offset is " + offset + " and the Cell type is " + cell.getCellType() + " while the index is " + cell.getColumnIndex());
+//			System.out.println("The offset is " + offset + " and the Cell type is " + cell.getCellType() + " while the index is " + cell.getColumnIndex());
 			while(position > columnLabels.size())
 			{
 				//fill empty Headers with null.
-				System.out.println("Adding automatic null header at position" + (cell.getColumnIndex()-offset));
+//				System.out.println("Adding automatic null header at position" + (cell.getColumnIndex()-offset));
 				columnLabels.add(null);
 			}
 			//Check the cell type and format accordingly
 			if(cell.getCellType() == CellType.NUMERIC)
 			{
 				columnLabels.add(Double.toString(cell.getNumericCellValue()));
-				System.out.println("Adding header " + Double.toString(cell.getNumericCellValue()) + " at position" + (cell.getColumnIndex()-offset));
+//				System.out.println("Adding header " + Double.toString(cell.getNumericCellValue()) + " at position" + (cell.getColumnIndex()-offset));
 			}
 			else if(cell.getCellType() == CellType.STRING)
 			{
 				columnLabels.add(cell.getStringCellValue());
-				System.out.println("Adding header " + cell.getStringCellValue() + " at position" + (cell.getColumnIndex()-offset));
+//				System.out.println("Adding header " + cell.getStringCellValue() + " at position" + (cell.getColumnIndex()-offset));
 			}
 			else
 			{
 				// We can't read anything but strings and numeric values.
-				System.out.println("Adding null header at position" + (cell.getColumnIndex()-offset));
+//				System.out.println("Adding null header at position" + (cell.getColumnIndex()-offset));
 				columnLabels.add(null);
 			}
 		}
@@ -213,14 +214,17 @@ public class ItemDataSet extends DataSet{
 	public void readWorkBookData(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
 		//We should clear the Data and everything;
+		PrintFDebugger.Debugging(this,"Resetting");
 		reset();
+		PrintFDebugger.Debugging(this,"Obtaining first sheet");
 		IDARESheet DataSheet = WB.getSheetAt(0);
 		Iterator<IDARERow> rowIterator = DataSheet.iterator();
 		//Read the first row, which are the headers (and labels)
 		IDARERow labelRow = rowIterator.next();
 		Iterator<IDARECell> labelIterator = labelRow.cellIterator();
 		//skip the first row.
-		System.out.println("Skipping Labels for Header Row");
+//		System.out.println("Skipping Labels for Header Row")
+		PrintFDebugger.Debugging(this,"Read Datapoint Names");
 		readDataPointNames(labelIterator);	
 
 		//read the data with the appropriate settings.
@@ -228,27 +232,44 @@ public class ItemDataSet extends DataSet{
 		{			
 			if(numericstrings)
 			{
+				PrintFDebugger.Debugging(this,"Read numeric data, with numeric strings");
 				readNumericData(WB,true);
 			}
 			else
 			{
+				PrintFDebugger.Debugging(this,"Read numeric data without strings");
 				readNumericData(WB,false);
 			}
 		}
 		else
 		{
+			PrintFDebugger.Debugging(this,"Read String Data");
 			readStringData(WB);
 		}
 		//If the dataset is discrete, we can actually use multiple additional Colors.
 		if(isdiscreet)
 		{
+			PrintFDebugger.Debugging(this,"Generating discrete ColorScales");
 			Collection<ColorScale> scales = ColorScaleFactory.getDiscreetColorScales(Valueset.size());
+			PrintFDebugger.Debugging(this,"Adding ColorMaps");
+			try{
 			for(ColorScale scale : scales)
 			{
+				PrintFDebugger.Debugging(this,"Setting Color Count for " + scale.getClass().getSimpleName() + " to " + Valueset.size());
 				scale.setColorCount(Valueset.size());
-				colormaps.add(new DiscreteColorMap(Valueset, scale));
-			}		
-			 scales = ColorScaleFactory.getContinousColorScales();
+				PrintFDebugger.Debugging(this,"Initializing new ColorMap");
+				DiscreteColorMap map = new DiscreteColorMap(Valueset, scale);
+				PrintFDebugger.Debugging(this,"Adding new ColorMap");
+				colormaps.add(map);
+			}	
+			}
+			catch(Exception e)
+			{
+			e.printStackTrace(System.out);	
+			}
+			PrintFDebugger.Debugging(this,"Generating continous ColorScales");
+			scales = ColorScaleFactory.getContinousColorScales();
+			 
 			//for(ColorScale scale : scales)
 			//{
 			//	scale.setColorCount(Valueset.size());
@@ -264,6 +285,7 @@ public class ItemDataSet extends DataSet{
 				colormaps.add(new ContinousZeroBalancedMap(MaxValue,MinValue,scale));
 			}			
 		}
+		PrintFDebugger.Debugging(this,"Generating Setting Default value");
 		Vector<NodeValue> DefaultValues = new Vector<NodeValue>();
 		for(int i = 0; i < columncount; i++)
 		{
@@ -271,6 +293,7 @@ public class ItemDataSet extends DataSet{
 		}
 		//add some values to the default entry
 		defaultEntry.setData(DefaultValues);
+		PrintFDebugger.Debugging(this,"Done");
 	}
 	
 	/**
@@ -328,7 +351,7 @@ public class ItemDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
-			System.out.println(WB.toString());
+//			System.out.println(WB.toString());
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 		if(Stringvalues.size() > 6)
@@ -384,13 +407,13 @@ public class ItemDataSet extends DataSet{
 				IDARECell currentCell = row.getCell(i+offset,IDARERow.RETURN_BLANK_AS_NULL);
 				if(currentCell == null)
 				{
-					System.out.println("Adding null Cell");
+//					System.out.println("Adding null Cell");
 					rowData.add(new NodeValue(true));
 					continue;
 				}
 				else
 				{
-					System.out.println("Adding non null Cell");
+//					System.out.println("Adding non null Cell");
 					hasentries = true;					
 					double currentvalue = currentCell.getNumericCellValue();
 					rowData.add(new NodeValue(currentvalue));
@@ -407,7 +430,7 @@ public class ItemDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
-			System.out.println(WB.toString());
+//			System.out.println(WB.toString());
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 	}
@@ -650,7 +673,7 @@ public class ItemDataSet extends DataSet{
 	 */
 	public String getColumnLabel(int column)
 	{
-		System.out.println("The Column Label for column " + column + " is " + columnLabels.get(column));
+//		System.out.println("The Column Label for column " + column + " is " + columnLabels.get(column));
 		return columnLabels.get(column);
 	}
 	
@@ -687,13 +710,13 @@ public class ItemDataSet extends DataSet{
 			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
 		}
 		
-		System.out.println("Trying to determine the number of columns");
+//		System.out.println("Trying to determine the number of columns");
 		while(cellIterator.hasNext())
 		{						
 			CurrentCell= cellIterator.next();
 			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
 		}
-		System.out.println("We have a Workbook with "+ columncount + "Columns");
+//		System.out.println("We have a Workbook with "+ columncount + "Columns");
 		emptycolumns = new boolean[columncount];
 		for(int i = 0; i < columncount ; i++)
 		{

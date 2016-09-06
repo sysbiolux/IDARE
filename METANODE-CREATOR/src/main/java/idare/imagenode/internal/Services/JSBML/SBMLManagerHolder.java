@@ -40,7 +40,7 @@ public class SBMLManagerHolder {
 		SBMLDocument doc = null;
 		if(SBMLMgr != null)
 		{
-			System.out.println("IDARE: Found an SBMLManager object calling functions" );			
+//			System.out.println("IDARE: Found an SBMLManager object calling functions" );			
 			try{
 				Method m = SBMLMgr.getClass().getMethod("getSBMLDocument", CyNetwork.class);
 				Object o = m.invoke(SBMLMgr, network);

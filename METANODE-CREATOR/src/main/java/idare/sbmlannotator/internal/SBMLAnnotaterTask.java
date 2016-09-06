@@ -107,11 +107,11 @@ public class SBMLAnnotaterTask extends AbstractTask{
 
 
 		SBMLDocument sbml = null;
-		System.out.println("Reading SBML");
+//		System.out.println("Reading SBML");
 		model = SBMLDoc.getModel();
 		
 		
-		System.out.println("Getting Annotation Fields");
+//		System.out.println("Getting Annotation Fields");
 		TaskMonitor.setProgress(0.2);
 		TaskMonitor.setTitle("Getting Annotation Fields");
 		
@@ -121,7 +121,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		Set<String> AddedCols = new HashSet<String>();
 		HashMap<Long,String> GeneLists = new HashMap<Long, String>();
 		//possible Gene Annotations (we have to select one type...
-		System.out.println("The current model has " + model.getListOfSpecies().size() + "Species");
+//		System.out.println("The current model has " + model.getListOfSpecies().size() + "Species");
 		HashMap<String,Set<Long>> GeneAssoc = new HashMap<String, Set<Long>>(); 
 		HashSet<String> GeneSet = new HashSet<String>();
 						
@@ -131,15 +131,15 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			boolean readnotes = true; 
 			if(!species.isSetNotes())
 			{
-				System.out.println("Species " + species.getId() + " has no Note String");
+//				System.out.println("Species " + species.getId() + " has no Note String");
 				readnotes = false;
 			}			
 			if(readnotes)
 			{ 
-				System.out.println("Getting the NotesString");
+//				System.out.println("Getting the NotesString");
 				try
 				{
-					System.out.println("Reading Notes String of species " + species.getId());
+//					System.out.println("Reading Notes String of species " + species.getId());
 
 					String NotesString = species.getNotesString();	
 					
@@ -200,28 +200,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		}
 		
 
-		/*try{
-			network.getDefaultNodeTable().createColumn(IDAREProperties.IDARE_NODE_TYPE, String.class, false,"");
-		}
-		catch(IllegalArgumentException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		try{
-			network.getDefaultNodeTable().createColumn(IDAREProperties.IDARE_NODE_NAME, String.class, false,"");
-		}
-		catch(IllegalArgumentException e)
-		{
-			System.out.println(e.getMessage());
-		}
-		try{
-			network.getDefaultNodeTable().createColumn(IDAREProperties.IDARE_NODE_TYPE, String.class, false,"");
-		}
-		catch(IllegalArgumentException e)
-		{
-			System.out.println(e.getMessage());
-		}*/
-		//JOptionPane.showMessageDialog(null, "Finished Checking Species. Added items contain: " + AddedCols.toString());
 		for (Reaction reac : model.getListOfReactions())
 		{
 			String NotesString = reac.getNotesString();		
@@ -543,7 +521,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 				else
 				{
 					singleGenes.add(Gene);
-					System.out.println("Gene " + Gene + " has only one associated reaction.");
+//					System.out.println("Gene " + Gene + " has only one associated reaction.");
 				}
 			}
 			//now we can create the new CyNodes
@@ -576,7 +554,12 @@ public class SBMLAnnotaterTask extends AbstractTask{
 				CyNode newNode = network.addNode();				
 				CyRow cRow = nodetab.getRow(newNode.getSUID());
 				
-				//if this network is set up, we will also fill in the IDARE Fields 
+				//if this network is set up, we will also fill in the IDARE Fields
+				if(Tab.getColumn(CyNetwork.NAME) != null)
+				{
+					cRow.set(CyNetwork.NAME, gene);
+				}
+				
 				if(Tab.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
 				{
 					cRow.set(IDAREProperties.IDARE_NODE_NAME, gene);
@@ -590,7 +573,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 				if(Tab.getColumn(IDAREProperties.IDARE_NODE_UID) != null)
 				{
 					IDARENetwork = true;
-					cRow.set(IDAREProperties.IDARE_NODE_UID, app.getSettingsManager().getNextID());
+					cRow.set(IDAREProperties.IDARE_NODE_UID, app.getSettingsManager().getNextNodeID());
 				}
 				
 				cRow.set(sbmlTypeCol, IDAREProperties.SBML_GENE_STRING);

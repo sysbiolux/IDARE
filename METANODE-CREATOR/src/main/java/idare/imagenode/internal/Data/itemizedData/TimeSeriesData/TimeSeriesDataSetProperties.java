@@ -1,14 +1,14 @@
 package idare.imagenode.internal.Data.itemizedData.TimeSeriesData;
 
-import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.AbstractItemDataSetProperties;
+import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation.Position;
+import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.Data.itemizedData.RectangleData.RectangleContainer;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
 
 /**
  * Properties for a Time Series DataSet

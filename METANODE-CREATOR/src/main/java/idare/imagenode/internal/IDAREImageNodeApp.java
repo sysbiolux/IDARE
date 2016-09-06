@@ -5,7 +5,7 @@ import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
+import idare.imagenode.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataSetReaders.CSVReader.CSVReader;
@@ -23,7 +23,6 @@ import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 import idare.imagenode.internal.VisualStyle.StyleManager;
 import idare.imagenode.internal.VisualStyle.Tasks.AddNodesToStyleTaskFactory;
 import idare.imagenode.internal.VisualStyle.Tasks.RemoveNodesFromStyleTaskFactory;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Pfau
  *
  */
-public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionLoadedListener{
+public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	
 	ImageStorage storage;
 	NodeManager nm;
@@ -100,7 +99,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 	public IDAREImageNodeApp(CySwingApplication cySwingApp, VisualLexicon currentLexicon, FileUtil util,
 			VisualStyleFactory vSFSR,VisualMappingManager vmm, VisualMappingFunctionFactory vmfFactoryD,
 			VisualMappingFunctionFactory vmfFactoryP,CyEventHelper eventHelper, CyNetworkViewManager nvm,
-			CyApplicationManager cyAppMgr, CyNetworkManager cyNetMgr, DialogTaskManager dtm)
+			CyApplicationManager cyAppMgr, CyNetworkManager cyNetMgr, DialogTaskManager dtm, IDARESettingsManager ism)
 	{		
 		logger = LoggerFactory.getLogger(IDAREImageNodeApp.class);
 		VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP = (VisualProperty<CyCustomGraphics<CustomGraphicLayer>>)currentLexicon.lookup(CyNode.class, "NODE_CUSTOMGRAPHICS_1");		
@@ -115,7 +114,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		//registerDefaultDataSetReaders();
 		ids = new IDAREVisualStyle(vSFSR, vmm, vmfFactoryD, vmfFactoryP, eventHelper, storage, nvm, nm,cyAppMgr);
 		storage.setVisualStyle(ids);
-		Settings = new IDARESettingsManager();
+		Settings = ism;
 		legend = new IDARELegend(new JPanel(),nm);
 		nm.addNodeChangeListener(legend);
 		nm.updateNetworkNodes();
@@ -304,8 +303,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 		return Settings;
 	}
 
-	@Override
-	public void handleEvent(SessionLoadedEvent arg0) {
+	public void handleSessionLoadedEvent(SessionLoadedEvent arg0) {
 		//first, see, whether we have datasets. If, we have to reset them, otherwise we will simply load the new ones.
 		if(!dsm.getDataSets().isEmpty())
 		{
@@ -313,11 +311,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener,SessionL
 			nm.reset();
 			storage.reset();			
 		}
-		//Let the ID MAnager handle the IDs
-		Settings.handleSessionLoadedEvent(arg0);;		
 		//first initialize the Dataset manager (i.e. get the datasets set up)		
-		dsm.handleEvent(arg0);
-				
+		dsm.handleEvent(arg0);				
 		//then init the nodemanager (i.e. assign the appropriate layouts) 
 		nm.handleEvent(arg0);
 		

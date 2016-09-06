@@ -2,10 +2,10 @@ package idare.imagenode.Data.BasicDataTypes.itemizedData;
 
 
 
+import idare.imagenode.GUI.Legend.Utilities.LegendSizeListener;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
-import idare.imagenode.internal.GUI.Legend.Utilities.LegendSizeListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -89,7 +89,7 @@ public class ItemDataDescription extends JPanel{
 				String Label = DataSetLabel + "." + Integer.toString(itemposition) + ":";
 				String ItemLabel = ((ItemDataSet)(ndata.getDataSet())).getColumnLabel(i);
 				ItemDescriptionPane pane = new ItemDescriptionPane(Label,ItemLabel);
-				System.out.println("Created a new Pane with ID: " + Label + " and Label " + ItemLabel);
+//				System.out.println("Created a new Pane with ID: " + Label + " and Label " + ItemLabel);
 				maxwidth = Math.max(pane.getMinSize(), maxwidth);
 				Itemdescriptions.add(pane);
 				itemposition++;
@@ -217,7 +217,7 @@ public class ItemDataDescription extends JPanel{
 		}
 		/**
 		 * Get the minimial width necessary for a specific JLabel.
-		 * @param Label the label for which to determine the minimal size
+		 * @param label The label for which to determine the minimal size
 		 * @return The size (in pixels) this label would need, with its current font 
 		 */
 		public int getMinSize(JLabel label)

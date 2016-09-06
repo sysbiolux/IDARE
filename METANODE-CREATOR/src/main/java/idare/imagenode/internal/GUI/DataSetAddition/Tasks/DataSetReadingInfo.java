@@ -30,7 +30,7 @@ public class DataSetReadingInfo {
 	
 	public void addErrorMessage(String message)
 	{
-		System.out.println("Adding Error Message" + message);
+//		System.out.println("Adding Error Message" + message);
 		errorMessages.add(message);
 	}
 	

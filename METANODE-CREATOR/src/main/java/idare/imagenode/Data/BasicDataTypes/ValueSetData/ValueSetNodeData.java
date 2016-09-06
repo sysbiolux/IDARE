@@ -2,7 +2,7 @@ package idare.imagenode.Data.BasicDataTypes.ValueSetData;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.internal.exceptions.io.DuplicateIDException;
+import idare.imagenode.exceptions.io.DuplicateIDException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class ValueSetNodeData extends NodeData {
 	public void addData(ValueSetDataValue newset,String VectorSetID) throws DuplicateIDException
 	{
 		if(Data.containsKey(VectorSetID)) throw new DuplicateIDException(this.id,"Duplicate ID in sheet " + VectorSetID);
-		System.out.println("Setting Data for ID" + VectorSetID + " to a Vector with size " + newset.getEntryData().size());
+		//System.out.println("Setting Data for ID" + VectorSetID + " to a Vector with size " + newset.getEntryData().size());
 		Data.put(VectorSetID,newset);
 	}
 	/**
@@ -48,7 +48,7 @@ public class ValueSetNodeData extends NodeData {
 	 */
 	public ValueSetDataValue getData(String SheetName)
 	{
-		System.out.println("Getting value for " + SheetName + " which is " + Data.get(SheetName));
+		//System.out.println("Getting value for " + SheetName + " which is " + Data.get(SheetName));
 		
 		return Data.get(SheetName);
 	}
@@ -60,6 +60,24 @@ public class ValueSetNodeData extends NodeData {
 		{
 			System.out.println("Stored data for sheet " + sheetname + " has a size of " + Data.get(sheetname).getEntryData().size());
 		}
+	}
+	@Override
+	public boolean isempty() {
+		for(String set : Data.keySet())
+		{
+			if(Data.get(set) != null)
+			{
+				ValueSetDataValue val = Data.get(set);
+				for(Double entry : val.getEntryData())
+				{
+					if(entry != null)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 		
 

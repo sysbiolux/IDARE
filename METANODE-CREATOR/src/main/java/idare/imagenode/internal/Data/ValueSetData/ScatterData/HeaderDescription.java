@@ -4,7 +4,7 @@ import idare.imagenode.Data.BasicDataTypes.ValueSetData.ValueSetDataSet;
 import idare.imagenode.Data.BasicDataTypes.itemizedData.ItemDataDescription;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.internal.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.LayoutUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;

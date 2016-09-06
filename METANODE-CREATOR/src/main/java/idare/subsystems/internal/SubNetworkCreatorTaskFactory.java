@@ -1,5 +1,7 @@
 package idare.subsystems.internal;
 
+import idare.Properties.IDARESettingsManager;
+
 import java.util.Set;
 import java.util.Vector;
 
@@ -32,7 +34,7 @@ public class SubNetworkCreatorTaskFactory extends AbstractTaskFactory{
 	private final VisualMappingManager vmm;
 	private final CyRootNetworkManager rootManager;
 	
-	
+	private final IDARESettingsManager ism;
 	private final NetworkViewSwitcher nvs;	
 	
 	private String subNetworkIDColumnName;
@@ -60,7 +62,7 @@ public class SubNetworkCreatorTaskFactory extends AbstractTaskFactory{
 			CyNetworkViewFactory networkViewFactory, CyEventHelper eventHelper,
 			CyApplicationManager applicationManager, CyNetworkManager networkManager, CyLayoutAlgorithm layout,
 			String ColumnName, VisualMappingManager vmm, NetworkViewSwitcher nvs, Vector<Object> subSystemsToDo,
-			Set<CyNode> ignoredNodes,Set<CyNode> noBranchNodes) {
+			Set<CyNode> ignoredNodes,Set<CyNode> noBranchNodes, IDARESettingsManager ism) {
 		super();
 		this.networkViewManager = networkViewManager;
 		this.networkViewFactory = networkViewFactory;
@@ -75,12 +77,13 @@ public class SubNetworkCreatorTaskFactory extends AbstractTaskFactory{
 		this.ignoredNodes = ignoredNodes;
 		this.noBranchNodes = noBranchNodes;
 		this.rootManager = rootManager;
+		this.ism = ism;
 	}
 
 	@Override
 	public TaskIterator createTaskIterator() {
 		SubNetworkCreationTask task = new SubNetworkCreationTask(rootManager,networkViewManager,networkViewFactory,eventHelper
-				,applicationManager,networkManager, layout,subNetworkIDColumnName,vmm,nvs,subSystemsToDo,ignoredNodes,noBranchNodes);
+				,applicationManager,networkManager, layout,subNetworkIDColumnName,vmm,nvs,subSystemsToDo,ignoredNodes,noBranchNodes, ism);
 		return new TaskIterator(task);
 	}
 	/**

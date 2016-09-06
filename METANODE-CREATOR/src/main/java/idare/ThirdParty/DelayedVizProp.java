@@ -64,7 +64,7 @@ public class DelayedVizProp {
 			if(view == null)
 			{
 				PrintFDebugger.Debugging(netView, "Current view is the view for model " + netView.getModel().getRow(netView.getModel()).get(CyNetwork.NAME,String.class));
-				System.out.println("Could not obtain view for node! ");
+//				System.out.println("Could not obtain view for node! ");
 				continue;
 			}			
 			if (delayedProp.isLocked) {

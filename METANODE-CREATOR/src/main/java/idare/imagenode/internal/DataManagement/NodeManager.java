@@ -1,8 +1,13 @@
 package idare.imagenode.internal.DataManagement;
 
 import idare.Properties.IDAREProperties;
+import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.EOOMarker;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
@@ -11,11 +16,7 @@ import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
 import idare.imagenode.internal.Layout.NodeLayout;
-import idare.imagenode.internal.Utilities.EOOMarker;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
-import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.internal.exceptions.layout.TooManyItemsException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,7 +107,7 @@ public class NodeManager implements DataSetChangeListener{
 		//new node ids contains all node ids from all networks
 		for(CyNetwork network : cyNetMgr.getNetworkSet())
 		{
-			NewNodeIDs.addAll(IDAREVisualStyle.getNetworkIDAREIDs(network, IDAREProperties.IDARE_NODE_NAME));
+			NewNodeIDs.addAll(IDARESettingsManager.getNetworkIDAREIDs(network, IDAREProperties.IDARE_NODE_NAME));
 			NodesToUpdate.addAll(NewNodeIDs);
 		}
 		//Remove those which were present before from the nodes to update

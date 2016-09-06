@@ -1,8 +1,8 @@
 package idare.imagenode.Interfaces.DataSetReaders;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
-import idare.imagenode.internal.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.internal.IDAREService;
 
 import java.io.File;
 import java.io.IOException;

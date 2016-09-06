@@ -1,7 +1,7 @@
 package idare.imagenode.internal.DataSetReaders;
 
 import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
-import idare.imagenode.Interfaces.Plugin.IDAREService;
+import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.DataSetReaders.CSVReader.CSVReader;
 import idare.imagenode.internal.DataSetReaders.CSVReader.TSVReader;
 import idare.imagenode.internal.DataSetReaders.POIReader.POIReader;

@@ -3,10 +3,10 @@ package idare.imagenode.internal.Layout;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.Localisation;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.Layout.ImageBag.BAGPOSITON;
-import idare.imagenode.internal.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.internal.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.internal.exceptions.layout.TooManyItemsException;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
