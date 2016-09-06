@@ -10,13 +10,13 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 * Addition of gene nodes and further information based on information from COBRA annotations in sbml files (see [Schellenberger et al 2011](http://www.nature.com/nprot/journal/v6/n9/abs/nprot.2011.308.html) )
 
 ##Availability
-**Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE
-**Bundle Plugin** http://idare-server.uni.lu/IDARE-1.0.jar
-**User Manual** http://idare-server.uni.lu/UserManual.pdf
-**Example/QuickStart** http://sysbiolux.github.com/Sample
-**API**: http://idare-server.uni.lu/Doc
-**Source Code**: https://github.com/sysbiolux/IDARE 
-**Bug Tracker**: https://github.com/sysbiolux/IDARE/issues
+**Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE  
+**Bundle Plugin** http://idare-server.uni.lu/IDARE-1.0.jar  
+**User Manual** http://idare-server.uni.lu/UserManual.pdf  
+**Example/QuickStart** http://sysbiolux.github.com/Sample  
+**API**: http://idare-server.uni.lu/Doc  
+**Source Code**: https://github.com/sysbiolux/IDARE  
+**Bug Tracker**: https://github.com/sysbiolux/IDARE/issues  
  
 ##Installation
 There are three options available:
