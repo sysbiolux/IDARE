@@ -1,4 +1,4 @@
-package idare.subsystems.internal;
+package idare.subnetwork.internal;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;

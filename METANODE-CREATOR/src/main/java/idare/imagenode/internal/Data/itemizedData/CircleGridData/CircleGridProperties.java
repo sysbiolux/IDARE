@@ -41,12 +41,12 @@ public class CircleGridProperties extends CircleDataSetProperties {
 	@Override
 	public String toString()
 	{
-		return "Gridded Items";
+		return "Gridded items";
 	}
 	@Override
 	public String getTypeName()
 	{
-		return "Gridded Items";
+		return "Gridded items";
 	}
 	@Override
 	public void testValidity(DataSet set) throws WrongFormat

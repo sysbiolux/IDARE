@@ -4,7 +4,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 
 ##Features
 * Automated layouting of data using a variety of layout types
-* Available Lyouts include scatter plots, graphs, heatmaps, time series and bar charts
+* Available visualisation types include scatter plots, graphs, heatmaps, time series and bar charts
 * Parseable formats include excel sheets, tab/comma separated value files and GEO SOFT files
 * Generation of connected subnetworks and clickable links between these networks
 * Addition of gene nodes and further information based on information from COBRA annotations in sbml files (see [Schellenberger et al 2011](http://www.nature.com/nprot/journal/v6/n9/abs/nprot.2011.308.html) )
@@ -42,7 +42,7 @@ mvn install
 ```
 ## Plugin Development
 
-To develope plugins, you will have to install the application into your maven repository.
+To develop plugins, you will have to install the application into your maven repository.
 Navigate to the location of the IDARE-1.0.jar file and run
 ```
 mvn -e install:install-file -Dfile=IDARE-1.0.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=1.0 -Dpackaging=jar

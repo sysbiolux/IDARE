@@ -56,12 +56,12 @@ public abstract class ScatterDataSetProperties extends ValueSetDataProperties {
 	@Override
 	public String getTypeName() {
 		// TODO Auto-generated method stub
-		return "Scatter";
+		return "Scatter plot";
 	}
 
 	public String toString()
 	{
-		return "Scatter";
+		return "Scatter plot";
 	}
 	
 	

@@ -6,7 +6,7 @@ import org.cytoscape.session.events.SessionLoadedListener;
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.subsystems.internal.SubSystemSessionManager;
+import idare.subnetwork.internal.SubSystemSessionManager;
 
 public class IDAREApp implements SessionLoadedListener{
 

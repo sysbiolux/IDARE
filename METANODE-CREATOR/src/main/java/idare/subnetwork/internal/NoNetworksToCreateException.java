@@ -1,4 +1,4 @@
-package idare.subsystems.internal;
+package idare.subnetwork.internal;
 /**
  * A Exception indicating, that there were no Networks to create.
  * @author Thomas Pfau

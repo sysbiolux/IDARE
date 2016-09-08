@@ -1,11 +1,12 @@
-package idare.subsystems.internal.GUI;
+package idare.subnetwork.internal.GUI;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.BoundsPopupMenuListener;
 import idare.imagenode.Utilities.GUIUtils;
-import idare.subsystems.internal.NoNetworksToCreateException;
-import idare.subsystems.internal.SubNetworkCreator;
+import idare.subnetwork.internal.NoNetworksToCreateException;
+import idare.subnetwork.internal.SubNetworkCreator;
+import idare.subnetwork.internal.SubNetworkUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -32,7 +33,7 @@ import javax.swing.JPanel;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.model.CyNetwork;
 
-public class SubSystemColumnChooser extends JDialog {
+public class SubnetworkColumnChooser extends JDialog {
 	
 	private CySwingApplication cySwingApp;
 	private IDARESettingsManager mgr;
@@ -40,7 +41,7 @@ public class SubSystemColumnChooser extends JDialog {
 	private JComboBox<String> typeColSelector = new JComboBox<String>();
 	private JComboBox<String> IDColSelector = new JComboBox<String>();
 	//private JCheckBox overwrite = new JCheckBox();
-	private SubSystemInteractionAndCompoundChooser ctc;
+	private SubnetworkInteractionAndCompoundChooser ctc;
 	private JButton acceptButton = new JButton("Accept");
 	private CyNetwork network; 
 	public String IDCol;
@@ -55,12 +56,12 @@ public class SubSystemColumnChooser extends JDialog {
 	 * @param cySwingApp
 	 * @param snc
 	 */
-	public SubSystemColumnChooser( Vector<String> ColumnNames,  CyNetwork network, 
+	public SubnetworkColumnChooser( Vector<String> ColumnNames,  CyNetwork network, 
 			CySwingApplication cySwingApp, SubNetworkCreator snc){
 		super(cySwingApp.getJFrame(),"Select fields and names for subsystem setup");
 		this.cySwingApp = cySwingApp;
 		background = this.getContentPane().getBackground();
-		ctc = new SubSystemInteractionAndCompoundChooser(network, ColumnNames);
+		ctc = new SubnetworkInteractionAndCompoundChooser(network, ColumnNames);
 		this.network = network;
 		this.mgr = mgr;		
 		//this.nm = nm;
@@ -231,9 +232,9 @@ public class SubSystemColumnChooser extends JDialog {
 	private class ColumChoiceListener implements ItemListener
 	{
 
-		SubSystemColumnChooser snc;
-		SubSystemInteractionAndCompoundChooser ctc;
-		public ColumChoiceListener(SubSystemColumnChooser snc, SubSystemInteractionAndCompoundChooser ctc)
+		SubnetworkColumnChooser snc;
+		SubnetworkInteractionAndCompoundChooser ctc;
+		public ColumChoiceListener(SubnetworkColumnChooser snc, SubnetworkInteractionAndCompoundChooser ctc)
 		{
 			this.snc = snc;
 			this.ctc = ctc;
@@ -259,11 +260,11 @@ public class SubSystemColumnChooser extends JDialog {
 	 */
 	private class TypeSelectionChoiceListener implements ActionListener
 	{
-		private SubSystemColumnChooser chooser;
+		private SubnetworkColumnChooser chooser;
 		private CySwingApplication cySwingApp;
-		SubSystemInteractionAndCompoundChooser ctc;
+		SubnetworkInteractionAndCompoundChooser ctc;
 		SubNetworkCreator creator;
-		public TypeSelectionChoiceListener(SubNetworkCreator creator, IDARESettingsManager mgr,SubSystemColumnChooser nsg, CySwingApplication cySwingApp, SubSystemInteractionAndCompoundChooser ctc)
+		public TypeSelectionChoiceListener(SubNetworkCreator creator, IDARESettingsManager mgr,SubnetworkColumnChooser nsg, CySwingApplication cySwingApp, SubnetworkInteractionAndCompoundChooser ctc)
 		{
 			this.creator = creator;
 			chooser = nsg;
@@ -291,9 +292,9 @@ public class SubSystemColumnChooser extends JDialog {
 				creator.IDAREIdmgr.resetSubNetworkTypes();
 				creator.IDAREIdmgr.setSubNetworkType(IDAREProperties.NodeType.IDARE_REACTION, ctc.getReactionID());
 				creator.IDAREIdmgr.setSubNetworkType(IDAREProperties.NodeType.IDARE_SPECIES, ctc.getCompoundID());
-				creator.setupNetworkForSubNetworkCreation(network, creator.IDAREIdmgr, chooser.getTypeCol());;
+				SubNetworkUtils.setupNetworkForSubNetworkCreation(network, creator.IDAREIdmgr, chooser.getTypeCol());;
 				try{
-					SubNetworkCreatorGUI scg = new SubNetworkCreatorGUI(creator.getAlgorithmNames(), creator.getNetworkColumns(), creator, network, cySwingApp);
+					SubnetworkCreatorGUI scg = new SubnetworkCreatorGUI(creator.getAlgorithmNames(), creator.getNetworkColumns(), creator, network, cySwingApp);
 					scg.setVisible(true);
 					scg.repaint();
 					scg.validate();

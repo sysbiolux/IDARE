@@ -13,9 +13,12 @@ import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFac
 import idare.imagenode.internal.Services.JSBML.SBMLServiceRegistrar;
 import idare.internal.IDAREApp;
 import idare.sbmlannotator.internal.SBMLAnnotationTaskFactory;
-import idare.subsystems.internal.NetworkViewSwitcher;
-import idare.subsystems.internal.SubNetworkCreator;
-import idare.subsystems.internal.SubSystemSessionManager;
+import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.SubNetworkCreator;
+import idare.subnetwork.internal.SubSystemSessionManager;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreatorTaskFactory;
+import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkPropertyColumnGUIHandlerFactory;
 
 import java.io.File;
 import java.util.Collection;
@@ -273,8 +276,35 @@ public class CyActivator extends AbstractCyActivator {
 		doubleClickProperties.setProperty(ServiceProperties.TITLE, "Switch To Network");
 		//registerService(context,SubSysSave,SessionLoadedListener.class, new Properties());
 		app.setSubsysManager(SubSysSave);
-		registerAllServices(context, snc, properties);
 		
+		Properties createSubnetworkPropertiesMenu = new Properties();
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.TITLE, "Create Subnetworks");		
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+
+		Properties createSubnetworkPropertiesTask = new Properties();
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NETWORK_APPS_MENU);
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.TITLE, "Create Subnetworks");		
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
+
+		SubnetworkCreationGUIHandlerFactory sncghf = new SubnetworkCreationGUIHandlerFactory(nvs, cyApplicationManager,LayoutManager);
+		SubnetworkPropertyColumnGUIHandlerFactory snpcghf = new SubnetworkPropertyColumnGUIHandlerFactory(cyApplicationManager);
+		
+		SubnetworkCreatorTaskFactory snctf = new SubnetworkCreatorTaskFactory(reg,nvs,app.getSettingsManager(),sncghf);
+		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesMenu);
+		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesTask);
+		
+		registerService(context, sncghf, GUITunableHandlerFactory.class, new Properties());
+		registerService(context, snpcghf, GUITunableHandlerFactory.class, new Properties());		
+		
+		registerAllServices(context, snc, properties);		
 		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
 		registerService(context,nvs,RowsSetListener.class, new Properties());
 		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, doubleClickProperties);

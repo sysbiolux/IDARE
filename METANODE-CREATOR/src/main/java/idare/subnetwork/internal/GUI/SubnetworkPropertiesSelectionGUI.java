@@ -1,17 +1,17 @@
-package idare.subsystems.internal.GUI;
+package idare.subnetwork.internal.GUI;
 
 
 import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.subsystems.internal.NoNetworksToCreateException;
-import idare.subsystems.internal.SubNetworkCreator;
+import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.NoNetworksToCreateException;
+import idare.subnetwork.internal.SubNetworkCreator;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubNetworkProperties;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -29,10 +29,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -58,19 +55,20 @@ import org.cytoscape.model.CyTable;
  *
  */
 
-public class SubNetworkCreatorGUI extends JDialog{
+public class SubnetworkPropertiesSelectionGUI extends JPanel{
 
 	
 	private CyNetwork network;
 	
-	private SubNetworkCreator creator;
-	
-	private JButton acceptButton = new JButton();
+//	private SubNetworkCreator creator;
+	NetworkViewSwitcher nvs;
 	public final JComboBox<String> layoutSelector = new JComboBox<String>();
 	public final JComboBox<String> colSelector = new JComboBox<String>();
 	private JTable metSelTab;
 	private JTable subSysSelTab = new JTable();
-	private MetaboliteSelectionModel metSelMod; 
+	private MetaboliteSelectionModel metSelMod;
+	private Vector<String> columnNames;
+	private String IDCol;
 	int colSelected = 0;
 	String algoselected = "";
 	boolean accepted; 
@@ -83,20 +81,15 @@ public class SubNetworkCreatorGUI extends JDialog{
 	 * @param network - the {@link CyNetwork} to generate subnetworks for
 	 * @param cySwingApp - The {@link CySwingApplication} that is the parent of this GUI.
 	 */
-	public SubNetworkCreatorGUI(Collection<String> AlgorithmNames, Vector<String> ColumnNames, SubNetworkCreator creator, 
-			CyNetwork network, CySwingApplication cySwingApp) throws NoNetworksToCreateException{
-		super(cySwingApp.getJFrame(),"Select Properties for Subnetworks");
-		
+	public SubnetworkPropertiesSelectionGUI(Collection<String> AlgorithmNames, Vector<String> ColumnNames, 
+			CyNetwork network, NetworkViewSwitcher nvs, String IDCol){
+		this.nvs = nvs;
+		this.IDCol = IDCol;
+		columnNames = ColumnNames;
 		this.network = network;
-		this.creator = creator;		
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.setContentPane(new JPanel());
-		this.getContentPane().setLayout(new GridBagLayout());
-//		System.out.println("Calling Pack");
-		this.pack();
+		this.setLayout(new GridBagLayout());
 		GridBagConstraints outerConst = new GridBagConstraints();
-//		System.out.println("Getting Color");
-		bgcolor = this.getContentPane().getBackground();
+		bgcolor = this.getBackground();
 		SimpleAttributeSet attribs = new SimpleAttributeSet();  
 		StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);
 		StyleConstants.setFontSize(attribs , 15);
@@ -112,11 +105,9 @@ public class SubNetworkCreatorGUI extends JDialog{
 		outerConst.weighty = 1;
 		outerConst.gridwidth = GridBagConstraints.REMAINDER;
 		outerConst.fill = GridBagConstraints.HORIZONTAL;
-//		System.out.println("Adding Title");
-		this.getContentPane().add(titleField,outerConst);
+		this.add(titleField,outerConst);
 		
 		
-//		System.out.println("Creating Middle Section");
 		outerConst.fill = GridBagConstraints.HORIZONTAL;
 	    outerConst.anchor = GridBagConstraints.CENTER;
 	    outerConst.weightx = 1;
@@ -126,7 +117,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 		outerConst.gridwidth = 1;
 		outerConst.fill = GridBagConstraints.HORIZONTAL;
 		try{
-			createMiddleSection(ColumnNames, AlgorithmNames,this.getContentPane(),outerConst);
+			createMiddleSection(ColumnNames, AlgorithmNames,this,outerConst);
 		}
 		catch(Exception e)
 		{
@@ -139,34 +130,18 @@ public class SubNetworkCreatorGUI extends JDialog{
 		outerConst.fill = GridBagConstraints.HORIZONTAL;	
 		outerConst.gridy++;		
 		//Create the selection panel for Subsystems
-//		System.out.println("Creating Metabolite Selection");
 		try{
-			createMetaboliteSelection(network,outerConst,this.getContentPane());
+			createMetaboliteSelection(network,outerConst,this);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace(System.out);
 		}
-//		
-//		System.out.println("Creating Subsystem Selection");
 		outerConst.gridx = 0;		
 		outerConst.weighty = 1;
 		outerConst.gridwidth = GridBagConstraints.REMAINDER;
 		outerConst.fill = GridBagConstraints.HORIZONTAL;				
-		createSubSystemSelection(outerConst,this.getContentPane());		
-		
-		// Create the Bottom Pane with the Accept button.
-		JPanel BottomPanel = new JPanel();		
-		createAcceptButton();
-		JPanel  AcceptButtonPanel = new JPanel();		
-		AcceptButtonPanel.add(acceptButton);
-		BottomPanel.add(AcceptButtonPanel);
-		outerConst.gridy++;
-		outerConst.weighty = 1;
-		outerConst.fill = GridBagConstraints.HORIZONTAL;		
-		this.getContentPane().add(BottomPanel,outerConst);
-		this.getContentPane().doLayout();		
-		this.pack();
+		createSubSystemSelection(outerConst,this);		
 		this.setSize(new Dimension(500,700));		
 	}
 	
@@ -177,15 +152,13 @@ public class SubNetworkCreatorGUI extends JDialog{
 		defaults.put("TextPane[Enabled].backgroundPainter", bgcolor);
 		JTextPane selectionDesc = new JTextPane();
 		selectionDesc.putClientProperty("Nimbus.Overrides", defaults);
-		selectionDesc.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-		
+		selectionDesc.putClientProperty("Nimbus.Overrides.InheritDefaults", true);	
 		selectionDesc.setBackground(null);
 		selectionDesc.setEditable(false);
 		selectionDesc.setBorder(BorderFactory.createEmptyBorder());			
 		selectionDesc.setOpaque(true);				
 		selectionDesc.setText(DescriptionString);		
 		selectionDesc.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));			
-		//selectionDesc.setPreferredSize(new Dimension(200,45));
 		selectionDesc.setBackground(bgcolor);		
 		return selectionDesc;
 		
@@ -195,7 +168,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 	 * Create the Subsystem Selection Panel
 	 * @return A {@link JPanel} for the Subsystem Selection
 	 */
-	private void createSubSystemSelection(GridBagConstraints gbc, Container MiddlePane) throws NoNetworksToCreateException
+	private void createSubSystemSelection(GridBagConstraints gbc, Container MiddlePane)
 	{
 		String TitleString = "Select the SubSystems to be generated";
 		JTextPane TitlePanel = createDescription(TitleString);
@@ -207,7 +180,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 		subSysSelTab.setFillsViewportHeight(true);
 		try
 		{
-			TableModel model = createSubSystemTableModel(network, creator);
+			TableModel model = createSubSystemTableModel(network);
 			subSysSelTab.setModel(model);
 		}
 		catch(NoNetworksToCreateException ex)
@@ -220,8 +193,8 @@ public class SubNetworkCreatorGUI extends JDialog{
 		JScrollPane subSysPane = new JScrollPane(subSysSelTab);
 		int colscount = subSysSelTab.getColumnModel().getColumnCount();
 		subSysSelTab.getColumnModel().getColumn(colscount-1).setMaxWidth(100);
-		subSysPane.setMinimumSize(new Dimension(200, 100));
-		subSysPane.setMaximumSize(new Dimension(1000,800));
+		//subSysPane.setMinimumSize(new Dimension(200, 100));
+		//subSysPane.setMaximumSize(new Dimension(1000,800));
 		MiddlePane.add(subSysPane,gbc);
 		
 		
@@ -232,7 +205,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 	 * @param creator - The {@link SubNetworkCreator} this GUI provides input to.
 	 * @return A {@link TableModel} containing a list of potential Subnetworks
 	 */
-	public TableModel createSubSystemTableModel(CyNetwork network, SubNetworkCreator creator) throws NoNetworksToCreateException
+	public TableModel createSubSystemTableModel(CyNetwork network) throws NoNetworksToCreateException
 	{
 		DefaultTableModel subSysSelMod = new DefaultTableModel(){
 			@Override
@@ -260,9 +233,9 @@ public class SubNetworkCreatorGUI extends JDialog{
 		};
 		String[] ColIds = {"Subsystem", "Selected"};
 		subSysSelMod.setColumnIdentifiers(ColIds);
-		Vector<Object> subSysNames = creator.getDifferentSubSystems(network.getDefaultNodeTable(), colSelector.getSelectedItem().toString());
+		Vector<Object> subSysNames = SubNetworkCreator.getDifferentSubSystems(network.getDefaultNodeTable(), colSelector.getSelectedItem().toString());
 
-		Set<String> existingSubSystems = creator.getExistingSubSystemNames(network, colSelector.getSelectedItem().toString());
+		Set<String> existingSubSystems = nvs.getSubNetworkWorksForNetwork(network, colSelector.getSelectedItem().toString());
 		for(Object subSys : subSysNames)
 		{
 			if(!existingSubSystems.contains(subSys) && subSys != null)
@@ -272,12 +245,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 				row.add(false);
 				subSysSelMod.addRow(row);
 			}
-		}
-		
-		//if(subSysSelMod.getRowCount() == 0)
-		//{
-		//	throw new NoNetworksToCreateException();			
-		//}		
+		}		
 		return subSysSelMod;
 	}
 	
@@ -322,7 +290,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 	 */
 	private void createMetaboliteSelection(CyNetwork network, GridBagConstraints gbc, Container MiddleSection)
 	{		
-		Graphics graphics = this.getGraphics();
+				
 		gbc.gridy = gbc.gridy + 1;
 		gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -336,7 +304,6 @@ public class SubNetworkCreatorGUI extends JDialog{
 		//metSelTab.setMinimumSize(new Dimension(200, 50));
 		metSelTab.setAutoCreateRowSorter(true);
 		metSelTab.setFillsViewportHeight(true);	
-		FontMetrics FM = graphics.getFontMetrics(metSelTab.getFont());
 				
 		//Try if this Network has A Compartment (sbml compartment, compartment, Compartment)
 		String[] CompartmentOptions = new String[]{"sbml compartment", "Compartment", "compartment"};
@@ -350,30 +317,20 @@ public class SubNetworkCreatorGUI extends JDialog{
 			}
 		}
 		metSelMod = new MetaboliteSelectionModel(CompartmentString);
-		//set up the model
-		//String[] ColumnName = {"Metabolite Name", "Involved Reactions", "Do not extend", "Remove","CyNode"};
 		List<CyNode> nodes = network.getNodeList();
 		HashMap<CyNode,Integer> metaboliteNodes = new HashMap<CyNode, Integer>();
 		List<SortEntry> metaboliteList = new LinkedList<SortEntry>();
-		double width = 0;
-		//for(String s : ColumnName)
-		//{
-		//	width += FM.stringWidth(s)+5;
-		//}
-		//metSelTab.setPreferredScrollableViewportSize(new Dimension((int)width, 100));
+	
 		for(CyNode node : nodes)
 		{
 							
 			
-			CyRow nodeRow = network.getRow(node);
-			String TypeEntry = nodeRow.get(creator.getNodeTypeColumn(), String.class);
+			CyRow nodeRow = network.getRow(node);			
+			String TypeEntry = nodeRow.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class);
 			
-			if(TypeEntry != null && TypeEntry.equals(creator.getCompoundName()))
+			if(TypeEntry != null && TypeEntry.equals(IDAREProperties.NodeType.IDARE_SPECIES))
 			{
 				updateMetaboliteLists(metaboliteNodes,metaboliteList, node, network);
-				//metaboliteNodes.put(node,network.getAdjacentEdgeList(node, CyEdge.Type.ANY).size());
-				//metaboliteList.add(new SortEntry(node,network.getAdjacentEdgeList(node, CyEdge.Type.ANY).size()));
-				
 			}
 		}
 				
@@ -382,7 +339,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 		for(SortEntry entry: metaboliteList)
 		{			
 			Vector<Object> row = new Vector<Object>();
-			row.add(network.getDefaultNodeTable().getRow(entry.key.getSUID()).get(creator.getIDColName(), String.class));
+			row.add(network.getDefaultNodeTable().getRow(entry.key.getSUID()).get(IDCol, String.class));
 			//If we foudn a CompartmentID, we will display it.
 			if(CompartmentString != null)
 			{
@@ -407,7 +364,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 			row.add(entry.value);
 			//if a metabolite is involved in more than 1% of all reactions
 			//Do not use it as a linker
-			if(entry.value > 10 && entry.value > network.getDefaultNodeTable().getMatchingRows(creator.getNodeTypeColumn(), creator.getInteractionName()).size()*0.005)
+			if(entry.value > 10 && entry.value > network.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_SUBNETWORK_TYPE, IDAREProperties.NodeType.IDARE_REACTION).size()*0.005)
 			{
 				row.add(true);
 			}
@@ -416,7 +373,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 				row.add(false);
 			}
 			//
-			if(entry.value > 25 && entry.value > network.getDefaultNodeTable().getMatchingRows(creator.getNodeTypeColumn(), creator.getInteractionName()).size()*0.02)
+			if(entry.value > 25 && entry.value > network.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_SUBNETWORK_TYPE, IDAREProperties.NodeType.IDARE_REACTION).size()*0.02)
 			{
 				row.add(true);
 			}			
@@ -425,12 +382,6 @@ public class SubNetworkCreatorGUI extends JDialog{
 				row.add(false);
 			}			
 			row.add(entry.key);
-//			System.out.println("Trying to add row: " + entry.key.toString());
-//			for(Object item : row)
-//			{
-//				System.out.print(item + "\t");
-//			}
-//			System.out.println("");
 			metSelMod.addRow(row);
 		}
 		metSelTab.setModel(metSelMod);
@@ -443,8 +394,8 @@ public class SubNetworkCreatorGUI extends JDialog{
 		gbc.weighty = 4;
 		gbc.fill = GridBagConstraints.BOTH;
 		JScrollPane metSelPane = new JScrollPane(metSelTab);
-		metSelPane.setMinimumSize(new Dimension(200,100));
-		metSelPane.setMaximumSize(new Dimension(1000,800));
+		//metSelPane.setMinimumSize(new Dimension(200,100));
+		//metSelPane.setMaximumSize(new Dimension(1000,800));
 		MiddleSection.add(metSelPane,gbc);
 	}
 	
@@ -534,16 +485,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 			return arg1.value.compareTo(arg0.value);
 		}		
 	}
-	/**
-	 * Create the Accept button and assign a {@link NetworkGuiListener} to it.
-	 */
-	private void createAcceptButton()
-	{
-		//acceptButton.setPreferredSize(new Dimension(100,30));		
-		acceptButton.setText("Accept");
-		acceptButton.addActionListener(new NetworkGuiListener(this,creator));			
-	}
-	
+
 	/**
 	 * Create the Middle section of the GUI
 	 * @param ColumnNames - The Column names to choose from to obtain the Subnetwork possibilities
@@ -582,7 +524,7 @@ public class SubNetworkCreatorGUI extends JDialog{
 				if(colSelector.getSelectedIndex() != -1)
 				{
 					try{
-						subSysSelTab.setModel(createSubSystemTableModel(network, creator));
+						subSysSelTab.setModel(createSubSystemTableModel(network));
 					}
 					catch(NoNetworksToCreateException ex)
 					{
@@ -633,43 +575,18 @@ public class SubNetworkCreatorGUI extends JDialog{
 	}
 	
 
-	/**
-	 * This Listener listens to the Network GUI to report the selections and items to the NetworkCreator
-	 * It 
-	 * @author Thomas Pfau
-	 *
-	 */
-	public class NetworkGuiListener implements ActionListener {
-		private SubNetworkCreator creator;
-		private SubNetworkCreatorGUI GUI;
-		/**
-		 * Constructor for a NetworkGuiListener listening to <b>GUI</b> and informing the {@link SubNetworkCreator}
-		 * @param GUI - The GUI Listened to
-		 * @param creator - The Creator which needs to be informed.
-		 */
-		public NetworkGuiListener(SubNetworkCreatorGUI GUI,SubNetworkCreator creator)
-		{
-			this.creator = creator;
-			this.GUI = GUI;
-		}
-
-
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {		
-
-			creator.setChoosenAlgorithm(GUI.algoselected);
-			creator.setChoosenColumn(GUI.colSelected);
-			creator.setCreatedSubSystems(GUI.SubSystemsToGenerate());
-			creator.setIgnoredCyNodes(GUI.getNodesToRemove());
-			creator.setNoBranchMetas(GUI.getNodesToSkip());
-			creator.accept();
-			//close the GUI. It's no longer needed. 
-			GUI.dispose();
-			//and start the network generation.
-			creator.runSubNetworkCreation();				
-		}
-
+	
+	public SubNetworkProperties getProperties()
+	{
+		SubNetworkProperties props = new SubNetworkProperties();
+		
+		props.selectedLayoutAlgorithmName = algoselected;
+		props.ColumnName = columnNames.get(colSelected);		
+		props.subSystems = SubSystemsToGenerate();
+		props.ignoredNodes = getNodesToRemove();
+		props.noBranchNodes = getNodesToSkip();
+		props.currentNetwork = network;
+		return props;
 	}
 	
 	private class MetaboliteSelectionModel extends DefaultTableModel 

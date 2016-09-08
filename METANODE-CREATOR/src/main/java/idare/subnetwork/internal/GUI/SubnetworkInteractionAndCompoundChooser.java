@@ -1,4 +1,4 @@
-package idare.subsystems.internal.GUI;
+package idare.subnetwork.internal.GUI;
 
 
 import java.awt.Color;
@@ -25,7 +25,7 @@ import javax.swing.UIDefaults;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyRow;
 
-public class SubSystemInteractionAndCompoundChooser extends JPanel {
+public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	private Color bgcolor;
 	Vector<String> ColumnNames;
 	CyNetwork network;
@@ -40,7 +40,7 @@ public class SubSystemInteractionAndCompoundChooser extends JPanel {
 	 * @param network
 	 * @param ColumnNames
 	 */
-	public SubSystemInteractionAndCompoundChooser(CyNetwork network, Vector<String> ColumnNames) {
+	public SubnetworkInteractionAndCompoundChooser(CyNetwork network, Vector<String> ColumnNames) {
 		// TODO Auto-generated constructor stub		
 		super();
 		String CompoundString = "Value for branching nodes";		
@@ -101,6 +101,48 @@ public class SubSystemInteractionAndCompoundChooser extends JPanel {
 		{
 			return (selectedVals <= choices.size());  
 		}		
+	}
+	/**
+	 * Get the problem that causes this selection to be not acceptable.
+	 * @return
+	 */
+	public String getProblemMessage()
+	{
+		List<CyRow> rows = network.getDefaultNodeTable().getAllRows();
+		HashSet<Object> diffvals = new HashSet<Object>(); 
+		for(CyRow row : rows)
+		{
+			diffvals.add(row.getRaw(SelectedColName));
+		}
+		Set<Object> choices = getSelectedItems(null);
+		int selectedVals = getSelectionCount();
+		if(selectedObjects.get(compoundTypeSelector) == null)
+		{
+			return "No identifier for compounds was selected";
+		}
+		if(selectedObjects.get(reactionTypeSelector) == null)
+		{
+			return "No identifier for interactions was selected";
+		}
+		
+		if(selectedVals <= choices.size())
+		{
+			HashSet<Object> usedItems = new HashSet<Object>();
+			for(JComboBox<String> box : selectedObjects.keySet())
+			{
+				if(selectedObjects.get(box) == null)
+				{
+					continue;
+				}
+				if(usedItems.contains(selectedObjects.get(box)))
+				{
+					return "Duplicate selection for compoind and interaction identifier: " + selectedObjects.get(box).toString(); 
+				}
+				usedItems.add(selectedObjects.get(box));
+			}
+			
+		}		
+		return "";
 	}
 	/**
 	 * Get the number of non null entries of selected items.
@@ -253,8 +295,8 @@ public class SubSystemInteractionAndCompoundChooser extends JPanel {
 	private class SelectionChoiceListener implements ItemListener
 	{
 
-		SubSystemInteractionAndCompoundChooser ctc;
-		public SelectionChoiceListener(SubSystemInteractionAndCompoundChooser ctc)
+		SubnetworkInteractionAndCompoundChooser ctc;
+		public SelectionChoiceListener(SubnetworkInteractionAndCompoundChooser ctc)
 		{
 			this.ctc = ctc;
 		}

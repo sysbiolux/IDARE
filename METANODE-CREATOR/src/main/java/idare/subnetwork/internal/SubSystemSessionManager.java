@@ -1,4 +1,4 @@
-package idare.subsystems.internal;
+package idare.subnetwork.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
