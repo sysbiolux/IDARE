@@ -1,6 +1,5 @@
 package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 
-import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 
 import java.lang.reflect.Field;
@@ -36,10 +35,10 @@ public class SubnetworkCreationGUIHandlerFactory implements GUITunableHandlerFac
 		// TODO Auto-generated method stub
 		if(!SubNetworkProperties.class.isAssignableFrom(arg0.getType()))
 		{
-			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getType().getSimpleName() );
+//			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getType().getSimpleName() );
 			return null;
 		}
-		PrintFDebugger.Debugging(this, "Generating new Handler");
+//		PrintFDebugger.Debugging(this, "Generating new Handler");
 		return new SubnetworkCreationGUIHandler(arg0,arg1,arg2,nvs,appmgr.getCurrentNetworkView().getModel(), appmgr.getCurrentNetworkView(), getCurrentLayouts(), IDCol);
 	}
 
@@ -48,10 +47,10 @@ public class SubnetworkCreationGUIHandlerFactory implements GUITunableHandlerFac
 			Method arg1, Object arg2, Tunable arg3) {
 		if(!SubNetworkProperties.class.isAssignableFrom(arg0.getReturnType()))
 		{
-			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getReturnType().getSimpleName() );
+//			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getReturnType().getSimpleName() );
 			return null;
 		}
-		PrintFDebugger.Debugging(this, "Generating new Handler");
+//		PrintFDebugger.Debugging(this, "Generating new Handler");
 		return new SubnetworkCreationGUIHandler(arg0,arg1,arg2,arg3,nvs,appmgr.getCurrentNetworkView().getModel(), appmgr.getCurrentNetworkView(), getCurrentLayouts(), IDCol);
 	}
 

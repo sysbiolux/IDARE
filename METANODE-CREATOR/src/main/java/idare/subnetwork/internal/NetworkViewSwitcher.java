@@ -244,13 +244,14 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		CyNetwork network = view.getModel();
 		if(SilentNodes.containsKey(network))
 		{
+			PrintFDebugger.Debugging(this, "Trying to restore links for network" + network);
 			//correct the SubNetwors field
 			SubNetworks.put(network, view);
 			//there were nodes pointing to this View so we have to deactivate them.
 			// we also have to remove this View from the ListenedNetworks
 			for(CyNode node : SilentNodes.get(network))
 			{
-				PrintFDebugger.Debugging(this, "Restoring visual link between " + network + " and " + targetViews.get(node).getTargetNetwork() + " using node " + node);
+				PrintFDebugger.Debugging(this, "Restoring visual link between " + network + " and " + targetViews.get(node).getSourceNetwork() + " using node " + node);
 				//reset the TargetNodeView -> we have to retrieve the target node information from the TargetViews Structure.
 				targetViews.get(node).setTargetNodeView(view.getNodeView(targetViews.get(node).getTargetNode()));
 				//Set the Target view
@@ -261,7 +262,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 					listenedNetworks.put(view,new LinkedList<CyNode>());
 				}
 				//and add the View to the Known views. and the node to the nodes pointing to this view.
-				listenedNetworks.get(network).add(node);
+				listenedNetworks.get(view).add(node);
 			}			
 			SilentNodes.remove(network);			
 		}		
@@ -340,26 +341,33 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
 		CyNetworkView view = e.getNetworkView();
 		CyNetwork network = view.getModel();
-//		System.out.println("Removing view for: "  + network.getRow(network).get(CyNetwork.NAME, String.class));
+		PrintFDebugger.Debugging(this, "Removing view for: "  + network);
 		if(listenedNetworks.containsKey(view))
 		{
 			//there were nodes pointing to this View so we have to deactivate them.
 			// we also have to remove this View from the ListenedNetworks
+			PrintFDebugger.Debugging(this, "Deactivating links for the view");	
 			for(CyNode node : listenedNetworks.get(view))
 			{
+				PrintFDebugger.Debugging(this, "link for node ");	
 				targetViews.get(node).setTargetNodeView(null);
 				targetViews.get(node).setTargetNetworkView(null);
 				// and now we have to add the links to the silent Links
 				if(!SilentNodes.containsKey(network))
 				{
+					PrintFDebugger.Debugging(this, "Adding List to silentnnodes for network " + network);
 					SilentNodes.put(network,new LinkedList<CyNode>());
 				}
+				PrintFDebugger.Debugging(this, "Adding node " + node + " to the silent network nodes of network " + network);
 				SilentNodes.get(network).add(node);
-			}			
+			}		
+			//We also have to place all nodes in other networks pointing to the current one "on hold"
+			//i.e. deactivate them.
+			
 			listenedNetworks.remove(view);	
 			if(SubNetworks.containsKey(network))
 			{
-//				System.out.println("Setting NetworkView for: "  + network.getRow(network).get(CyNetwork.NAME, String.class) + " to null");
+				PrintFDebugger.Debugging(this, "Setting NetworkView for: "  + network + " to null");
 				SubNetworks.put(network, null);
 			}
 			else

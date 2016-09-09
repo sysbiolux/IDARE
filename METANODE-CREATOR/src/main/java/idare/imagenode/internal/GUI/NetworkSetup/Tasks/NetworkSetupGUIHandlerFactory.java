@@ -35,10 +35,10 @@ public class NetworkSetupGUIHandlerFactory implements GUITunableHandlerFactory<N
 		// TODO Auto-generated method stub
 		if(!NetworkSetupProperties.class.isAssignableFrom(arg0.getType()))
 		{
-			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getType().getSimpleName() );
+//			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getType().getSimpleName() );
 			return null;
 		}
-		PrintFDebugger.Debugging(this, "Generating new Handler");
+//		PrintFDebugger.Debugging(this, "Generating new Handler");
 		return new NetworkSetupGUIHandler(arg0,arg1,arg2,idmgr,nmgr,appmgr.getCurrentNetwork());
 	}
 
@@ -47,10 +47,10 @@ public class NetworkSetupGUIHandlerFactory implements GUITunableHandlerFactory<N
 			Method arg1, Object arg2, Tunable arg3) {
 		if(!NetworkSetupProperties.class.isAssignableFrom(arg0.getReturnType()))
 		{
-			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getReturnType().getSimpleName() );
+//			PrintFDebugger.Debugging(this, "Obtained a Request for tunable handling for type " + arg0.getReturnType().getSimpleName() );
 			return null;
 		}
-		PrintFDebugger.Debugging(this, "Generating new Handler");
+//		PrintFDebugger.Debugging(this, "Generating new Handler");
 		return new NetworkSetupGUIHandler(arg0,arg1,arg2,arg3,idmgr,nmgr,appmgr.getCurrentNetwork());
 	}
 
