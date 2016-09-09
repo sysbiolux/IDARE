@@ -22,8 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
@@ -205,11 +203,13 @@ SessionLoadedListener, GraphicsChangedListener {
 
 		if(StyleNameFiles != null)
 		{
+			ObjectInputStream oi;
 			File CFile = StyleNameFiles.get(0);
 			try{
-				ObjectInputStream oi = new ObjectInputStream(new FileInputStream(CFile));
+				oi = new ObjectInputStream(new FileInputStream(CFile));
 				VisualStyleTitles = (HashSet<String>) (oi.readObject());
 				lockedenabled = (HashMap<String,Boolean>) oi.readObject();
+				oi.close();
 			}
 			catch(IOException ex)
 			{
@@ -219,6 +219,7 @@ SessionLoadedListener, GraphicsChangedListener {
 			{
 				//Should not happen
 			}
+			
 			Iterator it = vmmServiceRef.getAllVisualStyles().iterator();
 
 			while (it.hasNext()){
@@ -253,7 +254,6 @@ SessionLoadedListener, GraphicsChangedListener {
 
 		//Create A Temporary Zip File
 
-		Vector<String> existingFileNames = new Vector<>();
 		File TempFile = IOUtils.getTemporaryFile(IMAGENODEPROPERTIES.STYLE_MAPPINGS_SAVE_FILE,"");
 		try{
 			ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(TempFile));

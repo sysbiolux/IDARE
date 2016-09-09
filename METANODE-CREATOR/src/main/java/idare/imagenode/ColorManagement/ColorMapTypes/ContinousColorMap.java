@@ -2,7 +2,6 @@ package idare.imagenode.ColorManagement.ColorMapTypes;
 
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.ColorManagement.ColorScale;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -163,6 +162,7 @@ public abstract class ContinousColorMap extends ColorMap{
 	 * @see idare.imagenode.internal.ColorManagement.ColorMap#getColor(java.lang.Comparable)
 	 */
 	@Override
+	@SuppressWarnings("rawtypes") 
 	public Color getColor(Comparable Value)
 	{
 		//In a continous color map this value ALWAYS has to be a Double.
@@ -196,6 +196,11 @@ public abstract class ContinousColorMap extends ColorMap{
 	protected class ColorScaleLegendLayout implements LayoutManager,Serializable
 	{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
 		Double[] xpositions;		
 		/**
 		 * Generate a layout based on an array of fractions (these fractions have to rage from 0.0 to 1.0 in ascending order!

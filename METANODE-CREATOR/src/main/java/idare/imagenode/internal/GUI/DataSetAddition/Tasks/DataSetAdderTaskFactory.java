@@ -1,7 +1,5 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
-import java.util.Stack;
-
 import idare.imagenode.internal.DataManagement.DataSetManager;
 
 import org.cytoscape.application.swing.CySwingApplication;
@@ -32,11 +30,7 @@ public class DataSetAdderTaskFactory extends AbstractTaskFactory {
 		
 	}
 	/**
-	 * Add A Dataset
-	 * @param f - the file to read from
-	 * @param useTwoColHeaders - whether to use two column headers
-	 * @param Description - Description of the Dataset
-	 * @param DataTypeString - Type String of the Dataset.
+	 * Creates a new DataSetAdderTask.
 	 */
 	public void addDataset()
 	{		

@@ -3,6 +3,7 @@ package idare.imagenode.ColorManagement;
 import idare.imagenode.internal.ColorManagement.ColorScales.BlackYellowRed;
 import idare.imagenode.internal.ColorManagement.ColorScales.BlueWhiteRedScale;
 import idare.imagenode.internal.ColorManagement.ColorScales.BlueYellowRed;
+import idare.imagenode.internal.ColorManagement.ColorScales.DiscreteColorScale;
 import idare.imagenode.internal.ColorManagement.ColorScales.FlagScale;
 import idare.imagenode.internal.ColorManagement.ColorScales.GreenBlackRed;
 import idare.imagenode.internal.ColorManagement.ColorScales.GreenYellow;
@@ -17,6 +18,7 @@ import idare.imagenode.internal.ColorManagement.ColorScales.WhiteRed;
 import idare.imagenode.internal.ColorManagement.ColorScales.YellowGreen;
 import idare.imagenode.internal.ColorManagement.ColorScales.YellowRed;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -35,6 +37,7 @@ public class ColorScaleFactory {
 	 * @param ColorScaleClass The java canonical class name of the {@link ColorScale}
 	 * @return an instance of the requested {@link ColorScale} or a {@link BlueWhiteRedScale} if the class could not be found.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static ColorScale getColorScale(String ColorScaleClass)
 	{		
 		try{
@@ -56,6 +59,21 @@ public class ColorScaleFactory {
 	public static Collection<ColorScale> getDiscreetColorScales(int colorcount)
 	{
 		Vector<ColorScale> scales = new Vector<ColorScale>();
+		if(colorcount == 1)
+		{
+			scales.add(new DiscreteColorScale(new Color[]{ Color.MAGENTA}));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.RED }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.ORANGE }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.YELLOW }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.GREEN }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.GREEN.darker().darker().darker() }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.CYAN }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.BLUE }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.BLACK}));			
+		}
+		else
+		{
+		
 		scales.add(new FlagScale());
 		scales.add(new PrismScale());
 		scales.add(new LineScale());
@@ -63,6 +81,8 @@ public class ColorScaleFactory {
 		scales.add(new JetScale().getDiscreteColorScale(colorcount));
 		scales.add(new BlueYellowRed().getDiscreteColorScale(colorcount));
 		scales.add(new BlackYellowRed().getDiscreteColorScale(colorcount));
+		}
+		
 		return scales;
 	}
 	/**
@@ -93,12 +113,29 @@ public class ColorScaleFactory {
 	public static Vector<ColorScale> getNonWhiteDiscreteColorScales(int colorcount)
 	{
 		Vector<ColorScale> scales = new Vector<ColorScale>();
-		scales.add(new PrismScale());
-		scales.add(new LineScale());
-		scales.add(new HSVScale().getDiscreteColorScale(colorcount));
-		scales.add(new JetScale().getDiscreteColorScale(colorcount));
-		scales.add(new BlueYellowRed().getDiscreteColorScale(colorcount));
-		scales.add(new BlackYellowRed().getDiscreteColorScale(colorcount));
+		if(colorcount == 1)
+		{
+			scales.add(new DiscreteColorScale(new Color[]{ Color.MAGENTA}));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.RED }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.ORANGE }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.YELLOW }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.GREEN }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.CYAN }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.GREEN.darker().darker() }));			
+			scales.add(new DiscreteColorScale(new Color[]{ Color.BLUE }));
+			scales.add(new DiscreteColorScale(new Color[]{ Color.BLACK}));			
+		}
+		else
+		{
+			scales.add(new PrismScale());
+			scales.add(new LineScale());
+			scales.add(new HSVScale().getDiscreteColorScale(colorcount));
+			scales.add(new JetScale().getDiscreteColorScale(colorcount));
+			scales.add(new BlueYellowRed().getDiscreteColorScale(colorcount));
+			scales.add(new BlackYellowRed().getDiscreteColorScale(colorcount));
+			scales.add(new GreenYellow().getDiscreteColorScale(colorcount));
+		}
+
 		return scales;
 	}
 	

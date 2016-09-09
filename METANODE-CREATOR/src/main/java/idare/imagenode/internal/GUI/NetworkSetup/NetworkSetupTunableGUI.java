@@ -95,7 +95,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	
 	/**
 	 * Create the Panel for Type and ID Selection (i.e. two dropdown choosers, with respective labels.)
-	 * @return
+	 * @return A {@link JPanel} with the Type and ID selection boxes and LAbels.
 	 */
 	private JPanel createTypeAndIDSelection()
 	{
@@ -109,7 +109,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	
 	/**
 	 * Set up the Selectors for ID and Type Column . 
-	 * @param ColumnNames
+	 * @param ColumnNames the column names to use for the selectors
 	 */
 	private void setupSelectors(Vector<String> ColumnNames)
 	{
@@ -133,7 +133,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	}
 	/**
 	 * Create the Title panel.
-	 * @return
+	 * @return the Title panel for this GUI.
 	 */
 	private JPanel createTitle()
 	{
@@ -153,7 +153,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	 * Create a general checkbox panel
 	 * @param Description - The Description of the Checkbox
 	 * @param box - the Actual Checkbox.
-	 * @return
+	 * @return The Checkbox which can be ticked if values should be replaced
 	 */
 	private JPanel createCheckBoxPanel(String Description, JCheckBox box)
 	{
@@ -184,7 +184,10 @@ public class NetworkSetupTunableGUI extends JPanel {
 	//	IDAREVisualStyle.SetNetworkData(network, mgr, typeColSelector.getSelectedItem().toString(), IDColSelector.getSelectedItem().toString(), overwrite.isSelected(),nm);
 	}
 	
-	
+	/**
+	 * Get the properties selected in this GUI
+	 * @return the {@link NetworkSetupProperties} as selected by the user, or null, if the selection is invalid.
+	 */
 	public NetworkSetupProperties getNetworkSetupProperties()
 	{
 		if(ctc.acceptable())
@@ -214,6 +217,11 @@ public class NetworkSetupTunableGUI extends JPanel {
 
 		NetworkSetupTunableGUI snc;
 		ColumnTypeChooser ctc;
+		/**
+		 * Listener that updates the species/compound selection panel depending on the column choice.
+		 * @param snc The gui that contains the Column Choosers (which is updated on a selection)
+		 * @param ctc The TypeColumnChooser to obtain the column for the species/compound selectionfrom
+		 */
 		public ColumChoiceListener(NetworkSetupTunableGUI snc, ColumnTypeChooser ctc)
 		{
 			this.snc = snc;

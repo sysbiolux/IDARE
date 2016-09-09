@@ -16,6 +16,11 @@ import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.RequestsUIHelper;
 import org.cytoscape.work.swing.TunableUIHelper;
 
+/**
+ * A Task that sets up the network according to user selected columns and identifiers and calls the subnetworkpropertyselection after successful completion
+ * @author Thomas Pfau
+ *
+ */
 public class SubnetworkColumnPropertiesSelectionTask extends AbstractTask
 		implements RequestsUIHelper {
 

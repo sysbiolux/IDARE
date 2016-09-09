@@ -8,15 +8,11 @@ import idare.imagenode.Interfaces.Plugin.IDAREPlugin;
 import idare.imagenode.exceptions.io.DuplicateIDException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.DataSetReaders.CSVReader.CSVReader;
-import idare.imagenode.internal.DataSetReaders.CSVReader.TSVReader;
-import idare.imagenode.internal.DataSetReaders.POIReader.POIReader;
 import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
 import idare.imagenode.internal.GUI.DataSetController.CreateNodesTaskFactory;
 import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.Tasks.CreateNodeImagesTaskFactory;
-import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupTaskFactory;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
@@ -50,13 +46,11 @@ import org.cytoscape.view.model.VisualLexicon;
 import org.cytoscape.view.model.VisualProperty;
 import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
 import org.cytoscape.view.presentation.customgraphics.CyCustomGraphics;
-import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.ServiceProperties;
-import org.cytoscape.work.SynchronousTaskManager;
 import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
@@ -106,8 +100,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		ids = new IDAREVisualStyle(reg.getService(VisualStyleFactory.class), reg.getService(VisualMappingManager.class),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=discrete)"),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)"),				
-								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),
-								   nm, reg.getService(CyApplicationManager.class));
+								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),nm);
 		storage.setVisualStyle(ids);
 		Settings = ism;
 		legend = new IDARELegend(new JPanel(),nm);
@@ -180,8 +173,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		return dsm;
 	}
 	/**
-	 * Register a DataSet Type that can be selected in the DataSet selection.
-	 * @param DataSetClass the class of the new {@link DataSet}
+	 * Register a the type of a dataset provided to the set of avilable {@link DataSet} classes
+	 * @param ds An instance of a {@link DataSet} which is of the class to register.
 	 * @throws IllegalAccessException if there was an illegal access to the dataset class.
 	 * @throws InstantiationException if things went wrong in the Instantiation of the class
 	 * @throws DuplicateIDException if there are two datasets with the same type name
@@ -192,9 +185,8 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	}
 	
 	/**
-	 * Deregister a DataSet Type that can from the available selection.
-	 * @param DataSetClassName the classname of the new {@link DataSet}
-	 * @return whether the dataset type could be added
+	 * Deregister a the an available {@link DataSet} class based on an instance of the class.
+	 * @param ds An instance of a {@link DataSet} object that belongs t the class that is supposed to be registered
 	 */
 	public void deregisterDataSetType(DataSet ds)  
 	{				
@@ -278,7 +270,11 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	{
 		return Settings;
 	}
-
+	
+	/**
+	 * Handle a session load event. This class does not implement the {@link SessionLoadedListener} itself, as the order of loading is relevant.
+	 * @param arg0 The {@link SessionLoadedEvent} that provides information on the state of the app in the loaded session.
+	 */
 	public void handleSessionLoadedEvent(SessionLoadedEvent arg0) {
 		//first, see, whether we have datasets. If, we have to reset them, otherwise we will simply load the new ones.
 		if(!dsm.getDataSets().isEmpty())
@@ -308,7 +304,6 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	 * @param dtm The dialogTaskmanager uses
 	 * @param util A File Util to use in the Factories
 	 * @param cySwingApp A reference to the CySwingApp to be used in Factories
-	 * @return
 	 */
 	private void createTaskFactories(DialogTaskManager dtm, FileUtil util,CySwingApplication cySwingApp, CyApplicationManager cyAppMgr)
 	{
@@ -573,6 +568,11 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 			plugins.remove(plugin);
 		}		
 	}
+	/**
+	 * A small Task that updates a service for IDARE.
+	 * @author Thomas Pfau
+	 *
+	 */
 	private class UpdateTask implements Task
 	{
 		IDAREPlugin plugin;

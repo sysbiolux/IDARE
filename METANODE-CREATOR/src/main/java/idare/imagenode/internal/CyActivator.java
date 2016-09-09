@@ -18,7 +18,6 @@ import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUI
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreatorTaskFactory;
 import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkPropertyColumnGUIHandlerFactory;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,13 +25,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.cytoscape.application.CyApplicationConfiguration;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.ActionEnableSupport;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.event.CyEventHelper;
-import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.model.events.NetworkAddedListener;
@@ -47,19 +44,13 @@ import org.cytoscape.view.layout.AbstractLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
-import org.cytoscape.view.model.VisualLexicon;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.model.events.NetworkViewAddedListener;
-import org.cytoscape.view.presentation.RenderingEngineManager;
-import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualMappingManager;
-import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.ServiceProperties;
 import org.cytoscape.work.TaskIterator;
-import org.cytoscape.work.swing.DialogTaskManager;
 import org.cytoscape.work.swing.GUITunableHandlerFactory;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
@@ -74,9 +65,7 @@ public class CyActivator extends AbstractCyActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		
-		appcontext = context;
-		CyApplicationConfiguration configuration = getService(context, CyApplicationConfiguration.class);
-		File cyDirectory = configuration.getConfigurationDirectoryLocation();
+		appcontext = context;		
 		app = new IDAREApp();
 		registerAllServices(context, app, new Properties());
 
@@ -114,22 +103,13 @@ public class CyActivator extends AbstractCyActivator {
 		registerSBMLAnnotator(context);
 		
 	}
-
+	@SuppressWarnings("rawtypes")
 	private void setupimagenodeApp(BundleContext context)
 	{
 		//Obtain all services required for the app.
 		CyApplicationManager cyAppMgr = getService(context, CyApplicationManager.class);	
-		CyNetworkViewManager nvm = getService(context, CyNetworkViewManager.class);
-		CyEventHelper eventHelper = getService(context, CyEventHelper.class);
-		VisualStyleFactory vSFSR = getService(context,VisualStyleFactory.class);
 		VisualMappingManager vmm = getService(context, VisualMappingManager.class);
 		FileUtil util = getService(context, FileUtil.class);
-		VisualMappingFunctionFactory vmfFactoryD = getService(context,VisualMappingFunctionFactory.class, "(mapping.type=discrete)");
-		VisualMappingFunctionFactory vmfFactoryP = getService(context,VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
-		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);
-		VisualLexicon currentLexicon = getService(context,RenderingEngineManager.class).getDefaultVisualLexicon();
-		CyNetworkManager networkManager = getService(context, CyNetworkManager.class);
-		DialogTaskManager dialogTaskManager = getService(context, DialogTaskManager.class);    
 		
 
 		//initialize and register the app components.
@@ -237,7 +217,6 @@ public class CyActivator extends AbstractCyActivator {
 		//initialize the basic components of the Subnetwork generator part of this app.
 		NetworkViewSwitcher nvs = new NetworkViewSwitcher(reg);
 		SubnetworkSessionManager SubSysSave = new SubnetworkSessionManager(nvs, app.getSettingsManager());
-		Properties properties = new Properties();
 		Properties doubleClickProperties = new Properties();
 		doubleClickProperties.setProperty(ServiceProperties.PREFERRED_ACTION, NetworkViewSwitcher.PREFERRED_OPTION);
 		doubleClickProperties.setProperty(ServiceProperties.TITLE, "Switch To Network");

@@ -39,10 +39,8 @@ public class SubnetworkPropertyColumnChooser extends JPanel{
 	 * A Constructor requiring the column names to select the columns for the different properties from,
 	 * In addition, the current network is needed, along with the cySwingApp (for hierarchy reference), the {@link IDARESettingsManager} for 
 	 * idare specific settings, and a nodemanager to be informed of the updated nodes.  
-	 * @param ColumnNames
-	 * @param network
-	 * @param cySwingApp
-	 * @param snc
+	 * @param ColumnNames The Column Names available in the network
+	 * @param network The network to create subnetworks for.
 	 */
 	public SubnetworkPropertyColumnChooser( Vector<String> ColumnNames,  CyNetwork network){		
 		background = this.getBackground();
@@ -83,7 +81,7 @@ public class SubnetworkPropertyColumnChooser extends JPanel{
 	
 	/**
 	 * Create the Panel for Type and ID Selection (i.e. two dropdown choosers, with respective labels.)
-	 * @return
+	 * @return the Type and ID selection {@link JPanel}
 	 */
 	private JPanel createTypeAndIDSelection()
 	{
@@ -97,7 +95,7 @@ public class SubnetworkPropertyColumnChooser extends JPanel{
 	
 	/**
 	 * Set up the Selectors for ID and Type Column . 
-	 * @param ColumnNames
+	 * @param ColumnNames the column names to use to set up the selectors.
 	 */
 	private void setupSelectors(Vector<String> ColumnNames)
 	{
@@ -121,7 +119,7 @@ public class SubnetworkPropertyColumnChooser extends JPanel{
 	}
 	/**
 	 * Create the Title panel.
-	 * @return
+	 * @return The Title Panel
 	 */
 	private JPanel createTitle()
 	{

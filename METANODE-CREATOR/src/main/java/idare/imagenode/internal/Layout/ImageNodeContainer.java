@@ -64,7 +64,7 @@ public class ImageNodeContainer extends JLabel{
 	/**
 	 * Test whether there is still enough space left to place the freely moveable 
 	 * Containers.
-	 * @return
+	 * @return whether the freely locateable containers have enough room. 
 	 */
 	private boolean canPlaceFreeContainers()
 	{
@@ -106,9 +106,9 @@ public class ImageNodeContainer extends JLabel{
 	 * Create the layout for the contained {@link ImageBag}s and return the Panels generated from the {@link ImageBag}s (mapped to the {@link ImageBag}s and associated with their respective {@link DataContainer}s.
 	 * @param frame - the frame to use to generate the layout.
 	 * @return a Map matching the ImageBag (i.e. overall location) to maps mapping the Panels used for each container to their respective containers
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
-	 * @throws TooManyItemsException
+	 * @throws ContainerUnplaceableExcpetion if the container is not placeable due to its properties
+	 * @throws DimensionMismatchException if a containers dimensions are too large
+	 * @throws TooManyItemsException if there are too many items and not enough room left.
 	 */
 	public HashMap<ImageBag,HashMap<JPanel,DataContainer>> createLayout(JFrame frame ) throws ContainerUnplaceableExcpetion,DimensionMismatchException, TooManyItemsException
 	{

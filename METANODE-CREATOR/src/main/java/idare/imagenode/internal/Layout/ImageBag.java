@@ -54,8 +54,8 @@ public class ImageBag extends Container{
 	BAGPOSITON position;
 	/**
 	 * Default Constructor linking to the parent using this bag and providing the position of this bag.
-	 * @param position
-	 * @param parent
+	 * @param position the position of the bag (CENTER/LEFT/RIGHT)
+	 * @param parent the {@link ImageNodeContainer} this bag is part of 
 	 */
 	public ImageBag(BAGPOSITON position, ImageNodeContainer parent)
 	{
@@ -83,8 +83,8 @@ public class ImageBag extends Container{
 
 	/**
 	 * Add a {@link DataSet}, if there is sufficient space left in this bag. Otherwise throw a too many items exception.  
-	 * @param set
-	 * @throws TooManyItemsException
+	 * @param set the {@link DataSet} to add to this Bag.
+	 * @throws TooManyItemsException if there are too many items in the provided {@link DataSet} and not enough room left in this Bag
 	 */
 	public void addContainer(DataSet set) throws TooManyItemsException
 	{
@@ -131,8 +131,8 @@ public class ImageBag extends Container{
 	/**
 	 * Create the layout, if possible. The Layout provides a JPanel to DataContainer map, that can be used to extract the Container for each panel, thus getting the positions for the containers.
 	 * @return A Map matching {@link JPanel} s to their respective {@link DataContainer}s. 
-	 * @throws DimensionMismatchException
-	 * @throws ContainerUnplaceableExcpetion
+	 * @throws DimensionMismatchException if the dimensions of a container don't fit.
+	 * @throws ContainerUnplaceableExcpetion if there is not enough space
 	 */
 	public HashMap<JPanel,DataContainer> createLayout() throws DimensionMismatchException, ContainerUnplaceableExcpetion
 	{
@@ -249,10 +249,11 @@ public class ImageBag extends Container{
 	}
 	/**
 	 * Update the grid, filling in the container with its id at the tofill rectangle.
-	 * @param grid
-	 * @param tofill
-	 * @param id
-	 * @param cont
+	 * And place the container at the appropriate position.
+	 * @param grid the grid to update
+	 * @param tofill the ara (as a {@link Rectangle} that will be filled
+	 * @param id the id to fill it with
+	 * @param cont the container to place in the layout.
 	 */
 	private void updategrid(int[][] grid, Rectangle tofill, int id, DataContainer cont)
 	{
@@ -268,10 +269,10 @@ public class ImageBag extends Container{
 	}
 	/**
 	 * Get the largest empty area that fits to both the requested height and width.
-	 * @param grid
-	 * @param requestedwidth
-	 * @param requestedheight
-	 * @return
+	 * @param grid the grid to look for empty areas (i.e. areas with zeros)
+	 * @param requestedwidth the minimal width requested
+	 * @param requestedheight the minimal height requested
+	 * @return The x/y coordinates of the largest available rectangle (along with its width and height as a {@link Rectangle} object). null, if there is not enough space left to satisfy the requirements.
 	 */
 	private Rectangle getLargestEmptyArea(int[][] grid, int requestedwidth, int requestedheight)
 	{
@@ -365,9 +366,9 @@ public class ImageBag extends Container{
 	}
 	/**
 	 * Update the cache used for greatest empty area determination
-	 * @param c
-	 * @param x
-	 * @param grid
+	 * @param c the cache to update 
+	 * @param x the x position
+	 * @param grid the grid used
 	 */
 	private void update_cache(int[] c, int x, int[][] grid)
 	{
@@ -382,9 +383,8 @@ public class ImageBag extends Container{
 	}
 	/**
 	 * get Area function for a lower left and upper right corner
-	 * @param c
-	 * @param x
-	 * @param grid
+	 * @param ll the coordinates (2 integers) for the lower left corner
+	 * @param ur the coordinates (2 integers) for the upper right corner
 	 */
 	private int getArea(int[] ll, int[] ur)
 	{
@@ -395,30 +395,4 @@ public class ImageBag extends Container{
 			return (ur[0] - ll[0] +1 ) * (ur[1] - ll[1] +1 ); 
 	}
 	
-
-	/**
-	 * Utility function to print the Grid present in this bag.
-	 * @param grid
-	 */
-	public void printgrid(int[][] grid)	
-	{
-		String rv = "";
-		if(position == BAGPOSITON.CENTER)
-		{
-		}
-		if(position == BAGPOSITON.LEFT)
-		{
-		}
-		if(position == BAGPOSITON.RIGHT)
-		{
-		}
-		for(int y = 0; y < grid[0].length; y++)
-		{
-			for(int x = 0; x < grid.length; x++)
-			{
-				rv += "\t" + grid[x][y];  
-			}
-			rv += "\n";
-		}
-	}
 }

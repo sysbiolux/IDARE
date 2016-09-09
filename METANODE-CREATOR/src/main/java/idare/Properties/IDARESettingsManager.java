@@ -410,7 +410,6 @@ public class IDARESettingsManager{
 			SetupNetwork(network, IDAREIdmgr, NodeTypeCol, IDCol);
 		}
 		CyTable NodeTable = network.getDefaultNodeTable();
-		CyTable EdgeTable = network.getDefaultEdgeTable();
 		CyTable NetworkTable = network.getDefaultNetworkTable();				
 		if(!NetworkTable.getRow(network.getSUID()).isSet(IDAREProperties.IDARE_NETWORK_ID))
 		{

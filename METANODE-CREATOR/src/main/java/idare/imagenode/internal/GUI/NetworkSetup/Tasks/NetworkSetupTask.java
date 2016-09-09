@@ -2,7 +2,6 @@ package idare.imagenode.internal.GUI.NetworkSetup.Tasks;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
-import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;

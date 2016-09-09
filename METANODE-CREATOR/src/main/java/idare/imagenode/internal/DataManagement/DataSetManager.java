@@ -14,20 +14,13 @@ import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,13 +31,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
 import org.cytoscape.session.events.SessionLoadedEvent;
-import org.cytoscape.work.swing.TunableUIHelper;
 /**
  * A class to manage Datasets
  * @author Thomas Pfau
@@ -111,8 +100,8 @@ public class DataSetManager{
 	
 	/**
 	 * Register a DataSetType that can be accessed by the TypeName.
-	 * @param TypeName
-	 * @param The Class of the DataSet
+	 * @param TypeName the TypeName (string description) of the registered DataSetType
+	 * @param dataSetClass The Class of the DataSet
 	 */
 	public void registerDataSetType(String TypeName, Class<? extends DataSet> dataSetClass) throws DuplicateIDException
 	{
@@ -129,8 +118,8 @@ public class DataSetManager{
 	/**
 	 * Remove a class from the available Datasetclasses.
 	 * This is skipped, if the class matching to the typename does not match the class provided. 
-	 * @param TypeName
-	 * @param The Class of the DataSet
+	 * @param TypeName the TypeName (string description) of the deregistered DataSetType
+	 * @param dataSetClass The Class of the DataSet
 	 */
 	public void deRegisterDataSetType(String TypeName, Class<? extends DataSet> dataSetClass)
 	{
@@ -144,6 +133,7 @@ public class DataSetManager{
 	 * Add DataSetProperties for a specific dataset
 	 * @param classType The class to register the properties for
 	 * @param properties The properties to make available for the given class
+	 * @return whether the properties could be added
 	 */
 	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
@@ -180,7 +170,7 @@ public class DataSetManager{
 	
 	/**
 	 * Register a set of properties for a datasetclass.
-	 * @param datasetclass the class of the dataset which to register the properties for.
+	 * @param classType the class of the dataset which to register the properties for.
 	 * @param properties the property options for the dataset that should eb registered.
 	 * @return The properties that were not added because they are already present.
 	 */
@@ -222,7 +212,7 @@ public class DataSetManager{
 	
 	/**
 	 * Deregister Properties for a DataSet
-	 * @param datasetclass the class of the dataset to deregister items for.
+	 * @param classType the class of the dataset to deregister items for.
 	 * @param properties the properties to deregister.
 	 */
 	public void deregisterPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
@@ -408,7 +398,7 @@ public class DataSetManager{
 	}
 	/**
 	 * Handle A SessionLoadedevent, since order is relevant this object is not directly a listener but gets the command from a listener.
-	 * @param arg0
+	 * @param arg0 the {@link SessionLoadedEvent} to obtain data from
 	 */
 	public void handleEvent(SessionLoadedEvent arg0) {
 		// First, clear the temporary Folder!. This folder contains data from an old session and thus needs to be reset.		
@@ -468,7 +458,7 @@ public class DataSetManager{
 	 * @param TwoCols indicator whether to use twoColumn ID Indicators
 	 * @param DataSetTypeName Class name of the dataset
 	 * @param SetDescription Description of the Dataset
-	 * @param DataSetFile File to load into the dataset
+	 * @param dsWorkBook The {@link IDAREWorkbook} to use for this {@link DataSet}
 	 * @return The Created Dataset with the data from the DataSetFile parsed.
 	 * @throws WrongFormat Depending on the Dataset specific properties have to be matched by the file
 	 * @throws InvalidFormatException Depending on the Dataset specific properties have to be matched by the file
@@ -558,12 +548,8 @@ public class DataSetManager{
 	 */	
 	public void handleEvent(SessionAboutToBeSavedEvent arg0) {		
 		
-		//Map<String,List<File>> FileList = arg0.getAppFileListMap();
-		LinkedList<File> PropertiesList = new LinkedList<>();
 		LinkedList<File> DataFileList = new LinkedList<File>();
 		//Create A Temporary Zip File
-		StringBuffer descriptionbf = new StringBuffer();
-		//Vector<String> existingFileNames = new Vector<>();
 		File DataSetsFile = IOUtils.getTemporaryFile("DataSetFile",".bin");
 		DataFileList.add(DataSetsFile);
 		try
@@ -583,7 +569,6 @@ public class DataSetManager{
 			if(!DataFileList.isEmpty())
 			{
 				arg0.addAppFiles(IMAGENODEPROPERTIES.DATASET_FILES, DataFileList);			
-		//		arg0.addAppFiles(IMAGENODEPROPERTIES.DATASET_PROPERTIES, PropertiesList);
 			}
 		}
 		catch(Exception e)
@@ -592,25 +577,6 @@ public class DataSetManager{
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * Write DataSet Properties to a string (which can be read by <code>readDataSetProperties()</code>
-	 * @param set the set to obtain the properties from.
-	 * @return the string representing the properties of the provided set
-	 */
-	private String writeDataSetProperties(DataSet set)
-	{
-		StringBuffer res = new StringBuffer();
-		//String SourceFileName = set.SourceFile.getName();
-		//res.append("File : " + SourceFileName + "\n");
-		res.append("ID : " + set.getID() + "\n");
-		res.append("TwoColumn : " + set.useTwoColHeaders + "\n");
-		res.append("DataType : " + set.getClass().getCanonicalName() + "\n");
-		res.append("Description : " + set.Description + "\n");
-		res.append("\n");
-
-		return res.toString();
 	}
 	
 	/**

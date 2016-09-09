@@ -34,22 +34,13 @@ public class SBMLServiceRegistrar implements
 	
 	@Override
 	public void serviceChanged(ServiceEvent event) {
-		// TODO Auto-generated method stub
 
-		// TODO Auto-generated method stub
-		String[] objectclass = (String[]) event.getServiceReference().getProperty("objectClass");			
-		String res = "";
-		for( String cclass : objectclass)
-		{
-			res += cclass + "\n";
-		}
-		//System.out.println("Obtaining a registry event for the for the following clases:\n " + res);
+		String[] objectclass = (String[]) event.getServiceReference().getProperty("objectClass");					
 		
 		if(event.getType() == ServiceEvent.REGISTERED)
 		{
 			if(objectclass[0] == "org.cy3sbml.SBMLManager")
 			{	
-//				System.out.println("SBMLServiceReg:  Found a SBMLMAnager, registering it");
 				ref = event.getServiceReference();
 				Object mgr = appContext.getService(ref);
 				holder.setObject(mgr);					
@@ -59,7 +50,6 @@ public class SBMLServiceRegistrar implements
 		{
 				if(objectclass[0] == "org.cy3sbml.SBMLManager")
 				{
-//					System.out.println("SBMLServiceReg: SBMLManager deregistered, removing it");									
 					holder.setObject(null);					
 				}
 			

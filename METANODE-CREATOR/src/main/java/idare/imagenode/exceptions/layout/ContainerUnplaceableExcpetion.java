@@ -7,6 +7,11 @@ package idare.imagenode.exceptions.layout;
  */
 public class ContainerUnplaceableExcpetion extends Exception{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public ContainerUnplaceableExcpetion(String Message) {
 		// TODO Auto-generated constructor stub
 		super(Message);

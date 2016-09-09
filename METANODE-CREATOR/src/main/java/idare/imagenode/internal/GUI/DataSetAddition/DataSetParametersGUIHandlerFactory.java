@@ -1,7 +1,6 @@
 package idare.imagenode.internal.GUI.DataSetAddition;
 
 import idare.imagenode.internal.DataManagement.DataSetManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,7 +20,6 @@ public class DataSetParametersGUIHandlerFactory implements GUITunableHandlerFact
 	@Override
 	public DataSetParametersGUIHandler createTunableHandler(Field arg0, Object arg1,
 			Tunable arg2) {
-		// TODO Auto-generated method stub
 		if(!DataSetGenerationParameters.class.isAssignableFrom(arg0.getType()))
 		{
 //			PrintFDebugger.Debugging(this, "Received a request for handling");

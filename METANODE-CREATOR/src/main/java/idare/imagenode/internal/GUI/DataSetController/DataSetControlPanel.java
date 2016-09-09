@@ -48,7 +48,6 @@ import org.apache.batik.swing.JSVGCanvas;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
-import org.cytoscape.util.swing.FileUtil;
 import org.w3c.dom.svg.SVGDocument;
 /**
  * A Panel that controls the {@link DataSet}s, and allows the management of said sets.
@@ -56,6 +55,10 @@ import org.w3c.dom.svg.SVGDocument;
  *
  */
 public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	DataSetSelectionTable DataSetTable;
 	IDValueLabel commons = new IDValueLabel("Common:", "0");
 	IDValueLabel totals = new IDValueLabel("Total:", "0");
@@ -411,6 +414,10 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	 */
 	private class IDValueLabel extends JPanel
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private JLabel ID;
 		private JLabel Value;
 		/**
@@ -555,6 +562,10 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	{
 
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
 		 * The Basic constructor
 		 */
 		public DataSetAdderGuiAction() {
@@ -577,6 +588,10 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	private class DataSetRemoveAction extends AbstractAction
 	{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		DataSetManager dsm;
 		JTable DataSetTable;
 		/**

@@ -1,12 +1,11 @@
 package idare.imagenode.Interfaces.DataSets;
 
 import idare.imagenode.ColorManagement.ColorMap;
-import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
+import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
-import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell.CellType;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.Utilities.StringUtils;
@@ -15,7 +14,6 @@ import idare.imagenode.exceptions.io.WrongFormat;
 import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
@@ -37,6 +35,7 @@ import org.omg.IOP.CodecPackage.FormatMismatch;
  * @author Thomas Pfau
  *
  */
+@SuppressWarnings("rawtypes") 
 public abstract class DataSet implements IDAREService, Serializable{
 	
 	public static String DATASETCOLORSCALE = "Dataset ColorScale";
@@ -130,9 +129,6 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @throws IOException if there is a problem with the provided file.
 	 */
 	public final boolean loadWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException,IOException{
-		//SourceFile = DataFile;		
-		//IDAREWorkbook wb = null;
-		String ErrorMessage = "";
 		if(WB == null)
 		{		
 			throw new WrongFormat("No Reader available for the file format, or invalid Format\n" );

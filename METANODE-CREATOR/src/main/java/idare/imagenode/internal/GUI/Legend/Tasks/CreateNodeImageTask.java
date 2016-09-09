@@ -209,9 +209,9 @@ public class CreateNodeImageTask extends AbstractTask {
 	
 	/**
 	 * Build a DataDescriptionpane to  print the legend descriptions.
-	 * @param layout - the layouts to use
-	 * @param datasets - the datasets in correct order
-	 * @return
+	 * @param layout  the layouts to use
+	 * @param datasets  the datasets in correct order
+	 * @return The LegendDescription Panel
 	 */
 	private JPanel BuildLegendDescriptionFrame(NodeLayout layout, Vector<DataSet> datasets)
 	{
@@ -229,10 +229,10 @@ public class CreateNodeImageTask extends AbstractTask {
 	}
 	/**
 	 * Essentially a copy of the Method from the {@link IDARELegend}. using a ScrollPane and a given content to do the process.
-	 * @param scroller
-	 * @param datasets
-	 * @param layout
-	 * @param Content
+	 * @param scroller The scrollpane to add the DataSetDescription to.
+	 * @param datasets The datasets to add to this "legend"
+	 * @param layout the layout to use
+	 * @param Content the Content pane to use plot to
 	 */
 	private void setDataSetDescriptions(JScrollPane scroller, Vector<DataSet> datasets, NodeLayout layout, JPanel Content)
 	{

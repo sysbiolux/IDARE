@@ -3,11 +3,8 @@ package idare.imagenode.internal.DataSetReaders.POIReader;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARERow;
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARESheet;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -82,8 +79,6 @@ public class POISheet implements IDARESheet {
 	private class RowIter implements Iterator<IDARERow>
 	{
 
-		private HashMap<Integer, Cell> map;
-		private Vector<Integer> cellpositions;
 		Iterator<Row> iter;
 		public RowIter(Iterator<Row> iter)
 		{

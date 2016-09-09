@@ -14,8 +14,6 @@ import java.util.Collection;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.w3c.tools.resources.serialization.Serializer;
-
 /**
  * {@link DataSetLayoutProperties} allow the use of a specific class of {@link DataSet}s for multiple different layouts. 
  * They contain information about localisation preferences and can provide different {@link DataContainer}s (and thus layouts).

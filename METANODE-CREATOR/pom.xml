@@ -63,8 +63,8 @@
 						${bundle.namespace}.imagenode,
 						${bundle.namespace}.imagenode.Interfaces.*,
 						${bundle.namespace}.imagenode.Data.BasicDataTypes.*,
-						${bundle.namespace}.imagenode.Data.BasicDataTypes.itemizedData,
-						${bundle.namespace}.imagenode.Data.BasicDataTypes.ValueSetData,
+						${bundle.namespace}.imagenode.Data.BasicDataTypes.ArrayData.*,
+						${bundle.namespace}.imagenode.Data.BasicDataTypes.MultiArrayData.*,
 						${bundle.namespace}.imagenode.exceptions.io,
 						${bundle.namespace}.imagenode.exceptions.layout,
 						${bundle.namespace}.imagenode.Utilities,
@@ -316,12 +316,6 @@
 			<artifactId>batik-script</artifactId>
 			<version>1.6</version>
 		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-css</artifactId>
-			<version>1.6</version>
-		</dependency>
-
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-awt-util</artifactId>

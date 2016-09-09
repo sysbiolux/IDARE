@@ -300,7 +300,6 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 				boolean cellHasFocus) {
 			//Get the selected index. (The index param isn't
 			//always valid, so just use the value.)		
-			JPanel pane = new JPanel();
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
 				setForeground(list.getSelectionForeground());

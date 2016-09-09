@@ -69,7 +69,11 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 	
 	
-	
+	/**
+	 * Write all data that is relevant to restore this nodelayout to a {@link ObjectOutputStream}
+	 * @param os The {@link ObjectOutputStream} to write the dlayout infromation to
+	 * @throws IOException
+	 */
 	public void writeLayout(ObjectOutputStream os) throws IOException
 	{
 		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
@@ -83,7 +87,14 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		os.writeObject(new EOOMarker());
 		//os.close();
 	}
-	
+	/**
+	 * Read a layout object from an {@link ObjectInputStream} given the last object read (which is the first object of the layout)
+	 * @param dsm the {@link DataSetManager} to get information about DataSets from.
+	 * @param os The {@link ObjectInputStream} to read from
+	 * @param currentobject The last object read in the {@link ObjectInputStream} provided (the first object of the nodelayout save
+	 * @return true, if reading was successful, false if there was a non {@link IOException}.
+	 * @throws IOException
+	 */
 	public boolean readLayout(DataSetManager dsm, ObjectInputStream os, Object currentobject) throws IOException
 	{
 		//Format of a Layout Description:
@@ -129,8 +140,8 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		//set.dataset.addDataSetChangeListener(this);
 	}
 	/**
-	 * Generate a Layout for a given set of DataSets.
-	 * @param Datasets
+	 * Generate a Layout for a given set of {@link DataSet}s.
+	 * @param Datasets the {@link DataSet}s to generate a layout for.
 	 * @throws TooManyItemsException
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException
@@ -204,8 +215,8 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 
 	/** 
-	 * Get the label for a specific dataset  used in this layout;
-	 * @param ds
+	 * Get the label for a specific {@link DataSet}  used in this layout;
+	 * @param ds the {@link DataSet} to get the label for
 	 * @return The String label for the supplied {@link DataSet}
 	 */
 	public String getDataSetLabel(DataSet ds)
@@ -231,8 +242,8 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 	/**
 	 * Layout a specific node in a given context.
-	 * @param datacollection
-	 * @param svg
+	 * @param datacollection The data to be used for drawing
+	 * @param svg the {@link SVGGraphics2D} to draw in
 	 */
 	public synchronized void layoutNode(Collection<NodeData> datacollection, SVGGraphics2D svg)	
 	{
@@ -265,8 +276,8 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 	/**
 	 * Lay out the legend for a specific set of node data
-	 * @param datacollection
-	 * @param svg
+	 * @param datacollection The data to be used for drawing
+	 * @param svg the {@link SVGGraphics2D} to draw in
 	 */
 	public synchronized void layoutLegendNode(Collection<NodeData> datacollection, SVGGraphics2D svg)	
 	{
@@ -293,8 +304,8 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 	/**
 	 * Lay out the legend for a specific set of node data
-	 * @param datacollection
-	 * @param svg
+	 * @param svg the {@link SVGGraphics2D} to draw in
+	 * @param identifier the identifier to draw
 	 */
 	private void drawIdentifier(SVGGraphics2D svg, String identifier)
 	{

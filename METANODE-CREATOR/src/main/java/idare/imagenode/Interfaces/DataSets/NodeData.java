@@ -2,8 +2,6 @@ package idare.imagenode.Interfaces.DataSets;
 
 import java.io.Serializable;
 
-import com.thoughtworks.xstream.io.json.JsonWriter.Node;
-
 
 
 /**

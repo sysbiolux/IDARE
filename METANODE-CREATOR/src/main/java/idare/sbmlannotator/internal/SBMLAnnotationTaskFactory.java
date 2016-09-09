@@ -1,18 +1,15 @@
 package idare.sbmlannotator.internal;
 
 import idare.Properties.IDAREProperties;
-import idare.Properties.IDARESettingsManager;
 import idare.imagenode.internal.IDAREImageNodeApp;
-import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Services.JSBML.Annotation;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
+import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 import idare.imagenode.internal.Services.JSBML.Model;
 import idare.imagenode.internal.Services.JSBML.SBMLDocument;
 import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
 import idare.imagenode.internal.Services.JSBML.Species;
-import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +75,6 @@ NetworkViewTaskFactory {
 
 	private TaskIterator createTask()
 	{
-		String[] extensions = {"sbml","xml"};		
 		HashSet<String> geneAnnotationURIs = new HashSet<String>();
 		HashSet<String> proteinAnnotationURIs = new HashSet<String>();
 		Map<String,Set<CVTerm>> ProtAnnot  = new HashMap<String, Set<CVTerm>>();
@@ -89,7 +85,6 @@ NetworkViewTaskFactory {
 		String SBMLIDCol = null;
 		String SBMLCompCol = null;
 		String SBMLInteractionCol = null;
-		File SBMLFile = null;
 		SBMLDocument doc = null;
 		CyNetwork network = cyAppMgr.getCurrentNetwork();
 		if(network == null)

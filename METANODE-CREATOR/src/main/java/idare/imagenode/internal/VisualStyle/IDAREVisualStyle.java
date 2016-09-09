@@ -2,27 +2,19 @@ package idare.imagenode.internal.VisualStyle;
 
 
 import idare.Properties.IDAREProperties;
-import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
 
 import java.awt.Color;
 import java.awt.Paint;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.event.CyEventHelper;
-import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyRow;
-import org.cytoscape.model.CyTable;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.model.CyNetworkView;
@@ -53,7 +45,6 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	private CyEventHelper eventHelper;	
 	private CyNetworkViewManager cyNetViewMgr;
 	private VisualStyle vs;
-	private CyApplicationManager cyAppMgr;
 	
 	private ImageStorage imf;
 	private NodeManager nm;
@@ -69,11 +60,10 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
  * @param imf - The IDARE specific mapping function for images.
  * @param cyNetViewMgr - A Cytoscape Network View Manager
  * @param idm - The Nodemanager of IDARE
- * @param cyApp - the cytoscape App Manager. 
  */
 	public IDAREVisualStyle(VisualStyleFactory visualStyleFactoryServiceRef,	VisualMappingManager vmmServiceRef,
 			VisualMappingFunctionFactory vmfFactoryD,VisualMappingFunctionFactory vmfFactoryP, CyEventHelper eventHelper,
-			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm, CyApplicationManager cyApp)
+			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm)
 	{
 		//super("Setup Network for IDARE Style");		
 		this.visualStyleFactoryServiceRef = visualStyleFactoryServiceRef;
@@ -82,7 +72,6 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		this.vmfFactoryP	= vmfFactoryP;		
 		this.eventHelper = eventHelper;		
 		this.cyNetViewMgr = cyNetViewMgr;		
-		cyAppMgr = cyApp;
 		this.imf = imf;		
 		this.nm = idm;
 				
@@ -297,7 +286,6 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	 */
 	public void updateRelevantViews()
 	{
-		Set<CyNetworkView> views = new HashSet<CyNetworkView>();
 		for(CyNetworkView networkView : cyNetViewMgr.getNetworkViewSet())
 		{			
 			VisualStyle cvs = vmmServiceRef.getVisualStyle(networkView);

@@ -174,7 +174,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 		SVGGraphics2D g = new SVGGraphics2D(doc);		
 		layout.layoutLegendNode(source.getData(), g);
 		LayoutUtils.TransferGRaphicsToDocument(doc, new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH,(int)(IMAGENODEPROPERTIES.IMAGEHEIGHT * ((double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH/IMAGENODEPROPERTIES.IMAGEWIDTH))), g);
-		Node.setAlignmentY(Node.TOP_ALIGNMENT);
+		Node.setAlignmentY(MySVGCanvas.TOP_ALIGNMENT);
 		Node.setSVGDocument(doc);
 		//Node.flush();
 		Node.flushImageCache();

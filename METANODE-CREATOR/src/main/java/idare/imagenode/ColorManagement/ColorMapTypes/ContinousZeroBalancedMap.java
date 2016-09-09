@@ -68,6 +68,7 @@ public class ContinousZeroBalancedMap extends ContinousColorMap{
 	 * @see idare.imagenode.internal.ColorManagement.ColorMapTypes.ContinousColorMap#getColor(java.lang.Comparable)
 	 */
 	@Override
+	@SuppressWarnings("rawtypes") 
 	public Color getColor(Comparable value)
 	{
 		if(value == null)

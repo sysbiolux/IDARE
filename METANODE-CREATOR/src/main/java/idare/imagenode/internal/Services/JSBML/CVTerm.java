@@ -25,7 +25,10 @@ public class CVTerm {
 			
 		}
 	}
-	
+	/**
+	 * Get the Qualifier associated with this CVTerm
+	 * @return the Qualifier associated with this CVTerm
+	 */
 	public Qualifier getBiologicalQualifierType()
 	{
 		try{
@@ -39,7 +42,11 @@ public class CVTerm {
 		}
 		return quali;
 	}
-	
+	/**
+	 * Get the REssources as a List of String
+	 * @return The Resources associated with this CVTerm
+	 */
+	@SuppressWarnings("rawtypes")
 	public List<String> getResources()
 	{
 		try{

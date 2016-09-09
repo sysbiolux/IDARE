@@ -1,14 +1,9 @@
 package idare.imagenode.internal.GUI.DataSetAddition.Tasks;
 
-import java.io.File;
-import java.util.Stack;
-
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREReaderSetupTask;
-import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
-import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 

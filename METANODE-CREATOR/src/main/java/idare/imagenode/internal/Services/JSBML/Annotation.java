@@ -21,7 +21,7 @@ public class Annotation {
 		}
 		
 	}
-	
+	@SuppressWarnings("rawtypes")
 	public List<CVTerm> getListOfCVTerms()
 	{
 		try{

@@ -4,11 +4,9 @@ import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.IOUtils;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -40,7 +38,6 @@ import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
-import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.task.AbstractNodeViewTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
@@ -513,7 +510,8 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			{
 				oos.writeObject(root);
 			}
-			oos.writeObject(new EOOMarker());			
+			oos.writeObject(new EOOMarker());
+			oos.close();
 		}
 		catch(IOException e)
 		{
@@ -549,7 +547,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 				current = ois.readObject();
 				
 			}
-			
+			ois.close();
 			System.out.println("Network Hierarchy Restored");
 		}		
 		catch(Exception e)

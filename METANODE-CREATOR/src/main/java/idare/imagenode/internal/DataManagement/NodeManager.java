@@ -16,7 +16,6 @@ import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
 import idare.imagenode.internal.Layout.NodeLayout;
-import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,12 +115,6 @@ public class NodeManager implements DataSetChangeListener{
 		NetworkIDs.removeAll(NewNodeIDs);
 		//and add the discrepancy to those to update (i.e. those should reease their associated images)
 		NodesToUpdate.addAll(NetworkIDs);
-		for(String s: NodesToUpdate)
-		{
-		}
-		for(String s: NewNodeIDs)
-		{
-		}	
 		//Fire update events for those nodes and reassign the current nodes.
 		fireNetworkNodesChanged(NodesToUpdate);		
 		NetworkIDs = NewNodeIDs;		

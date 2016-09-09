@@ -104,7 +104,7 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	}
 	/**
 	 * Get the problem that causes this selection to be not acceptable.
-	 * @return
+	 * @return A String MEssage about the problem encountered.
 	 */
 	public String getProblemMessage()
 	{
@@ -146,7 +146,7 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	}
 	/**
 	 * Get the number of non null entries of selected items.
-	 * @return
+	 * @return The number of different selected non null entries
 	 */
 	private int getSelectionCount()
 	{
@@ -239,8 +239,8 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 
 	/**
 	 * Create a Selection description based on a given string
-	 * @param DescriptionString
-	 * @return
+	 * @param DescriptionString A String to be used in this Description
+	 * @return The JTextPane representing the SelectionDescription
 	 */
 	private JTextPane createSelectionDescription(String DescriptionString)
 	{
@@ -263,7 +263,7 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	}
 	/**
 	 * Get the items used in the comboboxes, excluding those provided. 
-	 * @param excluded
+	 * @param excluded the set of excluded items, which should not be returned
 	 * @return a set of the selected Items from the choosers
 	 */
 	public Set<Object> getSelectedItems(JComboBox<String> excluded)
@@ -308,12 +308,6 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 
 				JComboBox<String> box = (JComboBox<String>)e.getSource();
 				Object selected = box.getSelectedItem();
-				Set<Object> taken = ctc.getSelectedItems(box);
-				/*if(taken.contains(selected))
-				{
-					JOptionPane.showMessageDialog(ctc, "Value already used", "Warning",
-							JOptionPane.WARNING_MESSAGE);
-				}*/
 				ctc.selectedObjects.put(box, selected);
 			}
 		}
@@ -338,7 +332,9 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 
 	/**
 	 * Create a Comboboxmodel with one element per different string present in the Column in the network. 
-	 * @return
+	 * @param network The network to obtain data from
+	 * @param ColName the Column name to create the model from
+	 * @return a ComboboxModel that contains values from the provided column
 	 */
 	private ComboBoxModel<String> createBipartitionModel(CyNetwork network,String ColName)
 	{

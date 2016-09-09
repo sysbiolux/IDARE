@@ -9,16 +9,13 @@ import idare.subnetwork.internal.NoNetworksToCreateException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyEdge;
-import org.cytoscape.model.CyIdentifiable;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
@@ -27,7 +24,6 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.CyServiceRegistrar;
-import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
@@ -39,7 +35,6 @@ import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.RequestsUIHelper;
 import org.cytoscape.work.swing.TunableUIHelper;
-import org.w3c.dom.NodeList;
 /**
  * A Task creating Subnetworks for a Network.
  * @author Thomas Pfau
@@ -63,20 +58,10 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	private Map<CyNetwork,Map<Long,Collection<CyNetwork>>> createdNodeLinks;
 
 	/**
-	 * Default Constructor
-	 * @param rootManager
-	 * @param networkViewManager
-	 * @param networkViewFactory
-	 * @param eventHelper
-	 * @param applicationManager
-	 * @param networkManager
-	 * @param layout
-	 * @param ColumnName
-	 * @param vmm
-	 * @param nvs
-	 * @param subSystems
-	 * @param ignoredNodes
-	 * @param noBranchNodes
+	 * Default constructor 
+	 * @param reg a {@link CyServiceRegistrar} to obtain necessary services from
+	 * @param nvs The {@link NetworkViewSwitcher} to add the linker information to 
+	 * @param ism the Settings Manager to obtain and NodeIDs and property data..
 	 */
 	public SubnetworkCreationTask(CyServiceRegistrar reg, NetworkViewSwitcher nvs, IDARESettingsManager ism) {
 		super();
@@ -112,7 +97,6 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 		CyRootNetworkManager cyRootNetMgr = registry.getService(CyRootNetworkManager.class);
 		CyRootNetwork rootNetwork = cyRootNetMgr.getRootNetwork(originalnetwork);
 		CyTable NodeTable = originalnetwork.getDefaultNodeTable();		
-		String parentName = originalnetwork.getRow(originalnetwork).get(CyNetwork.NAME,String.class);
 
 		//Get the existing Networks (for this SUBNETWORK Column, otherwise we might create LOADS and LOADS of linkers...
 		
@@ -256,7 +240,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	 * @param subSysNodes Nodes in the current subsystem  
 	 * @param subSysEdges Edges in the current subsystem (these cannot function as links)
 	 * @param parent the parent {@link CyNetwork}
-	 * @param newnetwork The network to obtain the Nodes from.
+	 * @param newNetwork The network to obtain the Nodes from.
 	 * @param ColName The name of the column for which subnetworks are created
 	 * @param NetworkID The ID of the current network (a potential option from the Column.
 	 * @return a Set of LinkInfos for nodes that could potentially links to other networks.
@@ -454,6 +438,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	 * @param ColName - The Column Name in which the Subsystems are stored
 	 * @param LinkingNodes - Info about all potentially linking nodes from this network
 	 */
+	@SuppressWarnings("unused")
 	private void createLinkerNodes(CyNetwork originalnetwork, CyNetwork newnetwork, CyNetworkView newNetworkView, String ColName, 
 			Set<LinkInfo> LinkingNodes)
 			{		
@@ -484,11 +469,12 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 					}
 					CyNode targetNetworkNode = targetnetwork.addNode();
 					CyNode sourceNetworkNode = newnetwork.addNode();
+					
 					CyEdge targetNetworkEdge = null;
 					CyEdge sourceNetworkEdge = null;
 					if(linkNode.directed)
 					{
-						if(linkNode.direction == linkNode.INCOMING)
+						if(linkNode.direction == LinkInfo.INCOMING)
 						{
 							targetNetworkEdge = targetnetwork.addEdge(targetnode, targetNetworkNode, true);
 							sourceNetworkEdge = newnetwork.addEdge(sourceNetworkNode,sourcenode, true);
@@ -721,95 +707,10 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 
 	/**
-	 * Get the Adjacent Edges to the provided nodes in the provided network
-	 * @param Nodes - The Nodes to retrieve Edges for
-	 * @param net -  The Network in which to retrieve edges
-	 * @param useGeneEdges - Whether to include Edges Labeled as GENE Edges or not (this is necessary to avoid linking things over Genes)
-	 * @return A Set of CyEdges linking out of the pprovided Nodes.
-	 */
-	private Set<CyEdge> getAdjacentEdges(Set<CyNode> Nodes, CyNetwork net, boolean useGeneEdges)
-	{
-		Set<CyEdge> edges = new HashSet<CyEdge>();
-		for(CyNode node : Nodes)
-		{
-			List<CyEdge> edgelist = net.getAdjacentEdgeList(node, CyEdge.Type.ANY);
-			List<CyEdge> metaboliteEdges = new LinkedList<CyEdge>();
-			for(CyEdge edge : edgelist)
-			{
-				CyTable tab = net.getDefaultEdgeTable();
-				if(tab.getColumn(IDAREProperties.IDARE_EDGE_PROPERTY) != null && useGeneEdges){
-					//if we created this and added the appropriate field, than we can restrict it, otherwise "We dont know"
-					CyRow edgerow = net.getDefaultEdgeTable().getRow(edge.getSUID());
-					//if(!edgerow.get(IDAREProperties.IDARE_EDGE_PROPERTY, String.class).equals(IDAREProperties.GENE_EDGE_ID))
-					//{
-					//	metaboliteEdges.add(edge);
-					//}
-				}
-				else
-				{
-					metaboliteEdges.add(edge);
-				}
-
-			}
-			edges.addAll(metaboliteEdges);
-		}
-
-		return edges;
-	}	
-	/**
-	 * Get all nodes adjacent to a given set of Edges (i.e. all sources and targets)
-	 * @param Edges
-	 * @return
-	 */
-	private Set<CyNode> getAdjacentCyNodes(Set<CyEdge> Edges)
-	{
-		Set<CyNode> nodes = new HashSet<CyNode>();
-		for(CyEdge edge : Edges)
-		{
-			nodes.add(edge.getSource());
-			nodes.add(edge.getTarget());			
-		}		
-		return nodes;
-	}
-	/**
-	 * Helper class to Combine some information about the directionality 
+	 * Helper class to Combine some information about the directionality of a Link
 	 * @author Thomas Pfau
 	 *
 	 */
-	private class ExternalCyNodeDirection{
-		
-		public final CyNode externalNode;
-		public final Object externalNodeSubSystem;
-		public final CyNode internalNode;
-		public final String direction;
-
-		public ExternalCyNodeDirection(CyNode externalNode,CyNode internalNode, String direction, Object externalNodeSubSystem)
-		{
-			this.direction = direction;
-			this.externalNode = externalNode; 
-			this.internalNode = internalNode;
-			this.externalNodeSubSystem = externalNodeSubSystem;
-		}
-
-	}
-	/**
-	 * Helper class to Combine some information about the directionality 
-	 * @author Thomas Pfau
-	 *
-	 */
-	private class NetworkAndView{
-		public final CyNetwork network;
-		public final CyNetworkView view;
-
-		public NetworkAndView(CyNetwork network, CyNetworkView view)
-		{
-			this.network = network;
-			this.view = view; 
-
-		}
-
-	}
-	
 	private class LinkInfo
 	{
 		public final long NodeSUID;

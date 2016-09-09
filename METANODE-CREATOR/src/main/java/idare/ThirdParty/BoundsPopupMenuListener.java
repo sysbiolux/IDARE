@@ -181,6 +181,7 @@ public class BoundsPopupMenuListener implements PopupMenuListener
 	 *  Alter the bounds of the popup just before it is made visible.
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e)
 	{
 		JComboBox comboBox = (JComboBox)e.getSource();
@@ -237,6 +238,7 @@ public class BoundsPopupMenuListener implements PopupMenuListener
 	/*
 	 *  Adjust the width of the scrollpane used by the popup
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void popupWider(BasicComboPopup popup)
 	{
 		JList list = popup.getList();
@@ -313,6 +315,7 @@ public class BoundsPopupMenuListener implements PopupMenuListener
 	/*
 	 *  Get the scroll pane used by the popup so its bounds can be adjusted
 	 */
+	@SuppressWarnings("rawtypes")
 	protected JScrollPane getScrollPane(BasicComboPopup popup)
 	{
 		JList list = popup.getList();
@@ -325,6 +328,7 @@ public class BoundsPopupMenuListener implements PopupMenuListener
 	 *  I can't find any property on the scrollBar to determine if it will be
 	 *  displayed or not so use brute force to determine this.
 	 */
+	@SuppressWarnings("rawtypes")
 	protected int getScrollBarWidth(BasicComboPopup popup, JScrollPane scrollPane)
 	{
 		int scrollBarWidth = 0;
@@ -343,6 +347,7 @@ public class BoundsPopupMenuListener implements PopupMenuListener
 	 *  I can't find any property on the scrollBar to determine if it will be
 	 *  displayed or not so use brute force to determine this.
 	 */
+	@SuppressWarnings("rawtypes")
 	protected boolean horizontalScrollBarWillBeVisible(BasicComboPopup popup, JScrollPane scrollPane)
 	{
 		JList list = popup.getList();

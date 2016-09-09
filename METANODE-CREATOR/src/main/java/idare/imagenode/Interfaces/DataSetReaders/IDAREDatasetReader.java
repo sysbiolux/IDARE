@@ -6,13 +6,8 @@ import idare.imagenode.internal.IDAREService;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.FutureTask;
 
-import javax.swing.JFrame;
-
-import org.cytoscape.work.Task;
 import org.cytoscape.work.Tunable;
-import org.cytoscape.work.swing.TunableUIHelper;
 /**
  * A {@link IDAREDatasetReader} must be able to read a Datafile into a  
  * @author Thomas Pfau

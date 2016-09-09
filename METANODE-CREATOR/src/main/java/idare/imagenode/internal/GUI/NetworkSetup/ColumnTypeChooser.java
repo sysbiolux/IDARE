@@ -30,12 +30,21 @@ import org.cytoscape.model.CyRow;
  *
  */
 public class ColumnTypeChooser extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	CyNetwork network;
+	
+	
 	private Color bgcolor;
 	Vector<String> ColumnNames;
-	CyNetwork network;
 	boolean acceptbydefault = false;
-	HashMap<JComboBox<String>,Object> selectedObjects;
 	private String SelectedColName;
+	
+	
+	HashMap<JComboBox<String>,Object> selectedObjects;
 	public final JComboBox<String> compoundTypeSelector = new JComboBox<String>();
 	public final JComboBox<String> reactionTypeSelector = new JComboBox<String>();
 	public final JComboBox<String> geneTypeSelector = new JComboBox<String>();

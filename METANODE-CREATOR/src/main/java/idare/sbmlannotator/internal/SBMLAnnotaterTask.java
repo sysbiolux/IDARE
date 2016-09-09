@@ -1,16 +1,15 @@
 package idare.sbmlannotator.internal;
 
 import idare.Properties.IDAREProperties;
-import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
 import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.Services.JSBML.Annotation;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
+import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 import idare.imagenode.internal.Services.JSBML.Model;
 import idare.imagenode.internal.Services.JSBML.Reaction;
 import idare.imagenode.internal.Services.JSBML.SBMLDocument;
 import idare.imagenode.internal.Services.JSBML.Species;
-import idare.imagenode.internal.Services.JSBML.CVTerm.Qualifier;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.application.CyApplicationManager;
-import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyEdge;
@@ -56,7 +54,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 
 	/**
 	 *  A Task reading in an SBML File and parsing its Notes fields adding the information to the Nodes of the current network. 
-	 * @param cymanager
 	 * @param cymanager The {@link CyApplicationManager} used to obtain the currently choosen network for this Task.
 	 * @param SBMLDoc The {@link SBMLDocument} to obtain the annotation from
 	 * @param GenerateGeneNodes whether to generate gene (and potentially protein) nodes
@@ -531,21 +528,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			{
 				setIDAREColumns = true;
 			}
-			CyTable edgetab = cymanager.getCurrentNetwork().getDefaultEdgeTable();
-			Collection<CyColumn> cols = edgetab.getColumns();
-			//			for(CyColumn col : cols)
-			//			{
-			//				System.out.println(col.getName());
-			//			}
-//			try{
-//				edgetab.createColumn(IDAREProperties.IDARE_EDGE_PROPERTY, String.class, false,"");
-//			}
-//			catch(IllegalArgumentException e)
-//			{
-//				System.out.println(e.getMessage());
-//			}
-
-			//CyNetwork network = cymanager.getCurrentNetwork();
 
 			HashMap<CyNode, Set<CyNode>> ReacToGene = new HashMap<CyNode, Set<CyNode>>();
 			boolean IDARENetwork = false;
@@ -589,8 +571,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 					for(Long ReacSUID : GeneAssoc.get(gene))						
 					{
 						CyNode ReacNode = network.getNode(ReacSUID);
-						CyEdge edge = network.addEdge(newNode, ReacNode,true);
-						//edgetab.getRow(edge.getSUID()).set(IDAREProperties.IDARE_EDGE_PROPERTY, IDAREProperties.GENE_EDGE_ID);
 						if(!ReacToGene.containsKey(ReacNode))
 						{
 							ReacToGene.put(ReacNode, new HashSet<CyNode>());
@@ -611,8 +591,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 						//adjust the position into the middle of all involved reactions.
 						currenty = (currenty + ypos/GeneAssoc.get(gene).size());
 						currentx = (currentx + xpos/GeneAssoc.get(gene).size());
-						CyEdge edge = network.addEdge(newNode, ReacNode ,true);
-						//edgetab.getRow(edge.getSUID()).set(IDAREProperties.IDARE_EDGE_PROPERTY, IDAREProperties.GENE_EDGE_ID);
 
 					}
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_X_LOCATION, currentx, false));

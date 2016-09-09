@@ -1,11 +1,9 @@
 package idare.imagenode.ColorManagement;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -46,16 +44,6 @@ public abstract class ColorMap implements Serializable{
 		HashMap<Double, String> translation = new HashMap<Double, String>();		 		
 		Double max = values[values.length-1];
 		Double min = values[0];
-		//Check whether the values are integers.
-		boolean allint = true;
-
-		for(int i = 0; i < values.length; i++){
-			if(Math.floor(values[i]) != Math.ceil(values[i]))
-			{
-				allint = false;
-				break;
-			}
-		}
 		//we define an odd range a range that is three orders of magnitude different from the max value.
 		//if both values are smaller than zero we assume min to be the "larger" value and check min.
 		// these are essentially instances, where we have e.g. max = 1000 and min = 999 (i.e. values that are very much distorted).
@@ -139,6 +127,7 @@ public abstract class ColorMap implements Serializable{
 	 * @param Value A {@link Comparable} value.
 	 * @return a {@link Color} 
 	 */
+	@SuppressWarnings("rawtypes")
 	public abstract Color getColor(Comparable Value);
 
 }	

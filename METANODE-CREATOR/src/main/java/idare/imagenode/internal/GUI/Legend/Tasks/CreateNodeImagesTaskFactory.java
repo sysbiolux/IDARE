@@ -41,7 +41,7 @@ public class CreateNodeImagesTaskFactory extends AbstractTaskFactory implements 
 		//taskMonitor.setStatusMessage("Selecting Options );
 		String selection = ((Options)(JOptionPane.showInputDialog(null, "Select the File Format to save in.",
 				"File Format selection", JOptionPane.PLAIN_MESSAGE, null, options, options[0]))).getUseString();
-		File f = util.getFile(cySwingApp.getJFrame(),"Select File to save the Nodes:",util.SAVE,filter);
+		File f = util.getFile(cySwingApp.getJFrame(),"Select File to save the Nodes:",FileUtil.SAVE,filter);
 		
 		
 		return new TaskIterator(new CreateNodeImageTask(legend, f, manager, selection));

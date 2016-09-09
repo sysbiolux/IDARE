@@ -36,7 +36,6 @@ public class SubNetworkUtils {
 	public static void setupNetworkForSubNetworkCreation(CyNetwork network, IDARESettingsManager Idmgr, String NodeTypeCol)
 	{
 		CyTable NodeTable = network.getDefaultNodeTable();
-		CyTable EdgeTable = network.getDefaultEdgeTable();
 		if(!IDARESettingsManager.isSetupNetwork(network))
 		{
 			IDARESettingsManager.initNetwork(network);

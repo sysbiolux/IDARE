@@ -2,7 +2,6 @@ package idare.imagenode.internal.GUI.NetworkSetup.Tasks;
 
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

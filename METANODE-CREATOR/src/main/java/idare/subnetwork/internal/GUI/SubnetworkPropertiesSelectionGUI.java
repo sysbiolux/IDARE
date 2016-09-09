@@ -42,7 +42,6 @@ import javax.swing.table.TableModel;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
@@ -75,11 +74,11 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	private Color bgcolor;
 	/**
 	 * Generate the GUI for selection of Subnetwork generation properties
-	 * @param AlgorithmNames - The Layout algorithms available to the generator
-	 * @param ColumnNames - The ColumnNames available for Subnetwork column selection
-	 * @param creator - the {@link SubNetworkCreator} Object that needs to be informed of the result
-	 * @param network - the {@link CyNetwork} to generate subnetworks for
-	 * @param cySwingApp - The {@link CySwingApplication} that is the parent of this GUI.
+	 * @param AlgorithmNames  The Layout algorithms available to the generator
+	 * @param ColumnNames  The ColumnNames available for Subnetwork column selection
+	 * @param network  the {@link CyNetwork} to generate subnetworks for
+	 * @param nvs  the {@link NetworkViewSwitcher} Object to obtain present subnetworks from.
+	 * @param IDCol The String Identifying the column used for the compound IDs
 	 */
 	public SubnetworkPropertiesSelectionGUI(Collection<String> AlgorithmNames, Vector<String> ColumnNames, 
 			CyNetwork network, NetworkViewSwitcher nvs, String IDCol){
@@ -166,7 +165,8 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	
 	/**
 	 * Create the Subsystem Selection Panel
-	 * @return A {@link JPanel} for the Subsystem Selection
+	 * @param gbc the overall {@link GridBagConstraints} to properly place this panel
+	 * @param MiddlePane the Pane that the subsystemselection gets added to.
 	 */
 	private void createSubSystemSelection(GridBagConstraints gbc, Container MiddlePane)
 	{
@@ -193,8 +193,6 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		JScrollPane subSysPane = new JScrollPane(subSysSelTab);
 		int colscount = subSysSelTab.getColumnModel().getColumnCount();
 		subSysSelTab.getColumnModel().getColumn(colscount-1).setMaxWidth(100);
-		//subSysPane.setMinimumSize(new Dimension(200, 100));
-		//subSysPane.setMaximumSize(new Dimension(1000,800));
 		MiddlePane.add(subSysPane,gbc);
 		
 		
@@ -202,7 +200,6 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	/**
 	 * Create the TableModel for the SubSystem Selection
 	 * @param network - the {@link CyNetwork}Subsystems are created for
-	 * @param creator - The {@link SubNetworkCreator} this GUI provides input to.
 	 * @return A {@link TableModel} containing a list of potential Subnetworks
 	 */
 	public TableModel createSubSystemTableModel(CyNetwork network) throws NoNetworksToCreateException
@@ -250,13 +247,13 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	}
 	
 	/**
-	 * 
-	 * @param metaboliteNodes
-	 * @param metaboliteList
-	 * @param node
-	 * @param network
+	 * Update the List of selectable species 
+	 * @param speciesNodes A map of species representing nodes with the their respective number of interactions. 
+	 * @param speciesList a List of (sortable) Nodes (i.e. nodes with a corresponding integer value)
+	 * @param node the node to add to the map and list
+	 * @param network the network the node is in.
 	 */
-	private void updateMetaboliteLists(HashMap<CyNode,Integer> metaboliteNodes,	List<SortEntry> metaboliteList, CyNode node, CyNetwork network)
+	private void updateSpeciesLists(HashMap<CyNode,Integer> speciesNodes,	List<SortEntry> speciesList, CyNode node, CyNetwork network)
 	{
 		List<CyEdge> edges = network.getAdjacentEdgeList(node, CyEdge.Type.ANY);
 		CyTable NodeTable = network.getDefaultNodeTable();
@@ -280,13 +277,14 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 				}
 			}
 		}
-		metaboliteList.add(new SortEntry(node, reactionEdgeCount));
-		metaboliteNodes.put(node, reactionEdgeCount);
+		speciesList.add(new SortEntry(node, reactionEdgeCount));
+		speciesNodes.put(node, reactionEdgeCount);
 	}
 	/**
 	 * Create the Metabolite Selection Panel where you can choose which Metabolites to use and expand
-	 * @param network - The {@link CyNetwork} the metabolites are chosen from
-	 * @return A {@link JPanel} displaying the metabolite selection.
+	 * @param network  The {@link CyNetwork} the metabolites are chosen from
+	 * @param gbc The global {@link GridBagConstraints} used for placement
+	 * @param MiddleSection the Container to add the MetaboliteSelection to. 
 	 */
 	private void createMetaboliteSelection(CyNetwork network, GridBagConstraints gbc, Container MiddleSection)
 	{		
@@ -330,7 +328,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 			
 			if(TypeEntry != null && TypeEntry.equals(IDAREProperties.NodeType.IDARE_SPECIES))
 			{
-				updateMetaboliteLists(metaboliteNodes,metaboliteList, node, network);
+				updateSpeciesLists(metaboliteNodes,metaboliteList, node, network);
 			}
 		}
 				
@@ -490,7 +488,8 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	 * Create the Middle section of the GUI
 	 * @param ColumnNames - The Column names to choose from to obtain the Subnetwork possibilities
 	 * @param AlgorithmNames - The Names of all potential Layouting algorithms
-	 * @return A {@link JPanel} with selectors for a layout algorithm and a Column for Subnetwork selection
+	 * @param MiddlePane The {@link Container} to create the middle section in
+	 * @param gbc the global {@link GridBagConstraints} to layout this section correctly.
 	 */
 	private void createMiddleSection(Vector<String> ColumnNames, Collection<String> AlgorithmNames,Container MiddlePane, GridBagConstraints gbc)
 	{				
@@ -575,7 +574,10 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	}
 	
 
-	
+	/**
+	 * Get the Properties for the Subnetwork generation task as defined in this GUI
+	 * @return The {@link SubNetworkProperties} to be used.
+	 */
 	public SubNetworkProperties getProperties()
 	{
 		SubNetworkProperties props = new SubNetworkProperties();
@@ -589,10 +591,15 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		return props;
 	}
 	
+	
+	/**
+	 * A slightly modified DefaultTableModel to visualise the MetaboliteSelection
+	 * @author Thomas Pfau
+	 *
+	 */
 	private class MetaboliteSelectionModel extends DefaultTableModel 
 	{
-					
-		
+	
 		private String[] ColumnName;
 		private int mineditrows = 2;
 		private int maxeditrows = 3;

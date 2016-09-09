@@ -18,7 +18,7 @@ public class DebugException extends Exception
 	}
 	/**
 	 * Get the class name of the Object
-	 * @return
+	 * @return the Object name of the source class
 	 */
 	public String getObjClassame()
 	{
