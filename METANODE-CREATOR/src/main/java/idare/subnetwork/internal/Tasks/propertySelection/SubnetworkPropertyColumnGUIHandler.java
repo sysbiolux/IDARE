@@ -1,22 +1,14 @@
 package idare.subnetwork.internal.Tasks.propertySelection;
 
-import idare.Properties.IDARESettingsManager;
-import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.GUI.NetworkSetup.NetworkSetupTunableGUI;
-import idare.subnetwork.internal.NetworkViewSwitcher;
-import idare.subnetwork.internal.SubNetworkCreator;
 import idare.subnetwork.internal.SubNetworkUtils;
 import idare.subnetwork.internal.GUI.SubnetworkPropertyColumnChooser;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Vector;
 
-import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNode;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.AbstractGUITunableHandler;
 

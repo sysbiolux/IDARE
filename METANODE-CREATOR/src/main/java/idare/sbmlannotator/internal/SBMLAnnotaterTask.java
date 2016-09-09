@@ -47,32 +47,40 @@ public class SBMLAnnotaterTask extends AbstractTask{
     private Map<String,Set<CVTerm>> ProteinAnnotations;
 	private SBMLDocument SBMLDoc;
 	private boolean GenerateGeneNodes;
-	private CySwingApplication cySwingApp;
 	private Model model;
 	private String sbmlTypeCol;
 	private String sbmlIDCol;
 	private String sbmlCompCol;
 	private String sbmlInteractionCol;
 	private IDAREImageNodeApp app;
+
 	/**
-	 * A Task reading in an SBML File and parsing its Notes fields adding the information to the Nodes of the current network. 
-	 * @param cymanager 
-	 * @param FileName  - The SBML FileName that should be parsed.
-	 * @param GenerateGeneNodes - Whether to generate additional nodes based on the GENE_ASSOCIATION or GENE_LIST fields in the Notes. - This can potentially be replaced by the fbc fields at some point.
-	 * @param eventHelper
+	 *  A Task reading in an SBML File and parsing its Notes fields adding the information to the Nodes of the current network. 
+	 * @param cymanager
+	 * @param cymanager The {@link CyApplicationManager} used to obtain the currently choosen network for this Task.
+	 * @param SBMLDoc The {@link SBMLDocument} to obtain the annotation from
+	 * @param GenerateGeneNodes whether to generate gene (and potentially protein) nodes
+	 * @param eventHelper The {@link CyEventHelper} used to update the views. 
+	 * @param GeneAnnotDB The identifier used for protein name annotation , 
+	 * @param ProtAnnot a {@link Map} associating the protein names with their CVTerms,
+	 * @param sbmlTypeCol The column of the in which the SBML Types are stored
+	 * @param sbmlIDCol The nodeTable column in which the SBML IDs are stored
+	 * @param sbmlCompCol The Column in which the SBML compartment is stored
+	 * @param SBMLInteractionCol The Column to obtain the sbml interaction type from
+	 * @param app The {@link IDAREImageNodeApp} used to keep the current network up to date.   
 	 */
-	public SBMLAnnotaterTask(CyApplicationManager cymanager,SBMLDocument SBMLDoc, boolean GenerateGeneNodes,	CyEventHelper eventHelper, CySwingApplication cySwingApp, String GeneAnnotDB,
-			String ProtAnnotDB,Map<String,Set<CVTerm>> ProtAnnot, Model model,String sbmlTypeCol,String sbmlIDCol, String sbmlCompCol, String SBMLInteractionCol, IDAREImageNodeApp app)
+
+	public SBMLAnnotaterTask(CyApplicationManager cymanager,SBMLDocument SBMLDoc, boolean GenerateGeneNodes,
+							CyEventHelper eventHelper, String GeneAnnotDB, String ProtAnnotDB,
+							Map<String,Set<CVTerm>> ProtAnnot, String sbmlTypeCol,String sbmlIDCol, String sbmlCompCol, String SBMLInteractionCol, IDAREImageNodeApp app)
 	{
 		this.geneAnnotationDatabase = GeneAnnotDB;
 		this.ProteinAnnotationDatabase = ProtAnnotDB;
 		this.ProteinAnnotations = ProtAnnot;
-		this.cySwingApp = cySwingApp;
 		this.cymanager = cymanager;
 		this.SBMLDoc = SBMLDoc;
 		this.GenerateGeneNodes = GenerateGeneNodes;
 		this.eventHelper = eventHelper;
-		this.model = model;
 		this.sbmlTypeCol= sbmlTypeCol;
 		this.sbmlIDCol = sbmlIDCol;
 		this.sbmlCompCol = sbmlCompCol;
@@ -85,7 +93,8 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		try{
 		TaskMonitor.setTitle("Reading SBML File");
 		
-		CyNetwork network = cymanager.getCurrentNetwork();		
+		CyNetwork network = cymanager.getCurrentNetwork();
+		//IF we don't have a network selected, we can't do any annotation.
 		if(network == null)
 		{
 			JOptionPane.showMessageDialog(null, "Please select a network to apply the SBML annotation to");
@@ -103,18 +112,10 @@ public class SBMLAnnotaterTask extends AbstractTask{
 		}
 
 		TaskMonitor.setProgress(0.01);
-		//now read the sbml File
-
-
-		SBMLDocument sbml = null;
-//		System.out.println("Reading SBML");
+		//now get the model from the SBMLDocument
 		model = SBMLDoc.getModel();
-		
-		
-//		System.out.println("Getting Annotation Fields");
 		TaskMonitor.setProgress(0.2);
-		TaskMonitor.setTitle("Getting Annotation Fields");
-		
+		TaskMonitor.setTitle("Getting Annotation Fields");	
 		CyTable Tab = cymanager.getCurrentNetwork().getDefaultNodeTable();				
 		//first of all we will check which new columns we have to add for both Species and Reactions
 		// Lets assume there are the standard fields:
@@ -131,7 +132,6 @@ public class SBMLAnnotaterTask extends AbstractTask{
 			boolean readnotes = true; 
 			if(!species.isSetNotes())
 			{
-//				System.out.println("Species " + species.getId() + " has no Note String");
 				readnotes = false;
 			}			
 			if(readnotes)
@@ -743,6 +743,8 @@ public class SBMLAnnotaterTask extends AbstractTask{
 
 		return database;
 	}
+	
+	
 	private String getURIid(String URI)
 	{
 		String entry = null;

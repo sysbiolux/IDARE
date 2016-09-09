@@ -4,6 +4,7 @@ import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
 import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.NoNetworksToCreateException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,6 +88,10 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 	@Override
 	public void run(TaskMonitor arg0) throws Exception {
+		if(params.subSystems.isEmpty())
+		{
+			throw new NoNetworksToCreateException();
+		}
 		createSubNetworkViews(params.currentNetwork, params.currentNetworkView, params.ColumnName, params.subSystems);
 	}
 
@@ -128,21 +133,9 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			//And directly remove all ignored Nodes. This should not be necessary as there (should) be only reactions in this set yet, 			
 			subSystemNodes.get(subSystem).removeAll(params.ignoredNodes);
 
-			//assume, that there could eb nodes other than reactions in this set.
-
-
 			//Initialize the Set of internal subsystem Edges. 
 			//this set will be filled by the extendNodeSet method.
 			subSystemReactionEdges.put(subSystem, new HashSet<CyEdge>());
-
-			//get the adjacent Edges
-			//we need to make sure, that ignored nodes do not get connected to the subnetwork. Thus, we will
-			//subSystemReactionEdges.put(subSystem, getAdjacentEdges(subSystemNodes.get(subSystem),originalnetwork, false));
-			//and remove those pointing to ignored nodes, otherwise they will be included in the subnetworks.
-
-			//and add the Metabolite Nodes			
-			//subSystemNodes.get(subSystem).addAll(getAdjacentCyNodes(subSystemReactionEdges.get(subSystem)));
-			//now set up the ignored and non branching parts since they only now have their corresponding nodes in the subnetwork....
 
 			/*
 			 * lets do extend this subsystem so that it contains all Nodes that can be associated to the subsystem

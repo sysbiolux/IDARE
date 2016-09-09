@@ -105,7 +105,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	}
 	/**
 	 * Inform all listeners about the updated IDs (and provide them with the respective Images for those IDs. 
-	 * @param IDs
+	 * @param IDs The IDs which were changed.
 	 */
 	private void fireLayoutChange(Collection<String> IDs)
 	{
@@ -126,7 +126,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	
 	/**
 	 * Invalidate a specific ID (i.e. remove the ID from the mapping).
-	 * @param id
+	 * @param id The id to invalidate and remove the image the associated image.
 	 */
 	public void invalidate(String id)
 	{		
@@ -138,7 +138,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	}
 	/**
 	 * Invalidate all Images associated with the provided Strings.
-	 * @param ids
+	 * @param ids The IDs of the nodes for which to invalidate/remove the associated images.
 	 */
 	public void invalidate(Collection<String> ids)
 	{
@@ -157,8 +157,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	/**
 	 * Get the BufferedImage associated with a specific ID
 	 * The Image will be generated if necessar (and possible)
-	 * @param ID
-	 * @return the requested image, or null if it does not exists, and cannot be generated.
+	 * @param ID The ID of node an image is requested for
+	 * @return The requested image, or null if it does not exists, and cannot be generated.
 	 */
 	public BufferedImage getimagenodeImageForItem(String ID)
 	{	
@@ -182,9 +182,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 
 	/**
 	 * Convert a {@link SVGDocument} to a BufferedImage with a specified width.
-	 * @param svg
-	 * @param width
-	 * @return
+	 * @param svg The {@link SVGDocument} to obtain the data from
+	 * @param width The width we want the resulting image to be
+	 * @return A {@link BufferedImage} representing the {@link SVGDocument} provided scaled to the given width
 	 */
 	private BufferedImage SVGToBufferedImage(SVGDocument svg, int width)
 	{
@@ -326,7 +326,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	{
 		this.height = height;
 	}
-	
+	/**
+	 * Update all views using the visualstyle set for this Storage
+	 */
 	public void updateStyle()
 	{
 		if(visualstyle != null)

@@ -70,15 +70,15 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	
 	//lists for each CyNetwork the nodes pointing to that CyNetworkView	
 	private HashMap<CyNetworkView,List<CyNode>> listenedNetworks;
+	//A Map of networks which have no view and the nodes in that network that are links
 	private HashMap<CyNetwork,List<CyNode>> SilentNodes;
-	//private HashMap<CyNetwork,String> NetworkNames;
 	private HashMap<CyNetwork,CyNetworkView> SubNetworks;
 	private HashMap<CyNetwork,Set<NodeAndNetworkStruct>> nodesPointingToNetwork;
 	
 	
 	/**
 	 * Constructs a NetworkView Switcher for the current application. 
-	 * @param applicationManager - The current Cytoscape {@link CyApplicationManager} 
+	 * @param reg - A CyServiceRegistrar to obtain relevant services 
 	 */
 	public NetworkViewSwitcher(CyServiceRegistrar reg)
 	{
@@ -131,23 +131,12 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		return (HashMap<CyNetwork, CyNetworkView>)SubNetworks.clone();
 	}
 	
-/*
-	public synchronized HashMap<CyNetwork, CyNetworkView> getExistingNetworks(CyNetwork parentnetwork, String selectedColumn)
-	{		
-		HashMap<CyNetwork, CyNetworkView> existing = new HashMap<CyNetwork, CyNetworkView>();
-		if(NetworkHierarchy.containsKey(parentnetwork))
-		{
-			if(NetworkHierarchy.get(parentnetwork).containsKey(selectedColumn))
-			{
-				for(NetworkNode node : NetworkHierarchy.get(parentnetwork).get(selectedColumn).values())
-				{
-					existing.put(node.getNetwork(),SubNetworks.get(node.getNetwork()));
-				}
-			}
-		}
-		return existing;
-	}*/
-	
+
+	/**
+	 * Get the subnetworks that currently exist for the provided column present in any parent network 
+	 * @param selectedColumn The Column to obtain the Network-> View pairs for
+	 * @return A {@link Map} of {@link CyNetwork} -> {@link CyNetworkView} pairs. The Views can be null, if there is no existing view for the given network. 
+	 */
 	public synchronized HashMap<CyNetwork, CyNetworkView> getExistingNetworksForColumn(String selectedColumn)
 	{		
 		HashMap<CyNetwork, CyNetworkView> existing = new HashMap<CyNetwork, CyNetworkView>();
@@ -164,20 +153,6 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		}
 		return existing;
 	}
-	/*
-	public synchronized HashMap<CyNetwork, CyNetworkView> getExistingNetworks(Collection<String> options)
-	{		
-		HashMap<CyNetwork, CyNetworkView> existing = new HashMap<CyNetwork, CyNetworkView>();
-		for(CyNetwork network : SubNetworks.keySet())
-		{
-			if(options.contains(network.getRow(network).get(CyNetwork.NAME, String.class)))
-			{
-				existing.put(network, SubNetworks.get(network));
-				System.out.println("Existing Subnetworks contain "+ network.getRow(network).get(CyNetwork.NAME, String.class));
-			}
-		}
-		return existing;
-	}*/
 	/**
 	 * Add a Link between the {@link CyNode} and the target network {@link CyNetworkView}.
 	 * To keep track of these nodes and react properly to closing {@link CyNetworkView}s we need the original {@link CyNetwork} and the target NodeView

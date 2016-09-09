@@ -1,7 +1,6 @@
 package idare.imagenode.internal;
 
 
-import idare.Properties.IDARESettingsManager;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.internal.DataManagement.DataSetProvider;
 import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
@@ -14,8 +13,7 @@ import idare.imagenode.internal.Services.JSBML.SBMLServiceRegistrar;
 import idare.internal.IDAREApp;
 import idare.sbmlannotator.internal.SBMLAnnotationTaskFactory;
 import idare.subnetwork.internal.NetworkViewSwitcher;
-import idare.subnetwork.internal.SubNetworkCreator;
-import idare.subnetwork.internal.SubSystemSessionManager;
+import idare.subnetwork.internal.SubnetworkSessionManager;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreatorTaskFactory;
 import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkPropertyColumnGUIHandlerFactory;
@@ -34,17 +32,14 @@ import org.cytoscape.application.swing.ActionEnableSupport;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.event.CyEventHelper;
-import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.RowsSetListener;
-import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
-import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.task.NodeViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
@@ -52,7 +47,6 @@ import org.cytoscape.view.layout.AbstractLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.VisualLexicon;
@@ -139,16 +133,14 @@ public class CyActivator extends AbstractCyActivator {
 		
 
 		//initialize and register the app components.
-		IDAREImageNodeApp imageapp = new IDAREImageNodeApp(cySwingApp,currentLexicon,util,vSFSR,vmm,vmfFactoryD,vmfFactoryP,eventHelper,nvm,cyAppMgr,networkManager,dialogTaskManager, app.getSettingsManager());
+		IDAREImageNodeApp imageapp = new IDAREImageNodeApp(reg, app.getSettingsManager());
 		app.setImageApp(imageapp);
 		imageapp.registerPlugin(new DataSetReaderProvider());
 		imageapp.registerPlugin(new DataSetProvider());				
 		
 		//Generate the Externally available sErvice
 		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(imageapp);
-		
-		//NetworkSetup nsa = new NetworkSetup(cyAppMgr, cySwingApp, app.getSettingsManager(),app.getNodeManager());
-		
+			
 		//Set up the Legend Panel
 		IDARELegend pan = imageapp.getLegend();
 		LegendUpdater up = new LegendUpdater(pan, imageapp.getNodeManager(), cyAppMgr,vmm, imageapp.getStyleManager());		
@@ -195,8 +187,7 @@ public class CyActivator extends AbstractCyActivator {
 		registerAllServices(context, imageapp.getVisualStyle(), new Properties());
 		//Register the DatasetControlPanel
 		registerAllServices(context, dcp, new Properties());
-		//Register the Network Setup Menu item.
-		//registerAllServices(context, nsa, new Properties());
+
 	}	
 	private void registerSBMLAnnotator(BundleContext context)
 	{
@@ -205,6 +196,13 @@ public class CyActivator extends AbstractCyActivator {
 		CyEventHelper eventHelper = getService(context, CyEventHelper.class);
 		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);
 		
+
+		//This is a holder for the cy3sbml SBMLManager class, which can provide that class to the SBMLAnnotationFactory if it is available. 
+		SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
+		context.addServiceListener(SBMLReg);
+		
+		
+		//Set up properties for the Context and menu items for SBML annotation.
 		Properties addAnnotationPropertiesMenu = new Properties();
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
@@ -220,63 +218,52 @@ public class CyActivator extends AbstractCyActivator {
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.TITLE, "Add SBML Annotations");		
-		addAnnotationPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
+		addAnnotationPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);	
 
-
-		//SBMLAnnotationReader action2 = new SBMLAnnotationReader(cyApplicationManager, "Add SBML Notes",dialogTaskManager,
-		//		cytoscapePropertiesServiceRef,eventHelper,FileUtilService,cySwingApp);
-		SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
-		context.addServiceListener(SBMLReg);
+		//Create and register the SBMLAnnotationFactory.
 		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app.getImageNodeApp());
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
 		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
-	
-//		try{
-//			SBMLManager mgr = getService(context, SBMLManager.class);
-//			Annotator.setSBMLManager(mgr);
-//		}
-//		catch(NoClassDefFoundError|RuntimeException e)
-//		{
-//		}		
-//
-		//SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp);
-		//registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
-		//registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
-		//Properties properties = new Properties();					
-		//registerAllServices(context, action2, properties);
-		//registerServiceListener(context, cySBMLlistener, "serviceRegistered", "serviceUnRegistered", Object.class);
+		
 	}
 
 	private void setupNetworkCreatorApp(BundleContext context)
 	{
 
-		//Obtain all services required for the app.
-		DialogTaskManager dialogTaskManager = getService(context, DialogTaskManager.class);    
 		CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);	
-		CyNetworkViewFactory networkViewFactory = getService(context, CyNetworkViewFactory.class);
-		CyNetworkViewManager networkViewManager = getService(context, CyNetworkViewManager.class);
-		CyEventHelper eventHelper = getService(context, CyEventHelper.class);
-		CyNetworkFactory networkFactory = getService(context, CyNetworkFactory.class);
-		CyNetworkManager networkManager = getService(context, CyNetworkManager.class);
 		CyLayoutAlgorithmManager LayoutManager =  getService(context, CyLayoutAlgorithmManager.class);
-		VisualMappingManager vmm = getService(context, VisualMappingManager.class);
-		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);
-		CyRootNetworkManager rootManager = getService(context, CyRootNetworkManager.class);
 		CyServiceRegistrar reg = getService(context, CyServiceRegistrar.class);
 
-		//initialize and Register the App Components
-		IDARESettingsManager iDAREIDMgr= app.getSettingsManager();
+		//initialize the basic components of the Subnetwork generator part of this app.
 		NetworkViewSwitcher nvs = new NetworkViewSwitcher(reg);
-		SubNetworkCreator snc = new SubNetworkCreator(rootManager, cyApplicationManager, "SubNetworkCreator", networkViewManager,
-				networkViewFactory, eventHelper, networkFactory, networkManager,LayoutManager,dialogTaskManager,vmm, nvs,iDAREIDMgr,cySwingApp);
-		SubSystemSessionManager SubSysSave = new SubSystemSessionManager(nvs, iDAREIDMgr);
+		SubnetworkSessionManager SubSysSave = new SubnetworkSessionManager(nvs, app.getSettingsManager());
 		Properties properties = new Properties();
 		Properties doubleClickProperties = new Properties();
 		doubleClickProperties.setProperty(ServiceProperties.PREFERRED_ACTION, NetworkViewSwitcher.PREFERRED_OPTION);
 		doubleClickProperties.setProperty(ServiceProperties.TITLE, "Switch To Network");
-		//registerService(context,SubSysSave,SessionLoadedListener.class, new Properties());
+
+		//We need our own synchronization to load the different parts of the App when a new Session is loaded, so we don't register 
+		//these parts with Cytoscape but with the IDAREapp which handles the order of loading.
 		app.setSubsysManager(SubSysSave);
 		
+		//Register the diverse tasks of the NetworkViewSwitcher.
+		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
+		registerService(context,nvs,RowsSetListener.class, new Properties());
+		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, doubleClickProperties);
+		registerService(context,nvs,NetworkAddedListener.class, new Properties());
+		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, doubleClickProperties);
+		registerService(context,nvs,NetworkViewAddedListener.class, doubleClickProperties);
+		registerService(context,nvs,SessionAboutToBeSavedListener.class, new Properties());
+		
+		
+		//Create and register the Tunable Handler Factories for the dialogs
+		SubnetworkCreationGUIHandlerFactory sncghf = new SubnetworkCreationGUIHandlerFactory(nvs, cyApplicationManager,LayoutManager);
+		SubnetworkPropertyColumnGUIHandlerFactory snpcghf = new SubnetworkPropertyColumnGUIHandlerFactory(cyApplicationManager);
+		registerService(context, sncghf, GUITunableHandlerFactory.class, new Properties());
+		registerService(context, snpcghf, GUITunableHandlerFactory.class, new Properties());		
+
+
+		//create and register the subnetworkgeneratorTaskFactory, with the appropriate properties.
 		Properties createSubnetworkPropertiesMenu = new Properties();
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
@@ -294,24 +281,11 @@ public class CyActivator extends AbstractCyActivator {
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.TITLE, "Create Subnetworks");		
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
 
-		SubnetworkCreationGUIHandlerFactory sncghf = new SubnetworkCreationGUIHandlerFactory(nvs, cyApplicationManager,LayoutManager);
-		SubnetworkPropertyColumnGUIHandlerFactory snpcghf = new SubnetworkPropertyColumnGUIHandlerFactory(cyApplicationManager);
 		
 		SubnetworkCreatorTaskFactory snctf = new SubnetworkCreatorTaskFactory(reg,nvs,app.getSettingsManager(),sncghf);
 		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesMenu);
 		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesTask);
-		
-		registerService(context, sncghf, GUITunableHandlerFactory.class, new Properties());
-		registerService(context, snpcghf, GUITunableHandlerFactory.class, new Properties());		
-		
-		registerAllServices(context, snc, properties);		
-		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
-		registerService(context,nvs,RowsSetListener.class, new Properties());
-		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, doubleClickProperties);
-		registerService(context,nvs,NetworkAddedListener.class, new Properties());
-		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, doubleClickProperties);
-		registerService(context,nvs,NetworkViewAddedListener.class, doubleClickProperties);
-		registerService(context,nvs,SessionAboutToBeSavedListener.class, new Properties());
+						
 	}
 
 	@Override

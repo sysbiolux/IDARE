@@ -2,6 +2,7 @@ package idare.subnetwork.internal;
 
 import idare.Properties.IDAREProperties;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationTask;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -49,7 +50,7 @@ public class NetworkNode implements Serializable{
 		
 		if(parent != null)
 		{			
-			ID = parent.getNetworkID().equals("") ?  ID : parent.getNetworkID() + SubNetworkCreationTask.subnetworkNameSeparator + ID;
+			ID = parent.getNetworkID().equals("") ?  ID : parent.getNetworkID() + SubnetworkCreationTask.subnetworkNameSeparator + ID;
 		}
 		return ID;
 	}

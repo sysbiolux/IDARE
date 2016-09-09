@@ -5,7 +5,7 @@ import idare.Properties.IDAREProperties;
 import idare.ThirdParty.BoundsPopupMenuListener;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.NoNetworksToCreateException;
-import idare.subnetwork.internal.SubNetworkCreator;
+import idare.subnetwork.internal.SubNetworkUtils;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubNetworkProperties;
 
 import java.awt.Color;
@@ -233,7 +233,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		};
 		String[] ColIds = {"Subsystem", "Selected"};
 		subSysSelMod.setColumnIdentifiers(ColIds);
-		Vector<Object> subSysNames = SubNetworkCreator.getDifferentSubSystems(network.getDefaultNodeTable(), colSelector.getSelectedItem().toString());
+		Vector<Object> subSysNames = SubNetworkUtils.getDifferentSubSystems(network.getDefaultNodeTable(), colSelector.getSelectedItem().toString());
 
 		Set<String> existingSubSystems = nvs.getSubNetworkWorksForNetwork(network, colSelector.getSelectedItem().toString());
 		for(Object subSys : subSysNames)

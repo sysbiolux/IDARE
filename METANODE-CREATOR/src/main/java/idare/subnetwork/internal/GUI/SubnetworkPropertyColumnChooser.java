@@ -4,9 +4,6 @@ import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.BoundsPopupMenuListener;
 import idare.imagenode.Utilities.GUIUtils;
-import idare.subnetwork.internal.NoNetworksToCreateException;
-import idare.subnetwork.internal.SubNetworkCreator;
-import idare.subnetwork.internal.Tasks.InvalidSelectionException;
 import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkColumnProperties;
 
 import java.awt.Color;
@@ -15,24 +12,16 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
 
-import javax.naming.directory.InvalidAttributesException;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.model.CyNetwork;
 
 public class SubnetworkPropertyColumnChooser extends JPanel{

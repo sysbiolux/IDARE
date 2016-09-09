@@ -291,11 +291,11 @@ NetworkViewTaskFactory {
 			TaskIterator SATF;
 			if(confirmation == JOptionPane.YES_OPTION)
 			{	
-				SATF = new TaskIterator(new SBMLAnnotaterTask(cyAppMgr, doc ,true,eventHelper, cySwingApp, GeneAnnotDB, ProtAnnotDB,ProtAnnot, model,SBMLTypeCol,SBMLIDCol,SBMLCompCol,SBMLInteractionCol,app));
+				SATF = new TaskIterator(new SBMLAnnotaterTask(cyAppMgr, doc ,true,eventHelper,  GeneAnnotDB, ProtAnnotDB,ProtAnnot, SBMLTypeCol,SBMLIDCol,SBMLCompCol,SBMLInteractionCol,app));
 			}
 			else
 			{
-				SATF = new TaskIterator(new SBMLAnnotaterTask(cyAppMgr, doc ,false,eventHelper,cySwingApp, null, ProtAnnotDB,ProtAnnot, model,SBMLTypeCol,SBMLIDCol,SBMLCompCol,SBMLInteractionCol,app));
+				SATF = new TaskIterator(new SBMLAnnotaterTask(cyAppMgr, doc ,false,eventHelper, null, ProtAnnotDB,ProtAnnot, SBMLTypeCol,SBMLIDCol,SBMLCompCol,SBMLInteractionCol,app));
 			}
 			return SATF;
 		}

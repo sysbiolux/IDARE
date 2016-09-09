@@ -38,6 +38,7 @@ import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
@@ -49,6 +50,7 @@ import org.cytoscape.view.model.VisualLexicon;
 import org.cytoscape.view.model.VisualProperty;
 import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
 import org.cytoscape.view.presentation.customgraphics.CyCustomGraphics;
+import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyleFactory;
@@ -82,49 +84,42 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	DialogTaskManager dtm;
 	Logger logger;
 	/**
-	 * Basic constructor that receives all Cytoscape objects necessary for its creation.
-	 * @param cySwingApp
-	 * @param currentLexicon
-	 * @param util
-	 * @param vSFSR
-	 * @param vmm
-	 * @param vmfFactoryD
-	 * @param vmfFactoryP
-	 * @param eventHelper
-	 * @param nvm
-	 * @param cyAppMgr
-	 * @param cyNetMgr
-	 * @param dtm
-	 */	 	 
-	public IDAREImageNodeApp(CySwingApplication cySwingApp, VisualLexicon currentLexicon, FileUtil util,
-			VisualStyleFactory vSFSR,VisualMappingManager vmm, VisualMappingFunctionFactory vmfFactoryD,
-			VisualMappingFunctionFactory vmfFactoryP,CyEventHelper eventHelper, CyNetworkViewManager nvm,
-			CyApplicationManager cyAppMgr, CyNetworkManager cyNetMgr, DialogTaskManager dtm, IDARESettingsManager ism)
+	 * Basic constructor that gets the IDareSettingsManager along with a CyServiceRegistrar to obtain all necessary services.
+	 * 
+	 * @param reg The {@link CyServiceRegistrar} for the current bundle
+	 * @param ism The {@link IDARESettingsManager} used in this app
+	 */
+	public IDAREImageNodeApp(CyServiceRegistrar reg, IDARESettingsManager ism)
 	{		
-		logger = LoggerFactory.getLogger(IDAREImageNodeApp.class);
+		this.dtm = reg.getService(DialogTaskManager.class);
+		this.logger = LoggerFactory.getLogger(IDAREImageNodeApp.class);
+		VisualLexicon currentLexicon = reg.getService(VisualLexicon.class);
 		VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP = (VisualProperty<CyCustomGraphics<CustomGraphicLayer>>)currentLexicon.lookup(CyNode.class, "NODE_CUSTOMGRAPHICS_1");		
 		storage = new ImageStorage(VisualcustomGraphiVP);
-		dsm = new DataSetManager();
-		nm = new NodeManager(cyNetMgr);				
+		dsm = new DataSetManager();		
+		nm = new NodeManager(reg.getService(CyNetworkManager.class));
+		
 		storage.setNodeManager(nm);
 		nm.setDataSetManager(dsm);
 		nm.addNodeChangeListener(storage);
 		dsm.addDataSetChangeListener(nm);		
-		//registerDefaultDataSettypes();
-		//registerDefaultDataSetReaders();
-		ids = new IDAREVisualStyle(vSFSR, vmm, vmfFactoryD, vmfFactoryP, eventHelper, storage, nvm, nm,cyAppMgr);
+		ids = new IDAREVisualStyle(reg.getService(VisualStyleFactory.class), reg.getService(VisualMappingManager.class),
+								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=discrete)"),
+								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)"),				
+								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),
+								   nm, reg.getService(CyApplicationManager.class));
 		storage.setVisualStyle(ids);
 		Settings = ism;
 		legend = new IDARELegend(new JPanel(),nm);
 		nm.addNodeChangeListener(legend);
 		nm.updateNetworkNodes();
 		storage.addImageLayoutChangedListener(ids);
-		styleManager = new StyleManager(storage, vmm, nvm, eventHelper, nm, cyAppMgr);
+		styleManager = new StyleManager(storage, reg.getService(VisualMappingManager.class), reg.getService(CyNetworkViewManager.class),
+										reg.getService(CyEventHelper.class), nm, reg.getService(CyApplicationManager.class));
 		storage.addImageLayoutChangedListener(styleManager);
-		dcp = new DataSetControlPanel(cySwingApp, dsm, nm);
-		createActions(dtm, cyAppMgr);		
-		createTaskFactories(dtm,util,cySwingApp,cyAppMgr);
-		this.dtm = dtm;
+		dcp = new DataSetControlPanel(reg.getService(CySwingApplication.class), dsm, nm);
+		createActions(dtm, reg.getService(CyApplicationManager.class));		
+		createTaskFactories(dtm,reg.getService(FileUtil.class),reg.getService(CySwingApplication.class),reg.getService(CyApplicationManager.class));
 	}
 	
 	
@@ -161,25 +156,6 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	{
 		return ids;
 	}
-	
-	/**
-	 * Register the default DataSetTypes. 
-	 */
-	private void registerDefaultDataSettypes()
-	{
-		
-		//dsm.registerPropertiesForDataSet(vds.getClass(), new GraphDataSetProperties());
-	}		
-	
-	/**
-	 * Register the default DataSetTypes. 
-	 */
-	private void registerDefaultDataSetReaders()
-	{
-		dsm.registerDataSetReader(new CSVReader());
-		dsm.registerDataSetReader(new TSVReader());
-		dsm.registerDataSetReader(new POIReader());		
-	}		
 	
 	
 	/**
