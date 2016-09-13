@@ -1,5 +1,6 @@
 package idare.subnetwork.internal;
 import idare.Properties.IDAREProperties;
+import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.IOUtils;
 import idare.imagenode.internal.Debug.PrintFDebugger;
@@ -49,8 +50,7 @@ import org.cytoscape.work.TaskIterator;
 
 /**
  * A Class that acts as switcher between networks.
- * @author Thomas Pfau
- *
+ * @author Thomas Pfau 
  */
 public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements NetworkViewAboutToBeDestroyedListener, NetworkViewAddedListener,
 																				NetworkAboutToBeDestroyedListener, RowsSetListener, NetworkAddedListener, SessionAboutToBeSavedListener{
@@ -64,7 +64,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	private HashMap<CyNode, NodeViewLink> targetViews;
 	private HashMap<CyNode, NodeAndNetworkStruct> nodeNetworks;
 	private CyServiceRegistrar registrar;
-	
+	private IDARESettingsManager ism;
 	//lists for each CyNetwork the nodes pointing to that CyNetworkView	
 	private HashMap<CyNetworkView,List<CyNode>> listenedNetworks;
 	//A Map of networks which have no view and the nodes in that network that are links
@@ -77,7 +77,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	 * Constructs a NetworkView Switcher for the current application. 
 	 * @param reg - A CyServiceRegistrar to obtain relevant services 
 	 */
-	public NetworkViewSwitcher(CyServiceRegistrar reg)
+	public NetworkViewSwitcher(CyServiceRegistrar reg, IDARESettingsManager ism)
 	{
 		registrar = reg;
 		//this.applicationManager = applicationManager; 
@@ -90,6 +90,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		//this.eventhelper = eventhelper;
 		//networkManager= nm;
 		SubNetworks = new HashMap<CyNetwork, CyNetworkView>();
+		this.ism = ism;
 	}
 	
 	
@@ -135,7 +136,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	{
 		if(!NetworkNodes.containsKey(parent))
 		{
-			NetworkNodes.put(parent,new NetworkNode(parent));
+			NetworkNodes.put(parent,new NetworkNode(parent,ism));
 		}
 		if(!NetworkHierarchy.containsKey(parent))
 		{
@@ -153,7 +154,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		}
 		else
 		{
-			NetworkNode childnode = new NetworkNode(NetworkNodes.get(parent),child,ColumnID,NetworkID);
+			NetworkNode childnode = new NetworkNode(NetworkNodes.get(parent),child,ColumnID,NetworkID,ism);
 			NetworkNodes.get(parent).addChild(childnode);
 			NetworkNodes.put(child, childnode);
 			NetworkHierarchy.get(parent).get(ColumnID).put(NetworkID,childnode);
@@ -248,6 +249,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	 */
 	public synchronized void addLink(CyNode node, CyNetwork origin, CyNetworkView TargetNetworkView, View<CyNode> TargetNodeView)
 	{
+		PrintFDebugger.Debugging(this, "Creating a Visual link between " + origin + " and " +  TargetNetworkView.getModel() + " for node " + TargetNodeView.getModel());
 		targetViews.put(node, new NodeViewLink(TargetNodeView, TargetNetworkView,TargetNetworkView.getModel(),TargetNodeView.getModel(),origin));
 		//PrintFDebugger.Debugging(this, "Adding node " + origin.getRow(node).get(IDAREProperties.IDARE_NODE_UID, Long.class) + " with Network " +  origin.getDefaultNetworkTable().getRow(origin.getSUID()).get(CyNetwork.NAME, String.class ) + " to nodeAndNetwork");
 		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
@@ -274,6 +276,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	 */
 	public synchronized void addNetworkLink(CyNode node,CyNetwork origin, CyNetwork target, CyNode TargetNode)
 	{
+		PrintFDebugger.Debugging(this, "Creating a network link between " + origin + " and " +  target + " for node " + TargetNode);
 		targetViews.put(node, new NodeViewLink(null, null, target, TargetNode,origin));
 		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
 		if(!nodesPointingToNetwork.containsKey(target))
@@ -327,11 +330,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 //		System.out.println("Calling NetworkAboutToBeDestroyed");		
 		CyNetwork tobeDestroyed = e.getNetwork();
 		PrintFDebugger.Debugging(this, "The Network to be destroyed is " + tobeDestroyed);
-		NetworkNode netNode = NetworkNodes.get(tobeDestroyed);
-		if(netNode != null)
-		{
-			netNode.setNetwork(null);
-		}
+
 		//now we need to get all linkers to this network and remove them.
 		try
 		{
@@ -373,19 +372,28 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		{
 			ex.printStackTrace(System.out);
 		}
-		//remove the network from the local fields
-//		System.out.println("Removing Network for: "  + tobeDestroyed.getRow(tobeDestroyed).get(CyNetwork.NAME, String.class));
-		NetworkNode node = NetworkNodes.get(tobeDestroyed);
-		//remove the network reference, but keep the NetworkNode. This node could be repopulated later on.
-		if(node != null)
+		
+		
+		NetworkNode netNode = NetworkNodes.get(tobeDestroyed);
+		if(netNode != null)
 		{
-			node.setNetwork(null);
+			netNode.setNetwork(null);
 		}
-		//NetworkNames.remove(tobeDestroyed);
+		//if the network is a root network, we have to adjust its children and eliminate the NetworkNode entirely.
+		if(netNode.parent == null)
+		{
+			for(NetworkNode child : netNode.getChildren())
+			{
+				child.parent = null;				
+			}	
+		}		
+		NetworkNodes.remove(tobeDestroyed);
+		NetworkHierarchy.remove(tobeDestroyed);
 		nodesPointingToNetwork.remove(tobeDestroyed);
 		SilentNodes.remove(tobeDestroyed);
 		SubNetworks.remove(tobeDestroyed);
 	}
+	
 	
 	@Override
 	public synchronized void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
@@ -525,6 +533,8 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			}
 			oos.writeObject(new EOOMarker());
 			oos.close();
+			printHierarchy();
+			printNetworkNodes();
 		}
 		catch(IOException e)
 		{
@@ -562,11 +572,14 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			}
 			ois.close();
 			System.out.println("Network Hierarchy Restored");
+			printHierarchy();
+			printNetworkNodes();
 		}		
 		catch(Exception e)
 		{
 			e.printStackTrace(System.out);
 		}
+		
 	}
 	
 	private void handleNetworkNode(NetworkNode node)
@@ -597,9 +610,60 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 				NetworkHierarchy.get(node.parent.getNetwork()).get(node.colName).put(node.networkID, node);
 			}
 		}
+		else
+		{
+			if(node.getNetwork() != null)
+			{
+				if(node.getChildren().size() > 0)
+				{
+					if(!NetworkHierarchy.containsKey(node.getNetwork()))
+					{
+						NetworkHierarchy.put(node.getNetwork(), new HashMap<String, HashMap<String,NetworkNode>>());
+					}
+					for(NetworkNode childnode : node.getChildren())
+					{
+						if(!NetworkHierarchy.get(node.getNetwork()).containsKey(childnode.colName))
+						{
+							NetworkHierarchy.get(node.getNetwork()).put(childnode.colName,new HashMap<String, NetworkNode>());
+						}	
+						System.out.println("Adding SubNetwork " + childnode.networkID + " for column " + childnode.colName + " to network " + node.networkID);					
+						NetworkHierarchy.get(node.getNetwork()).get(childnode.colName).put(childnode.networkID, childnode);
+					}
+				}
+			}
+		}
 		for(NetworkNode child : node.getChildren())
 		{
 			handleNetworkNode(child);
+			child.parent = node;
 		}								
+	}
+	
+	private void printHierarchy()
+	{		
+		for(CyNetwork network : NetworkHierarchy.keySet())
+		{
+			PrintFDebugger.Debugging(this, "Parent: " + network);			
+			for(String ColName : NetworkHierarchy.get(network).keySet())
+			{
+				PrintFDebugger.Debugging(this, "\tColumn: " + ColName);
+				for(String networkID : NetworkHierarchy.get(network).get(ColName).keySet())
+				{	
+					PrintFDebugger.Debugging(this, "\t\tNetworkID:  " + networkID);
+					System.out.println(NetworkHierarchy.get(network).get(ColName).get(networkID).printWithChildren("\t\t\t"));
+				}
+			}
+			
+		}
+	}
+	
+	private void printNetworkNodes()
+	{
+		for(CyNetwork node : NetworkNodes.keySet())
+		{
+			PrintFDebugger.Debugging(this, node + ": ");
+			if(NetworkNodes.get(node) != null)
+			System.out.println(NetworkNodes.get(node).printWithChildren("\t"));
+		}
 	}
 }

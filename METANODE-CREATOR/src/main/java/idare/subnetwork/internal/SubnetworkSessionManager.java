@@ -126,6 +126,7 @@ public class SubnetworkSessionManager{
 					if(view.getModel().getRow(view.getModel()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class).equals(TargetSubSystem))
 					{
 						LinkView = view;
+						nvs.addSubNetworkView(view.getModel(),view);
 						//Lets assume, that we have the correct view for the target subsystem...
 						//we will make sure, that this view has the respective node.
 						if(view.getNodeView(TargetNode) != null)

@@ -215,7 +215,7 @@ public class CyActivator extends AbstractCyActivator {
 		CyServiceRegistrar reg = getService(context, CyServiceRegistrar.class);
 
 		//initialize the basic components of the Subnetwork generator part of this app.
-		NetworkViewSwitcher nvs = new NetworkViewSwitcher(reg);
+		NetworkViewSwitcher nvs = new NetworkViewSwitcher(reg, app.getSettingsManager());
 		SubnetworkSessionManager SubSysSave = new SubnetworkSessionManager(nvs, app.getSettingsManager());
 		Properties doubleClickProperties = new Properties();
 		doubleClickProperties.setProperty(ServiceProperties.PREFERRED_ACTION, NetworkViewSwitcher.PREFERRED_OPTION);

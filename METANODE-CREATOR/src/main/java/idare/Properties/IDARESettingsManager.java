@@ -236,10 +236,10 @@ public class IDARESettingsManager{
 					else
 					{
 						//if this is not pointing to the same node, we have to reset the whole IDARE Setup, i.e. we will clear the whole network from Cytoscape Columns.
-						PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
+						//PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
 						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()))
 						{
-							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
+							//PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
 							resetNetworks(networks);
 							reset();
 							return;
@@ -256,7 +256,7 @@ public class IDARESettingsManager{
 				{
 					if(!networkmatch.get(NetworkID).getSUID().equals(network.getSUID()))
 					{
-						PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
+						//PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
 						resetNetworks(networks);
 						reset();						
 						return;
@@ -435,7 +435,7 @@ public class IDARESettingsManager{
 			}
 			if(overwrite)
 			{
-				PrintFDebugger.Debugging(IDAREIdmgr, "Asking Property manager to obtain value for entry " + row.get(NodeTypeCol, String.class) + " it returned " + IDAREIdmgr.getType(row.get(NodeTypeCol, String.class)));
+				//PrintFDebugger.Debugging(IDAREIdmgr, "Asking Property manager to obtain value for entry " + row.get(NodeTypeCol, String.class) + " it returned " + IDAREIdmgr.getType(row.get(NodeTypeCol, String.class)));
 				if(!row.get(IDAREProperties.IDARE_NODE_TYPE,String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
 				{
 					row.set(IDAREProperties.IDARE_NODE_TYPE,IDAREIdmgr.getType(row.get(NodeTypeCol, String.class)));

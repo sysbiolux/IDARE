@@ -1,6 +1,7 @@
 package idare.subnetwork.internal;
 
 import idare.Properties.IDAREProperties;
+import idare.Properties.IDARESettingsManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationTask;
 
@@ -21,17 +22,30 @@ public class NetworkNode implements Serializable{
 	public String networkID;
 	public Long networkIDAREID;
 	private Vector<NetworkNode> children = new Vector<NetworkNode>();	
-	public NetworkNode(NetworkNode parent, CyNetwork reference, String ColName, String networkID) {		
+	public NetworkNode(NetworkNode parent, CyNetwork reference, String ColName, String networkID, IDARESettingsManager ism) {		
 		this.parent = parent;		
 		networkreference = reference;
 		networkIDAREID = reference.getDefaultNetworkTable().getRow(reference.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+		if(networkIDAREID == null)
+		{
+			networkIDAREID = ism.getNextNetworkID();
+			reference.getDefaultNetworkTable().getRow(reference.getSUID()).set(IDAREProperties.IDARE_NETWORK_ID, networkIDAREID);
+		}
 		this.colName = ColName;		
 		this.networkID = networkID;
+		PrintFDebugger.Debugging(this, "Created a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 	}
 	
-	public NetworkNode(CyNetwork reference) {
+	public NetworkNode(CyNetwork reference, IDARESettingsManager ism) {
 		networkreference = reference;
-		networkIDAREID = reference.getSUID();
+		
+		networkIDAREID = reference.getDefaultNetworkTable().getRow(reference.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+		if(networkIDAREID == null)
+		{
+			networkIDAREID = ism.getNextNetworkID();
+			reference.getDefaultNetworkTable().getRow(reference.getSUID()).set(IDAREProperties.IDARE_NETWORK_ID, networkIDAREID);
+		}
+		
 	}
 	
 	public Collection<NetworkNode> getChildren() {
@@ -100,12 +114,13 @@ public class NetworkNode implements Serializable{
 	
 	public void setupNetworkReferences(CyNetworkManager mgr)
 	{
-		PrintFDebugger.Debugging(this, "The manager is " + mgr);
-		PrintFDebugger.Debugging(this, "The networkSUID is " + networkIDAREID);
+		PrintFDebugger.Debugging(this, "Trying to restore network reference with IDAREID " + networkIDAREID);
 		for(CyNetwork network : mgr.getNetworkSet())
 		{
-			if(network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class).equals(networkIDAREID)){
+			Long NetworkIDAREID = network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+			if(NetworkIDAREID!= null  && NetworkIDAREID.equals(networkIDAREID)){
 				networkreference = network;
+				PrintFDebugger.Debugging(this, "Restoring Network Node" + print());
 				break;
 			}
 		}		
@@ -119,6 +134,7 @@ public class NetworkNode implements Serializable{
 	private void writeObject(ObjectOutputStream out)
 	{
 		try{
+			PrintFDebugger.Debugging(this, "Writing a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 			out.writeObject(this.colName);
 			out.writeObject(this.networkIDAREID);
 			out.writeObject(this.networkID);
@@ -137,10 +153,37 @@ public class NetworkNode implements Serializable{
 			networkIDAREID = (Long)(in.readObject());
 			networkID = (String)(in.readObject());
 			children = (Vector<NetworkNode>)(in.readObject());
+			PrintFDebugger.Debugging(this, "Successfully read a NetworkNode with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 		}
 		catch(IOException | ClassNotFoundException e)
 		{
 			
 		}
+	}
+	
+	public String printWithChildren(String indent)
+	{
+		String Result = indent + "NetworkRef: " + networkreference + "  networkID: " + networkID  + " IDAREID: " + networkIDAREID + " colName " + colName;
+		if(parent != null)
+		{
+			Result += "; has Parent";
+		}
+		Result += "\n";
+		for(NetworkNode node : children)
+		{
+			String newindent = indent + "\t";
+			Result += node.printWithChildren(newindent);
+		}
+		return Result;
+	}
+	
+	public String print()
+	{
+		String Result = "NetworkRef: " + networkreference + "  networkID: " + networkID  + " IDAREID: " + networkIDAREID + " colName " + colName;
+		if(parent != null)
+		{
+			Result += "; has Parent";
+		}
+		return Result;
 	}
 }
