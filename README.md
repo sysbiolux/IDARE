@@ -11,7 +11,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 
 ##Availability
 **Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE  
-**Bundle Plugin** http://idare-server.uni.lu/IDARE-1.0.jar  
+**Bundle Plugin** http://idare-server.uni.lu/IDAREJars/IDARE-1.0.jar  
 **User Manual** http://idare-server.uni.lu/UserManual.pdf  
 **Example/QuickStart** http://sysbiolux.github.com/Sample  
 **API**: http://idare-server.uni.lu/Doc  
@@ -22,7 +22,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 There are three options available:
 * Use the Cytoscape Application manager. In Cytoscape open `Apps → App Manager → Install Apps` and search for `IDARE`. 
 * Download the Jar from the [Cytoscape App store](http://apps.cytoscape.org/apps/IDARE)
-* Download the Jar from the [University of Luxembourg](http://idare-server.uni.lu/IDARE-1.0.jar)
+* Download the Jar from the [University of Luxembourg](http://idare-server.uni.lu/IDAREJars/IDARE-1.0.jar)
 If you download it manually put it into the apps/installed folder of your Cytoscape configuration folder (commonly %HOME/CytoscapeConfiguration/3/apps/installed).
 
 ##Building
@@ -63,6 +63,10 @@ The IDARE dependency is added as follows:
 	<scope>provided</scope>	
 </dependency>
 ```
+### Existing Plugins
+Two plgins exist for the app:  
+A reader for GEO SOFT Files that converts them into a format useable by IDARE. The jar can be downloaded from [here](http://idare-server.uni.lu/IDARE/GEOSOFTPlugin.jar), the code can be found [here](https://github.com/sysbiolux/IDAREGEOSoftReader).  
+The second plugin allows to create BarCharts as visualisation option and can be downloaded from [here](http://idare-server.uni.lu/IDARE/IDAREBarChartPlugin.jar), with code available [here](https://github.com/sysbiolux/IDAREBarChartsPlugin)
 
 
 ### Relevant Literature

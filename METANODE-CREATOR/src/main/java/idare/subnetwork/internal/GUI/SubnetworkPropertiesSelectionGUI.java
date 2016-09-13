@@ -64,7 +64,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	public final JComboBox<String> layoutSelector = new JComboBox<String>();
 	public final JComboBox<String> colSelector = new JComboBox<String>();
 	private JTable metSelTab;
-	private JTable subSysSelTab = new JTable();
+	private JTable subNetSelTab = new JTable();
 	private MetaboliteSelectionModel metSelMod;
 	private Vector<String> columnNames;
 	private String IDCol;
@@ -83,7 +83,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	public SubnetworkPropertiesSelectionGUI(Collection<String> AlgorithmNames, Vector<String> ColumnNames, 
 			CyNetwork network, NetworkViewSwitcher nvs, String IDCol){
 		this.nvs = nvs;
-		this.IDCol = IDCol;
+		this.IDCol = IDCol;		
 		columnNames = ColumnNames;
 		this.network = network;
 		this.setLayout(new GridBagLayout());
@@ -140,7 +140,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		outerConst.weighty = 1;
 		outerConst.gridwidth = GridBagConstraints.REMAINDER;
 		outerConst.fill = GridBagConstraints.HORIZONTAL;				
-		createSubSystemSelection(outerConst,this);		
+		createSubnetworkSelection(outerConst,this);		
 		this.setSize(new Dimension(500,700));		
 	}
 	
@@ -164,37 +164,39 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	}
 	
 	/**
-	 * Create the Subsystem Selection Panel
+	 * Create the Subnetwork Selection Panel
 	 * @param gbc the overall {@link GridBagConstraints} to properly place this panel
-	 * @param MiddlePane the Pane that the subsystemselection gets added to.
+	 * @param MiddlePane the Pane that the subsnetworkselection gets added to.
 	 */
-	private void createSubSystemSelection(GridBagConstraints gbc, Container MiddlePane)
+	private void createSubnetworkSelection(GridBagConstraints gbc, Container MiddlePane)
 	{
-		String TitleString = "Select the SubSystems to be generated";
+		String TitleString = "Select the Subnetworks to be generated";
 		JTextPane TitlePanel = createDescription(TitleString);
 		gbc.gridy++;
 		gbc.weighty = 1;
 		MiddlePane.add(TitlePanel,gbc);
 			
-		subSysSelTab.setAutoCreateRowSorter(true);
-		subSysSelTab.setFillsViewportHeight(true);
+		subNetSelTab.setAutoCreateRowSorter(true);
+		subNetSelTab.setFillsViewportHeight(true);
 		try
 		{
-			TableModel model = createSubSystemTableModel(network);
-			subSysSelTab.setModel(model);
+			TableModel model = createSubNetworkTableModel(network);
+			subNetSelTab.setModel(model);
 		}
 		catch(NoNetworksToCreateException ex)
 		{
-			subSysSelTab.setModel(new DefaultTableModel());
+			subNetSelTab.setModel(new DefaultTableModel());
 		}
 		gbc.gridy++;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weighty = 6;
-		JScrollPane subSysPane = new JScrollPane(subSysSelTab);
-		int colscount = subSysSelTab.getColumnModel().getColumnCount();
-		subSysSelTab.getColumnModel().getColumn(colscount-1).setMaxWidth(100);
-		MiddlePane.add(subSysPane,gbc);
-		
+		JScrollPane subSysPane = new JScrollPane(subNetSelTab);
+		int colscount = subNetSelTab.getColumnModel().getColumnCount();
+		subNetSelTab.getColumnModel().getColumn(colscount-1).setMaxWidth(100);
+		Dimension dim = subNetSelTab.getPreferredSize();
+		dim.height = 200;
+		subNetSelTab.setPreferredScrollableViewportSize(dim);
+		MiddlePane.add(subSysPane,gbc);		
 		
 	}
 	/**
@@ -202,7 +204,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	 * @param network - the {@link CyNetwork}Subsystems are created for
 	 * @return A {@link TableModel} containing a list of potential Subnetworks
 	 */
-	public TableModel createSubSystemTableModel(CyNetwork network) throws NoNetworksToCreateException
+	public TableModel createSubNetworkTableModel(CyNetwork network) throws NoNetworksToCreateException
 	{
 		DefaultTableModel subSysSelMod = new DefaultTableModel(){
 			@Override
@@ -383,8 +385,11 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 			metSelMod.addRow(row);
 		}
 		metSelTab.setModel(metSelMod);
-		metSelTab.getColumnModel().getColumn(metSelMod.getExtendCol()).setMaxWidth(100);
+		metSelTab.getColumnModel().getColumn(metSelMod.getExtendCol()).setMaxWidth(130);
 		metSelTab.getColumnModel().getColumn(metSelMod.getRemoveCol()).setMaxWidth(70);
+		Dimension dim = metSelTab.getPreferredSize();
+		dim.height = 300;
+		metSelTab.setPreferredScrollableViewportSize(dim);
 		// and now hide the CyNode Column.
 		TableColumnModel tcm = metSelTab.getColumnModel();
 		tcm.removeColumn(tcm.getColumn(metSelMod.getCyNodeCol()));
@@ -404,11 +409,11 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	public Vector<Object> SubSystemsToGenerate()
 	{
 		Vector<Object> subSystems = new Vector<Object>();
-		for(int i=0; i < subSysSelTab.getModel().getRowCount(); i++)
+		for(int i=0; i < subNetSelTab.getModel().getRowCount(); i++)
 		{
-			if((Boolean)subSysSelTab.getModel().getValueAt(i, 1))
+			if((Boolean)subNetSelTab.getModel().getValueAt(i, 1))
 			{
-				subSystems.add(subSysSelTab.getModel().getValueAt(i, 0));
+				subSystems.add(subNetSelTab.getModel().getValueAt(i, 0));
 			}
 		}
 		return subSystems;
@@ -523,12 +528,15 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 				if(colSelector.getSelectedIndex() != -1)
 				{
 					try{
-						subSysSelTab.setModel(createSubSystemTableModel(network));
+						subNetSelTab.setModel(createSubNetworkTableModel(network));
+						Dimension dim = subNetSelTab.getPreferredSize();
+						dim.height = 200;
+						subNetSelTab.setPreferredScrollableViewportSize(dim);						
 					}
 					catch(NoNetworksToCreateException ex)
 					{
 						//There are no SubSystems, so we can't select anything.
-						subSysSelTab.setModel(new DefaultTableModel());
+						subNetSelTab.setModel(new DefaultTableModel());
 					}
 				}
 			}

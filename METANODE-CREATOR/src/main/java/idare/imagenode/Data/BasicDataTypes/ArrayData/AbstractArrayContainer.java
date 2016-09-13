@@ -9,7 +9,7 @@ import idare.imagenode.Properties.IMAGENODEPROPERTIES.LayoutStyle;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 /**
- * A Basis class for container using itemized data. providing some functionality common to any item based data.
+ * A Basis class for container using {@link ArrayNodeData}. providing some functionality common to any item based data.
  * @author Thomas Pfau
  *
  */

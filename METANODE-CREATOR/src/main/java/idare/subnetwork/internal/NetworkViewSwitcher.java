@@ -91,12 +91,16 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		//networkManager= nm;
 		SubNetworks = new HashMap<CyNetwork, CyNetworkView>();
 	}
+	
+	
 	@Override
 	public synchronized TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
 		CyNode node = arg0.getModel();
 		
 		return new TaskIterator(new NetworkViewSwitchTask(registrar.getService(CyApplicationManager.class),targetViews.get(node)));
 	}
+	
+	
 	/**
 	 * Reset the Switcher (e.g. upon loading a session).
 	 */
@@ -120,6 +124,59 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	{
 		SubNetworks.put(network, view);
 	}
+	/**
+	 * Add a subnetwork to the subnetwork hierarchy. 
+	 * @param parent The parent network (to retrieve the parent node, or create it if parent non null
+	 * @param child The child node (i.e. the node to add to the hierarchy
+	 * @param ColumnID The Column the subnetwork is generated from.
+	 * @param NetworkID The ID of the network (should be an entry of the column indicated).
+	 */
+	public void addNetworkToTree(CyNetwork parent, CyNetwork child, String ColumnID, String NetworkID)
+	{
+		if(!NetworkNodes.containsKey(parent))
+		{
+			NetworkNodes.put(parent,new NetworkNode(parent));
+		}
+		if(!NetworkHierarchy.containsKey(parent))
+		{
+			NetworkHierarchy.put(parent, new HashMap<String, HashMap<String,NetworkNode>>());			
+		}
+		if(!NetworkHierarchy.get(parent).containsKey(ColumnID))
+		{
+			NetworkHierarchy.get(parent).put(ColumnID, new HashMap<String,NetworkNode>());
+		}
+		if(NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID) != null)
+		{
+			//we restore an old item!
+			NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID).setNetwork(child);
+			NetworkNodes.put(child,NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID));
+		}
+		else
+		{
+			NetworkNode childnode = new NetworkNode(NetworkNodes.get(parent),child,ColumnID,NetworkID);
+			NetworkNodes.get(parent).addChild(childnode);
+			NetworkNodes.put(child, childnode);
+			NetworkHierarchy.get(parent).get(ColumnID).put(NetworkID,childnode);
+		}
+	}
+	/**
+	 * Get the internal name of the network (i.e. the identifier used)
+	 * @param network The network to retrieve a name for
+	 * @return The name used to identify the network.
+	 */
+	public String getSubNetworkName(CyNetwork network)
+	{
+		NetworkNode currentNode = NetworkNodes.get(network);
+		if(currentNode == null)
+		{
+			throw new RuntimeException("No Node exists for the Network " +network.getRow(network).get(CyNetwork.NAME, String.class));
+		}
+		else
+		{
+			return currentNode.getNetworkID();
+		}
+	}
+	
 	
 
 	@SuppressWarnings("unchecked")
@@ -141,15 +198,46 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		{
 			if(NetworkHierarchy.get(network).containsKey(selectedColumn))
 			{
-				PrintFDebugger.Debugging(this, "Found a Network for Column " + selectedColumn + " with name " + network);
+				//PrintFDebugger.Debugging(this, "Found a Network for Column " + selectedColumn + " with name " + network);
 				for(NetworkNode node : NetworkHierarchy.get(network).get(selectedColumn).values())
 				{
-					existing.put(node.getNetwork(),SubNetworks.get(node.getNetwork()));
+					
+					if(node.getNetwork() != null)
+					{
+						//PrintFDebugger.Debugging(this, "Adding Network " + node.getNetwork() + " with name " + node.getNetworkID());
+						existing.put(node.getNetwork(),SubNetworks.get(node.getNetwork()));
+					}
 				}
 			}
 		}
 		return existing;
 	}
+	
+	
+	/**
+	 * Get the Names of all subnetworks for a specific parent network and a specific column.
+	 * @param parentnetwork the parent network to retrieve subnetwork names for
+	 * @param ColName the currently selected Column (to only return names specific for this network)
+	 * @return A {@link Set} of String with al the subnetwork Names for the provided parent network created using the specified column. 
+	 */
+	public synchronized Set<String> getSubNetworkWorksForNetwork(CyNetwork parentnetwork, String ColName)
+	{
+		HashSet<String> subnetworkNames = new HashSet<String>();
+		if(NetworkHierarchy.containsKey(parentnetwork) && NetworkHierarchy.get(parentnetwork).containsKey(ColName)){
+			for(NetworkNode node : NetworkHierarchy.get(parentnetwork).get(ColName).values())
+			{
+				//if the current network exists, then we return it.
+				if(node.getNetwork() != null)
+				{
+					subnetworkNames.add(node.networkID);
+				}
+			}
+		}
+		return subnetworkNames;
+	}
+	
+	
+	
 	/**
 	 * Add a Link between the {@link CyNode} and the target network {@link CyNetworkView}.
 	 * To keep track of these nodes and react properly to closing {@link CyNetworkView}s we need the original {@link CyNetwork} and the target NodeView
@@ -161,7 +249,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized void addLink(CyNode node, CyNetwork origin, CyNetworkView TargetNetworkView, View<CyNode> TargetNodeView)
 	{
 		targetViews.put(node, new NodeViewLink(TargetNodeView, TargetNetworkView,TargetNetworkView.getModel(),TargetNodeView.getModel(),origin));
-		PrintFDebugger.Debugging(this, "Adding node " + origin.getRow(node).get(IDAREProperties.IDARE_NODE_UID, Long.class) + " with Network " +  origin.getDefaultNetworkTable().getRow(origin.getSUID()).get(CyNetwork.NAME, String.class ) + " to nodeAndNetwork");
+		//PrintFDebugger.Debugging(this, "Adding node " + origin.getRow(node).get(IDAREProperties.IDARE_NODE_UID, Long.class) + " with Network " +  origin.getDefaultNetworkTable().getRow(origin.getSUID()).get(CyNetwork.NAME, String.class ) + " to nodeAndNetwork");
 		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
 		CyNetwork targetNetwork = TargetNetworkView.getModel();
 		if(!nodesPointingToNetwork.containsKey(targetNetwork))
@@ -201,39 +289,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	
 	}
 	
-	/**
-	 * Gives a copy of the TargetView Map. ITs only a copy to keep this class consistent internally
-	 * @return A Copy of the TargetViews {@link Map} of this network Switcher 
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized Map<CyNode,NodeViewLink> getTargetViewCopy()
-	{
-		// we dont want to give out the actual TargetViews map but only a copy structure. 
-		return (Map<CyNode,NodeViewLink>)targetViews.clone();
-	}	
-	
-	/**
-	 * Get the Names of all subnetworks for a specific parent network and a specific column.
-	 * @param parentnetwork the parent network to retrieve subnetwork names for
-	 * @param ColName the currently selected Column (to only return names specific for this network)
-	 * @return A {@link Set} of String with al the subnetwork Names for the provided parent network created using the specified column. 
-	 */
-	public synchronized Set<String> getSubNetworkWorksForNetwork(CyNetwork parentnetwork, String ColName)
-	{
-		HashSet<String> subnetworkNames = new HashSet<String>();
-		if(NetworkHierarchy.containsKey(parentnetwork) && NetworkHierarchy.get(parentnetwork).containsKey(ColName)){
-			for(NetworkNode node : NetworkHierarchy.get(parentnetwork).get(ColName).values())
-			{
-				//if the current network exists, then we return it.
-				if(node.getNetwork() != null)
-				{
-					subnetworkNames.add(node.networkID);
-				}
-			}
-		}
-		return subnetworkNames;
-	}
-	
+
 	@Override
 	public synchronized void handleEvent(NetworkViewAddedEvent e) {
 		//here we have to check whether this fits...
@@ -299,9 +355,6 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			CyNetwork orignetwork = nodeAndNet.network;
 			Collection<CyEdge> edges = orignetwork.getAdjacentEdgeList(nodeAndNet.node, CyEdge.Type.ANY);
 			orignetwork.removeEdges(edges);
-			PrintFDebugger.Debugging(this, "The corresponding network is " + orignetwork);
-			PrintFDebugger.Debugging(this, "Trying to remove node " + nodeAndNet.node );
-			PrintFDebugger.Debugging(this," from Network " + nodeAndNet.network.getDefaultNetworkTable().getRow(nodeAndNet.network.getSUID()).get(CyNetwork.NAME, String.class));
 			orignetwork.removeNodes(Collections.singletonList(nodeAndNet.node));
 			//check whether the other view still exists and if, update it. Otherwise 
 			if(targetViews.get(nodeAndNet.node).getTargetNetworkView() != null)
@@ -338,24 +391,24 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
 		CyNetworkView view = e.getNetworkView();
 		CyNetwork network = view.getModel();
-		PrintFDebugger.Debugging(this, "Removing view for: "  + network);
+//		PrintFDebugger.Debugging(this, "Removing view for: "  + network);
 		if(listenedNetworks.containsKey(view))
 		{
 			//there were nodes pointing to this View so we have to deactivate them.
 			// we also have to remove this View from the ListenedNetworks
-			PrintFDebugger.Debugging(this, "Deactivating links for the view");	
+//			PrintFDebugger.Debugging(this, "Deactivating links for the view");	
 			for(CyNode node : listenedNetworks.get(view))
 			{
-				PrintFDebugger.Debugging(this, "link for node ");	
+//				PrintFDebugger.Debugging(this, "link for node ");	
 				targetViews.get(node).setTargetNodeView(null);
 				targetViews.get(node).setTargetNetworkView(null);
 				// and now we have to add the links to the silent Links
 				if(!SilentNodes.containsKey(network))
 				{
-					PrintFDebugger.Debugging(this, "Adding List to silentnnodes for network " + network);
+//					PrintFDebugger.Debugging(this, "Adding List to silentnnodes for network " + network);
 					SilentNodes.put(network,new LinkedList<CyNode>());
 				}
-				PrintFDebugger.Debugging(this, "Adding node " + node + " to the silent network nodes of network " + network);
+//				PrintFDebugger.Debugging(this, "Adding node " + node + " to the silent network nodes of network " + network);
 				SilentNodes.get(network).add(node);
 			}		
 			//We also have to place all nodes in other networks pointing to the current one "on hold"
@@ -364,7 +417,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			listenedNetworks.remove(view);	
 			if(SubNetworks.containsKey(network))
 			{
-				PrintFDebugger.Debugging(this, "Setting NetworkView for: "  + network + " to null");
+//				PrintFDebugger.Debugging(this, "Setting NetworkView for: "  + network + " to null");
 				SubNetworks.put(network, null);
 			}
 			else
@@ -436,47 +489,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized void handleEvent(NetworkAddedEvent e) {
 	}
 	
-	public void addNetworkToTree(CyNetwork parent, CyNetwork child, String ColumnID, String NetworkID)
-	{
-		if(!NetworkNodes.containsKey(parent))
-		{
-			NetworkNodes.put(parent,new NetworkNode(parent));
-		}
-		if(!NetworkHierarchy.containsKey(parent))
-		{
-			NetworkHierarchy.put(parent, new HashMap<String, HashMap<String,NetworkNode>>());			
-		}
-		if(!NetworkHierarchy.get(parent).containsKey(ColumnID))
-		{
-			NetworkHierarchy.get(parent).put(ColumnID, new HashMap<String,NetworkNode>());
-		}
-		if(NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID) != null)
-		{
-			//we restore an old item!
-			NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID).setNetwork(child);
-			NetworkNodes.put(child,NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID));
-		}
-		else
-		{
-			NetworkNode childnode = new NetworkNode(NetworkNodes.get(parent),child,ColumnID,NetworkID);
-			NetworkNodes.get(parent).addChild(childnode);
-			NetworkNodes.put(child, childnode);
-			NetworkHierarchy.get(parent).get(ColumnID).put(NetworkID,childnode);
-		}
-	}
 	
-	public String getSubNetworkName(CyNetwork network)
-	{
-		NetworkNode currentNode = NetworkNodes.get(network);
-		if(currentNode == null)
-		{
-			throw new RuntimeException("No Node exists for the Network " +network.getRow(network).get(CyNetwork.NAME, String.class));
-		}
-		else
-		{
-			return currentNode.getNetworkID();
-		}
-	}
 	
 	@Override
 	public void handleEvent(SessionAboutToBeSavedEvent arg0) {		
@@ -559,11 +572,11 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	private void handleNetworkNode(NetworkNode node)
 	{
 		CyNetworkManager mgr = registrar.getService(CyNetworkManager.class);
-		PrintFDebugger.Debugging(this, "The manager is: " + mgr);
+//		PrintFDebugger.Debugging(this, "The manager is: " + mgr);
 		node.setupNetworkReferences(mgr);
 		if(node.getNetwork() != null)
 		{
-			System.out.println("Adding associated network node for network " + node.networkID);
+//			System.out.println("Adding associated network node for network " + node.networkID);
 			NetworkNodes.put(node.getNetwork(), node);		
 		}
 		

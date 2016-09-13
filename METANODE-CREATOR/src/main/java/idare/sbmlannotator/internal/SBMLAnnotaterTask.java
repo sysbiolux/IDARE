@@ -571,6 +571,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 					for(Long ReacSUID : GeneAssoc.get(gene))						
 					{
 						CyNode ReacNode = network.getNode(ReacSUID);
+						CyEdge edge = network.addEdge(newNode, ReacNode,true);
 						if(!ReacToGene.containsKey(ReacNode))
 						{
 							ReacToGene.put(ReacNode, new HashSet<CyNode>());
@@ -591,7 +592,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 						//adjust the position into the middle of all involved reactions.
 						currenty = (currenty + ypos/GeneAssoc.get(gene).size());
 						currentx = (currentx + xpos/GeneAssoc.get(gene).size());
-
+						network.addEdge(newNode, ReacNode, true);
 					}
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_X_LOCATION, currentx, false));
 					VizProps.add(new DelayedVizProp(newNode, BasicVisualLexicon.NODE_Y_LOCATION, currenty, false));

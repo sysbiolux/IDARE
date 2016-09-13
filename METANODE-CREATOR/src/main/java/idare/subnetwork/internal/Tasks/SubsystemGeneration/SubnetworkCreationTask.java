@@ -3,6 +3,7 @@ package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.NoNetworksToCreateException;
 
@@ -49,6 +50,11 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	
 	@Tunable	
 	public SubNetworkProperties params;  
+	
+	
+	@Tunable(description="Keep parent network links")
+	public boolean keepoldLinks;
+	
 	
 	private final IDARESettingsManager ism;
 	private final NetworkViewSwitcher nvs;
@@ -120,7 +126,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			//Initialize the Set of internal subsystem Edges. 
 			//this set will be filled by the extendNodeSet method.
 			subSystemReactionEdges.put(subSystem, new HashSet<CyEdge>());
-
+			
 			/*
 			 * lets do extend this subsystem so that it contains all Nodes that can be associated to the subsystem
 			 * This mean: get all nodes connected to nodes within the network.
@@ -129,13 +135,26 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			 * And we have to ignore all nodes which are ignored.
 			 */
 			int csize = subSystemNodes.get(subSystem).size();
+			for(CyNode node : subSystemNodes.get(subSystem))
+			{
+				if(node.getSUID() == 67L)
+				{
+					PrintFDebugger.Debugging(this,"Node is part of " + subSystem + "  at after node set init");
+				}
+			}
 			extendNodeSet(subSystemNodes.get(subSystem), subSystemReactionEdges.get(subSystem), originalnetwork, subSystem, ColName);
 			while(subSystemNodes.get(subSystem).size() > csize)
 			{
 				csize = subSystemNodes.get(subSystem).size();
 				extendNodeSet(subSystemNodes.get(subSystem), subSystemReactionEdges.get(subSystem), originalnetwork, subSystem, ColName);
 			}
-
+			for(CyNode node : subSystemNodes.get(subSystem))
+			{
+				if(node.getSUID() == 67L)
+				{
+					PrintFDebugger.Debugging(this,"Node is part of " + subSystem + "  at after node set extension");
+				}
+			}
 			//and remove all internal subsystem edges and locally ignored edges.
 
 			//and add the local non branching ones back in.
@@ -144,9 +163,10 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 			//now we are set up. So lets create a new Network and a new network view
 			CyNetwork subNetwork = rootNetwork.addSubNetwork(subSystemNodes.get(subSystem),subSystemReactionEdges.get(subSystem));
+			CyTable ntab = subNetwork.getDefaultNodeTable();			
 			String subNetworkName = subSystem.toString();
 			nvs.addNetworkToTree(originalnetwork, subNetwork, ColName, subNetworkName);
-			subNetwork.getDefaultNetworkTable().getRow(subNetwork.getSUID()).set(IDAREProperties.IDARE_NETWORK_ID, ism.getNextNetworkID());
+			subNetwork.getDefaultNetworkTable().getRow(subNetwork.getSUID()).set(IDAREProperties.IDARE_NETWORK_ID, ism.getNextNetworkID());			
 			subSystemNetworks.put(subSystem ,subNetwork);
 			
 			
@@ -155,6 +175,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			//now get the outgoing Edges
 			netMgr.addNetwork(subSystemNetworks.get(subSystem));
 			CyNetworkView newModelView = networkViewFactory.createNetworkView(subSystemNetworks.get(subSystem));
+			
 			if(params.layoutAlgorithm == null)
 			{
 				//in case we want to keep the layout, lets try to put all nodes to their respective new positions.
@@ -171,14 +192,36 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			}
 			subSystemOutGoingEdges.put(subSystem,getLinkingInfo(subSystemNodes.get(subSystem), subSystemReactionEdges.get(subSystem), 
 					originalnetwork, subNetwork, ColName, subNetworkName));
-			
+			if(subNetwork.getNode(67L) != null)
+			{
+				PrintFDebugger.Debugging(this,"Node " + subNetwork.getRow(subNetwork.getNode(67L)).get(CyNetwork.NAME, String.class) + " is part of " + subNetwork + "  after outgoing edge definition");
+			}
+			for(CyRow row : ntab.getAllRows())
+			{
+				if(row.get(CyNode.SUID, Long.class) == 67L)
+				{
+					PrintFDebugger.Debugging(this,"Node 67 is part of " + subNetwork + "-table after outgoing edge definition");	
+				}
+			}
 			nvs.addSubNetworkView(subSystemNetworks.get(subSystem),newModelView);
 			subSystemViews.put(subSystem,newModelView);	
 			//At this point, no new nodes have yet been created 
 			//so we should be able to simply check all nodes, whether they are linkers.
 			//and create linkers from those nodes to the current nodes.
 			createLinkerNodes(originalnetwork, subSystemNetworks.get(subSystem), subSystemViews.get(subSystem),
-					ColName, subSystemOutGoingEdges.get(subSystem));						
+					ColName, subSystemOutGoingEdges.get(subSystem));
+			if(subNetwork.getNode(67L) != null)
+			{
+				PrintFDebugger.Debugging(this,"Node " + subNetwork.getRow(subNetwork.getNode(67L)).get(CyNetwork.NAME, String.class) + " is part of " + subNetwork + "  after linker generation");
+			}
+			ntab = subNetwork.getDefaultNodeTable();
+			for(CyRow row : ntab.getAllRows())
+			{
+				if(row.get(CyNode.SUID, Long.class) == 67L)
+				{
+					PrintFDebugger.Debugging(this,"Node 67 is part of " + subNetwork + "-table after linker generation");	
+				}
+			}
 		}
 			
 		//Than add the links between the networks.
@@ -204,8 +247,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 
 			}
-		}
-		
+		}		
 		for(CyNetworkView view : LinkNodeProps.keySet())
 		{
 			//create New Linker Nodes.
@@ -231,6 +273,21 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 				view.updateView();
 			}			
 		}
+		for(CyNetworkView view : subSystemViews.values())
+		{
+			CyTable NTable = view.getModel().getDefaultNodeTable();
+			for(CyRow row : NTable.getAllRows())
+			{
+				if(row.get(CyNode.SUID, Long.class) == 67L)
+				{
+					PrintFDebugger.Debugging(this,"Node 67 is part of " + view.getModel() + "-table  when finishing subnetwork generation");
+				}
+			}
+			if(view.getModel().getNode(67L) != null)
+			{
+				PrintFDebugger.Debugging(this,"Node " + view.getModel().getRow(view.getModel().getNode(67L)).get(CyNetwork.NAME, String.class) + " is part of " + view.getModel() + "  when finishing subnetwork generation");
+			}
+		}
 		
 	}
 	
@@ -249,7 +306,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			CyNetwork newNetwork, String ColName, String NetworkID)
 	{
 		HashSet<LinkInfo> outgoingEdges = new HashSet<LinkInfo>();		
-		CyTable nodeTab = newNetwork.getDefaultNodeTable();
+		CyTable nodeTab = parent.getDefaultNodeTable();
 		//nvs.getExistingNetworks(parent, ColName);
 		for(CyNode node : subSysNodes)
 		{
@@ -284,7 +341,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 									OppositeSite.getRaw(ColName) != parent.getDefaultNodeTable().getColumn(ColName).getDefaultValue()))
 							{								
 								//if this is an edge that is not IN this set, and it targets a node, that has a non empty SUBSYSTEM Column, than this is an outgoing edge!
-								System.out.println("In subsystem " + NetworkID + " We will try to generate links for node " + noderow.get(CyNetwork.NAME, String.class));
+								//System.out.println("In subsystem " + NetworkID + " We will try to generate links for node " + noderow.get(CyNetwork.NAME, String.class));
 								outgoingEdges.add(new LinkInfo(node,direction,reversible));
 									
 							}
@@ -299,11 +356,11 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	}
 	/**
 	 * Extend the current set of nodes by walking along the edges and checking to see whether there are additional nodes to use.
-	 * @param subSysNodes
-	 * @param subSysEdges
-	 * @param net
-	 * @param Subsystem
-	 * @param ColName
+	 * @param subSysNodes The nodes in the current subsystem
+	 * @param subSysEdges the Edges in the current subsystem
+	 * @param net the parent network
+	 * @param Subsystem the current subsystem
+	 * @param ColName the subsystem column
 	 */
 	private void extendNodeSet(Set<CyNode> subSysNodes, Set<CyEdge> subSysEdges, CyNetwork net, Object Subsystem, String ColName)
 	{
@@ -317,6 +374,18 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			if(params.ignoredNodes.contains(node))
 			{
 				continue;
+			}
+			if(!keepoldLinks)
+			{
+				//if choosen skip links.
+				if(nodeTab.getColumn(IDAREProperties.IDARE_NODE_TYPE) != null)
+				{
+					CyRow noderow = nodeTab.getRow(node.getSUID());
+					if(noderow.get(IDAREProperties.IDARE_NODE_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
+					{
+						continue;
+					}
+				}
 			}
 			//get all edges from the remaining supplied nodes.
 			if(nodeTab.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) != null )
@@ -420,6 +489,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			}
 			//otherwise, this is either an edge to a non reaction node or it is an edge to a reaction node within the subsystem.
 			//so we can simply add it.
+			PrintFDebugger.Debugging(this, "Extending " + Subsystem + " to Nodes" + edge.getSource() + " and " + edge.getTarget());
 			newnodes.add(edge.getSource());
 			newnodes.add(edge.getTarget());
 			subSysEdges.add(edge);
@@ -458,10 +528,11 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			}
 			for(CyNetwork targetnetwork: OtherNetworks)
 			{
+				//PrintFDebugger.Debugging(this, "The target network is " + targetnetwork);
+				//PrintFDebugger.Debugging(this, "The linhkNode is " + linkNode);
 				CyNode targetnode = targetnetwork.getNode(linkNode.NodeSUID); 
 				if(targetnode != null)
-				{
-					System.out.println("Trying to create a link between " + newnetwork.getDefaultNetworkTable().getRow(newnetwork.getSUID()).get(CyNetwork.NAME, String.class) +" and "+ targetnetwork.getDefaultNetworkTable().getRow(targetnetwork.getSUID()).get(CyNetwork.NAME, String.class) + " for node " + targetnetwork.getDefaultNodeTable().getRow(linkNode.NodeSUID).get(CyNetwork.NAME, String.class));
+				{					
 					//if the link does exist, just skip it (commonly this should not happen.
 					if(createdNodeLinks.containsKey(newnetwork) && createdNodeLinks.get(newnetwork).containsKey(linkNode.NodeSUID) && createdNodeLinks.get(newnetwork).get(linkNode.NodeSUID).contains(targetnetwork))
 					{						

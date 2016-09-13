@@ -241,6 +241,7 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(context, sncghf, GUITunableHandlerFactory.class, new Properties());
 		registerService(context, snpcghf, GUITunableHandlerFactory.class, new Properties());		
 
+		
 
 		//create and register the subnetworkgeneratorTaskFactory, with the appropriate properties.
 		Properties createSubnetworkPropertiesMenu = new Properties();
@@ -264,7 +265,8 @@ public class CyActivator extends AbstractCyActivator {
 		SubnetworkCreatorTaskFactory snctf = new SubnetworkCreatorTaskFactory(reg,nvs,app.getSettingsManager(),sncghf);
 		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesMenu);
 		registerService(context, snctf, NetworkViewTaskFactory.class, createSubnetworkPropertiesTask);
-						
+		
+		
 	}
 
 	@Override

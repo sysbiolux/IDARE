@@ -25,7 +25,7 @@ import org.apache.batik.svggen.DefaultExtensionHandler;
 import org.apache.batik.svggen.SVGGraphics2D;
 
 /**
- * The {@link AbstractArrayContainerLayout} provides basic features for any itemized container layout, such as shape placements etc.
+ * The {@link AbstractArrayContainerLayout} provides basic features for any  {@link AbstractArrayContainerLayout}, such as shape placements etc.
  * @author Thomas Pfau
  *
  */

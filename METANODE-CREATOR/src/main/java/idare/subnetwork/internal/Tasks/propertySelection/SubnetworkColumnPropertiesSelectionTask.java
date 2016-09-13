@@ -5,8 +5,8 @@ import idare.Properties.IDARESettingsManager;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.SubNetworkUtils;
 import idare.subnetwork.internal.Tasks.InvalidSelectionException;
-import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationTask;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationTask;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.service.util.CyServiceRegistrar;
@@ -26,8 +26,7 @@ public class SubnetworkColumnPropertiesSelectionTask extends AbstractTask
 
 	@Tunable 
 	public SubnetworkColumnProperties properties;
-	
-	
+
 	private CyServiceRegistrar reg;
 	private NetworkViewSwitcher nvs;
 	private IDARESettingsManager ism;
