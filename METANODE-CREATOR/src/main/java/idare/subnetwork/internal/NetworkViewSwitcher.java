@@ -149,7 +149,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		if(NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID) != null)
 		{
 			//we restore an old item!
-			NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID).setNetwork(child);
+			NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID).setNetwork(child,ism);
 			NetworkNodes.put(child,NetworkHierarchy.get(parent).get(ColumnID).get(NetworkID));
 		}
 		else
@@ -377,7 +377,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		NetworkNode netNode = NetworkNodes.get(tobeDestroyed);
 		if(netNode != null)
 		{
-			netNode.setNetwork(null);
+			netNode.setNetwork(null,ism);
 		}
 		//if the network is a root network, we have to adjust its children and eliminate the NetworkNode entirely.
 		if(netNode.parent == null)

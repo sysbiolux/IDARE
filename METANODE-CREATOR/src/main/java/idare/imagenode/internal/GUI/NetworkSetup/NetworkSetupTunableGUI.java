@@ -35,7 +35,6 @@ public class NetworkSetupTunableGUI extends JPanel {
 	private JComboBox<String> IDColSelector = new JComboBox<String>();
 	private JCheckBox overwrite = new JCheckBox();
 	private ColumnTypeChooser ctc;
-	boolean overwriteData;
 	public String IDCol;
 	public String TypeCol;
 	/**
@@ -199,7 +198,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 			props.ProteinID = ctc.getProteinID();
 			props.IDColID = IDColSelector.getSelectedItem().toString();
 			props.TypeColID = typeColSelector.getSelectedItem().toString();
-			props.overwrite = overwriteData;
+			props.overwrite = overwrite.isSelected();
 			return props;
 		}
 		else

@@ -51,7 +51,7 @@ public class SBMLAnnotaterTask extends AbstractTask{
 	private String sbmlCompCol;
 	private String sbmlInteractionCol;
 	private IDAREImageNodeApp app;
-
+	
 	/**
 	 *  A Task reading in an SBML File and parsing its Notes fields adding the information to the Nodes of the current network. 
 	 * @param cymanager The {@link CyApplicationManager} used to obtain the currently choosen network for this Task.

@@ -475,6 +475,10 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			if(targetTable.isEditing())
+			{
+				targetTable.getCellEditor().stopCellEditing();
+			}
 			if(up)
 			{
 				targetTable.moveEntryUp();
@@ -610,6 +614,10 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			// TODO Auto-generated method stub					
 			int[] selectedrows = DataSetTable.getSelectedRows();
 			Vector<DataSet> setsToRemove = new Vector<DataSet>();
+			if(DataSetTable.isEditing())
+			{
+				DataSetTable.getCellEditor().stopCellEditing();
+			}
 			int DataSetColumn = 0;
 			for(int j = 0 ; j < DataSetTable.getColumnCount(); j++)
 			{

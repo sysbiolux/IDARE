@@ -428,7 +428,6 @@ public abstract class DataSet implements IDAREService, Serializable{
 				}
 			}			
 			Vector<Comparable> entrynames = new Vector<Comparable>();
-			entrynames.addAll(entries);
 			if(entries.contains(null))
 			{
 				entries.remove(null);													
@@ -437,7 +436,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 			{
 				throw new WrongFormat("Using String Values with more than 5 different values is not possible.");				
 			}
-
+			entrynames.addAll(entries);
 			Valueset.addAll(entrynames);
 			Collections.sort(Valueset);
 		}

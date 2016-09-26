@@ -50,7 +50,7 @@ public class SubnetworkCreatorTaskFactory extends AbstractTaskFactory implements
 	 */
 	@Override
 	public boolean isReady(CyNetworkView arg0) {
-		return true;
+		return arg0 != null;
 	}
 
 }

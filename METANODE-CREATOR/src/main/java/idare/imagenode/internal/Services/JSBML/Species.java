@@ -3,7 +3,7 @@ package idare.imagenode.internal.Services.JSBML;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Species {
+public class Species extends SBase{
 	
 	private Object SBMLSpecies;
 	private Method notesSet;

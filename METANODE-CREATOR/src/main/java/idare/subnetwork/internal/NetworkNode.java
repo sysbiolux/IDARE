@@ -90,10 +90,26 @@ public class NetworkNode implements Serializable{
 		}
 	}
 
-	public void setNetwork(CyNetwork network)
+	public void setNetwork(CyNetwork network, IDARESettingsManager ism)
 	{
 		networkreference = network;
-		networkIDAREID = network == null ? null : network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);	
+
+		if(network != null)
+		{
+			Long currentNetworkIDAREID = network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+			if(currentNetworkIDAREID == null)
+			{
+				network.getDefaultNetworkTable().getRow(network.getSUID()).set(IDAREProperties.IDARE_NETWORK_ID, ism.getNextNetworkID());
+			}
+			networkIDAREID = network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+		} 
+		else
+		{
+			networkIDAREID = null;
+		}
+
+			
+			
 	}
 	
 	public CyNetwork getNetwork()

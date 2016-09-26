@@ -283,7 +283,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 		 MultiArrayNodeData nd = (MultiArrayNodeData) data;
 		 Paint origPaint = g2d.getPaint();
 		 Stroke currentStroke = g2d.getStroke();
-		 g2d.setStroke(new BasicStroke(3));
+		 g2d.setStroke(new BasicStroke(5));
 		 //move to the plotting area
 		 g2d.translate(area.getX(), area.getY());
 		 for(String name : ((MultiArrayDataSet)data.getDataSet()).getSetNames())

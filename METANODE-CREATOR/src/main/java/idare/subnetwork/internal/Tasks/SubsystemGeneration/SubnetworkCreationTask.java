@@ -321,11 +321,18 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			if(params.ignoredNodes.contains(node))
 			{
 				continue;
-			}			
+			}	
+			CyRow noderow = nodeTab.getRow(node.getSUID());
+			if((nodeTab.getColumn(IDAREProperties.IDARE_NODE_TYPE) != null) && IDAREProperties.NodeType.IDARE_GENE.equals(noderow.get(IDAREProperties.IDARE_NODE_TYPE,String.class)))
+			{
+				//if this is a gene, we do not extend it.
+				continue;
+			}
 			//get all edges from the remaining supplied nodes.
 			if(nodeTab.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) != null )
 			{
-				CyRow noderow = nodeTab.getRow(node.getSUID());
+				
+				
 				//If this is a gene or Protein or metabolite, only add edges which do not point to reactions outside the current subsystem.
 				//In fact, we should never extend from a gene.
 				boolean isReaction = false;

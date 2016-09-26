@@ -3,7 +3,7 @@ package idare.imagenode.internal.Services.JSBML;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Reaction {
+public class Reaction extends SBase{
 
 	private Object SBMLReaction;
 	private Method notesSet;
