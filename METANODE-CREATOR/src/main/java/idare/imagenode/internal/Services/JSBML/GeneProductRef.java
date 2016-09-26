@@ -3,29 +3,24 @@ package idare.imagenode.internal.Services.JSBML;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class GeneProduct extends SBase{
+public class GeneProductRef extends Association{
 
-	
-	private Method getLabel;
-
-
-	public GeneProduct(Object o)
-	{
-		super(o);
+	Method getGeneProduct;
+	public GeneProductRef(Object o) {
+		super(o);		
 		try{
-			getLabel = o.getClass().getMethod("getLabel");
+			getGeneProduct = o.getClass().getMethod("getGeneProduct");
 		}
 		catch(NoSuchMethodException e)
 		{
-
+			
 		}
 	}
 
-	
-	public String getLabel()
+	public String getGeneProduct()
 	{
 		try{
-			Object res = getLabel.invoke(SBMLBase);
+			Object res = getGeneProduct.invoke(SBMLAssoc);
 			return res == null ? null : (String) res;							
 		}
 		catch(InvocationTargetException | IllegalAccessException e)
@@ -33,11 +28,5 @@ public class GeneProduct extends SBase{
 			return null;
 		}
 	
-	}
-	
-	@Override
-	public String getName()
-	{
-		return getLabel();
 	}
 }

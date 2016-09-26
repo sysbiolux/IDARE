@@ -16,7 +16,7 @@ public class SBMLServiceRegistrar implements
 	public SBMLServiceRegistrar(BundleContext context, FileUtil fileUtil, CySwingApplication cySwingApp)
 	{
 		super();
-		holder = new SBMLManagerHolder(fileUtil, cySwingApp);
+		holder = new SBMLManagerHolder(fileUtil, cySwingApp,context);
 		appContext = context;
 		ref = context.getServiceReference("org.cy3sbml.SBMLManager");
 		if(ref != null)

@@ -9,6 +9,8 @@ import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.util.swing.FileChooserFilter;
 import org.cytoscape.util.swing.FileUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.sbml.jsbml.SBMLReader;
 
 public class SBMLManagerHolder {
@@ -16,21 +18,31 @@ public class SBMLManagerHolder {
 	Object SBMLMgr;
 	protected final FileUtil fUtil;
 	protected CySwingApplication swingApp;
-
-	public SBMLManagerHolder(FileUtil fileUtil, CySwingApplication cySwingApp)
+	BundleContext appContext;
+	
+	public SBMLManagerHolder(FileUtil fileUtil, CySwingApplication cySwingApp, BundleContext context)
 	{
+		this.appContext = context;				
 		this.swingApp = cySwingApp;
 		this.fUtil = fileUtil;
 	}
-	public void setObject(Object o)
+	
+	public boolean isSBMLManagerPresent()
 	{
-		if(o == null)
+		if(SBMLMgr == null)
 		{
+			ServiceReference ref = appContext.getServiceReference("org.cy3sbml.SBMLManager");
+			if(ref != null)
+			{
+				SBMLMgr = appContext.getService(ref);
+			}
 		}
-		else
-		{
-		}
-
+		
+		return SBMLMgr != null;			
+	}
+	
+	public void setObject(Object o)
+	{		
 		SBMLMgr = o;
 	}
 

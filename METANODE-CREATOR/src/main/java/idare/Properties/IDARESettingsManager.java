@@ -1,19 +1,21 @@
 package idare.Properties;
 
 import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.session.events.SessionLoadedEvent;
+import org.springframework.cglib.transform.impl.AddPropertyTransformer;
 
 /**
  * Class to keep track of IDARE IDs and complain (throw exceptions) if duplicate IDs are found. hopefully there wont be any instances with > max(long) nodes in one network...
@@ -27,7 +29,12 @@ public class IDARESettingsManager{
 	private Long maxNodeID = new Long(0);
 	private HashSet<Long> networkIDs;
 	private Long maxNetworkID = new Long(0);
-	
+	private HashSet<Long> proteinIDs;
+	private Long maxProteinID = new Long(0);
+	private HashSet<Long> proteinComplexIDs;
+	private Long maxProteinComplexID = new Long(0);
+	private Pattern proteinPattern = Pattern.compile("^" + IDAREProperties.NodeType.IDARE_PROTEIN + "([0-9]+)$");
+	private Pattern proteinComplexPattern = Pattern.compile("^" + IDAREProperties.NodeType.IDARE_PROTEINCOMPLEX + "([0-9]+)$");
 	private IDAREProperties properties;
 	private HashMap<String,String> SubNetworkTypes;
 	
@@ -41,8 +48,40 @@ public class IDARESettingsManager{
 		maxNodeID = new Long(0);
 		maxNetworkID = new Long(0);
 		networkIDs = new HashSet<Long>();
+		proteinIDs = new HashSet<Long>();
+		maxProteinID = new Long(0);
+		maxProteinComplexID = new Long(0);
+		proteinComplexIDs = new HashSet<Long>();		
 		SubNetworkTypes = new HashMap<String, String>();
 	}
+	
+	/**
+	 * Get the next protein ID which is the largest current ID + 1
+	 * This Id should be used otherwise it will be blocked for this manager.
+	 * @return a valid IDARE identifier
+	 */
+	
+	public long getNextProteinID()
+	{
+		maxProteinID = maxProteinID+1;
+		proteinIDs.add(maxProteinID);
+		return maxProteinID;
+	}
+	
+	
+	/**
+	 * Get the nextprotein Complex  ID which is the largest current ID + 1
+	 * This Id should be used otherwise it will be blocked for this manager.
+	 * @return a valid IDARE identifier
+	 */
+	
+	public long getNextProteinComplexID()
+	{
+		maxProteinComplexID = maxProteinComplexID+1;
+		proteinComplexIDs.add(maxProteinComplexID);
+		return maxProteinComplexID;
+	}
+	
 	/**
 	 * Get the next ID which is the largest current ID + 1
 	 * This Id should be used otherwise it will be blocked for this manager.
@@ -80,6 +119,10 @@ public class IDARESettingsManager{
 		maxNodeID = new Long(0);
 		networkIDs = new HashSet<Long>();
 		maxNetworkID = new Long(0);
+		proteinIDs = new HashSet<Long>();
+		maxProteinID = new Long(0);
+		maxProteinComplexID = new Long(0);
+		proteinComplexIDs = new HashSet<Long>();
 	}
 	
 	/**
@@ -102,6 +145,46 @@ public class IDARESettingsManager{
 		}
 	}
 
+	/**
+	 * Add an ID to this manager. The manager checks whether this ID is already used.
+	 * @param id - The id that needs to be checked
+	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
+	 */
+	private void addProteinID(Long id) throws IllegalArgumentException
+	{
+		if(proteinIDs.contains(id)) {
+			throw new IllegalArgumentException("ID already used");
+		}
+		else
+		{
+			if(id.compareTo(maxProteinID) > 0)
+			{
+				maxProteinID = id;
+			}
+			proteinIDs.add(id);
+		}
+	}
+	
+	/**
+	 * Add an ID to this manager. The manager checks whether this ID is already used.
+	 * @param id - The id that needs to be checked
+	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
+	 */
+	private void addProteinComplexID(Long id) throws IllegalArgumentException
+	{
+		if(proteinComplexIDs.contains(id)) {
+			throw new IllegalArgumentException("ID already used");
+		}
+		else
+		{
+			if(id.compareTo(maxProteinComplexID) > 0)
+			{
+				maxProteinComplexID = id;
+			}
+			proteinComplexIDs.add(id);
+		}
+	}
+	
 	/**
 	 * Add a network ID to this manager. The manager checks whether this ID is already used.
 	 * @param id - The id that needs to be checked
@@ -243,6 +326,23 @@ public class IDARESettingsManager{
 							resetNetworks(networks);
 							reset();
 							return;
+						}
+					}
+					if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
+					{
+						String nodename = row.get(IDAREProperties.IDARE_NODE_NAME, String.class);
+						if(nodename != null)
+						{
+							Matcher protMatch = proteinPattern.matcher(nodename);
+							if(protMatch.matches())
+							{
+								addProteinID(Long.parseLong(protMatch.group(0)));
+							}
+							Matcher protComplexMatch = proteinComplexPattern.matcher(nodename);
+							if(protMatch.matches())
+							{
+								addProteinComplexID(Long.parseLong(protComplexMatch.group(0)));
+							}
 						}
 					}
 				}

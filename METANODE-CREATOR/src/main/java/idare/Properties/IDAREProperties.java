@@ -61,6 +61,7 @@ public class IDAREProperties {
 		public static final String IDARE_imagenode = "imagenode";
 		public static final String IDARE_PROTEIN = "protein";
 		public static final String IDARE_LINK = "link";
+		public static final String IDARE_PROTEINCOMPLEX = "proteincomplex";		
 	}
 	
 	public static class EdgeType

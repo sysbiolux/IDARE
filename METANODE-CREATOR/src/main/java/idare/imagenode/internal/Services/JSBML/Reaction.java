@@ -5,20 +5,20 @@ import java.lang.reflect.Method;
 
 public class Reaction extends SBase{
 
-	private Object SBMLReaction;
-	private Method notesSet;
-	private Method id;
-	private Method notesString;
-	
+
+	private Method getExtension;	
 	private Method reversible;
+	private Method getName;
+	
 	public Reaction(Object o) 
 	{
-		SBMLReaction = o;
+		super(o);
 		try{
-			notesSet = o.getClass().getMethod("isSetNotes");
-			id = o.getClass().getMethod("getId");
-			notesString = o.getClass().getMethod("getNotesString");
 			reversible = o.getClass().getMethod("isReversible");
+			Class[] cArg = new Class[1];
+		    cArg[0] = String.class;
+			getExtension = o.getClass().getMethod("getExtension", cArg);
+			getName = o.getClass().getMethod("getName");
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -26,48 +26,86 @@ public class Reaction extends SBase{
 		}
 	}
 	
-	public boolean isSetNotes()
-	{		
-		try{
-			return (Boolean) notesSet.invoke(SBMLReaction);
-		}
-		catch(InvocationTargetException | IllegalAccessException e)
-		{
-			return false;
-		}
-	}
-	
-	public String getId()
-	{
-		try{
-			return (String) id.invoke(SBMLReaction);
-		}
-		catch(InvocationTargetException | IllegalAccessException e)
-		{
-			return "";
-		}
-	}
-	
-	public String getNotesString()
-	{
-		try{
-			return (String) notesString.invoke(SBMLReaction);
-		}
-		catch(InvocationTargetException | IllegalAccessException e)
-		{
-			return "";
-		}
-	}
+
 
 
 	public boolean isReversible()
 	{
 		try{
-			return (Boolean) reversible.invoke(SBMLReaction);
+			return (Boolean) reversible.invoke(SBMLBase);
 		}
 		catch(InvocationTargetException | IllegalAccessException e)
 		{
 			return false;
 		}
 	}
+	
+	public Object getFBCExtension()
+	{
+		try{
+			return getExtension.invoke(SBMLBase, "fbc");
+		}
+		catch(InvocationTargetException | IllegalAccessException e)
+		{
+			return null;
+		}
+	}
+	public Association getAssociation()
+	{
+		try{
+			Object r = getFBCExtension();
+			if(r == null)
+			{
+				return null;
+			}
+			Method getGPRAssociation = r.getClass().getMethod("getGeneProductAssociation");
+			Object o = getGPRAssociation.invoke(r);
+			if(o == null)
+			{
+				return null;
+			}
+			Method getAssoc = o.getClass().getMethod("getAssociation");			
+			Object assoc = getAssoc.invoke(o);
+			if(assoc != null)
+			{
+				if(assoc.getClass().getSimpleName().equals("And"))
+				{
+					return new And(assoc);
+				}
+				if(assoc.getClass().getSimpleName().equals("Or"))
+				{
+					return new Or(assoc);
+				}
+				if(assoc.getClass().getSimpleName().equals("GeneProductRef"))
+				{
+					return new GeneProductRef(assoc);
+				}
+				else
+				{
+					//We do not parse "Not" associations.
+					return null;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			
+		}
+		return null;
+	}
+	
+	@Override
+	public String getName()
+	{
+		{
+			try{
+				return getName.invoke(SBMLBase).toString();
+			}
+			catch(InvocationTargetException | IllegalAccessException e)
+			{
+				return "";
+			}
+		}
+	}
+	
 }
