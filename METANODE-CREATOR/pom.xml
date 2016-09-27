@@ -5,9 +5,15 @@
 	<properties>
 		<bundle.symbolicName>IDARE</bundle.symbolicName>
 		<bundle.namespace>idare</bundle.namespace>
-		<cytoscape.api.version>3.3.0</cytoscape.api.version>
-		<maven-bundle-plugin.version>2.3.4</maven-bundle-plugin.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<maven-bundle-plugin.version>3.2.0</maven-bundle-plugin.version>
 		<osgi.api.version>4.2.0</osgi.api.version>
+		<!-- javax.xml.namespace -->
+		<org.osgi.framework.system.packages.extra>
+			javafx.animation,javafx.application,javafx.collections,javafx.embed.swing,javafx.geometry,javafx.scene,javafx.scene.layout,javafx.scene.transform,javax.swing,javax.swing.border,javafx.fxml,org.osgi.framework
+		</org.osgi.framework.system.packages.extra>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<cytoscape.api.version>3.4.0</cytoscape.api.version>
 	</properties>
 
 
@@ -18,8 +24,9 @@
 	<version>1.0</version>
 
 	<name>IDARE [${bundle.namespace}]</name>
-
-	<!-- Cytoscape requires Java 1.8 -->
+	<description> The IDARE Data Visualisation Tool</description>
+	
+		
 	<build>
 		<resources>
 			<resource>
@@ -28,12 +35,14 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<encoding>UTF-8</encoding>
 					<optimize>true</optimize>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
@@ -54,45 +63,78 @@
 					<instructions>
 						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace},
-						${bundle.namespace}.subnetwork,						
-						${bundle.namespace}.sbmlannotator,						
-						${bundle.namespace}.ThirdParty,
-						${bundle.namespace}.Properties,
-						${bundle.namespace}.imagenode.Properties,						
-						${bundle.namespace}.imagenode,
-						${bundle.namespace}.imagenode.Interfaces.*,
-						${bundle.namespace}.imagenode.Data.BasicDataTypes.*,
-						${bundle.namespace}.imagenode.Data.BasicDataTypes.ArrayData.*,
-						${bundle.namespace}.imagenode.Data.BasicDataTypes.MultiArrayData.*,
-						${bundle.namespace}.imagenode.exceptions.io,
-						${bundle.namespace}.imagenode.exceptions.layout,
-						${bundle.namespace}.imagenode.Utilities,
-						${bundle.namespace}.imagenode.GUI.Legend.Utilities,
-						${bundle.namespace}.imagenode.ColorManagement.*,
-						org.apache.batik.svggen.*,
-						</Export-Package>						
+						<Export-Package>
+							${bundle.namespace},
+							${bundle.namespace}.subnetwork,
+							${bundle.namespace}.sbmlannotator,
+							${bundle.namespace}.ThirdParty,
+							${bundle.namespace}.Properties,
+							${bundle.namespace}.imagenode.Properties,
+							${bundle.namespace}.imagenode,
+							${bundle.namespace}.imagenode.Interfaces.*,
+							${bundle.namespace}.imagenode.Data.BasicDataTypes.*,
+							${bundle.namespace}.imagenode.Data.BasicDataTypes.ArrayData.*,
+							${bundle.namespace}.imagenode.Data.BasicDataTypes.MultiArrayData.*,
+							${bundle.namespace}.imagenode.exceptions.io,
+							${bundle.namespace}.imagenode.exceptions.layout,
+							${bundle.namespace}.imagenode.Utilities,
+							${bundle.namespace}.imagenode.GUI.Legend.Utilities,
+							${bundle.namespace}.imagenode.ColorManagement.*,
+							org.apache.batik.*,
+							org.sbml.*,
+						</Export-Package>
 						<Private-Package>${bundle.namespace}.imagenode.internal.*,
-						${bundle.namespace}.subnetwork.internal.*,
-						${bundle.namespace}.sbmlannotator.internal.*,
-						${bundle.namespace}.imagenode.ColorManagement.*,
-						${bundle.namespace}.imagenode.*,
-						${bundle.namespace}.internal.*
+							${bundle.namespace}.subnetwork.internal.*,
+							${bundle.namespace}.sbmlannotator.internal.*,
+							${bundle.namespace}.imagenode.ColorManagement.*,
+							${bundle.namespace}.imagenode.*,
+							${bundle.namespace}.internal.*
 						</Private-Package>
 						<Bundle-Activator>${bundle.namespace}.imagenode.internal.CyActivator</Bundle-Activator>
-						<Embed-Dependency>jsbml;inline=false,
-							poi|poi-ooxml|poi-ooxml-schemas|ooxml-schemas;groupId=org.apache.poi;inline=false,
-							batik-ext|batik-svggen|batik-swing|xmlgraphics-commons|batik-util|batik-awt-util|batik-anim|batik-css|batik-dom|batik-anim|batik-svg-dom|batik-xml|batik-parser|batik-gvt|batik-bridge|batik-script;groupId=batik;inline=false,
-							*;scope=compile|runtime</Embed-Dependency>
-						<Import-Package>
-							junit.*|org.apache.poi.hdgf.*|org.apache.poi.hpbf.*|org.apache.poi.hslf.*|org.apache.poi.hsmf|org.apache.poi.hsmf.*|org.apache.poi.hwpf.*;resolution:=optional,
-							org.sbml.*;resolution:=optional,						
-							*;resolution:=optional,
-						</Import-Package>
+						<Embed-Dependency>*;scope=!provided|test;groupId=!org.cytoscape</Embed-Dependency>
+                        <Import-Package>javax.xml.namespace, *;resolution:=optional</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
+						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>
+			            <!-- resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+            </plugin>
+                        <!-- jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+                        <!-- coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.7.201606060606</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 
@@ -100,33 +142,84 @@
 	<repositories>
 		<repository>
 			<id>cytoscape_snapshots</id>
-			<snapshots>
-			</snapshots>
+			<name>Cytoscape Snapshots</name>
+			<url>http://code.cytoscape.org/nexus/content/repositories/snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-			<name>Cytoscape Snapshots</name>
-			<url>http://code.cytoscape.org/nexus/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>cytoscape_releases</id>
+			<name>Cytoscape Releases</name>
+			<url>http://code.cytoscape.org/nexus/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<releases>
-			</releases>
-			<name>Cytoscape Releases</name>
-			<url>http://code.cytoscape.org/nexus/content/repositories/releases/</url>
+		</repository>
+
+		<repository>
+			<id>maven-central</id>
+			<name>Maven central repository</name>
+			<url>http://repo.maven.apache.org/maven2/</url>
+		</repository>
+
+		<repository>
+			<id>JSBML SNAPSHOT</id>
+			<name>The JSBML repository</name>
+			<url>http://jsbml.sourceforge.net/m2repo_snapshots/</url>
+		</repository>
+
+		<!-- <repository> <id>EBI-mirror</id> <name>EBI mirror</name> <url>https://github.com/matthiaskoenig/ebi-maven-deps</url> 
+			</repository> -->
+
+		<repository>
+			<id>sems-maven-repository-releases</id>
+			<name>SEMS Maven Repo</name>
+			<url>http://mvn.sems.uni-rostock.de/releases/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 		<repository>
+			<id>sems-maven-repository-snapshots</id>
+			<name>SEMS Maven Repo</name>
+			<url>http://mvn.sems.uni-rostock.de/snapshots/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+
+		<repository>
 			<id>ebi-repo</id>
-			<name>The EBI repository</name>
+			<name>The EBI internal repository</name>
 			<url>http://www.ebi.ac.uk/~maven/m2repo</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>EBI SNAPSHOT</id>
+			<name>EBI Snapshot repository</name>
+			<url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
 		</repository>
 
+		<!-- resolves javax.jms:jms:jar:1.1 see http://stackoverflow.com/questions/3622773/java-net-maven-repo-jms-artifact-missing -->
+		<repository>
+			<id>repository.jboss.org-public</id>
+			<name>JBoss.org Maven repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
 	</repositories>
 
 
@@ -141,100 +234,132 @@
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>vizmap-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>core-task-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-util-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>work-swing-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>model-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>layout-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>presentation-api</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Logging -->
+	    <!-- CySBML -->
 		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-api</artifactId>
-			<version>1.5.2</version>
+			<groupId>org.cysbml</groupId>
+			<artifactId>cy3sbml</artifactId>
+			<version>[0.2.2,)</version>
 			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 		<!-- XLS In OUT -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.8</version>
-		</dependency>
-
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>		
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>dom4j</groupId>
+					<artifactId>dom4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>3.8</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.xmlbeans</groupId>
+					<artifactId>xmlbeans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>ooxml-schemas</artifactId>
 			<version>1.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.xmlbeans</groupId>
+					<artifactId>xmlbeans</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.5</version>
 		</dependency>
 
 
@@ -331,22 +456,59 @@
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.6</version>
 		</dependency>
+		<!-- Identifiers Matching (from cy3sbml) -->
+		<dependency>
+			<groupId>org.identifiers</groupId>
+			<artifactId>registry-lib</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
 
-		<!-- Trying to alter the order and add some packages early on for batik -->
+		<dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.7</version>
+        </dependency>
 
+		<!-- JSBML -->
 		<dependency>
 			<groupId>org.sbml.jsbml</groupId>
 			<artifactId>jsbml</artifactId>
-			<version>1.1</version>
-			<optional>true</optional>
-		</dependency>						
+			<version>1.2-SNAPSHOT</version>
+		</dependency>
+
+
 		<dependency>
-			<groupId>org.cysbml</groupId>
-			<artifactId>cy3sbml</artifactId>
-			<version>[0.2.2,)</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>		
-		
+			<groupId>org.biojava</groupId>
+			<artifactId>biojava-ontology</artifactId>
+			<version>4.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-slf4j-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+
 	</dependencies>
 </project>

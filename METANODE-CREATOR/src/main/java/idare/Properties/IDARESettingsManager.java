@@ -15,7 +15,6 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.session.events.SessionLoadedEvent;
-import org.springframework.cglib.transform.impl.AddPropertyTransformer;
 
 /**
  * Class to keep track of IDARE IDs and complain (throw exceptions) if duplicate IDs are found. hopefully there wont be any instances with > max(long) nodes in one network...
@@ -31,8 +30,11 @@ public class IDARESettingsManager{
 	private Long maxNetworkID = new Long(0);
 	private HashSet<Long> proteinIDs;
 	private Long maxProteinID = new Long(0);
+	private HashSet<Long> geneIDs;
+	private Long maxGeneID = new Long(0);
 	private HashSet<Long> proteinComplexIDs;
 	private Long maxProteinComplexID = new Long(0);
+	private Pattern genePattern = Pattern.compile("^" + IDAREProperties.NodeType.IDARE_GENE + "([0-9]+)$");
 	private Pattern proteinPattern = Pattern.compile("^" + IDAREProperties.NodeType.IDARE_PROTEIN + "([0-9]+)$");
 	private Pattern proteinComplexPattern = Pattern.compile("^" + IDAREProperties.NodeType.IDARE_PROTEINCOMPLEX + "([0-9]+)$");
 	private IDAREProperties properties;
@@ -50,6 +52,8 @@ public class IDARESettingsManager{
 		networkIDs = new HashSet<Long>();
 		proteinIDs = new HashSet<Long>();
 		maxProteinID = new Long(0);
+		geneIDs = new HashSet<Long>();
+		maxGeneID = new Long(0);
 		maxProteinComplexID = new Long(0);
 		proteinComplexIDs = new HashSet<Long>();		
 		SubNetworkTypes = new HashMap<String, String>();
@@ -66,6 +70,20 @@ public class IDARESettingsManager{
 		maxProteinID = maxProteinID+1;
 		proteinIDs.add(maxProteinID);
 		return maxProteinID;
+	}
+	
+	
+	/**
+	 * Get the next gene ID which is the largest current ID + 1
+	 * This Id should be used otherwise it will be blocked for this manager.
+	 * @return a valid IDARE identifier
+	 */
+	
+	public long getNextGeneID()
+	{
+		maxGeneID = maxGeneID+1;
+		geneIDs.add(maxGeneID);
+		return maxGeneID;
 	}
 	
 	
@@ -123,6 +141,8 @@ public class IDARESettingsManager{
 		maxProteinID = new Long(0);
 		maxProteinComplexID = new Long(0);
 		proteinComplexIDs = new HashSet<Long>();
+		geneIDs = new HashSet<Long>();
+		maxGeneID = new Long(0);
 	}
 	
 	/**
@@ -146,7 +166,7 @@ public class IDARESettingsManager{
 	}
 
 	/**
-	 * Add an ID to this manager. The manager checks whether this ID is already used.
+	 * Add a protein ID to this manager. The manager checks whether this ID is already used.
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
@@ -162,6 +182,27 @@ public class IDARESettingsManager{
 				maxProteinID = id;
 			}
 			proteinIDs.add(id);
+		}
+	}
+	
+
+	/**
+	 * Add an gene ID to this manager. The manager checks whether this ID is already used.
+	 * @param id - The id that needs to be checked
+	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
+	 */
+	private void addGeneID(Long id) throws IllegalArgumentException
+	{
+		if(geneIDs.contains(id)) {
+			throw new IllegalArgumentException("ID already used");
+		}
+		else
+		{
+			if(id.compareTo(maxGeneID) > 0)
+			{
+				maxGeneID = id;
+			}
+			geneIDs.add(id);
 		}
 	}
 	
@@ -339,9 +380,14 @@ public class IDARESettingsManager{
 								addProteinID(Long.parseLong(protMatch.group(0)));
 							}
 							Matcher protComplexMatch = proteinComplexPattern.matcher(nodename);
-							if(protMatch.matches())
+							if(protComplexMatch.matches())
 							{
 								addProteinComplexID(Long.parseLong(protComplexMatch.group(0)));
+							}
+							Matcher geneMatch = genePattern.matcher(nodename);
+							if(geneMatch.matches())
+							{
+								addGeneID(Long.parseLong(geneMatch.group(0)));
 							}
 						}
 					}

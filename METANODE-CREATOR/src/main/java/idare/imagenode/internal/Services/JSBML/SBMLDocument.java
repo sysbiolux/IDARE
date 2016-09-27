@@ -22,6 +22,7 @@ public class SBMLDocument {
 	{
 		try{
 			return new Model(model.invoke(SBMLDocument));
+			
 		}
 		catch(InvocationTargetException | IllegalAccessException e)
 		{

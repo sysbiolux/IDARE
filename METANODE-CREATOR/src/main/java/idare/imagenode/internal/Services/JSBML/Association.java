@@ -5,10 +5,20 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.sbml.jsbml.JSBML;
+/**
+ * Wrapper for the Association Object from the fbc package of JSBML
+ * @author Thomas Pfau
+ *
+ */
 public class Association {
 
 	Object SBMLAssoc;
 	Method getListOfAssociations;
+	/**
+	 * A Wrapper that takes a hopefully) Association object
+	 * @param o
+	 */
 	public Association(Object o)
 	{
 		SBMLAssoc = o;		
@@ -28,15 +38,15 @@ public class Association {
 			List<Association> result = new LinkedList<Association>();
 			for(Object o : assoclist)
 			{
-				if(o.getClass().getSimpleName().equals("And"))
+				if(o.getClass().getSimpleName().equals(org.sbml.jsbml.ext.fbc.And.class.getSimpleName()))
 				{
 					result.add(new And(o));
 				}
-				if(o.getClass().getSimpleName().equals("Or"))
+				if(o.getClass().getSimpleName().equals(org.sbml.jsbml.ext.fbc.Or.class.getSimpleName()))
 				{
 					result.add(new Or(o));
 				}
-				if(o.getClass().getSimpleName().equals("GeneProductRef"))
+				if(o.getClass().getSimpleName().equals(org.sbml.jsbml.ext.fbc.GeneProductRef.class.getSimpleName()))
 				{
 					result.add(new GeneProductRef(o));
 				}

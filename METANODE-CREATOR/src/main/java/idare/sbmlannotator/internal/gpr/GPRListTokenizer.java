@@ -3,9 +3,6 @@ package idare.sbmlannotator.internal.gpr;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class GPRListTokenizer{

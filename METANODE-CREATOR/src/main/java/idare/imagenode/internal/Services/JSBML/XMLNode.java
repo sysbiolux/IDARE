@@ -1,5 +1,7 @@
 package idare.imagenode.internal.Services.JSBML;
 
+import idare.imagenode.internal.Debug.PrintFDebugger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -17,20 +19,20 @@ public class XMLNode {
 	{
 		xmlnode = o;
 		try{
-			Class[] cArg = new Class[2];
-			cArg[0] = String.class;
-			cArg[1] = String.class;
 			getChildCount = o.getClass().getMethod("getChildCount");
-			getChildElement = o.getClass().getMethod("getChildElement", cArg);
-			getChildElements= o.getClass().getMethod("getChildElements", cArg);
-			Class[] cArg2 = new Class[1];
-			cArg2[0] = Integer.class;			
-			getChild = o.getClass().getMethod("getChild",cArg2);
-			getCharacters= o.getClass().getMethod("getCharacters");
+			getChildElement = o.getClass().getMethod("getChildElement", String.class, String.class);
+			getChildElements= o.getClass().getMethod("getChildElements", String.class, String.class);
+			getChild = o.getClass().getMethod("getChild",int.class);
+			getCharacters= o.getClass().getMethod("getCharacters");			
 		}
 		catch(NoSuchMethodException e)
 		{
-
+			e.printStackTrace(System.out);
+			PrintFDebugger.Debugging(this,"Available Methods");
+			for(Method m : o.getClass().getMethods())
+			{
+				System.out.println(m.getName());
+			}			
 		}
 	}
 	

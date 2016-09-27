@@ -1,5 +1,7 @@
 package idare.imagenode.internal.Services.JSBML;
 
+import idare.imagenode.internal.Debug.PrintFDebugger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -10,23 +12,27 @@ public class Model {
 	private Method ListOfSpecies;
 	private Method ListOfReactions;
 	private Method hasFBCExtension;
-	private Method getListOfGeneProducts;
+	//private Method getListOfGeneProducts;
 	private Object SBMLModel;
 
 	public Model(Object o)
 	{
 		SBMLModel = o;
 		try{
-			getListOfGeneProducts = o.getClass().getMethod("getListOfGeneProducts");
+			//getListOfGeneProducts = o.getClass().getMethod("getListOfGeneProducts");
 			ListOfReactions = o.getClass().getMethod("getListOfReactions");
 			ListOfSpecies= o.getClass().getMethod("getListOfSpecies");
-			Class[] cArg = new Class[1];
-			cArg[0] = String.class;
-			hasFBCExtension = o.getClass().getMethod("isPackageEnabled", cArg);				
+			hasFBCExtension = o.getClass().getMethod("isPackageEnabled", String.class);		
 		}
 		catch(NoSuchMethodException e)
 		{
-
+			e.printStackTrace();
+			PrintFDebugger.Debugging(this,"Available Methods");
+			for(Method m : o.getClass().getMethods())
+			{
+				System.out.println(m.getName());
+			}
+			
 		}
 	}
 
@@ -87,7 +93,14 @@ public class Model {
 	public List<GeneProduct> getListOfGeneProducts()
 	{
 		try{
-			List specieslist = (List)getListOfGeneProducts.invoke(SBMLModel);
+			Method getExtension = SBMLModel.getClass().getMethod("getExtension", String.class);			
+			Object fbcmodel = getExtension.invoke(SBMLModel, "fbc");
+			if(fbcmodel == null)
+			{
+				return new LinkedList<GeneProduct>();
+			}
+			Method getListOfGeneProducts = fbcmodel.getClass().getMethod("getListOfGeneProducts");
+			List specieslist = (List)getListOfGeneProducts.invoke(fbcmodel);
 			List<GeneProduct> result = new LinkedList<GeneProduct>();
 			for(Object o : specieslist)
 			{
@@ -98,9 +111,9 @@ public class Model {
 			}
 			return result;
 		}
-		catch(InvocationTargetException | IllegalAccessException e)
+		catch(InvocationTargetException | IllegalAccessException | NoSuchMethodException e)
 		{
-			return null;
+			return new LinkedList<GeneProduct>();
 		}
 	}
 }

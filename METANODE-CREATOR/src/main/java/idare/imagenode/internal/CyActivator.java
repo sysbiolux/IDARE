@@ -9,9 +9,9 @@ import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.LegendUpdater;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
-import idare.imagenode.internal.Services.JSBML.SBMLServiceRegistrar;
+import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
 import idare.internal.IDAREApp;
-import idare.sbmlannotator.internal.SBMLAnnotationTaskFactory;
+import idare.sbmlannotator.internal.Tasks.SBMLAnnotatorTaskFactory;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.SubnetworkSessionManager;
 import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
@@ -55,16 +55,17 @@ import org.cytoscape.work.swing.GUITunableHandlerFactory;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
 
+
+
 public class CyActivator extends AbstractCyActivator {
 
 	IDAREApp app;
 	CyServiceRegistrar reg;
 	BundleContext appcontext;
-	SBMLServiceRegistrar SBMLReg;
-	
+	//SBMLServiceRegistrar SBMLReg;
+
 	@Override
-	public void start(BundleContext context) throws Exception {
-		
+	public void start(BundleContext context) throws Exception {		
 		appcontext = context;		
 		app = new IDAREApp();
 		registerAllServices(context, app, new Properties());
@@ -178,8 +179,8 @@ public class CyActivator extends AbstractCyActivator {
 		
 
 		//This is a holder for the cy3sbml SBMLManager class, which can provide that class to the SBMLAnnotationFactory if it is available. 
-		SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
-		context.addServiceListener(SBMLReg);
+		//SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
+		//context.addServiceListener(SBMLReg);
 		
 		
 		//Set up properties for the Context and menu items for SBML annotation.
@@ -201,9 +202,13 @@ public class CyActivator extends AbstractCyActivator {
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);	
 
 		//Create and register the SBMLAnnotationFactory.
-		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app.getImageNodeApp());
-		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
-		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
+//		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app.getImageNodeApp());
+//		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
+//		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);		
+	
+		SBMLAnnotatorTaskFactory Annotator2 = new SBMLAnnotatorTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, new SBMLManagerHolder(FileUtilService, cySwingApp, context), app.getImageNodeApp());
+		registerService(context, Annotator2, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
+		registerService(context, Annotator2, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
 		
 	}
 
@@ -274,10 +279,6 @@ public class CyActivator extends AbstractCyActivator {
 	{
 		super.shutDown();
 		app.getImageNodeApp().unregisterAll();		
-		if(SBMLReg != null)
-		{
-			appcontext.removeServiceListener(SBMLReg);
-		}
 		try{
 			reg.unregisterService(app, IDAREImageNodeApp.class);
 		}

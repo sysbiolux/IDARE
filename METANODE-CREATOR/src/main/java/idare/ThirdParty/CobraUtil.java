@@ -104,9 +104,7 @@ public class CobraUtil {
 
             props.setProperty(key, value);
           } 
-        } // else if (logger.isDebugEnabled()) {
-          // logger.debug("The content of one of the 'p' element does not seems to respect the expected pattern (KEY: VALUE), found no children !");
-        //}
+        } 
       }
     }
     

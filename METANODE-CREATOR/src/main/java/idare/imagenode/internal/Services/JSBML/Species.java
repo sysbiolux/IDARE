@@ -5,10 +5,7 @@ import java.lang.reflect.Method;
 
 public class Species extends SBase{
 	
-	private Method notesSet;
-	private Method id;
-	private Method notesString;
-	private Method annotation;
+
 	private Method compartment;
 	private Method getName;
 	public Species(Object o) 

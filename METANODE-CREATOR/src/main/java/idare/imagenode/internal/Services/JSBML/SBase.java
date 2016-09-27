@@ -25,7 +25,7 @@ public abstract class SBase {
 			notesString = o.getClass().getMethod("getNotesString");
 			annotation = o.getClass().getMethod("getAnnotation");
 			setAnnotation = o.getClass().getMethod("isSetAnnotation");
-			setAnnotation = o.getClass().getMethod("getNotes");
+			getNotes = o.getClass().getMethod("getNotes");
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -144,4 +144,34 @@ public abstract class SBase {
 	
 	
 	public abstract String getName();	
+	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((SBMLBase == null) ? 0 : SBMLBase.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SBase other = (SBase) obj;
+		if (SBMLBase == null) {
+			if (other.SBMLBase != null)
+				return false;
+		} else if (!SBMLBase.equals(other.SBMLBase))
+			return false;
+		return true;
+	}
+	
+	
+
 }

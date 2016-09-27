@@ -15,9 +15,7 @@ public class Reaction extends SBase{
 		super(o);
 		try{
 			reversible = o.getClass().getMethod("isReversible");
-			Class[] cArg = new Class[1];
-		    cArg[0] = String.class;
-			getExtension = o.getClass().getMethod("getExtension", cArg);
+			getExtension = o.getClass().getMethod("getExtension", String.class);
 			getName = o.getClass().getMethod("getName");
 		}
 		catch(NoSuchMethodException e)
@@ -53,19 +51,19 @@ public class Reaction extends SBase{
 	public Association getAssociation()
 	{
 		try{
-			Object r = getFBCExtension();
-			if(r == null)
+			Object fbcreac = getFBCExtension();
+			if(fbcreac == null)
 			{
 				return null;
 			}
-			Method getGPRAssociation = r.getClass().getMethod("getGeneProductAssociation");
-			Object o = getGPRAssociation.invoke(r);
-			if(o == null)
+			Method getGPRAssociation = fbcreac.getClass().getMethod("getGeneProductAssociation");
+			Object gprassoc = getGPRAssociation.invoke(fbcreac);
+			if(gprassoc == null)
 			{
 				return null;
 			}
-			Method getAssoc = o.getClass().getMethod("getAssociation");			
-			Object assoc = getAssoc.invoke(o);
+			Method getAssoc = gprassoc.getClass().getMethod("getAssociation");			
+			Object assoc = getAssoc.invoke(gprassoc);
 			if(assoc != null)
 			{
 				if(assoc.getClass().getSimpleName().equals("And"))
@@ -89,7 +87,7 @@ public class Reaction extends SBase{
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace(System.out);
 		}
 		return null;
 	}

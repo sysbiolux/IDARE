@@ -7,7 +7,16 @@ import idare.ThirdParty.CobraUtil;
 import idare.ThirdParty.DelayedVizProp;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Services.JSBML.*;
+import idare.imagenode.internal.Services.JSBML.Annotation;
+import idare.imagenode.internal.Services.JSBML.Association;
+import idare.imagenode.internal.Services.JSBML.CVTerm;
+import idare.imagenode.internal.Services.JSBML.GeneProduct;
+import idare.imagenode.internal.Services.JSBML.Model;
+import idare.imagenode.internal.Services.JSBML.Reaction;
+import idare.imagenode.internal.Services.JSBML.SBMLDocument;
+import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
+import idare.imagenode.internal.Services.JSBML.SBase;
+import idare.imagenode.internal.Services.JSBML.Species;
 import idare.sbmlannotator.internal.gpr.FBCGPRParser;
 import idare.sbmlannotator.internal.gpr.GPRAssociation;
 import idare.sbmlannotator.internal.gpr.GPRListTokenizer;
@@ -17,16 +26,13 @@ import idare.sbmlannotator.internal.gpr.Gene;
 import idare.sbmlannotator.internal.gpr.Protein;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.solr.common.util.Hash;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyEdge;
@@ -71,6 +77,9 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	@Tunable(description="Do you want to generate gene and Protein Nodes?", dependsOn="doc!=null")
 	public boolean generateGeneNodes = true;
 
+	@Tunable(description="Should FBC Nodes and edges be removed", dependsOn="generateGeneNodes=true")
+	public boolean removeFBCNodes = true;
+
 
 	//@Tunable
 	boolean hasProteinAnnotation = false;
@@ -103,7 +112,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 	@Tunable
 	public SBMLDocument doc;
-	
+
 	private CyNetwork network;
 	GPRManager gm;
 	IDARESettingsManager ism;	
@@ -262,10 +271,10 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			getCobraReactions();
 		}
-		//if(cysbmlNetwork & generateGeneNodes)
-		//{
-		//	removeFBCLogic();			
-		//}
+		if(cysbmlNetwork & generateGeneNodes & removeFBCNodes)
+		{
+			removeFBCNodes();			
+		}
 		if(!generateGeneNodes)
 		{			
 			taskMonitor.setStatusMessage("No Gene Nodes to be generated - Finishing");
@@ -286,9 +295,10 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		taskMonitor.setStatusMessage("Parsing GPRs");
 		if(doc.getModel().isFBCPackageEnabled());
 		{
+			taskMonitor.setStatusMessage("Parsing FBC GPRs");
 			parseFBCLogic();
-		}
-		parseCOBRALogic();
+		}		
+		parseCOBRALogic(taskMonitor);
 		//removeModifierGeneEdges();	
 		if(!skipNodes)
 		{
@@ -350,7 +360,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 					setupGPRAssociation(currentGPR, reacNode);								
 				}
 			}
-
+			eventHelper.flushPayloadEvents();			
 		}
 	}
 
@@ -486,7 +496,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				}
 				else
 				{
-					
+
 					View<CyNode> nodeView = networkView.getNodeView(proteinNode);
 					if(nodeView != null)
 					{
@@ -592,7 +602,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				Double y = ReacNodeView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
 				Double NewNodeX = GetXPosition(i, sourroundingNodeCount, x, width);
 				Double NewNodeY = GetYPosition(i, sourroundingNodeCount, y, width);
-//				System.out.println("Assigning position for node " + network.getRow(neighbourNode).get(sbmlIDcol, String.class) + " surrounding node " + network.getRow(reacNode).get(sbmlIDcol, String.class) + " at " + x +"/"+y + " to " + NewNodeX + "/" + NewNodeY);
+				//				System.out.println("Assigning position for node " + network.getRow(neighbourNode).get(sbmlIDcol, String.class) + " surrounding node " + network.getRow(reacNode).get(sbmlIDcol, String.class) + " at " + x +"/"+y + " to " + NewNodeX + "/" + NewNodeY);
 				i+=1;
 				VizProps.add(new DelayedVizProp(neighbourNode, BasicVisualLexicon.NODE_X_LOCATION, NewNodeX, false));
 				VizProps.add(new DelayedVizProp(neighbourNode, BasicVisualLexicon.NODE_Y_LOCATION, NewNodeY, false));
@@ -602,19 +612,6 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		eventHelper.flushPayloadEvents();			
 		DelayedVizProp.applyAll(networkView, VizProps);		
 
-	}
-
-
-	private void removeModifierGeneEdges()
-	{
-		Set<CyEdge> edgesToRemove = new HashSet<CyEdge>();
-		for(SBase base : geneMap.keySet())
-		{
-			if(base instanceof Species)
-			{
-				edgesToRemove.addAll(network.getAdjacentEdgeList(network.getNode(matchingNodes.get(base).get(CyNode.SUID,Long.class)),CyEdge.Type.ANY));			
-			}
-		}
 	}
 
 
@@ -700,13 +697,12 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			{
 				network.addEdge(proteinNode, reacNode, true);
 			}
-		}
-
+		}		
 	}
 
 	private void setupProteinNode(Protein p, CyNode proteinNode)
 	{
-//		PrintFDebugger.Debugging(this, "Setting up protein Node for protein  " + p.getName() + " which has " + p.getCodingGenes().size() + " Genes");
+		//		PrintFDebugger.Debugging(this, "Setting up protein Node for protein  " + p.getName() + " which has " + p.getCodingGenes().size() + " Genes");
 
 		for(Gene g : p.getCodingGenes())
 		{
@@ -723,7 +719,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 	private void setupRowAs(CyTable Tab, CyRow row, String id, String type)
 	{
-
+		
 		if(Tab.getColumn(CyNetwork.NAME) != null)
 		{
 			row.set(CyNetwork.NAME, id);
@@ -821,11 +817,14 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			for(SBase gprod: proteinIDAnnotation.keySet())
 			{
+				if(matchingNodes.containsKey(gprod))
+				{
 
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,proteinIDAnnotation.get(gprod).get(proteinAnnotationDataBase.getSelectedValue()));
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,proteinIDAnnotation.get(gprod).get(proteinAnnotationDataBase.getSelectedValue()));
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_PROTEIN);
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_PROTEIN);
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,proteinIDAnnotation.get(gprod).get(proteinAnnotationDataBase.getSelectedValue()));
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,proteinIDAnnotation.get(gprod).get(proteinAnnotationDataBase.getSelectedValue()));
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_PROTEIN);
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_PROTEIN);
+				}
 			}
 		}
 		//otherwise, we use the available label/name
@@ -833,11 +832,14 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			for(SBase gprod: proteinIDAnnotation.keySet())
 			{
+				if(matchingNodes.containsKey(gprod))
+				{
 
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,gprod.getName());
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,gprod.getName());
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_PROTEIN);
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_PROTEIN);
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,gprod.getName());
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,gprod.getName());
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_PROTEIN);
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_PROTEIN);
+				}
 			}
 
 		}
@@ -852,10 +854,13 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			for(SBase gprod: geneIDAnnotation.keySet())
 			{
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,geneIDAnnotation.get(gprod).get(geneAnnotationDataBase.getSelectedValue()));
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,geneIDAnnotation.get(gprod).get(geneAnnotationDataBase.getSelectedValue()));
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_GENE);
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_GENE);
+				if(matchingNodes.containsKey(gprod))
+				{
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,geneIDAnnotation.get(gprod).get(geneAnnotationDataBase.getSelectedValue()));
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,geneIDAnnotation.get(gprod).get(geneAnnotationDataBase.getSelectedValue()));
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_GENE);
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_GENE);
+				}
 			}			
 		}
 		//otherwise, we use the available label/name
@@ -863,10 +868,13 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			for(SBase gprod: geneIDAnnotation.keySet())
 			{
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,gprod.getName());
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,gprod.getName());
-				matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_GENE);
-				matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_GENE);
+				if(matchingNodes.containsKey(gprod))
+				{
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_NAME_STRING,gprod.getName());
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_NAME,gprod.getName());
+					matchingNodes.get(gprod).set(IDAREProperties.SBML_TYPE_STRING,IDAREProperties.NodeType.IDARE_GENE);
+					matchingNodes.get(gprod).set(IDAREProperties.IDARE_NODE_TYPE,IDAREProperties.NodeType.IDARE_GENE);
+				}
 			}
 
 		}
@@ -880,18 +888,23 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			Association assoc = reac.getAssociation();
 			if(assoc == null)
 			{
+				PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has no Association.");
 				continue;
-			}
-			FBCGPRParser parser = new FBCGPRParser(assoc, doc.getModel() ,geneMap,proteinMap);
+			}	
+			PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has a GPR Association.");
 			if(matchingNodes.containsKey(reac))
 			{
+				PrintFDebugger.Debugging(this, "Found a reaction node with a matching row, Trying to associate GPR");
 				CyNode reacNode = network.getNode(matchingNodes.get(reac).get(CyNode.SUID, Long.class));
+				FBCGPRParser parser = new FBCGPRParser(assoc, doc.getModel() ,geneMap,proteinMap,SBMLObjectIDs);
 				if(!AssociatedGPRs.containsKey(reacNode))
 				{
+					PrintFDebugger.Debugging(this, "Adding GPRs to " + reacNode );
 					AssociatedGPRs.put(reacNode, parser.getGPRAssociation());
 				}
 				else
 				{
+					PrintFDebugger.Debugging(this, "Combining GPRs on " + reacNode );
 					AssociatedGPRs.put(reacNode, combineGPRAnnotations(parser.getGPRAssociation(),AssociatedGPRs.get(reacNode)));
 				}
 			}
@@ -900,7 +913,43 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		}
 	}
 
-	private void parseCOBRALogic()
+	private void removeFBCNodes()
+	{
+		//this only happens if we have a cy3sbml parsed network, thus we can savely access cy3sbml fields.
+		//however, we will have to do so via reflections...
+		Vector<CyNode> nodeToRemove = new Vector<CyNode>();
+		Vector<CyEdge> edgesToRemove = new Vector<CyEdge>();
+		if(network.getDefaultNodeTable().getColumn(org.cy3sbml.SBMLCore.SBML_TYPE_ATTR) != null)
+		{	
+			
+			for(CyRow row : network.getDefaultNodeTable().getAllRows())
+			{
+				String type_value = row.get(org.cy3sbml.SBMLCore.SBML_TYPE_ATTR, String.class);
+				if(type_value != null && (type_value.equals(org.cy3sbml.SBML.NODETYPE_FBC_AND) || type_value.equals(org.cy3sbml.SBML.NODETYPE_FBC_OR)))
+				{
+					nodeToRemove.add(network.getNode(row.get(CyNode.SUID, Long.class)));
+				}
+			}
+		}
+		if(network.getDefaultEdgeTable().getColumn(org.cy3sbml.SBMLCore.INTERACTION_TYPE_ATTR) != null)
+		{
+			for(CyRow row : network.getDefaultEdgeTable().getAllRows())
+			{				
+				String type_value = row.get(org.cy3sbml.SBMLCore.INTERACTION_TYPE_ATTR, String.class);
+				if(type_value != null && type_value.equals(org.cy3sbml.SBML.INTERACTION_FBC_ASSOCIATION_REACTION))
+				{
+					edgesToRemove.add(network.getEdge(row.get(CyEdge.SUID,Long.class)));
+				}
+			}
+			
+		}
+		//this should also eliminate the attached edges.
+		network.removeNodes(nodeToRemove);
+		network.removeEdges(edgesToRemove);
+		
+	}
+	
+	private void parseCOBRALogic(TaskMonitor taskMonitor)
 	{
 		CyColumn assoccol = null;
 		CyColumn listcol = null;
@@ -916,6 +965,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		}
 		if(assoccol != null || listcol != null)
 		{
+			taskMonitor.setStatusMessage("Parsing Cobra GPRs");
 			for(Reaction reac : CobraReactions)
 			{
 				boolean annotationparsed = false;
@@ -951,7 +1001,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 							geneList = geneList.trim();
 							System.out.println("Setting up the GPR for " + row.get(sbmlIDcol, String.class) + " as " + geneList+ " of size " + geneList.length());
 						}
-						
+
 						if(geneList != null && geneList.trim().equals("") && !geneList.equals(listcol.getDefaultValue()))
 						{
 							System.out.println("Parsing GPR: " + geneList);						
@@ -1018,7 +1068,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 							}
 						}						
 						matchingNodes.get(sbmlitem).set(propertyname.toString(), props.get(propertyname));
-						
+
 					}
 				}
 				catch(Exception e)
@@ -1030,10 +1080,6 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		getCobraReactions();
 	}
 
-	private boolean isGeneInformation(String NoteType)
-	{
-		return NoteType.equals("GENE_ASSOCIATION") || NoteType.equals("GENE ASSOCIATION") || NoteType.equals("GENE_LIST") || NoteType.equals("GENE LIST");						
-	}
 
 	private void getMatchingNodes()
 	{
@@ -1057,9 +1103,9 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 						{
 							nodesToMerge.put(proteinNodes.get(proteinMap.get(sbmlitem)), new HashSet<CyRow>());
 						}
-//						System.out.println("A: " + proteinMap.get(sbmlitem) );
-//						System.out.println("B: " + proteinNodes.get(proteinMap.get(sbmlitem)));
-//						System.out.println("C: " + nodesToMerge.get(proteinNodes.get(proteinMap.get(sbmlitem))));
+						//						System.out.println("A: " + proteinMap.get(sbmlitem) );
+						//						System.out.println("B: " + proteinNodes.get(proteinMap.get(sbmlitem)));
+						//						System.out.println("C: " + nodesToMerge.get(proteinNodes.get(proteinMap.get(sbmlitem))));
 						nodesToMerge.get(proteinNodes.get(proteinMap.get(sbmlitem))).add(row);
 					}
 					else
@@ -1096,24 +1142,24 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		for(Species spec : doc.getModel().getListOfSpecies())
 		{
 			SBMLObjectIDs.put(spec.getId(), spec);
-//			PrintFDebugger.Debugging(this, "Found a species with id " + spec.getId());
+			//			PrintFDebugger.Debugging(this, "Found a species with id " + spec.getId());
 
 		}
 		for(Reaction reac : doc.getModel().getListOfReactions())
 		{
 			SBMLObjectIDs.put(reac.getId(), reac);
-//			PrintFDebugger.Debugging(this, "Found a reaction with id " + reac.getId());
+			//			PrintFDebugger.Debugging(this, "Found a reaction with id " + reac.getId());
 		}
 		PrintFDebugger.Debugging(this, "Finished reading Reactions ");
 		if(doc.getModel().isFBCPackageEnabled())
 		{
-//			PrintFDebugger.Debugging(this, "Checking the model for FBC");
+			//			PrintFDebugger.Debugging(this, "Checking the model for FBC");
 			for(GeneProduct gprod : doc.getModel().getListOfGeneProducts())
 			{
 				SBMLObjectIDs.put(gprod.getId(), gprod);
 			}
 		}
-//		PrintFDebugger.Debugging(this, "Finished reading SBMLIDs");
+		//		PrintFDebugger.Debugging(this, "Finished reading SBMLIDs");
 	}
 
 	public void addCobraInformationAnnotation()
@@ -1146,7 +1192,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			//This is a Protein.
 			if(cspec.getSBOTerm() == 14 || cspec.getSBOTerm() == 252)
 			{
-//				PrintFDebugger.Debugging(this, "Found a Protein " + cspec.getName() );
+				//				PrintFDebugger.Debugging(this, "Found a Protein " + cspec.getName() );
 				nodesAnnotedAsProtein = true;
 				Set<Gene> GeneList = new HashSet<Gene>();
 				if(cspec.isSetAnnotation())
@@ -1181,7 +1227,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 								{
 									proteinToGeneAnnotation.get(cspec).put(dataCollection, new Vector<String>());
 								}
-//								PrintFDebugger.Debugging(this, "Adding Gene " + identifier + " as coding for protein " + cspec.getName());
+								//								PrintFDebugger.Debugging(this, "Adding Gene " + identifier + " as coding for protein " + cspec.getName());
 								proteinToGeneAnnotation.get(cspec).get(dataCollection).add(identifier);								
 								geneAnnotationDatabases.add(dataCollection);
 								genesPresent = true;
@@ -1203,7 +1249,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 								}
 								proteinIDAnnotation.get(cspec).put(dataCollection, identifier);
 								proteinAnnotationDatabases.add(dataCollection);
-//								PrintFDebugger.Debugging(this, "Adding Protein " + identifier + " as protein ID for protein " + cspec.getName());
+								//								PrintFDebugger.Debugging(this, "Adding Protein " + identifier + " as protein ID for protein " + cspec.getName());
 								dbIDs.put(dataCollection, identifier);
 							}
 							if(!proteinMap.containsKey(cspec))
@@ -1322,185 +1368,198 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 		if(doc.getModel().isFBCPackageEnabled())
 		{
-				
+			PrintFDebugger.Debugging(this, "Looking up FBC GeneProducts");	
 			for(GeneProduct cspec : doc.getModel().getListOfGeneProducts())
 			{
 				SBMLObjectIDs.put(cspec.getId(),cspec);
-				if(!cspec.isSetSBOTerm())
+				PrintFDebugger.Debugging(this, "Annotating a GeneProduct with label" + cspec.getLabel());
+				if(cspec.isSetSBOTerm())
 				{
-					//if the SBO Term is not set, we can't determine, what this is..				
-					continue;
-				}
-				if(cspec.getSBOTerm() == 14 || cspec.getSBOTerm() == 252)
-				{
-					fbcnodesAnnotedAsProtein = true;
 
-					Set<Gene> GeneList = new HashSet<Gene>();
-
-					if(cspec.isSetAnnotation())
+					if(cspec.getSBOTerm() == 14 || cspec.getSBOTerm() == 252)
 					{
-						Annotation cspecAnnotation = cspec.getAnnotation();
-						List<CVTerm> CVTerms = cspecAnnotation.getListOfCVTerms();
-						//Checking whether it is annotated as polypeptide chain or as enzyme
-						boolean proteinCreated = false;
-						boolean genesPresent = false;
-						for(CVTerm cv : CVTerms)
-						{						
+						fbcnodesAnnotedAsProtein = true;
 
+						Set<Gene> GeneList = new HashSet<Gene>();
 
-							//Ok, We have an enzyme (otherwise a cspec should not be 'Encoded' by anything)							
-							if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS_ENCODED_BY)
-							{
-								//isProtein = true;
-								for(String ressource : cv.getResources())
-								{
-									//We assume, that we have a URI of the form: http://authority/database/Entry
-									String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
-									String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
-									if(!proteinToGeneAnnotation.containsKey(cspec))
-									{
-										proteinToGeneAnnotation.put(cspec, new HashMap<String, Vector<String>>());
-									}
-									if(!proteinToGeneAnnotation.get(cspec).containsKey(dataCollection))
-									{
-										proteinToGeneAnnotation.get(cspec).put(dataCollection, new Vector<String>());
-									}
-									proteinToGeneAnnotation.get(cspec).get(dataCollection).add(identifier);								
-									geneAnnotationDatabases.add(dataCollection);
-									genesPresent = true;
-								}
-
-							}
-
-							if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS)
-							{
-								//isProtein = true;
-								HashMap<String,String> dbIDs = new HashMap<String, String>(); 
-								for(String ressource : cv.getResources())
-								{
-									//We assume, that we have a URI of the form: http://authority/database/Entry
-									String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
-									String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
-									if(!proteinIDAnnotation.containsKey(cspec))
-									{
-										proteinIDAnnotation.put(cspec, new HashMap<String, String>());
-									}
-									proteinIDAnnotation.get(cspec).put(dataCollection, identifier);
-									proteinAnnotationDatabases.add(dataCollection);
-									dbIDs.put(dataCollection, identifier);
-								}
-								if(!proteinMap.containsKey(cspec))
-								{
-									proteinMap.put(cspec,gm.getProtein(dbIDs));
-								}
-								else
-								{
-									gm.updateProteindbs(proteinMap.get(cspec),dbIDs);
-								}
-
-								proteinCreated = true;
-							}
-						}
-						if(!proteinCreated)
+						if(cspec.isSetAnnotation())
 						{
-							HashMap<String,String> proteinName = new HashMap<String, String>();
-							proteinName.put(null, cspec.getLabel());
-							proteinMap.put(cspec,gm.getProtein(proteinName));
-						}
+							Annotation cspecAnnotation = cspec.getAnnotation();
+							List<CVTerm> CVTerms = cspecAnnotation.getListOfCVTerms();
+							//Checking whether it is annotated as polypeptide chain or as enzyme
+							boolean proteinCreated = false;
+							boolean genesPresent = false;
+							for(CVTerm cv : CVTerms)
+							{						
 
-						if(genesPresent)
-						{
-							try{
-								//First, determine the number of genes
-								int genecount = 0; 
-								for(String DataCollection : proteinToGeneAnnotation.get(cspec).keySet())
+
+								//Ok, We have an enzyme (otherwise a cspec should not be 'Encoded' by anything)							
+								if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS_ENCODED_BY)
 								{
-									//We will require that 
-									genecount = Math.max(genecount,proteinToGeneAnnotation.get(cspec).get(DataCollection).size());
-								}
-								for(int i = 0; i < genecount; i++)
-								{
-									HashMap<String,String> databaseIDs = new HashMap<String, String>();
-									for(String datacollection : proteinToGeneAnnotation.get(cspec).keySet())
+									//isProtein = true;
+									for(String ressource : cv.getResources())
 									{
-										databaseIDs.put(datacollection, proteinToGeneAnnotation.get(cspec).get(datacollection).get(i));
+										//We assume, that we have a URI of the form: http://authority/database/Entry
+										String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
+										String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
+										if(!proteinToGeneAnnotation.containsKey(cspec))
+										{
+											proteinToGeneAnnotation.put(cspec, new HashMap<String, Vector<String>>());
+										}
+										if(!proteinToGeneAnnotation.get(cspec).containsKey(dataCollection))
+										{
+											proteinToGeneAnnotation.get(cspec).put(dataCollection, new Vector<String>());
+										}
+										proteinToGeneAnnotation.get(cspec).get(dataCollection).add(identifier);								
+										geneAnnotationDatabases.add(dataCollection);
+										genesPresent = true;
 									}
-									GeneList.add(gm.getGene(databaseIDs));
 
 								}
+
+								if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS)
+								{
+									//isProtein = true;
+									HashMap<String,String> dbIDs = new HashMap<String, String>(); 
+									for(String ressource : cv.getResources())
+									{
+										//We assume, that we have a URI of the form: http://authority/database/Entry
+										String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
+										String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
+										if(!proteinIDAnnotation.containsKey(cspec))
+										{
+											proteinIDAnnotation.put(cspec, new HashMap<String, String>());
+										}
+										proteinIDAnnotation.get(cspec).put(dataCollection, identifier);
+										proteinAnnotationDatabases.add(dataCollection);
+										dbIDs.put(dataCollection, identifier);
+									}
+									if(!proteinMap.containsKey(cspec))
+									{
+										proteinMap.put(cspec,gm.getProtein(dbIDs));
+									}
+									else
+									{
+										gm.updateProteindbs(proteinMap.get(cspec),dbIDs);
+									}
+
+									proteinCreated = true;
+								}
 							}
-							catch(ArrayIndexOutOfBoundsException e)
+							if(!proteinCreated)
 							{
-								//If we get an array index out of bounds exception, the annotation has different length for different databases (which doesn't make any sense)
-								//And we can't determine how the genes looks like. Thus we will simply create an unassociated protein. 
-								GeneList = new HashSet<Gene>();								
+								HashMap<String,String> proteinName = new HashMap<String, String>();
+								proteinName.put(null, cspec.getLabel());
+								proteinMap.put(cspec,gm.getProtein(proteinName));
 							}
 
+							if(genesPresent)
+							{
+								try{
+									//First, determine the number of genes
+									int genecount = 0; 
+									for(String DataCollection : proteinToGeneAnnotation.get(cspec).keySet())
+									{
+										//We will require that 
+										genecount = Math.max(genecount,proteinToGeneAnnotation.get(cspec).get(DataCollection).size());
+									}
+									for(int i = 0; i < genecount; i++)
+									{
+										HashMap<String,String> databaseIDs = new HashMap<String, String>();
+										for(String datacollection : proteinToGeneAnnotation.get(cspec).keySet())
+										{
+											databaseIDs.put(datacollection, proteinToGeneAnnotation.get(cspec).get(datacollection).get(i));
+										}
+										GeneList.add(gm.getGene(databaseIDs));
+
+									}
+								}
+								catch(ArrayIndexOutOfBoundsException e)
+								{
+									//If we get an array index out of bounds exception, the annotation has different length for different databases (which doesn't make any sense)
+									//And we can't determine how the genes looks like. Thus we will simply create an unassociated protein. 
+									GeneList = new HashSet<Gene>();								
+								}
+
+							}
+
+
+							proteinMap.get(cspec).setCodingGenes(GeneList,gm);						
+						}
+						else
+						{
+							proteinIDAnnotation.put(cspec,new HashMap<String, String>());
+							proteinToGeneAnnotation.put(cspec,new HashMap<String, Vector<String>>());
+							proteinMap.put(cspec, gm.getUnassociatedProtein(cspec.getLabel()));
+						}
+					}
+					//Gene or DNA Segment or gene coding region is all considered as gene.
+					else if(cspec.getSBOTerm() == 243 || cspec.getSBOTerm() == 634 || cspec.getSBOTerm() == 335 )
+					{	
+						fbcnodesAnnotedAsGene = true;
+						if(cspec.isSetAnnotation())
+						{
+							Annotation cspecAnnotation = cspec.getAnnotation();
+							List<CVTerm> CVTerms = cspecAnnotation.getListOfCVTerms();
+							boolean genecreated = false;
+							for(CVTerm cv : CVTerms)
+							{			
+
+								if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS)
+								{
+
+									HashMap<String,String> dbIDs = new HashMap<String, String>();
+									for(String ressource : cv.getResources())
+									{
+										//We assume, that we have a URI of the form: http://authority/database/Entry
+										String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
+										String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
+										if(!geneIDAnnotation.containsKey(cspec))
+										{
+											geneIDAnnotation.put(cspec, new HashMap<String, String>());
+										}
+										geneIDAnnotation.get(cspec).put(dataCollection, identifier);
+										geneAnnotationDatabases.add(dataCollection);
+										dbIDs.put(dataCollection,identifier);
+									}
+									if(!geneMap.containsKey(cspec))
+									{
+										geneMap.put(cspec,gm.getGene(dbIDs));
+									}
+									else
+									{
+										gm.updateGenedbs(geneMap.get(cspec),dbIDs);
+									}
+									genecreated = true;
+								}
+							}
+							if(!genecreated)
+							{
+								HashMap<String,String> geneName = new HashMap<String, String>();
+								geneName.put(null, cspec.getId());
+								geneMap.put(cspec,gm.getGene(geneName));
+							}
+						}
+						else
+						{
+							//if no annotation is set use a default.
+							geneIDAnnotation.put(cspec, new HashMap<String, String>());
+							geneMap.put(cspec, gm.getUnassociatedGene(cspec.getLabel()));
 						}
 
-
-						proteinMap.get(cspec).setCodingGenes(GeneList,gm);						
 					}
 					else
 					{
-						proteinIDAnnotation.put(cspec,new HashMap<String, String>());
-						proteinToGeneAnnotation.put(cspec,new HashMap<String, Vector<String>>());
-						proteinMap.put(cspec, gm.getUnassociatedProtein(cspec.getLabel()));
-					}
-				}
-				//Gene or DNA Segment or gene coding region is all considered as gene.
-				if(cspec.getSBOTerm() == 243 || cspec.getSBOTerm() == 634 || cspec.getSBOTerm() == 335 )
-				{	
-					fbcnodesAnnotedAsGene = true;
-					if(cspec.isSetAnnotation())
-					{
-						Annotation cspecAnnotation = cspec.getAnnotation();
-						List<CVTerm> CVTerms = cspecAnnotation.getListOfCVTerms();
-						boolean genecreated = false;
-						for(CVTerm cv : CVTerms)
-						{			
-
-							if(cv.getBiologicalQualifierType() == CVTerm.Qualifier.BQB_IS)
-							{
-
-								HashMap<String,String> dbIDs = new HashMap<String, String>();
-								for(String ressource : cv.getResources())
-								{
-									//We assume, that we have a URI of the form: http://authority/database/Entry
-									String dataCollection = RegistryUtilities.getDataCollectionPartFromURI(ressource);
-									String identifier = RegistryUtilities.getIdentifierFromURI(ressource);
-									if(!geneIDAnnotation.containsKey(cspec))
-									{
-										geneIDAnnotation.put(cspec, new HashMap<String, String>());
-									}
-									geneIDAnnotation.get(cspec).put(dataCollection, identifier);
-									geneAnnotationDatabases.add(dataCollection);
-									dbIDs.put(dataCollection,identifier);
-								}
-								if(!geneMap.containsKey(cspec))
-								{
-									geneMap.put(cspec,gm.getGene(dbIDs));
-								}
-								else
-								{
-									gm.updateGenedbs(geneMap.get(cspec),dbIDs);
-								}
-								genecreated = true;
-							}
-						}
-						if(!genecreated)
-						{
-							HashMap<String,String> geneName = new HashMap<String, String>();
-							geneName.put(null, cspec.getId());
-							geneMap.put(cspec,gm.getGene(geneName));
-						}
-					}
-					else
-					{
+						//if the SBO Term is set to something unclear, we assume its a gene.
 						geneIDAnnotation.put(cspec, new HashMap<String, String>());
 						geneMap.put(cspec, gm.getUnassociatedGene(cspec.getLabel()));
-					}
-
+					}	
+				}
+				else
+				{
+					//if the SBO Term is not set we assume its a gene.
+					geneIDAnnotation.put(cspec, new HashMap<String, String>());
+					geneMap.put(cspec, gm.getUnassociatedGene(cspec.getLabel()));
 				}
 
 			}

@@ -4,11 +4,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-
+/**
+ * Wrapper for the Annotation Object from JSBML
+ * which provides only a few operations.
+ * @author Thomas Pfau
+ *
+ */
 public class Annotation {
 	
 	private Object SBMLAnnotation;
 	private Method ListOfCVTerms;
+	/**
+	 * Wrap the provided Object (which should be an org.sbml.jsbml.Annotation object 
+	 * @param o
+	 */
 	public Annotation(Object o)
 	{
 		SBMLAnnotation = o;
@@ -21,7 +30,11 @@ public class Annotation {
 		}
 		
 	}
-	@SuppressWarnings("rawtypes")
+
+	/**
+	 * Get the List of CVTerms
+	 * @return a List of CVTerms. 
+	 */
 	public List<CVTerm> getListOfCVTerms()
 	{
 		try{

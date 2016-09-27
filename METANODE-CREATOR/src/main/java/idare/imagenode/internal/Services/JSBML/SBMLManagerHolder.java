@@ -73,7 +73,11 @@ public class SBMLManagerHolder {
 			File SBMLFile = fUtil.getFile(swingApp.getJFrame(), "Select sbml File for properties", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("SBML Files",extensions)));
 			try{
 				SBMLReader sr = new SBMLReader();
-				doc =  new SBMLDocument(sr.readSBML(SBMLFile));
+				Object sbmldoc = sr.readSBML(SBMLFile);
+				if(sbmldoc != null)
+				{
+					doc =  new SBMLDocument(sbmldoc);
+				}
 			}
 			catch(Exception e)
 			{
