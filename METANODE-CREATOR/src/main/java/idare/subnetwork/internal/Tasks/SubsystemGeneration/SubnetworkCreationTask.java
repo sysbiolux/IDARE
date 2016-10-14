@@ -7,6 +7,7 @@ import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.NoNetworksToCreateException;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +30,9 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
+import org.cytoscape.view.model.VisualProperty;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
+import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
@@ -552,8 +555,23 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 					//set the target Subsystem to the Subsystems SUID
 					newnetwork.getRow(sourceNetworkNode).set(IDAREProperties.LINK_TARGET_SUBSYSTEM, targetnetwork.getRow(targetnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
 					targetnetwork.getRow(targetNetworkNode).set(IDAREProperties.LINK_TARGET_SUBSYSTEM, newnetwork.getRow(newnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
-						
 					
+					try{
+						String labelcolumn = org.cy3sbml.SBML.LABEL;					
+						if(newnetwork.getDefaultNodeTable().getColumn(labelcolumn) != null)
+						{
+							newnetwork.getRow(sourceNetworkNode).set(labelcolumn, nvs.getSubNetworkName(targetnetwork));							
+						}
+						if(targetnetwork.getDefaultNodeTable().getColumn(labelcolumn) != null)
+						{
+							targetnetwork.getRow(targetNetworkNode).set(labelcolumn, nvs.getSubNetworkName(newnetwork));							
+						}
+					}
+					catch(Exception | NoClassDefFoundError e)
+					{
+						//We have to catch the NoClassDefFoudnError as we would otherwise run into troubles when cy3sbml is not present
+						//but if this happens, just don't do anything.
+					}
 					//get the view of the other subsystem
 					CyNetworkView targetSubSystemView = existingNetworks.get(targetnetwork);
 					CyNetworkView sourceSubSystemView = existingNetworks.get(newnetwork);									
@@ -591,8 +609,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 						existingNodeLinks.get(targetSubSystemView).get(targetnode).add(targetNetworkNode);
 						LinkNodeProps.get(targetSubSystemView).add(new DelayedVizProp(targetNetworkNode, BasicVisualLexicon.NODE_WIDTH,
 							nvs.getSubNetworkName(targetnetwork).toString().length() * 6., true));
-						
-						LinkNodeProps.get(targetSubSystemView).add(new DelayedVizProp(targetNetworkNode, BasicVisualLexicon.NODE_HEIGHT, 20., true));
+						setLinkNodeVisualProperties(LinkNodeProps.get(targetSubSystemView), targetNetworkNode);
 					}
 					if(sourceSubSystemView != null)
 					{
@@ -617,15 +634,23 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 						existingNodeLinks.get(sourceSubSystemView).get(sourcenode).add(sourceNetworkNode);
 								
 						LinkNodeProps.get(sourceSubSystemView).add(new DelayedVizProp(sourceNetworkNode, BasicVisualLexicon.NODE_WIDTH,
-							nvs.getSubNetworkName(newnetwork).toString().length() * 6., true));
-						
-						LinkNodeProps.get(sourceSubSystemView).add(new DelayedVizProp(sourceNetworkNode, BasicVisualLexicon.NODE_HEIGHT, 20., true));
+							nvs.getSubNetworkName(newnetwork).toString().length() * 6., true));												
+						setLinkNodeVisualProperties(LinkNodeProps.get(sourceSubSystemView), sourceNetworkNode);
 					}
 				}
 			}
 		}
 	}
 
+	public void setLinkNodeVisualProperties(Collection<DelayedVizProp> props, CyNode node)
+	{
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.RECTANGLE, true));
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_FILL_COLOR, Color.white, true));
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_BORDER_WIDTH, 0.0, true));
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_BORDER_TRANSPARENCY, 0, true));
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_TRANSPARENCY, 0, true));
+		props.add(new DelayedVizProp(node, BasicVisualLexicon.NODE_HEIGHT, 20., true));
+	}
 	/**
 	 * Check whether the entry of Column ColName in CyRow row is empty. I.e. it is either null or its string representation is an empty string.
 	 * @param row - The row in question
