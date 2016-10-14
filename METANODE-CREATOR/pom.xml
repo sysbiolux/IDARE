@@ -81,7 +81,7 @@
 							${bundle.namespace}.imagenode.GUI.Legend.Utilities,
 							${bundle.namespace}.imagenode.ColorManagement.*,
 							org.apache.batik.*,
-							org.sbml.*,
+							org.sbml.*
 						</Export-Package>
 						<Private-Package>${bundle.namespace}.imagenode.internal.*,
 							${bundle.namespace}.subnetwork.internal.*,
@@ -174,9 +174,6 @@
 			<name>The JSBML repository</name>
 			<url>http://jsbml.sourceforge.net/m2repo_snapshots/</url>
 		</repository>
-
-		<!-- <repository> <id>EBI-mirror</id> <name>EBI mirror</name> <url>https://github.com/matthiaskoenig/ebi-maven-deps</url> 
-			</repository> -->
 
 		<repository>
 			<id>sems-maven-repository-releases</id>
@@ -482,7 +479,13 @@
         </dependency>
 
 		<!-- JSBML -->
-		<dependency>
+
+    <dependency>
+      <groupId>org.sbml.jsbml</groupId>
+      <artifactId>jsbml</artifactId>
+      <version>1.1</version>
+    </dependency>
+<!-- <dependency>
 			<groupId>org.sbml.jsbml</groupId>
 			<artifactId>jsbml</artifactId>
 			<version>1.2-SNAPSHOT</version>
@@ -508,7 +511,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+ -->		
 
 	</dependencies>
 </project>
