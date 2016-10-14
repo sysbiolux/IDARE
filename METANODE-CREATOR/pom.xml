@@ -210,7 +210,12 @@
 			<name>EBI Snapshot repository</name>
 			<url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
 		</repository>
-
+        
+        <repository>
+            <id>in-project</id>
+            <name>In project repository</name>
+            <url>file:${project.basedir}/lib</url>
+		</repository>
 		<!-- resolves javax.jms:jms:jar:1.1 see http://stackoverflow.com/questions/3622773/java-net-maven-repo-jms-artifact-missing -->
 		<repository>
 			<id>repository.jboss.org-public</id>
