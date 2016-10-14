@@ -77,8 +77,8 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	@Tunable(description="Do you want to generate gene and Protein Nodes?", dependsOn="doc!=null")
 	public boolean generateGeneNodes = true;
 
-	@Tunable(description="Should FBC Nodes and edges be removed", dependsOn="generateGeneNodes=true")
-	public boolean removeFBCNodes = true;
+	//@Tunable(description="Should FBC Nodes and edges be removed", dependsOn="generateGeneNodes=true")
+	public boolean removeFBCNodes = false;
 
 
 	//@Tunable
@@ -160,24 +160,15 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	String ErrorMessage = "";
 
 	public SBMLAnnotatorTask(SBMLManagerHolder holder, CyNetwork network, IDARESettingsManager ism,
-			CyNetworkView networkView, CyEventHelper eventHelper) {
+			CyNetworkView networkView, CyEventHelper eventHelper, SBMLDocument doc) {
 		// TODO Auto-generated constructor stub
 		this.eventHelper = eventHelper;
 		this.networkView = networkView;		
-
+		this.doc = doc;
 		this.ism = ism;
 		gm = new GPRManager(ism);
 
-		cysbmlNetwork = holder.isSBMLManagerPresent();
-		try{
-			doc = holder.readSBML(network);
-		}
-		catch(Exception e)
-		{
-			ErrorMessage = e.getMessage();
-			e.printStackTrace(System.out);
-			return;
-		}
+		cysbmlNetwork = holder.isSBMLManagerPresent();		
 		if(doc == null)
 		{			
 			ErrorMessage = "SBML Could not be read or the network is not associated with an SBML.";
@@ -370,9 +361,13 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		eventHelper.flushPayloadEvents();
 		//then assign their position
 		assignPositionsSurroundingReacs();
+		eventHelper.flushPayloadEvents();
 		assignPositionsSouroundingComplexes();
+		eventHelper.flushPayloadEvents();
 		assignProteinPositions();
+		eventHelper.flushPayloadEvents();
 		assignPositionsSurroundingProteins();
+		eventHelper.flushPayloadEvents();
 		assignGenePositions();
 		networkView.updateView();
 	}

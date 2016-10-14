@@ -1,6 +1,7 @@
 package idare.sbmlannotator.internal.Tasks;
 
 import idare.imagenode.internal.IDAREImageNodeApp;
+import idare.imagenode.internal.Services.JSBML.SBMLDocument;
 import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
 
 import java.util.Set;
@@ -66,9 +67,9 @@ NetworkViewTaskFactory {
 	{
 		
 		CyNetworkView view = cyAppMgr.getCurrentNetworkView();
-		CyNetwork network = view.getModel();
-		//SBMLDocument doc = SBMLListener.readSBML(network);
-		return new TaskIterator(new SBMLAnnotatorTask(SBMLListener, network, app.getSettingsManager(), view, eventHelper));
+		CyNetwork network = view.getModel();		
+		SBMLDocument doc = SBMLListener.readSBML(network);
+		return new TaskIterator(new SBMLDocumentSelectionTask(SBMLListener, network, app.getSettingsManager(), view, eventHelper,doc));
 	}
 
 	

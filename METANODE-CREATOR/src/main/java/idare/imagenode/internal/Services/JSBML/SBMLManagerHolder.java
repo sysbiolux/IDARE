@@ -13,13 +13,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.sbml.jsbml.SBMLReader;
 
+import idare.subnetwork.internal.Tasks.InvalidSelectionException;
+
 public class SBMLManagerHolder {
 
 	Object SBMLMgr;
 	protected final FileUtil fUtil;
 	protected CySwingApplication swingApp;
 	BundleContext appContext;
-	
+	private String SBMLstatus = "";
 	public SBMLManagerHolder(FileUtil fileUtil, CySwingApplication cySwingApp, BundleContext context)
 	{
 		this.appContext = context;				
@@ -48,9 +50,10 @@ public class SBMLManagerHolder {
 
 	public SBMLDocument readSBML(CyNetwork network)
 	{		
+		SBMLstatus = "";
 		String[] extensions = {"sbml","xml"};		
 		SBMLDocument doc = null;
-		if(SBMLMgr != null)
+		if(isSBMLManagerPresent())
 		{
 //			System.out.println("IDARE: Found an SBMLManager object calling functions" );			
 			try{
@@ -64,14 +67,18 @@ public class SBMLManagerHolder {
 			catch(NoSuchMethodException|IllegalAccessException|InvocationTargetException e)
 			{				
 				e.printStackTrace(System.out);
-				return null;
+				SBMLstatus+= "Problem with cy3sbml: " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\n Full Stacktrace available in the log file \n";
 			}
 
 		}
 		if(doc == null)
 		{
-			File SBMLFile = fUtil.getFile(swingApp.getJFrame(), "Select sbml File for properties", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("SBML Files",extensions)));
 			try{
+				File SBMLFile = fUtil.getFile(swingApp.getJFrame(), "Select sbml File for properties", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("SBML Files",extensions)));
+				if(SBMLFile == null)
+				{
+					throw new InvalidSelectionException("No SBML File Selected to obtain the annotation from");
+				}
 				SBMLReader sr = new SBMLReader();
 				Object sbmldoc = sr.readSBML(SBMLFile);
 				if(sbmldoc != null)
@@ -81,12 +88,16 @@ public class SBMLManagerHolder {
 			}
 			catch(Exception e)
 			{
-				//JOptionPane.showMessageDialog(null, "Could not read SBML File");
+				SBMLstatus+= "Could not read SBML due to: " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\n Full Stacktrace available in the log file \n";
 				e.printStackTrace(System.out);
-				return null;
 			}
 		}
 		return doc;
+	}
+	
+	public String getSBMLStatus()
+	{
+		return SBMLstatus;
 	}
 
 
