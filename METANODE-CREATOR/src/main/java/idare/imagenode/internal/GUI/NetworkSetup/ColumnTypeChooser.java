@@ -127,15 +127,14 @@ public class ColumnTypeChooser extends JPanel{
 		{
 			diffvals.add(row.getRaw(SelectedColName));
 		}
-		Set<Object> choices = getSelectedItems();
-		int selectedVals = getSelectionCount();
+		//CompoundType must be defined as must be the interaction type. everything else can be empty.
 		if(selectedObjects.get(compoundTypeSelector) == null || selectedObjects.get(reactionTypeSelector) == null)
 		{
 			return false;
 		}
 		else 
 		{
-			return (selectedVals <= choices.size());  
+			return true;  
 		}		
 	}
 	/**
@@ -461,12 +460,10 @@ public class ColumnTypeChooser extends JPanel{
 			if(o != null)
 			{
 				compoundColumnSelectionModel.addElement(o.toString());
-			}
-			else
-			{
-				compoundColumnSelectionModel.addElement(null);
-			}
-		}
+			}		
+		}		
+		//add a null element, we have to filter this at some point.
+		compoundColumnSelectionModel.addElement(null);
 		return compoundColumnSelectionModel;
 	}
 }

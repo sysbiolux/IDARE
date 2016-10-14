@@ -26,7 +26,7 @@ public class NetworkSetupTask extends AbstractTask implements RequestsUIHelper{
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		if(params == null)
 		{
-			throw new DuplicateTypeException("Cannot use the same type twice, or an empty entry as a type identifier");
+			throw new DuplicateTypeException("Compound and interactions must be defined and non null.");
 		}
 		try{
 //			System.out.println("Running Task");
