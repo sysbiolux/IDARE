@@ -3,6 +3,8 @@ package idare.imagenode.Data.BasicDataTypes.MultiArrayData;
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 
 import java.awt.Rectangle;
 
@@ -27,7 +29,7 @@ public abstract class MultiArrayContainerLayout extends ContainerLayout {
 	 * @see idare.imagenode.Interfaces.Layout.ContainerLayout#createLayout(idare.imagenode.Interfaces.DataSets.NodeData, java.awt.Rectangle, java.lang.String)
 	 */
 	@Override
-	public abstract void createLayout(NodeData data, Rectangle area, String DataSetLabel);
+	public abstract void setupLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props)  throws WrongDatasetTypeException;
 
 	/*
 	 * (non-Javadoc)

@@ -137,6 +137,8 @@ public class DataSetManager{
 	 */
 	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
+		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
+
 		if(!dataSetPropertyOptions.containsKey(classType))
 		{
 			dataSetPropertyOptions.put(classType, new Vector<DataSetLayoutProperties>());
@@ -155,8 +157,14 @@ public class DataSetManager{
 		for(DataSet ds : dataSets.values())
 		{
 			//Check whether the class fits and if it could be added.
+			PrintFDebugger.Debugging(this, "Checking whether the properties fit to the dataset: " + ds.Description);
+			if(ds.getClass().equals(classType))
+			{
+				PrintFDebugger.Debugging(this, "Class Types match");
+			}
 			if(ds.getClass().equals(classType) && ds.addPropertyOption(properties))
 			{
+				PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
 				changedDatasets.add(ds);
 			}
 		}
@@ -176,7 +184,7 @@ public class DataSetManager{
 	 */
 	public Collection<DataSetLayoutProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetLayoutProperties> properties )
 	{
-		
+		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
 		Vector<DataSetLayoutProperties> propertiesToAdd = new Vector<DataSetLayoutProperties>();
 		Vector<DataSetLayoutProperties> notAddedProperties = new Vector<DataSetLayoutProperties>();
 		if(!dataSetPropertyOptions.containsKey(classType))
@@ -198,6 +206,7 @@ public class DataSetManager{
 			{
 				if(ds.getClass().equals(classType) && ds.addPropertyOption(props))
 				{
+					PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
 					changedDatasets.add(ds);
 				}
 			}

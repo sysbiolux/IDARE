@@ -5,7 +5,8 @@ import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
-import idare.imagenode.internal.Layout.NodeLayout;
+import idare.imagenode.internal.Layout.DataSetLink;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -73,8 +74,8 @@ public class CreateNodeImageTask extends AbstractTask {
 		// have it in SVG... 
 		SVGDocument svgdoc2 = LayoutUtils.createSVGDoc();
 		SVGGraphics2D g2 = new SVGGraphics2D(svgdoc2);
-		NodeLayout layout = manager.getLayoutForNode(legend.getCurrentlyUsedNode());
-		JPanel ContentPane = BuildLegendDescriptionFrame(layout, layout.getDatasetsInOrder());
+		ImageNodeLayout layout = manager.getLayoutForNode(legend.getCurrentlyUsedNode());
+		JPanel ContentPane = buildLegendDescriptionFrame(layout, layout.getDatasetsInOrder());
 		layout.layoutLegendNode(manager.getNode(legend.getCurrentlyUsedNode()).getData(), g2);
 		g2.translate(0, IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT);		
 		descriptionFrame.setVisible(true);
@@ -122,7 +123,7 @@ public class CreateNodeImageTask extends AbstractTask {
 		Element root2 = svgdoc2.getDocumentElement();
 		g2.getRoot(root2);
 		
-		LayoutUtils.TransferGRaphicsToDocument(svgdoc2, null, g2);		
+		LayoutUtils.TransferGraphicsToDocument(svgdoc2, null, g2);		
 		
 		//OutputStream os2 = new FileOutputStream(F);
 		if(coder == null)
@@ -213,7 +214,7 @@ public class CreateNodeImageTask extends AbstractTask {
 	 * @param datasets  the datasets in correct order
 	 * @return The LegendDescription Panel
 	 */
-	private JPanel BuildLegendDescriptionFrame(NodeLayout layout, Vector<DataSet> datasets)
+	private JPanel buildLegendDescriptionFrame(ImageNodeLayout layout, Vector<? extends DataSetLink> datasets)
 	{
 		descriptionFrame = new JFrame();
 		JPanel ContentPane = new JPanel();
@@ -234,12 +235,12 @@ public class CreateNodeImageTask extends AbstractTask {
 	 * @param layout the layout to use
 	 * @param Content the Content pane to use plot to
 	 */
-	private void setDataSetDescriptions(JScrollPane scroller, Vector<DataSet> datasets, NodeLayout layout, JPanel Content)
+	private void setDataSetDescriptions(JScrollPane scroller, Vector<? extends DataSetLink> datasets, ImageNodeLayout layout, JPanel Content)
 	{
 
-		for(DataSet ds : datasets)
+		for(DataSetLink dsl : datasets)
 		{
-			JPanel DataSetPane = ds.getDataSetDescriptionPane(scroller,layout.getDataSetLabel(ds),layout.getColorsForDataSet(ds));			
+			JPanel DataSetPane = dsl.getDataSet().getDataSetDescriptionPane(scroller,layout.getDataSetLabel(dsl),layout.getColorsForDataSet(dsl));			
 			Content.add(Box.createRigidArea(new Dimension(0,2)));
 			Content.add(DataSetPane);
 			//DataSetPane.doLayout();

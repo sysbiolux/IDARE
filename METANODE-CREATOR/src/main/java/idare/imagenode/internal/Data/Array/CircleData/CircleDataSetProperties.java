@@ -34,10 +34,10 @@ public class CircleDataSetProperties extends AbstractArrayDataSetProperties{
 		return new CircleContainer(origin, (ArrayNodeData) data);
 	}
 
-	@Override
-	public DataContainer newContainerForData(NodeData data) {
-		return new CircleContainer(data.getDataSet(), (ArrayNodeData)data);
-	}
+//	@Override
+//	public DataContainer newContainerForData(NodeData data) {
+//		return new CircleContainer(data.getDataSet(), (ArrayNodeData)data);
+//	}
 
 	@Override
 	public String toString()

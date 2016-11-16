@@ -30,6 +30,7 @@ public interface ColorScale extends Serializable{
 	 * @return A {@link ColorScalePane} that can represents this ColorScale
 	 */
 	public ColorScalePane getColorScalePane();
+	
 	/**
 	 * Set the {@link ColorScaleProperties} used by this {@link ColorScale}
 	 * This can e.g. adapt a certain color to a specific point in the scale (e.g. for 0 balancing) but can also be used to stretch
@@ -37,6 +38,7 @@ public interface ColorScale extends Serializable{
 	 * @param props The {@link ColorScaleProperties} to be used.
 	 */
 	public void setColorScaleProperties(ColorScaleProperties props);
+	
 	/**
 	 * Set the number of colors used by this scale. 
 	 * This function does not need to have an effect and can potentially be simply ignored, but it will be called by discreet color maps and potentially other methods.
@@ -51,4 +53,19 @@ public interface ColorScale extends Serializable{
 	 * @param targetval The value the origval shall be moved to in the range of [0.0,1.0]. 
 	 */
 	public void movePointOnScale(float origval, float targetval);
+	
+//	/**
+//	 * The hashcode of a colorscale is derived from its ColorScaleProperties. Two Colorscales with the same properties have the same 
+//	 * hashCode.
+//	 */
+//	public int hashCode();
+//	
+//
+//	/**
+//	 * Two colorscale are equal if they have the same ColorScaleProperties. 
+//	 * @param obj
+//	 * @return whether the properties of the given Object is the same as the properties of this colorscale. 
+//	 */
+//	public boolean equals(Object obj);
+
 }

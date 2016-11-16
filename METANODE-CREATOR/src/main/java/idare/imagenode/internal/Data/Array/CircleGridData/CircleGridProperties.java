@@ -5,8 +5,10 @@ import idare.imagenode.Data.BasicDataTypes.ArrayData.ArrayNodeData;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.internal.Data.Array.CircleData.CircleContainer;
 import idare.imagenode.internal.Data.Array.CircleData.CircleDataSetProperties;
 /**
  * Properties of a Gridded Circle Dataset.
@@ -31,13 +33,13 @@ public class CircleGridProperties extends CircleDataSetProperties {
 
 	@Override
 	public DataContainer newContainerInstance(DataSet origin, NodeData data) {
-		return new CircleGridContainer(origin, (ArrayNodeData) data);
+		return new CircleContainer(origin, (ArrayNodeData) data);
 	}
 
-	@Override
-	public DataContainer newContainerForData(NodeData data) {
-		return new CircleGridContainer(data.getDataSet(), (ArrayNodeData) data);
-	}
+//	@Override
+//	public DataContainer newContainerForData(NodeData data) {
+//		return new CircleGridContainer(data.getDataSet(), (ArrayNodeData) data);
+//	}
 	@Override
 	public String toString()
 	{

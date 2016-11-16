@@ -2,8 +2,10 @@ package idare.imagenode.internal.ColorManagement.ColorScales;
 
 import idare.imagenode.ColorManagement.ColorScale;
 import idare.imagenode.ColorManagement.ColorScalePane;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Color;
+import java.util.Arrays;
 /**
  * A {@link MultiColorScale} is a color scale, that contains multiple colors and commonly has gradients between 
  * those colors that will be used to obtain the colors for plotting
@@ -208,5 +210,32 @@ public abstract class MultiColorScale implements ColorScale {
 		}
 		return new DiscreteColorScale(ccolors); 
 	}
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + getColorScaleProperties().hashCode();
+//		return result;
+//	}
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (!(obj instanceof MultiColorScale))
+//		{
+//			PrintFDebugger.Debugging(this, "Classes do not match " + getClass() + "/" + obj.getClass() );
+//			return false;
+//		}
+//		MultiColorScale other = (MultiColorScale) obj;
+//		if (!getColorScaleProperties().equals(other.getColorScaleProperties()))
+//		{
+//			PrintFDebugger.Debugging(this, "Properties do not match");
+//			return false;
+//		}
+//		return true;
+//	}
+	
 	
 }

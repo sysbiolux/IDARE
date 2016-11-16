@@ -49,7 +49,7 @@ public class LayoutUtils {
 	 * @param canvasdimension - the target canvas dimension (can be <code>null</code>, in which instance default sizes are used (400/290)
 	 * @param g
 	 */
-	public static void TransferGRaphicsToDocument(SVGDocument doc, Dimension canvasdimension, SVGGraphics2D g )
+	public static void TransferGraphicsToDocument(SVGDocument doc, Dimension canvasdimension, SVGGraphics2D g )
 	{		
 		if(canvasdimension == null)
 		{
@@ -59,7 +59,7 @@ public class LayoutUtils {
 		Element root = doc.getDocumentElement();
 		g.getRoot(root);
 		//PrintFDebugger.Debugging(root, "Setting property viewbox to: " + "0 0 "+ IMAGENODEPROPERTIES.IMAGEWIDTH +" " + (IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT));
-		root.setAttribute("viewBox", "0 0 "+ IMAGENODEPROPERTIES.IMAGEWIDTH +" " + (IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT) );		
+		root.setAttribute("viewBox", "0 0 "+ canvasdimension.width +" " + (canvasdimension.height) );		
 	}
 	
 	/**

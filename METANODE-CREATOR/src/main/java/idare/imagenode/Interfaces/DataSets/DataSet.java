@@ -11,6 +11,7 @@ import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.Utilities.StringUtils;
 import idare.imagenode.exceptions.io.DuplicateIDException;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
@@ -185,7 +186,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public void setTwoColumnHeaders(boolean twocols)
 	{
 		useTwoColHeaders = twocols;
-	}
+	}	
 	
 	/**
 	 * Set up the data properties from the provided workbook and read the data into this dataset.
@@ -193,9 +194,9 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * @throws WrongFormat if there are problems with the format of the data in the Workbook.
 	 * @throws DuplicateIDException if there are duplicate IDs in the Workbook (e.g. sheets which have the same identifier twice). 
 	 */
-	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
+	public final void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
-
+		preProcessWorkBook(WB);
 		PrintFDebugger.Debugging(this,"Determining Data Properties");
 		determineDataProperties(WB);
 		//now we can go on to read the data appropriately.  
@@ -204,9 +205,33 @@ public abstract class DataSet implements IDAREService, Serializable{
 		//readWorkbookdata should also set up the Colormaps, as this is the first time that all items are being looked at.
 		PrintFDebugger.Debugging(this,"reading Data");
 		readWorkBookData(WB);
+		setupPropertyOptions();
 	}
 
-	
+	/**
+	 * 
+	 */
+	public void setupPropertyOptions() throws WrongFormat
+	{
+		Vector<DataSetLayoutProperties> props = new Vector<>();
+		props.addAll(propertyOptions);
+		String ErrorMessage = "";
+		for(DataSetLayoutProperties cprop : props)
+		{
+			try{
+				cprop.testValidity(this);
+			}
+			catch(Exception e)
+			{
+				propertyOptions.remove(cprop);
+				ErrorMessage += e.getMessage() + "\n";
+			}
+		}
+		if(propertyOptions.isEmpty())
+		{
+			throw new WrongFormat("No fitting Layout Properties available. Individual Errors were:\n" + ErrorMessage);
+		}
+	}
 	
 	
 	/**
@@ -531,9 +556,12 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public final boolean addPropertyOption(DataSetLayoutProperties propsToAdd)
 	{
 		try{
+			PrintFDebugger.Debugging(this, "Testing validity" );
 			propsToAdd.testValidity(this);
+			PrintFDebugger.Debugging(this, "Success" );
 			if(!propertyOptions.contains(propsToAdd))
 			{
+				PrintFDebugger.Debugging(this, "PropertyOptions dont contain the new properties" );
 				propertyOptions.add(propsToAdd);
 				return true;
 			}
@@ -544,7 +572,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 		}
 		catch(WrongFormat e)
 		{
-			//Did not fit to this dataset.
+			//Did not fit to this dataset.			
+			e.printStackTrace(System.out);
 			return false;
 		}
 	}
@@ -583,7 +612,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Get the {@link NodeData} for a specific ID.
 	 * @param NodeID The ID of the {@link NodeData} requested.
-	 * @return the requested NodeData (if it is not present an appropriate empty entry should be returned.
+	 * @return the requested NodeData (if it is not present an appropriate empty entry should be returned.)
 	 */
 	public abstract NodeData getDataForID(String NodeID);
 	/**
@@ -603,13 +632,15 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public abstract Set<String> getNodeIDs();
 
 	/**
-	 * Get the {@link ColorMap}s available for this {@link DataSet} 
+	 * Get the {@link ColorMap}s available for this {@link DataSet}
+	 * The objects in this vector should always be the same (i.e. two successive calls should yield colormaps that can be compare with ==) 
 	 * @return A collection of {@link ColorMap}s available to this {@link DataSet}
 	 */
 	public abstract Vector<ColorMap> getColorMapOptions();
 	
 	/**
 	 * Read the Data for this workbook into the dataset.
+	 * This function should also remove any inappropriate property options, as those can only be determined now.
 	 * @param WB
 	 * @throws FormatMismatch
 	 * @throws DuplicateIDException
@@ -625,7 +656,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * Get a sample container for Layout purposes
 	 * @return a sample container using Default data. 
 	 */
-	public abstract DataContainer getLayoutContainer();
+	public abstract DataContainer getLayoutContainer(DataSetLayoutProperties properties) throws WrongDatasetTypeException;
+		
 	
 	/**
 	 *  Get a default NodeData object for this dataset
@@ -652,5 +684,14 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 * Get the general Name for this Type of DataSet
 	 */
 	public abstract String getDataSetTypeName();
-	
+
+	/**
+	 * Do preprocessing for the setup Process. This function is called before the actual data setup.
+	 * @param WB The WorkBook to be preprocessed
+	 * @throws WrongFormat
+	 */
+	public void preProcessWorkBook(IDAREWorkbook WB) throws WrongFormat
+	{
+		
+	}
 }

@@ -61,6 +61,5 @@ public class CircleContainerLayout extends AbstractArrayContainerLayout{
 		LegendShapePosition item = new LegendShapePosition(itemshape, Area, id, p, Labelfont);				
 		return item;
 	}
-	
 
 }

@@ -48,11 +48,11 @@ public class GraphDataSetProperties extends MultiArrayDataProperties {
 		return new GraphContainer(data.getDataSet(), (MultiArrayNodeData)data);
 	}
 
-	@Override
-	public DataContainer newContainerForData(NodeData data) {
-		// TODO Auto-generated method stub
-		return new GraphContainer(data.getDataSet(), (MultiArrayNodeData)data);
-	}
+//	@Override
+//	public DataContainer newContainerForData(NodeData data) {
+//		// TODO Auto-generated method stub
+//		return new GraphContainer(data.getDataSet(), (MultiArrayNodeData)data);
+//	}
 
 	@Override
 	public String getTypeName() {

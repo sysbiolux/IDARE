@@ -8,6 +8,7 @@ import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
+import idare.imagenode.internal.VisualStyle.Tasks.AddNodesToStyleTaskFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,7 +59,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	private CyApplicationManager cyAppMgr;
 	private NodeManager nm;
 	private ImageStorage imf;
-
+	private AddNodesToStyleTaskFactory addNodesFactory;
 	/**
 	 * Default Constructor. 
 	 * @param imf
@@ -81,6 +82,15 @@ SessionLoadedListener, GraphicsChangedListener {
 		storedProperties.addElement(BasicVisualLexicon.NODE_WIDTH);
 		storedProperties.addElement(BasicVisualLexicon.NODE_HEIGHT);
 		storedProperties.addElement(imf.getVisualProperty());
+	}
+	
+	private void reset()
+	{
+		storedProperties = new Vector<VisualProperty>();
+		VisualStyleTitles = new HashSet<String>();
+		origstylemappings = new HashMap<VisualStyle, HashMap<VisualProperty,VisualMappingFunction>>();
+		origstyleproperties = new HashMap<VisualStyle, HashMap<VisualProperty,Object>>();
+		lockedenabled = new HashMap<String, Boolean>();
 	}
 	/**
 	 * Update all Views that could need an update due to a change in nodes.
@@ -107,6 +117,14 @@ SessionLoadedListener, GraphicsChangedListener {
 			networkView.updateView();
 		}		
 	}	
+	
+	/**
+	 * 
+	 */
+	public void setAddNodesTaskFactory(AddNodesToStyleTaskFactory factory)
+	{
+		addNodesFactory = factory;
+	}
 	/**
 	 * Add nodes to the currently used Style, and update the TaskMonitor to indicate the current activity.
 	 * @param monitor
@@ -131,6 +149,29 @@ SessionLoadedListener, GraphicsChangedListener {
 
 	}
 
+	/**
+	 * Add nodes to the defined Style, and update the TaskMonitor to indicate the current activity.
+	 * Add the Nodes to the style assuming this is happening during a session load (i.e. we only store the default values).
+	 * @param monitor
+	 */
+	public synchronized void addNodesToStyleDuringLoad(TaskMonitor monitor, VisualStyle styleToModify)
+	{
+		String StyleTitle = styleToModify.getTitle();
+		monitor.setStatusMessage("Adding Nodes to Style " + StyleTitle);
+		if(!VisualStyleTitles.contains(StyleTitle) && !StyleTitle.equalsIgnoreCase(IDAREVisualStyle.IDARE_STYLE_TITLE))
+		{
+			monitor.setStatusMessage("Saving old Properties for " + StyleTitle);
+			saveProperties(styleToModify, true);
+			setMappings(styleToModify);
+			VisualStyleTitles.add(StyleTitle);			
+		}	
+		monitor.setProgress(0.1);
+		monitor.setStatusMessage("Updating Views");
+		updateRelevantViews();
+		monitor.setProgress(1.0);
+
+	}
+	
 
 	/**
 	 * Set the Mappings for IDARE to the current style.
@@ -200,14 +241,15 @@ SessionLoadedListener, GraphicsChangedListener {
 	public void handleEvent(SessionLoadedEvent e) {
 		// TODO Auto-generated method stub
 		List<File> StyleNameFiles = e.getLoadedSession().getAppFileListMap().get(IMAGENODEPROPERTIES.STYLE_MAPPINGS_SAVE_NAME);
-
+		reset();
 		if(StyleNameFiles != null)
 		{
-			ObjectInputStream oi;
+			ObjectInputStream oi;			
 			File CFile = StyleNameFiles.get(0);
+			HashSet<String> StylesToRestore = new HashSet<String>();
 			try{
 				oi = new ObjectInputStream(new FileInputStream(CFile));
-				VisualStyleTitles = (HashSet<String>) (oi.readObject());
+				StylesToRestore = (HashSet<String>) (oi.readObject());
 				lockedenabled = (HashMap<String,Boolean>) oi.readObject();
 				oi.close();
 			}
@@ -219,7 +261,10 @@ SessionLoadedListener, GraphicsChangedListener {
 			{
 				//Should not happen
 			}
-			
+			for(String title: VisualStyleTitles)
+			{
+				PrintFDebugger.Debugging(this, "Restoring Mappings for" + title);				
+			}
 			Iterator it = vmmServiceRef.getAllVisualStyles().iterator();
 
 			while (it.hasNext()){
@@ -227,19 +272,22 @@ SessionLoadedListener, GraphicsChangedListener {
 				IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
 				IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
 				IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
-
-
-				if (VisualStyleTitles.contains(curVS.getTitle()))
+				PrintFDebugger.Debugging(this, "Checking Style " + curVS.getTitle());				
+				
+				if (StylesToRestore.contains(curVS.getTitle()))
 				{
-					saveProperties(curVS,true);
-					curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
-					curVS.addVisualMappingFunction(LabelTransparency);
-					curVS.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
-					curVS.addVisualMappingFunction(imagenodeHeight);
-					curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
-					curVS.addVisualMappingFunction(imagenodeWidth);
-					curVS.removeVisualMappingFunction(imf.getVisualProperty());
-					curVS.addVisualMappingFunction(imf);
+					
+					PrintFDebugger.Debugging(this, "Restoring properties to style" + curVS.getTitle());
+					addNodesFactory.addNodesToStyle(curVS);					
+					//saveProperties(curVS,true);
+					//curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
+					//curVS.addVisualMappingFunction(LabelTransparency);
+					//curVS.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
+//					curVS.addVisualMappingFunction(imagenodeHeight);
+//					curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
+//					curVS.addVisualMappingFunction(imagenodeWidth);
+//					curVS.removeVisualMappingFunction(imf.getVisualProperty());
+//					curVS.addVisualMappingFunction(imf);
 				}
 			}
 		}
@@ -258,6 +306,10 @@ SessionLoadedListener, GraphicsChangedListener {
 		try{
 			ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(TempFile));
 			os.writeObject(VisualStyleTitles);
+			for(String title: VisualStyleTitles)
+			{
+				PrintFDebugger.Debugging(this, "Saving mappings for " + title);				
+			}
 			os.writeObject(lockedenabled);
 			os.close();
 			MappingStyles.add(TempFile);

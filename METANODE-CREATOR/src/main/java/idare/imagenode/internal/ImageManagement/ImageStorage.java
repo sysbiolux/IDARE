@@ -168,7 +168,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);	
 			nodeManager.getLayoutForNode(ID).layoutNode(nodeManager.getNode(ID).getData(), g);
-			LayoutUtils.TransferGRaphicsToDocument(doc, null, g);
+			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
 			//Element root = doc.getDocumentElement();
 			//g.getRoot(root);
 			//root.setAttribute("viewBox", "0 0 400 270");
@@ -290,7 +290,15 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		if(imagenode != null)
 		{
 			//Use the image if there is one provided by the imageMatcher
-			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(imagenode,width,height);
+			double imageheight = imagenode.getHeight();
+			double imagewidth = imagenode.getWidth();
+			//now, get the maximal extension
+			double heightscale = imageheight/height;
+			double widthscale = imagewidth/width;
+			double scalefactor = Math.max(heightscale, widthscale);
+			int usedwidth = (int)Math.floor(imagewidth/scalefactor);
+			int usedheight = (int)Math.floor(imageheight/scalefactor);
+			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(imagenode,usedwidth,usedheight);
 			myCustomGraphics.setDisplayName(input);
 			return myCustomGraphics;
 		}

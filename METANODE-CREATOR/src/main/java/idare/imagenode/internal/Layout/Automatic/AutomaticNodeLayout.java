@@ -1,10 +1,11 @@
-package idare.imagenode.internal.Layout;
+package idare.imagenode.internal.Layout.Automatic;
 
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Properties.LabelGenerator;
 import idare.imagenode.Utilities.EOOMarker;
@@ -12,11 +13,17 @@ import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
+import idare.imagenode.internal.Layout.DataSetLink;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
+import idare.imagenode.internal.Layout.SimpleLink;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,35 +52,43 @@ import org.apache.batik.svggen.SVGGraphics2D;
  * @author Thomas Pfau
  *
  */
-public class NodeLayout implements DataSetAboutToBeChangedListener{
+public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 
 	//private Vector<DataContainer> containers = new Vector<>();
 	ImageNodeContainer cont = new ImageNodeContainer();
-	HashMap<DataSet,ContainerLayout> DataSetPositions = new HashMap<>(); 
-	Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,IMAGENODEPROPERTIES.LABELHEIGHT-2);
+	HashMap<DataSet,ContainerLayout> DataSetPositions = new HashMap<>();
+	HashMap<DataSet,DataSetLayoutProperties> Properties = new HashMap<>();
 	HashMap<DataSet,String> DataSetLabels = new HashMap<DataSet, String>();
 	HashMap<DataSet,ColorMap> DataSetColors = new HashMap<DataSet, ColorMap>();
 	Vector<DataSet> DatasetOrder = new Vector<DataSet>();
-	private boolean layoutcreated = false;
-	//public int ID = -1;
+	private boolean layoutcreated = false;	 
+	private Set<DataSetLayoutInfoBundle> dataSetsToUse = new HashSet<>();
+		
 	
-	/**
-	 * Check whether this {@link NodeLayout} is valid. A Layout is valid, if its {@link ImageNodeContainer} contains 
-	 * at least one {@link DataSet}. 
-	 * Thus, by default a newly generated layout is invalid until a {@link DataSet} is added. 
-	 * @return whether this layout is still valid (i.e. has contaniers to lay out)
+	public AutomaticNodeLayout()
+	{
+		
+	}
+	
+	public AutomaticNodeLayout(Collection<DataSetLayoutInfoBundle> DataSetsToUse) {
+		// TODO Auto-generated constructor stub
+		this.dataSetsToUse.addAll(DataSetsToUse);
+	}
+	
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#isValid()
 	 */
+	@Override
 	public boolean isValid()
 	{
 		return cont.isValidForIDARE();
 	}
 	
 	
-	/**
-	 * Write all data that is relevant to restore this nodelayout to a {@link ObjectOutputStream}
-	 * @param os The {@link ObjectOutputStream} to write the dlayout infromation to
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#writeLayout(java.io.ObjectOutputStream)
 	 */
+	@Override
 	public void writeLayout(ObjectOutputStream os) throws IOException
 	{
 		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
@@ -82,19 +97,16 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 			os.writeObject(new Integer(ds.getID()));
 			os.writeObject(DataSetPositions.get(ds));
 			os.writeObject(DataSetColors.get(ds));
+			os.writeObject(Properties.get(ds));
 			os.writeObject(DataSetLabels.get(ds));
 		}
 		os.writeObject(new EOOMarker());
 		//os.close();
 	}
-	/**
-	 * Read a layout object from an {@link ObjectInputStream} given the last object read (which is the first object of the layout)
-	 * @param dsm the {@link DataSetManager} to get information about DataSets from.
-	 * @param os The {@link ObjectInputStream} to read from
-	 * @param currentobject The last object read in the {@link ObjectInputStream} provided (the first object of the nodelayout save
-	 * @return true, if reading was successful, false if there was a non {@link IOException}.
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#readLayout(idare.imagenode.internal.DataManagement.DataSetManager, java.io.ObjectInputStream, java.lang.Object)
 	 */
+	@Override
 	public boolean readLayout(DataSetManager dsm, ObjectInputStream os, Object currentobject) throws IOException
 	{
 		//Format of a Layout Description:
@@ -111,10 +123,12 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 				DataSetPositions.put(currentDataSet, layout);				
 				DatasetOrder.addElement(currentDataSet);
 				ColorMap map = (ColorMap) os.readObject();
+				DataSetLayoutProperties props = (DataSetLayoutProperties) os.readObject();
 				//DataSetColors.put(currentDataSet, map);
-				ColorMapDataSetBundle set = new ColorMapDataSetBundle();
-				set.map = map;
+				DataSetLayoutInfoBundle set = new DataSetLayoutInfoBundle();				
+				set.colormap = map;
 				set.dataset = currentDataSet;
+				set.properties = props;
 				addDataSet(set);
 				currentobject = os.readObject();
 				DataSetLabels.put(currentDataSet, (String) currentobject); 
@@ -133,10 +147,29 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		
 	}
 	
-	private void addDataSet(ColorMapDataSetBundle set) throws TooManyItemsException	
+	/**
+	 * Get the Container used for the provided dataset 
+	 * @param set The {@link DataSet} for which the {@link ContainerLayout} is requested. 
+	 * @return the associated {@link ContainerLayout} or null if there is no associated {@link ContainerLayout} 
+	 */
+	public ContainerLayout getLayoutContainerUsedFor(DataSet set)
+	{
+		return DataSetPositions.get(set);
+	}
+	
+	
+	/**
+	 * Add a dataset to this layout (checking whether it fits) given the properties and colors in the provided bundle
+	 * @param bundle a {@link DataSetLayoutInfoBundle} which has at least the dataset, colormap and properties fields set.
+	 * @throws TooManyItemsException
+	 * @throws WrongDatasetTypeException
+	 */
+	private void addDataSet(DataSetLayoutInfoBundle bundle) throws TooManyItemsException,WrongDatasetTypeException
 	{		
-		cont.addDataSet(set.dataset);
-		DataSetColors.put(set.dataset, set.map);
+		cont.addDataSet(bundle);
+		DataSetColors.put(bundle.dataset, bundle.colormap);
+		Properties.put(bundle.dataset, bundle.properties);
+		//bundles.put(set.dataset, set);
 		//set.dataset.addDataSetChangeListener(this);
 	}
 	/**
@@ -146,22 +179,29 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException
 	 */
-	public void generateLayoutForDataSets(Collection<ColorMapDataSetBundle> Datasets) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException
+	public void generateLayoutForDataSets(Collection<DataSetLayoutInfoBundle> Datasets) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{		
-		for(ColorMapDataSetBundle current : Datasets)
+		for(DataSetLayoutInfoBundle current : Datasets)
 		{
 			addDataSet(current);			
 		}		
-		doLayout();
+		calculateLayout();
 	}
 	
+	public void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
+	{
+		generateLayoutForDataSets(dataSetsToUse);
+	}
+	
+	
 	/**
-	 * Produce the layout based on the added DataSets.
+	 * Calculate the layout with the Sets to use provided during construction.
 	 * @throws TooManyItemsException
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException
+	 * @throws WrongDatasetTypeException
 	 */
-	public synchronized void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException
+	private synchronized void calculateLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{
 		DataSetPositions = new HashMap<DataSet, ContainerLayout>();
 		DataSetLabels = new HashMap<DataSet, String>();
@@ -205,7 +245,7 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 			DataContainer current_container = containerlocations.get(pane);
 			ContainerLayout current_layout = current_container.createEmptyLayout();
 			String Label = lab.getLabel();
-			current_layout.createLayout(current_container.getData(), pane, Label);
+			current_layout.createLayout(current_container.getData(), pane, Label,Properties.get(current_container.getDataSet()));
 			DataSetPositions.put(current_container.getDataSet(), current_layout);
 			DataSetLabels.put(current_container.getDataSet(), Label);
 			DatasetOrder.add(current_container.getDataSet());
@@ -214,37 +254,47 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		layoutcreated = true;
 	}
 
-	/** 
-	 * Get the label for a specific {@link DataSet}  used in this layout;
-	 * @param ds the {@link DataSet} to get the label for
-	 * @return The String label for the supplied {@link DataSet}
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#getDataSetLabel(idare.imagenode.Interfaces.DataSets.DataSet)
 	 */
-	public String getDataSetLabel(DataSet ds)
+	@Override
+	public String getDataSetLabel(DataSetLink dsl)
 	{
-		return DataSetLabels.get(ds);
+		if(dsl instanceof SimpleLink)
+		{
+			return DataSetLabels.get(((SimpleLink)dsl).ds);
+		}		
+		return "";
 	}
-	/**
-	 * Get the {@link ColorMap} associated with this {@link DataSet} in this {@link NodeLayout}.
-	 * @param ds - The requested Dataset
-	 * @return the {@link ColorMap} associated with the {@link DataSet} in this {@link NodeLayout}
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#getColorsForDataSet(idare.imagenode.Interfaces.DataSets.DataSet)
 	 */
-	public ColorMap getColorsForDataSet(DataSet ds)
+	@Override
+	public ColorMap getColorsForDataSet(DataSetLink dsl)
 	{
-		return DataSetColors.get(ds);
+		if(dsl instanceof SimpleLink)
+		{
+			return DataSetColors.get(((SimpleLink)dsl).ds);
+		}
+		return DataSetColors.get(dsl);
 	}
-	/** 
-	 * Get the DataSets used in this Layout in the order of labeling
-	 * @return A {@link Vector} of {@link DataSet}s in the order they were added during the layout process 
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#getDatasetsInOrder()
 	 */
-	public Vector<DataSet> getDatasetsInOrder()
+	@Override
+	public Vector<? extends DataSetLink> getDatasetsInOrder()
 	{
-		return (Vector<DataSet>)DatasetOrder.clone();
+		Vector<DataSetLink> orderedsets = new Vector<>();
+		for(int i = 0; i < DatasetOrder.size(); i++)
+		{
+			orderedsets.add(new SimpleLink(DatasetOrder.get(i), i));
+		}
+		return orderedsets;
 	}
-	/**
-	 * Layout a specific node in a given context.
-	 * @param datacollection The data to be used for drawing
-	 * @param svg the {@link SVGGraphics2D} to draw in
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#layoutNode(java.util.Collection, org.apache.batik.svggen.SVGGraphics2D)
 	 */
+	@Override
 	public synchronized void layoutNode(Collection<NodeData> datacollection, SVGGraphics2D svg)	
 	{
 		HashSet<DataSet> PlacedDataSets = new HashSet<DataSet>();
@@ -274,11 +324,10 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		drawIdentifier(svg, datacollection.iterator().next().getLabel());
 
 	}
-	/**
-	 * Lay out the legend for a specific set of node data
-	 * @param datacollection The data to be used for drawing
-	 * @param svg the {@link SVGGraphics2D} to draw in
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#layoutLegendNode(java.util.Collection, org.apache.batik.svggen.SVGGraphics2D)
 	 */
+	@Override
 	public synchronized void layoutLegendNode(Collection<NodeData> datacollection, SVGGraphics2D svg)	
 	{
 
@@ -310,7 +359,7 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	private void drawIdentifier(SVGGraphics2D svg, String identifier)
 	{
 		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IDFont, svg, identifier));
+		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IMAGENODEPROPERTIES.IDFont, svg, identifier));
 		svg.setColor(Color.black);		
 		FontMetrics fm = svg.getFontMetrics();		
 		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
@@ -320,6 +369,9 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		svg.setFont(currentFont);
 	}
 
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#datasetChanged(idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent)
+	 */
 	@Override
 	public void datasetChanged(DataSetChangedEvent e) {
 		if(e.wasRemoved())
@@ -352,6 +404,9 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 	}
 
 
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#datasetsChanged(idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent)
+	 */
 	@Override
 	public void datasetsChanged(DataSetsChangedEvent e) {
 		// TODO Auto-generated method stub
@@ -387,5 +442,6 @@ public class NodeLayout implements DataSetAboutToBeChangedListener{
 		}
 
 	}
-	 
+	
+
 }

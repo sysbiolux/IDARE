@@ -8,14 +8,18 @@ import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
-import idare.imagenode.internal.Layout.NodeLayout;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
+import idare.imagenode.internal.Layout.Automatic.AutomaticNodeLayout;
+import idare.internal.IDAREApp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +52,7 @@ import org.cytoscape.work.TaskMonitor;
 public class NodeManager implements DataSetChangeListener{
 
 	private HashMap<String,ImageNodeModel> Nodes = new HashMap<>();
-	private HashMap<String,NodeLayout> activeLayouts = new HashMap<String, NodeLayout>();
+	private HashMap<String,ImageNodeLayout> activeLayouts = new HashMap<String, ImageNodeLayout>();
 	private Set<String> NetworkIDs = new HashSet<String>();
 	private DataSetManager dsm;
 	
@@ -230,6 +234,15 @@ public class NodeManager implements DataSetChangeListener{
 					}
 
 				}
+				else
+				{
+					//if its not in the active layouts we still have to remove the data.
+					Nodes.get(currentID).removeData(ds);
+					if(!Nodes.get(currentID).isValid())
+					{
+						Nodes.remove(currentID);
+					}
+				}
 			}
 			Vector<String> NodesToUpdate = new Vector<String>();
 			NodesToUpdate.addAll(ds.getNodeIDs());
@@ -247,9 +260,17 @@ public class NodeManager implements DataSetChangeListener{
 		return Nodes.get(ID);
 	}
 
+	/**
+	 * Get all nodes, that have associated data.
+	 * @return all nodes that have at least one associated dataset.
+	 */
+	public Collection<String> getNodesWithData()
+	{
+		return Nodes.keySet();	
+	}
 	
 	/**
-	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link ColorMapDataSetBundle}s provided.
+	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link DataSetLayoutInfoBundle}s provided.
 	 * This version is to be used if the created nodes are created by a {@link Task}.
 	 * @param datasets The datasets to create nodes for 
 	 * @param monitor The TaskMonitor that keeps track of progress.
@@ -257,56 +278,59 @@ public class NodeManager implements DataSetChangeListener{
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException
 	 */
-	public void generateLayoutsForNodes(Collection<ColorMapDataSetBundle> datasets,TaskMonitor monitor) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException
+	public void generateLayoutsForNodes(Set<DataSet> datasets, ImageNodeLayout layout ,TaskMonitor monitor) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{
 		//create a new layout
-		NodeLayout newLayout = new NodeLayout();					
+		//AutomaticNodeLayout newLayout = new AutomaticNodeLayout();					
 		//produce the Layout, this is where errors are likely to raise.
-		newLayout.generateLayoutForDataSets(datasets);
+		//newLayout.generateLayoutForDataSets(datasets);
 		//get all Nodes, that need to be updated
+		layout.doLayout();
 		Set<String> NodeIDs = new HashSet<String>();
-		for(ColorMapDataSetBundle set : datasets)
+		for(DataSet set : datasets)
 		{
-			NodeIDs.addAll(set.dataset.getNodeIDs());	
+			NodeIDs.addAll(set.getNodeIDs());	
 		}
 		//add the new layout to all those nodes.
 		for(String id : NodeIDs)
 		{
-			activeLayouts.put(id,newLayout);
+			PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
+			activeLayouts.put(id,layout);
 		}
 		monitor.setProgress(0.2);
 		monitor.setStatusMessage("Updating Image Nodes");
 		// if everything went fine, register the layout.
-		dsm.addDataSetAboutToBeChangedListener(newLayout);
+		dsm.addDataSetAboutToBeChangedListener(layout);
 		fireNodesChanged(NodeIDs);		
 	}
 	
 	/**
-	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link ColorMapDataSetBundle}s provided.
+	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link DataSetLayoutInfoBundle}s provided.
 	 * @param datasets
 	 * @throws TooManyItemsException
 	 * @throws ContainerUnplaceableExcpetion
 	 * @throws DimensionMismatchException
 	 */
-	public void generateLayoutsForNodes(Collection<ColorMapDataSetBundle> datasets) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException
+	public void generateLayoutsForNodes(Set<DataSet> datasets, ImageNodeLayout layout ) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException	
 	{
 		//create a new layout
-		NodeLayout newLayout = new NodeLayout();					
+		//AutomaticNodeLayout newLayout = new AutomaticNodeLayout();					
 		//produce the Layout, this is where errors are likely to raise.
-		newLayout.generateLayoutForDataSets(datasets);
+		//newLayout.generateLayoutForDataSets(datasets);
 		//get all Nodes, that need to be updated
+		layout.doLayout();
 		Set<String> NodeIDs = new HashSet<String>();
-		for(ColorMapDataSetBundle set : datasets)
+		for(DataSet set : datasets)
 		{
-			NodeIDs.addAll(set.dataset.getNodeIDs());	
+			NodeIDs.addAll(set.getNodeIDs());	
 		}
 		//add the new layout to all those nodes.
 		for(String id : NodeIDs)
 		{
-			activeLayouts.put(id,newLayout);
+			activeLayouts.put(id,layout);
 		}
 		// if everything went fine, register the layout.
-		dsm.addDataSetAboutToBeChangedListener(newLayout);
+		dsm.addDataSetAboutToBeChangedListener(layout);
 		fireNodesChanged(NodeIDs);
 	}
 	/**
@@ -323,7 +347,7 @@ public class NodeManager implements DataSetChangeListener{
 	 * @param id
 	 * @return the layout associated with the ID, or null if the ID has no associated layout.
 	 */
-	public NodeLayout getLayoutForNode(String id)
+	public ImageNodeLayout getLayoutForNode(String id)
 	{
 		return activeLayouts.get(id);
 	}
@@ -343,13 +367,13 @@ public class NodeManager implements DataSetChangeListener{
 	 * This Object does not itself implement the listener, but requires another function to call the handling operation.
 	 * @param arg0
 	 */
-	public void handleEvent(SessionAboutToBeSavedEvent arg0) {
+	public void handleEvent(SessionAboutToBeSavedEvent arg0, IDAREImageNodeApp app) {
 
 		LinkedList<File> LayoutList = new LinkedList<File>();	
 		File LayoutFile = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.LAYOUT_FILE_NAME);
 		LayoutList.add(LayoutFile);
 		try{
-			writeNodeLayouts(LayoutFile);
+			writeNodeLayouts(LayoutFile, app);
 		}
 		catch(IOException e)
 		{
@@ -375,7 +399,7 @@ public class NodeManager implements DataSetChangeListener{
 	 * by implementing the {@link SessionLoadedListener} interface
 	 * @param arg0
 	 */
-	public void handleEvent(SessionLoadedEvent arg0) {
+	public void handleEvent(SessionLoadedEvent arg0, IDAREImageNodeApp app) {
 		
 		//First, obtain all nodeids present in the networks in this session. 
 		updateNetworkNodes();
@@ -390,7 +414,7 @@ public class NodeManager implements DataSetChangeListener{
 		File LayoutFile = LayoutFiles.get(0);
 		try
 		{
-			readNodeLayouts(LayoutFile);
+			readNodeLayouts(LayoutFile, app);
 		}
 		catch(IOException e)
 		{
@@ -403,11 +427,11 @@ public class NodeManager implements DataSetChangeListener{
 	/**
 	 * Create a Collection of IDs that are associated with a specific Layout.
 	 * @param Layout
-	 * @return the Nodes IDs assigned to the provided {@link NodeLayout} 
+	 * @return the Nodes IDs assigned to the provided {@link ImageNodeLayout} 
 	 */
-	public Collection<String> getNodesForLayout(NodeLayout Layout)
+	public Collection<String> getNodesForLayout(ImageNodeLayout Layout)
 	{
-		HashMap<NodeLayout,Set<String>> NodesLayoutedByID = new HashMap<NodeLayout, Set<String>>();
+		HashMap<ImageNodeLayout,Set<String>> NodesLayoutedByID = new HashMap<ImageNodeLayout, Set<String>>();
 		for(String node : activeLayouts.keySet())
 		{
 			if(!NodesLayoutedByID.containsKey(activeLayouts.get(node)))
@@ -423,10 +447,10 @@ public class NodeManager implements DataSetChangeListener{
 	 * @param LayoutFile
 	 * @throws IOException
 	 */
-	public void writeNodeLayouts(File LayoutFile) throws IOException
+	public void writeNodeLayouts(File LayoutFile, IDAREImageNodeApp app) throws IOException
 	{
 		//Set up the Layout to Node map:
-		HashMap<NodeLayout,Set<String>> NodesLayoutedByID = new HashMap<NodeLayout, Set<String>>();
+		HashMap<ImageNodeLayout,Set<String>> NodesLayoutedByID = new HashMap<ImageNodeLayout, Set<String>>();
 		for(String node : activeLayouts.keySet())
 		{
 			if(!NodesLayoutedByID.containsKey(activeLayouts.get(node)))
@@ -437,9 +461,9 @@ public class NodeManager implements DataSetChangeListener{
 		}
 		ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
 
-		for(NodeLayout layout : NodesLayoutedByID.keySet())
+		for(ImageNodeLayout layout : NodesLayoutedByID.keySet())
 		{
-			layout.writeLayout(os);
+			app.getLayoutIOManager().writeLayout(layout, os);			
 			os.writeObject(NodesLayoutedByID.get(layout));			
 		}		
 		os.writeObject(new EOOMarker());
@@ -450,7 +474,7 @@ public class NodeManager implements DataSetChangeListener{
 	 * @param LayoutFile
 	 * @throws IOException
 	 */
-	public void readNodeLayouts(File LayoutFile) throws IOException
+	public void readNodeLayouts(File LayoutFile, IDAREImageNodeApp app) throws IOException
 	{
 		//Set up the Layout to Node map:
 		ObjectInputStream os = new ObjectInputStream(new FileInputStream(LayoutFile));
@@ -459,10 +483,9 @@ public class NodeManager implements DataSetChangeListener{
 		try{		
 			Object currentobject = os.readObject(); 
 			while(!(currentobject instanceof EOOMarker)) {
-				NodeLayout layout = new NodeLayout();
 
-				notdone = layout.readLayout(dsm, os,currentobject);
-				if(notdone)
+				ImageNodeLayout layout = app.getLayoutIOManager().readLayout(os, currentobject, dsm);
+				if(layout != null)
 				{
 					Set<String> nodeids = (Set<String>)os.readObject();
 					for(String id : nodeids)
@@ -470,8 +493,8 @@ public class NodeManager implements DataSetChangeListener{
 						activeLayouts.put(id, layout);
 						NodeIDsToUpdate.add(id);
 					}
+					dsm.addDataSetAboutToBeChangedListener(layout);
 				}
-				dsm.addDataSetAboutToBeChangedListener(layout);
 				currentobject = os.readObject();
 			}
 		}

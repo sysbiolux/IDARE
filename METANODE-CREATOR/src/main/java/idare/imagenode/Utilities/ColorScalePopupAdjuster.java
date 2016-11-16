@@ -58,4 +58,11 @@ public class ColorScalePopupAdjuster extends BoundsPopupMenuListener {
 		}
 	}
 	
+	/**
+	 * Change the number of items that are being adjusted by this adjuster
+	 */
+	public void changeItemCount(int count)
+	{
+		panecount = count;
+	}
 }

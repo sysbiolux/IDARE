@@ -28,5 +28,19 @@ public class PrintFDebugger {
 		}
 	}
 	
+	public static void Trace(Object obj)
+	{
+		try
+		{
+			throw new DebugException("", obj);
+		}
+		catch(DebugException e)
+		{
+			Calendar cal = Calendar.getInstance();
+	        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");	        
+			System.out.println(sdf.format(cal.getTime()) + "(" + obj.getClass().getSimpleName() + " " + e.getStackTrace()[1].getLineNumber() + ":"  );
+			e.printStackTrace(System.out);
+		}
+	}
 	
 }

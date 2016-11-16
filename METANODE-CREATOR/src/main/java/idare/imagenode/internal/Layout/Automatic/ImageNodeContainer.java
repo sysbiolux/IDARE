@@ -1,4 +1,4 @@
-package idare.imagenode.internal.Layout;
+package idare.imagenode.internal.Layout.Automatic;
 
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
@@ -6,7 +6,9 @@ import idare.imagenode.Properties.Localisation;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
-import idare.imagenode.internal.Layout.ImageBag.BAGPOSITON;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
+import idare.imagenode.internal.Layout.Automatic.ImageBag.BAGPOSITON;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -33,9 +35,11 @@ public class ImageNodeContainer extends JLabel{
 	private ImageBag leftBag;
 	private ImageBag rightBag;
 	private ImageBag centerBag;	
-	private HashMap<Integer,Vector<DataSet>> flexibleContainers = new HashMap<>();
-	private HashMap<Integer,Vector<DataSet>> fixedContainers = new HashMap<>();	
-	private HashMap<Integer,Vector<DataSet>> freecontainers = new HashMap<>();
+	private HashMap<DataSet,DataSetLayoutInfoBundle> bundles = new HashMap<>();
+	private HashMap<Integer,Vector<DataSetLayoutInfoBundle>> flexibleContainers = new HashMap<>();
+	private HashMap<Integer,Vector<DataSetLayoutInfoBundle>> fixedContainers = new HashMap<>();	
+	private HashMap<Integer,Vector<DataSetLayoutInfoBundle>> freecontainers = new HashMap<>();
+	private HashMap<DataSet,DataContainer> containers = new HashMap<>();
 	private Set<Integer> addedDataSets = new HashSet<Integer>();
 	//private HashMap<Rectangle,Integer> Layout = new HashMap<>();
 	
@@ -110,7 +114,7 @@ public class ImageNodeContainer extends JLabel{
 	 * @throws DimensionMismatchException if a containers dimensions are too large
 	 * @throws TooManyItemsException if there are too many items and not enough room left.
 	 */
-	public HashMap<ImageBag,HashMap<JPanel,DataContainer>> createLayout(JFrame frame ) throws ContainerUnplaceableExcpetion,DimensionMismatchException, TooManyItemsException
+	public HashMap<ImageBag,HashMap<JPanel,DataContainer>> createLayout(JFrame frame ) throws ContainerUnplaceableExcpetion,DimensionMismatchException, TooManyItemsException, WrongDatasetTypeException
 	{
 		this.removeAll();
 		//reset the image bags, as datasets could have changed.
@@ -128,11 +132,11 @@ public class ImageNodeContainer extends JLabel{
 		Collections.sort(sizes,Collections.reverseOrder());
 		for(Integer i : sizes)
 		{			
-			for(DataSet set : fixedContainers.get(i))
+			for(DataSetLayoutInfoBundle set : fixedContainers.get(i))
 			{
-				DataContainer container = set.getLayoutContainer();
+				DataContainer container = containers.get(set.dataset);
 //				System.out.println("Trying to add non flexible container with " + i +" items to position " + container.getLocalisation().pos  );
-				if(container.getLocalisationPreference().pos == Localisation.Position.CENTER)
+				if(set.properties.getLocalisationPreference() == Localisation.Position.CENTER)
 				{
 					centerBag.addContainer(set);
 				}
@@ -155,11 +159,11 @@ public class ImageNodeContainer extends JLabel{
 		Collections.sort(sizes,Collections.reverseOrder());
 		for(Integer i : sizes)
 		{			
-			for(DataSet set : flexibleContainers.get(i))
+			for(DataSetLayoutInfoBundle set : flexibleContainers.get(i))
 			{
-				DataContainer container = set.getLayoutContainer(); 
+				DataContainer container = containers.get(set.dataset); 
 			//	System.out.println("Trying to add flexible container with " + i +" items to position " + container.getLocalisation().pos  );
-				if(container.getLocalisationPreference().pos == Localisation.Position.CENTER)
+				if(set.properties.getLocalisationPreference() == Localisation.Position.CENTER)
 				{
 					centerBag.addContainer(set);
 				}
@@ -183,7 +187,7 @@ public class ImageNodeContainer extends JLabel{
 		Collections.sort(sizes,Collections.reverseOrder());
 		for(Integer i : sizes)
 		{			
-			for(DataSet set : freecontainers.get(i))
+			for(DataSetLayoutInfoBundle set : freecontainers.get(i))
 			{
 				//System.out.print("Trying to add freely placeable container with " + i +" items to position");
 				if(centerBag.itemcount > rightBag.itemcount && centerBag.itemcount > leftBag.itemcount)
@@ -246,34 +250,34 @@ public class ImageNodeContainer extends JLabel{
 	 * @param set - The {@link DataSet} to remove
 	 */
 	public void removeDataSet(DataSet set)
-	{
+	{		
 		int id = set.getID();
 		if(addedDataSets.contains(id))
 		{
-			DataContainer container =  set.getLayoutContainer();		
-			Localisation loc = container.getLocalisationPreference();
-			if(loc.Flexible)
+			DataSetLayoutInfoBundle bundleToRemove = bundles.get(set);
+			DataContainer container =  containers.get(set);						
+			if(bundleToRemove.properties.getItemFlexibility())
 			{
 				Rectangle contsize = container.getMinimalSize();
 				int items = contsize.width * contsize.height;
 						
 				if(flexibleContainers.containsKey(items))
 				{
-					flexibleContainers.get(items).remove(set);
+					flexibleContainers.get(items).remove(bundleToRemove);
 				}				
-				if(loc.pos == Localisation.Position.CENTER )
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.CENTER )
 				{
 					currentcenteritems -= items;					
 				}
-				if(loc.pos == Localisation.Position.EDGE)
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.EDGE)
 				{
 					currentedgeitems -= items;
 				}
-				if(loc.pos == Localisation.Position.FREE)
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.FREE)
 				{				
 					if(freecontainers.containsKey(items))
 					{
-						freecontainers.get(items).remove(set);
+						freecontainers.get(items).remove(bundleToRemove);
 					}					
 				}
 			}
@@ -284,25 +288,27 @@ public class ImageNodeContainer extends JLabel{
 						
 				if(fixedContainers.containsKey(items))
 				{
-					fixedContainers.get(items).remove(set);
+					fixedContainers.get(items).remove(bundleToRemove);
 				}				
-				if(loc.pos == Localisation.Position.CENTER )
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.CENTER )
 				{
 					currentcenteritems -= items;
 				}
-				if(loc.pos == Localisation.Position.EDGE)
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.EDGE)
 				{
 					currentedgeitems -= items;
 				}
-				if(loc.pos == Localisation.Position.FREE)
+				if(bundleToRemove.properties.getLocalisationPreference() == Localisation.Position.FREE)
 				{				
 					if(freecontainers.containsKey(items))
 					{
-						freecontainers.get(items).remove(set);
+						freecontainers.get(items).remove(bundleToRemove);
 					}					
 				}
 			}
 			addedDataSets.remove(set.getID());
+			containers.remove(set);
+			bundles.remove(set);
 		}
 
 	}
@@ -311,23 +317,23 @@ public class ImageNodeContainer extends JLabel{
 	 * @param set - The {@link DataSet} to add to the {@link ImageNodeContainer}
 	 * @throws TooManyItemsException
 	 */
-	public void addDataSet(DataSet set) throws TooManyItemsException
+	public void addDataSet(DataSetLayoutInfoBundle bundle) throws TooManyItemsException, WrongDatasetTypeException
 	{
-		DataContainer container =  set.getLayoutContainer();
+		DataSet set = bundle.dataset;
+		DataContainer container =  set.getLayoutContainer(bundle.properties);
 		//Don't add duplicate datasets!
 		if(addedDataSets.contains(container.getDataSet().getID())) return;
-		Localisation loc = container.getLocalisationPreference();
-		if(loc.Flexible)
+		if(bundle.properties.getItemFlexibility())
 		{
 			Rectangle contsize = container.getMinimalSize();
 			int items = contsize.width * contsize.height;
 					
 			if(!flexibleContainers.containsKey(items))
 			{
-				flexibleContainers.put(items,  new Vector<DataSet>());
+				flexibleContainers.put(items,  new Vector<DataSetLayoutInfoBundle>());
 			}
-			flexibleContainers.get(items).add(set);
-			if(loc.pos == Localisation.Position.CENTER )
+			flexibleContainers.get(items).add(bundle);
+			if(bundle.properties.getLocalisationPreference() == Localisation.Position.CENTER )
 			{
 				if(currentcenteritems + items > maxcenteritems || !canPlaceFreeContainers())
 				{
@@ -338,7 +344,7 @@ public class ImageNodeContainer extends JLabel{
 					currentcenteritems += items;
 				}
 			}
-			if(loc.pos == Localisation.Position.EDGE)
+			if(bundle.properties.getLocalisationPreference() == Localisation.Position.EDGE)
 			{
 				if(currentedgeitems + items > maxedgeitems || !canPlaceFreeContainers())
 				{
@@ -349,13 +355,13 @@ public class ImageNodeContainer extends JLabel{
 					currentedgeitems += items;
 				}
 			}
-			if(loc.pos == Localisation.Position.FREE)
+			if(bundle.properties.getLocalisationPreference()== Localisation.Position.FREE)
 			{				
 				if(!freecontainers.containsKey(items))
 				{
-					freecontainers.put(items,new Vector<DataSet>());
+					freecontainers.put(items,new Vector<DataSetLayoutInfoBundle>());
 				}
-				freecontainers.get(items).add(set);
+				freecontainers.get(items).add(bundle);
 				if(!canPlaceFreeContainers())
 				{
 					freecontainers.get(items).remove(container);
@@ -371,10 +377,10 @@ public class ImageNodeContainer extends JLabel{
 					
 			if(!fixedContainers.containsKey(items))
 			{
-				fixedContainers.put(items,  new Vector<DataSet>());
+				fixedContainers.put(items,  new Vector<DataSetLayoutInfoBundle>());
 			}
-			fixedContainers.get(items).add(set);
-			if(loc.pos == Localisation.Position.CENTER )
+			fixedContainers.get(items).add(bundle);
+			if(bundle.properties.getLocalisationPreference() == Localisation.Position.CENTER )
 			{
 				if(currentcenteritems + items > maxcenteritems || !canPlaceFreeContainers())
 				{
@@ -385,7 +391,7 @@ public class ImageNodeContainer extends JLabel{
 					currentcenteritems += items;
 				}
 			}
-			if(loc.pos == Localisation.Position.EDGE)
+			if(bundle.properties.getLocalisationPreference() == Localisation.Position.EDGE)
 			{
 				if(currentedgeitems + items > maxedgeitems || !canPlaceFreeContainers())
 				{
@@ -396,13 +402,13 @@ public class ImageNodeContainer extends JLabel{
 					currentedgeitems += items;
 				}
 			}
-			if(loc.pos == Localisation.Position.FREE)
+			if(bundle.properties.getLocalisationPreference() == Localisation.Position.FREE)
 			{				
 				if(!freecontainers.containsKey(items))
 				{
-					freecontainers.put(items,new Vector<DataSet>());
+					freecontainers.put(items,new Vector<DataSetLayoutInfoBundle>());
 				}
-				freecontainers.get(items).add(set);
+				freecontainers.get(items).add(bundle);
 				if(!canPlaceFreeContainers())
 				{
 					freecontainers.get(items).remove(container);
@@ -413,6 +419,8 @@ public class ImageNodeContainer extends JLabel{
 		}
 		//if we did nto encounter any errors, add this set to the added sets.
 		addedDataSets.add(set.getID());	
+		containers.put(set, container);
+		bundles.put(set, bundle);
 
 	}
 	

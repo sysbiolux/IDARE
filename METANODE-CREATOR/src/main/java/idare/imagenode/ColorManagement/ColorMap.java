@@ -130,4 +130,36 @@ public abstract class ColorMap implements Serializable{
 	@SuppressWarnings("rawtypes")
 	public abstract Color getColor(Comparable Value);
 
+//	//Two ColorMaps are equal if their color scales are the same.
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + ((cs == null) ? 0 : cs.hashCode());
+//		return result;
+//	}
+//
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//		{
+//			PrintFDebugger.Debugging(this, "Classes do not match: " + getClass() + " / " + obj.getClass());
+//			
+//			return false;
+//		}
+//		ColorMap other = (ColorMap) obj;
+//		if (cs == null) {
+//			if (other.cs != null)
+//				return false;
+//		} else if (!cs.equals(other.cs))
+//		{
+//			PrintFDebugger.Debugging(this, "The colorscales do not match");
+//			return false;
+//		}
+//		return true;
+//	}
 }	

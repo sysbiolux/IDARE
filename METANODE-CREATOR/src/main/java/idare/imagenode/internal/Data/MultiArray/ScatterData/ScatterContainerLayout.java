@@ -6,8 +6,11 @@ import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayDataSet;
 import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayDataValue;
 import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayNodeData;
 import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.Utilities.LegendLabel;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -72,9 +75,11 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 		 // TODO Auto-generated constructor stub
 	 }
 	 @Override
-	 public void createLayout(NodeData data, Rectangle area, String DataSetLabel) {
+	 public void setupLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException{
+		 //PrintFDebugger.Debugging(this, "Trying to create a layout in the area:" + area );
 		 MultiArrayDataSet dataset = (MultiArrayDataSet)data.getDataSet();
-		 
+		 XLabels = new Vector<>();
+		 itemxPositions = new HashMap<>();
 		 //obtain the limits from the original Dataset
 		 Double[] valuerange = dataset.getYAxisLimits();
 		 Double[] displayrange = determineDisplayRange(valuerange);
@@ -142,6 +147,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 	  */
 	 private void calcNormalLayoutpositions(Rectangle area)
 	 {
+		 //PrintFDebugger.Debugging(this, "Calculating normal Layout positions");
 		 double xdrawMin = area.getX() + 2;
 		 double xdrawMax = area.getX() + area.getWidth();
 		 double xdrawRange = xdrawMax - xdrawMin;
@@ -150,9 +156,11 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 		 double ydrawRange = ydrawMax - ydrawMin;
 		 //Leave a little margin for the area to allow for axes 
 		 LineArea = new Rectangle2D.Double(xdrawMin+1,ydrawMin+1,xdrawRange-2,ydrawRange-2);
+		 //PrintFDebugger.Debugging(this, "The Line Area is " + LineArea + " while the enclosing area is " + area);
 		 NodeAxes = new Path2D.Double();
 		 NodeAxes.append(new Line2D.Double(new Point2D.Double(area.getX()+1,ydrawMin),new Point2D.Double(area.getX()+1,ydrawMin +area.getHeight()-1)), false);		
 		 NodeAxes.append(new Line2D.Double(new Point2D.Double(area.getX()+1,ydrawMin + area.getHeight()-1),new Point2D.Double(xdrawMax,ydrawMin + area.getHeight()-1)), true);
+		 //PrintFDebugger.Debugging(this, "The NodeAxes are " + NodeAxes);
 		 if(ymaxval > 0 & yminval < 0)
 		 {
 			 double zerofraction = ymaxval/yrange;
@@ -314,10 +322,12 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 	  */
 	 private void LayoutNode(NodeData data, SVGGraphics2D g2d, ColorMap colors)
 	 {
+		 //PrintFDebugger.Debugging(this, "Trying to layout Data");
 		 Paint currentPaint = g2d.getPaint();
 		 Stroke currentStroke = g2d.getStroke();
 		 g2d.setPaint(Color.black);
 		 g2d.setStroke(new BasicStroke(2));
+		 //PrintFDebugger.Debugging(this, "The NodeAxes are " + NodeAxes);
 		 g2d.draw(NodeAxes);		
 		 if(ZeroLine != null)
 		 {
@@ -337,6 +347,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 	  */
 	 private void makePlot(NodeData data, SVGGraphics2D g2d, Rectangle2D area, ColorMap colors)
 	 {
+		 //PrintFDebugger.Debugging(this, "Creating plot in area " + area );
 		 MultiArrayNodeData nd = (MultiArrayNodeData) data;		 
 		 Paint origPaint = g2d.getPaint();
 		 Stroke currentStroke = g2d.getStroke();
@@ -345,9 +356,11 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 		 g2d.translate(area.getX(), area.getY());
 		 for(String name : ((MultiArrayDataSet)data.getDataSet()).getSetNames())
 		 {
+			 //PrintFDebugger.Debugging(this, "Plotting Line for " + name);
 			 MultiArrayDataValue vsd = nd.getData(name);
 			 if(vsd != null)
 			 {
+				 PrintFDebugger.Debugging(this, "Data is not null");
 				 Vector<Double> LineYValues = vsd.getEntryData();
 				 Color linecolor = colors.getColor(name);
 				 g2d.setPaint(linecolor);
@@ -381,6 +394,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 	  */
 	 private void plotItems(String SheetName, Vector<Comparable> xvalues, Vector<Double> yvalues, Rectangle2D area, SVGGraphics2D g2d)
 	 {
+		 //PrintFDebugger.Debugging(this, "Plotting Items for " + SheetName);
 		 Path2D result = new Path2D.Double();
 		 for(int i = 0; i < xvalues.size(); i++)
 		 {
@@ -397,6 +411,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 					 coord = itemxPositions.get(xvalues.get(i)).position;
 				 }
 				 Point2D loc = getPlotPoint(coord,val,area.getWidth(),area.getHeight());
+				 //PrintFDebugger.Debugging(this, "Plotting Items at position " + loc);
 				 Path2D marker = createMarker(SheetName, loc, labelSize);
 				 g2d.draw(marker);
 				 result.append(new Line2D.Double(loc,loc), false);
@@ -605,6 +620,11 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 				 centerx, centery - radius),true);
 		 return diamondpath;
 	 }
+	@Override
+	public void updateLabel(String DatasetLabel) {
+		// TODO Auto-generated method stub
+		LabelForDataSet.Label = DatasetLabel;
+	}
 
 	 
 }

@@ -6,8 +6,10 @@ import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayDataSet;
 import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayDataValue;
 import idare.imagenode.Data.BasicDataTypes.MultiArrayData.MultiArrayNodeData;
 import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.Utilities.LegendLabel;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -67,7 +69,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 		 // TODO Auto-generated constructor stub
 	 }
 	 @Override
-	 public void createLayout(NodeData data, Rectangle area, String DataSetLabel) {
+	 public void setupLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException{
 		 MultiArrayDataSet dataset = (MultiArrayDataSet)data.getDataSet();
 		 //obtain the limits from the original Dataset
 		 Double[] valuerange = dataset.getYAxisLimits();
@@ -376,6 +378,12 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 			 LayoutNode(data,context, colors);
 		 }		
 	 }
+
+	@Override
+	public void updateLabel(String DatasetLabel) {
+		// TODO Auto-generated method stub
+		LabelForDataSet.Label = DatasetLabel;
+	}
 
 }
 

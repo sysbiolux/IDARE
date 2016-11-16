@@ -6,6 +6,7 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.Localisation.Position;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.IDAREService;
 
 import java.io.Serializable;
@@ -44,13 +45,13 @@ public abstract class DataSetLayoutProperties implements IDAREService,Serializab
 	 * @param data a node data 
 	 * @return A new container for the given {@link DataSet} and {@link NodeData}
 	 */
-	public abstract DataContainer newContainerInstance(DataSet origin, NodeData data);
-	/**
-	 * Generate A DataContainer for a specific {@link NodeData} object (obtaining the {@link DataSet} from there.
-	 * @param data nodedata that for which to generate a {@link DataContainer}. The {@link DataSet} this {@link NodeData} originates from has to pass the testValididty Method, or the behaviour is undefined.
-	 * @return an empty {@link DataContainer} for the given NodeData entry . 
-	 */
-	public abstract DataContainer newContainerForData(NodeData data);
+	public abstract DataContainer newContainerInstance(DataSet origin, NodeData data) throws WrongDatasetTypeException;
+//	/**
+//	 * Generate A DataContainer for a specific {@link NodeData} object (obtaining the {@link DataSet} from there.
+//	 * @param data nodedata that for which to generate a {@link DataContainer}. The {@link DataSet} this {@link NodeData} originates from has to pass the testValididty Method, or the behaviour is undefined.
+//	 * @return an empty {@link DataContainer} for the given NodeData entry . 
+//	 */
+//	public abstract DataContainer newContainerForData(NodeData data) throws WrongDatasetTypeException;
 	/**
 	 * Get the type of DataSet (this can be used for display purposes
 	 * @return the type name of these properties

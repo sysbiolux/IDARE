@@ -47,11 +47,11 @@ public abstract class ScatterDataSetProperties extends MultiArrayDataProperties 
 		return new ScatterContainer(data.getDataSet(), (MultiArrayNodeData)data, getLabelSize());
 	}
 
-	@Override
-	public DataContainer newContainerForData(NodeData data) {
-		// TODO Auto-generated method stub
-		return new ScatterContainer(data.getDataSet(), (MultiArrayNodeData)data, getLabelSize());
-	}
+//	@Override
+//	public DataContainer newContainerForData(NodeData data) {
+//		// TODO Auto-generated method stub
+//		return new ScatterContainer(data.getDataSet(), (MultiArrayNodeData)data, getLabelSize());
+//	}
 
 	@Override
 	public String getTypeName() {

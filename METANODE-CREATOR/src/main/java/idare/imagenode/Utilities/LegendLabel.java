@@ -13,7 +13,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 public class LegendLabel implements Serializable
 {
 	
-	String Label;
+	public String Label;
 	Point Position;
 	Font LabelFont;
 	/**

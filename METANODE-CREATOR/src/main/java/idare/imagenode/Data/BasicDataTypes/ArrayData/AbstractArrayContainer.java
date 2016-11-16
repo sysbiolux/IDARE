@@ -15,9 +15,9 @@ import java.awt.Rectangle;
  */
 public abstract class AbstractArrayContainer implements DataContainer {
 
-	Localisation loc;
-	DataSet origin;
-	ArrayNodeData data;
+	protected Localisation loc;
+	protected DataSet origin;
+	protected ArrayNodeData data;
 	/**
 	 * Basic constructor with a source {@link DataSet} and the data used in this container.
 	 * @param origin the Dataset represented by this {@link DataContainer}
@@ -42,15 +42,6 @@ public abstract class AbstractArrayContainer implements DataContainer {
 	}
 
 
-	/*
-	 * (non-Javadoc)
-	 * @see idare.imagenode.Interfaces.DataSets.DataContainer#getLocalisationPreference()
-	 */
-	@Override
-	public Localisation getLocalisationPreference() {		
-		// TODO Auto-generated method stub
-		return loc;		
-	}
 	/*
 	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataContainer#getDataSet()

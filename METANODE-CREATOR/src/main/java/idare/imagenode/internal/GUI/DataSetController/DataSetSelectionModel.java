@@ -11,7 +11,7 @@ import idare.imagenode.internal.DataManagement.Events.DataSetChangeListener;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 
 import java.awt.Component;
 import java.util.Collection;
@@ -47,6 +47,10 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	private HashMap<DataSet,Vector<ColorScalePane>> colorscalesperdataset = new HashMap<DataSet, Vector<ColorScalePane>>();
 	private HashMap<ColorScalePane,ColorMap> colorscaleselection = new HashMap<ColorScalePane, ColorMap>();
 	public static String[] Column_Identifiers = new String[] {"Dataset Description", "Nodes", "Selected","Colors", "Visualisation Type"};	
+	private static int COLOR_DESCRIPTION_POSITION = 3;
+	private static int DATASET_POSITION = 0;
+	private static int DATASET_PROPERTIES_POSITION = 4;
+	private static int SELECTED_POSITION = 2;
 	
 	
 	/**
@@ -94,7 +98,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public void updateDataSetProperties(DataSet ds)
 	{
-		
+		PrintFDebugger.Debugging(this, ds.Description + " has Changed");
 		int dsrow = getRowByDataSet(ds);
 		if(dsrow < 0 || getColumnCount() < 1)
 		{
@@ -127,9 +131,10 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 			renderers.put(ds, null);
 			return;
 		}
+		PrintFDebugger.Debugging(this, "The row to change is " + dsrow + " while the rowcount is " + getRowCount());
 		if(dsrow < getRowCount())
 		{
-			setValueAt(ds.getPropertyOptions().get(0),dsrow,4);
+			setValueAt(ds.getPropertyOptions().get(0),dsrow,DATASET_PROPERTIES_POSITION);
 		}
 	}
 	
@@ -149,20 +154,22 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	/**
 	 * Get the selected {@link DataSet}s along with the currently used {@link ColorMap}s 
-	 * @return A vector of all selected {@link DataSet}s and their chosen {@link ColorMap}s in a {@link ColorMapDataSetBundle} 
+	 * @return A vector of all selected {@link DataSet}s and their chosen {@link ColorMap}s in a {@link DataSetLayoutInfoBundle} 
 	 */
-	public Vector<ColorMapDataSetBundle> getSelectedDataSets()
+	public Vector<DataSetLayoutInfoBundle> getSelectedDataSets()
 	{
-		Vector<ColorMapDataSetBundle> rv = new Vector<ColorMapDataSetBundle>();
+		Vector<DataSetLayoutInfoBundle> rv = new Vector<DataSetLayoutInfoBundle>();
 		for(int i = 0; i < this.getRowCount(); i++)
 		{
-			if((Boolean) getValueAt(i, 2))
+			if((Boolean) getValueAt(i, SELECTED_POSITION))
 			{
-				DataSet ds = (DataSet) getValueAt(i, 0);
-				ColorMap cm = colorscaleselection.get((ColorScalePane) getValueAt(i,3));
-				ColorMapDataSetBundle bundle = new ColorMapDataSetBundle();
+				DataSet ds = (DataSet) getValueAt(i, DATASET_POSITION);
+				ColorMap cm = colorscaleselection.get((ColorScalePane) getValueAt(i,COLOR_DESCRIPTION_POSITION));
+				DataSetLayoutProperties props = (DataSetLayoutProperties)getValueAt(i, DATASET_PROPERTIES_POSITION);
+				DataSetLayoutInfoBundle bundle = new DataSetLayoutInfoBundle();
 				bundle.dataset = ds;
-				bundle.map = cm;
+				bundle.colormap = cm;
+				bundle.properties = props;				
 				rv.add(bundle);
 			}
 
@@ -178,7 +185,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 		for(int i = 0; i < getRowCount(); i++)
 		{
 			DataSet ds = (DataSet) getValueAt(i, 0);					
-			ds.setProperties((DataSetLayoutProperties)getValueAt(i,4));
+			ds.setProperties((DataSetLayoutProperties)getValueAt(i,DATASET_PROPERTIES_POSITION));
 		}
 	}
 
@@ -207,7 +214,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public ComboBoxRenderer getPropertiesRenderer(int row)
 	{
-		return renderers.get(getValueAt(row, 0));
+		return renderers.get(getValueAt(row, DATASET_POSITION));
 	}
 	
 	/**
@@ -217,7 +224,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public ColorBoxRenderer getColorScaleRenderer(int row)
 	{
-		return colorscalerenderer.get(getValueAt(row, 0));
+		return colorscalerenderer.get(getValueAt(row, DATASET_POSITION));
 	}
 	/**
 	 * Get the Editor for the appropriate {@link ColorScalePane} renderer.
@@ -226,7 +233,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public DefaultCellEditor getColorScaleEditor(int row)
 	{
-		return new DefaultCellEditor(colorscaleBoxes.get(getValueAt(row, 0)));
+		return new DefaultCellEditor(colorscaleBoxes.get(getValueAt(row, DATASET_POSITION)));
 	}
 	
 	/**
@@ -236,7 +243,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public TableCellEditor getDataSetEditor(int row)
 	{
-		return new DataSetNameEditor((DataSet)getValueAt(row, 0));
+		return new DataSetNameEditor((DataSet)getValueAt(row, DATASET_POSITION));
 	}
 	
 	/**
@@ -440,7 +447,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 			return -1;
 		}
 	    for (int i = getRowCount() - 1; i >= 0; --i) {
-	        if (getValueAt(i, 0).equals(value)) {
+	        if (getValueAt(i, DATASET_POSITION).equals(value)) {
 	                return i;
 	        }
 	    }

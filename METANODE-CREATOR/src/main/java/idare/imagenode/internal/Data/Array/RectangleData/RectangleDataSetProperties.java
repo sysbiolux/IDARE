@@ -33,10 +33,10 @@ public class RectangleDataSetProperties extends AbstractArrayDataSetProperties{
 		return new RectangleContainer(origin, (ArrayNodeData) data);
 	}
 
-	@Override
-	public DataContainer newContainerForData(NodeData data) {
-		return new RectangleContainer(data.getDataSet(), (ArrayNodeData)data);
-	}
+//	@Override
+//	public DataContainer newContainerForData(NodeData data) {
+//		return new RectangleContainer(data.getDataSet(), (ArrayNodeData)data);
+//	}
 
 	@Override
 	public String toString()

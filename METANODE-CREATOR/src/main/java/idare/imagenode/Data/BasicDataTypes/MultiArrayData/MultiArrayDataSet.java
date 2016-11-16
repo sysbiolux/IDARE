@@ -12,9 +12,11 @@ import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook;
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Utilities.StringUtils;
 import idare.imagenode.exceptions.io.DuplicateIDException;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.ColorManagement.ColorScales.LineScale;
 import idare.imagenode.internal.Data.MultiArray.GraphData.GraphDataSetProperties;
 import idare.imagenode.internal.Data.MultiArray.ScatterData.LargeScatterProperties;
@@ -121,9 +123,17 @@ public class MultiArrayDataSet extends DataSet{
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getContainerForID(java.lang.String)
 	 */
 	@Override
-	public DataContainer getContainerForID(String ID) {
+	public DataContainer getContainerForID(String ID){
 		// TODO Auto-generated method stub
-		return datasetProperties.newContainerInstance(this, Data.get(ID));
+		try{
+			return datasetProperties.newContainerInstance(this, Data.get(ID));
+		}
+		catch(WrongDatasetTypeException e)
+		{
+			//This should not happen as we are using a valid property which was set during set
+			return null;
+		}
+		
 	}
 	/*
 	 * (non-Javadoc)
@@ -465,9 +475,9 @@ public class MultiArrayDataSet extends DataSet{
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getLayoutContainer()
 	 */
 	@Override
-	public DataContainer getLayoutContainer() {
+	public DataContainer getLayoutContainer(DataSetLayoutProperties props) throws WrongDatasetTypeException{
 		// TODO Auto-generated method stub
-		return datasetProperties.newContainerInstance(this, Data.values().iterator().next());						
+		return props.newContainerInstance(this, Data.values().iterator().next());						
 	}
 
 	/*

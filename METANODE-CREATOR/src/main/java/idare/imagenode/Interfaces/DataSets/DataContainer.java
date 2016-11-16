@@ -24,11 +24,11 @@ public interface DataContainer {
 	 */
 	public Rectangle getMinimalSize();
 
-	/**
-	 * Get the localisation preferences for this container (i.e whether to be placed on the EDGE, or in the CENTER, See {@link Position}, and whether it is a flexible container or not).
-	 * @return the preferred {@link Localisation} of this Container
-	 */
-	public Localisation getLocalisationPreference();
+//	/**
+//	 * Get the localisation preferences for this container (i.e whether to be placed on the EDGE, or in the CENTER, See {@link Position}, and whether it is a flexible container or not).
+//	 * @return the preferred {@link Localisation} of this Container
+//	 */
+//	public Localisation getLocalisationPreference();
 	
 	/**
 	 * Get the source Dataset this Container was build from.

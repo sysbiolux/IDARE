@@ -1,4 +1,4 @@
-package idare.imagenode.internal.Layout;
+package idare.imagenode.internal.Layout.Automatic;
 
 import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
@@ -7,6 +7,8 @@ import idare.imagenode.Properties.IMAGENODEPROPERTIES.LayoutStyle;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
@@ -43,8 +45,8 @@ public class ImageBag extends Container{
 
 	private ImageNodeContainer parent;
 	
-	HashMap<Integer,Vector<DataSet>> FixedContainers = new HashMap<>();
-	HashMap<Integer,Vector<DataSet>> FlexContainers = new HashMap<>();
+	HashMap<Integer,Vector<DataSetLayoutInfoBundle>> FixedContainers = new HashMap<>();
+	HashMap<Integer,Vector<DataSetLayoutInfoBundle>> FlexContainers = new HashMap<>();
 	HashMap<DataContainer, Rectangle> Layout = new HashMap<DataContainer, Rectangle>();
 	int itemcount = 0;
 	int maxitemcount = 0;
@@ -86,20 +88,19 @@ public class ImageBag extends Container{
 	 * @param set the {@link DataSet} to add to this Bag.
 	 * @throws TooManyItemsException if there are too many items in the provided {@link DataSet} and not enough room left in this Bag
 	 */
-	public void addContainer(DataSet set) throws TooManyItemsException
+	public void addContainer(DataSetLayoutInfoBundle set) throws TooManyItemsException,WrongDatasetTypeException
 	{
-		DataContainer container = set.getLayoutContainer();
+		DataContainer container = set.dataset.getLayoutContainer(set.properties);
 		Rectangle contDim = container.getMinimalSize();
 		int items = contDim.height * contDim.width;
-		Localisation contLoc = container.getLocalisationPreference();		
 		if(itemcount + items < maxitemcount)
 		{
 			//We can still add this.
-			if(!contLoc.Flexible)
+			if(!set.properties.getItemFlexibility())
 			{
 				if(!FixedContainers.containsKey(items))
 				{
-					FixedContainers.put(items,new Vector<DataSet>());	
+					FixedContainers.put(items,new Vector<DataSetLayoutInfoBundle>());	
 				}
 				FixedContainers.get(items).add(set);
 			}
@@ -107,7 +108,7 @@ public class ImageBag extends Container{
 			{
 				if(!FlexContainers.containsKey(items))
 				{
-					FlexContainers.put(items,new Vector<DataSet>());	
+					FlexContainers.put(items,new Vector<DataSetLayoutInfoBundle>());	
 				}
 				FlexContainers.get(items).add(set);
 			}
@@ -134,7 +135,7 @@ public class ImageBag extends Container{
 	 * @throws DimensionMismatchException if the dimensions of a container don't fit.
 	 * @throws ContainerUnplaceableExcpetion if there is not enough space
 	 */
-	public HashMap<JPanel,DataContainer> createLayout() throws DimensionMismatchException, ContainerUnplaceableExcpetion
+	public HashMap<JPanel,DataContainer> createLayout() throws DimensionMismatchException, ContainerUnplaceableExcpetion, WrongDatasetTypeException
 	{
 		int[][] grid = new int[maxwidth][maxheight];
 		//First add all non flexible items
@@ -143,10 +144,10 @@ public class ImageBag extends Container{
 		Collections.sort(fixedsizes, Collections.reverseOrder());
 		for(Integer size : fixedsizes)
 		{
-			Vector<DataSet> current_container_set = FixedContainers.get(size);
-			for(DataSet current_set : current_container_set)
+			Vector<DataSetLayoutInfoBundle> current_container_set = FixedContainers.get(size);
+			for(DataSetLayoutInfoBundle current_set : current_container_set)
 			{
-				DataContainer current_container = current_set.getLayoutContainer();
+				DataContainer current_container = current_set.dataset.getLayoutContainer(current_set.properties);
 				Rectangle dim = current_container.getMinimalSize();
 				//System.out.println("Current Container has size: " + dim.width + "/" + dim.height);
 				if(dim.width > maxwidth)
@@ -177,10 +178,10 @@ public class ImageBag extends Container{
 		Collections.sort(flexsizes, Collections.reverseOrder());
 		for(Integer size : flexsizes)
 		{
-			Vector<DataSet> current_container_set = FlexContainers.get(size);
-			for(DataSet current_set : current_container_set)
+			Vector<DataSetLayoutInfoBundle> current_container_set = FlexContainers.get(size);
+			for(DataSetLayoutInfoBundle current_set : current_container_set)
 			{
-				DataContainer current_container = current_set.getLayoutContainer();
+				DataContainer current_container = current_set.dataset.getLayoutContainer(current_set.properties);
 				//Simply get the largest area, and place it in this area. there wont be a larger container left.
 				Rectangle empty = getLargestEmptyArea(grid,0,0);
 				if(empty.height * empty.width < size)

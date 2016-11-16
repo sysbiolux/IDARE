@@ -4,8 +4,11 @@ import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.ColorManagement.ColorUtils;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.Utilities.LegendLabel;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -73,8 +76,7 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 	 * @param Legend indication whether we are creating a legend layout of a non legend layout.
 	 */
 	private void createLayoutPositions(ArrayNodeData data, Rectangle AreaAndPosition, String DataSetLabel, HashMap<Integer,ShapePosition> storage, boolean Legend)
-	{
-		
+	{		
 		//Now, we can simply get the row width and column width by dividing the Rectangle width and height
 		double rowheight = (double)AreaAndPosition.height / rows;
 		double colwidth = (double)AreaAndPosition.width / cols;		
@@ -116,38 +118,46 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 	 * @see idare.imagenode.Interfaces.Layout.ContainerLayout#createLayout(idare.imagenode.Interfaces.DataSets.NodeData, java.awt.Rectangle, java.lang.String)
 	 */
 	@Override
-	public void createLayout(NodeData data, Rectangle AreaAndPosition, String DataSetLabel) {
-		//first, determine, whether we have a container with fixed sizes, or a container with flexible sizes
+	public void setupLayout(NodeData data, Rectangle AreaAndPosition, String DataSetLabel, DataSetLayoutProperties props)  throws WrongDatasetTypeException{
+		//first, determine, whether we have a container with fixed sizes, or a container with flexible sizes		
+		PrintFDebugger.Debugging(this, "Creating layout in area" + AreaAndPosition);
 		ArrayNodeData ndata = (ArrayNodeData) data;
 		upperright = new Point(AreaAndPosition.x,AreaAndPosition.y);
 		//get the rows and columns to use.
-		if(data.getDataSet().getLayoutContainer().getLocalisationPreference().Flexible)
+//		PrintFDebugger.Debugging(this, "Calculating Rows and Columns");
+		if(props.getItemFlexibility())
 		{
 			calcRowsAndCols(AreaAndPosition.width, AreaAndPosition.height,ndata.getValueCount());
 		}
 		else
 		{
-			rows = data.getDataSet().getLayoutContainer().getMinimalSize().height;
-			cols = data.getDataSet().getLayoutContainer().getMinimalSize().width;
+			rows = data.getDataSet().getLayoutContainer(props).getMinimalSize().height;
+			cols = data.getDataSet().getLayoutContainer(props).getMinimalSize().width;
 		}
 		//create Layout for normal node
+//		PrintFDebugger.Debugging(this, "Creating Layout positions");
 		createLayoutPositions(ndata, AreaAndPosition, DataSetLabel, DisplayNodePositions, false);
 		
 		//Set up the Legend DataSet label and Legend Frame 
 		int FrameOffset = 1;
+//		PrintFDebugger.Debugging(this, "Creating Legend Frame");
 		LegendFrame = new Rectangle(AreaAndPosition.x+FrameOffset,AreaAndPosition.y+FrameOffset,AreaAndPosition.width-2*FrameOffset,AreaAndPosition.height-2*FrameOffset);
 		Font LegendLabelFont = new Font(Font.MONOSPACED,Font.BOLD,Math.max(20,(int)Math.min((LegendFrame.getWidth() * 0.1),(LegendFrame.getHeight() * 0.1))));
+//		PrintFDebugger.Debugging(this, "Obtaining FontMetrics");
 		FontMetrics fm = LayoutUtils.getSVGFontMetrics(LegendLabelFont);
+//		PrintFDebugger.Debugging(this, "Using Font metrics");
 		int LabelWidth = fm.stringWidth(DataSetLabel);
 		int LabelHeight = fm.getAscent();		
 		int LabelOffSet = 2;
 		int BaseLinePositionx =  FrameOffset + LabelOffSet; // one Pixel to be set off from the border, one 
 		int BaseLinePositiony =  FrameOffset + LabelOffSet + LabelHeight;
+//		PrintFDebugger.Debugging(this, "Setting up dataset label");
 		LabelForDataSet = new LegendLabel(LegendLabelFont, new Point(BaseLinePositionx,BaseLinePositiony), DataSetLabel);
 		
 		
-		//Defien the legend Rectangle. This is dependent on the shape of the area to plot in.
+		//Define the legend Rectangle. This is dependent on the shape of the area to plot in.
 		Rectangle LegendRectangle;
+//		PrintFDebugger.Debugging(this, "Setting up Legend Frame");
 		if(LegendFrame.getWidth() > LegendFrame.getHeight())
 		{
 			//move the area to plot the data to the right
@@ -165,7 +175,8 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 			//LegendRectangle = new Rectangle(LegendFrame.x+2*LabelOffSet,LegendFrame.y+FrameOffset + fm.getHeight(),LegendFrame.width-3*LabelOffSet,LegendFrame.height-2*FrameOffset - fm.getHeight());
 			
 		}
-		createLayoutPositions(ndata, LegendRectangle, DataSetLabel, LegendNodePositions, true);
+//		PrintFDebugger.Debugging(this, "Creating Legend Layout position");
+		createLayoutPositions(ndata, LegendRectangle, DataSetLabel, LegendNodePositions, true);		
 
 	}
 
@@ -404,6 +415,12 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 
 		}
 		
+	}
+	
+	@Override
+	public void updateLabel(String DatasetLabel) {
+		// TODO Auto-generated method stub
+		LabelForDataSet.Label = DatasetLabel;
 	}
 	
 }

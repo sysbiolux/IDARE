@@ -1,5 +1,7 @@
 package idare.imagenode.Properties;
 
+import java.awt.Font;
+
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.NodeShape;
 
@@ -41,6 +43,7 @@ public class IMAGENODEPROPERTIES {
 	public static double IDARE_NODE_DISPLAY_WIDTH = 80.; 
 	public static double IDARE_NODE_DISPLAY_HEIGHT = 290./400 * 80;
 	public static NodeShape IDARE_NODE_DISPLAY_SHAPE = NodeShapeVisualProperty.RECTANGLE;
-	
+	public static Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,IMAGENODEPROPERTIES.LABELHEIGHT-2);
+
 	public static int LEGEND_DESCRIPTION_OPTIMAL_WIDTH = 300;
 }

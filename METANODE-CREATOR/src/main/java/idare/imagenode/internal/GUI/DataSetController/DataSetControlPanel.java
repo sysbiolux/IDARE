@@ -8,11 +8,15 @@ import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.GUI.DataSetAddition.Tasks.DataSetAdderTaskFactory;
-import idare.imagenode.internal.Layout.ColorMapDataSetBundle;
-import idare.imagenode.internal.Layout.NodeLayout;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
+import idare.imagenode.internal.Layout.Automatic.AutomaticNodeLayout;
+import idare.imagenode.internal.Layout.Manual.LayoutGUI;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -22,11 +26,15 @@ import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -64,8 +72,8 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	IDValueLabel totals = new IDValueLabel("Total:", "0");
 	JDialog PreviewFrame;
 	JDialog PreviewLegendFrame;
-	DataSetSelectionModel dssm;
-	private DataSetManager dsm;
+	DataSetSelectionModel dssm;	
+	private IDAREImageNodeApp app;
 	private CreateNodesTaskFactory nodeFactory;
 	private DataSetAdderTaskFactory dsatf;	
 
@@ -75,16 +83,16 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	 * @param dsm - The {@link DataSetManager}, this panel will represent
 	 * @param nmr - The {@link NodeManager} used for node preview
 	 */
-	public DataSetControlPanel(CySwingApplication cySwingApp, DataSetManager dsm, NodeManager nmr) {
+	public DataSetControlPanel(CySwingApplication cySwingApp, IDAREImageNodeApp app) {
 		//initialize the fields;
-		this.dsm = dsm;
+		this.app = app;
 		this.setLayout(new GridBagLayout());
 		Vector<DataSet> currentSets = new Vector<DataSet>();
-		for(DataSet ds : this.dsm.getDataSets())
+		for(DataSet ds : app.getDatasetManager().getDataSets())
 		{
 			currentSets.add(ds);
 		}		
-		dssm = new DataSetSelectionModel(dsm);
+		dssm = new DataSetSelectionModel(app.getDatasetManager());
 		dssm.addTableModelListener(new SelectionListener(this));		
 
 		//Set up the DataSetAdder Button
@@ -100,18 +108,30 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				nodeFactory.run();
+				
+					dssm.setDataSetProperties();					
+					if(dssm.getSelectedDataSets().size() > 0)
+					{
+						Collection<DataSetLayoutInfoBundle> bundles = dssm.getSelectedDataSets();
+						AutomaticNodeLayout layout = new AutomaticNodeLayout(bundles);
+						Set<DataSet> usedDataSets = new HashSet<DataSet>();
+						for(DataSetLayoutInfoBundle bundle : bundles)
+						{
+							usedDataSets.add(bundle.dataset);
+						}
+						nodeFactory.run(usedDataSets, layout);
+					}
 			}
 		});
 		//Set up the Preview button
 		JButton previewButton = new JButton("Preview Visualisation");
-		previewButton.addActionListener(new PreviewLayoutListener(this,nmr, cySwingApp));
+		previewButton.addActionListener(new PreviewLayoutListener(this,app.getNodeManager(), cySwingApp));
 
 		//Set up the DataSetTable
 		DataSetTable = new DataSetSelectionTable(dssm);
 		//Add DataSetRemover Button
 		JButton removeDSButton = new JButton("Remove Dataset");		
-		removeDSButton.addActionListener(new DataSetRemoveAction(DataSetTable,dsm));		
+		removeDSButton.addActionListener(new DataSetRemoveAction(DataSetTable,app.getDatasetManager()));		
 		// create the Up/Down buttons
 		JButton moveUp = new JButton("Move up");		
 		moveUp.addActionListener(new MoveListener(true,DataSetTable));
@@ -169,7 +189,22 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 
 		gbc.gridx+=2;
 		add(previewButton,gbc);
-
+		//Create the Manual Layout button
+		JButton createManualLayoutButton = new JButton(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				LayoutGUI.createAndShowGUI(dssm, app.getDatasetManager(), app, nodeFactory);
+			}
+		});
+		createManualLayoutButton.setToolTipText("Create a Manual Layout initially using the selected datasets.");
+		createManualLayoutButton.setText("Manual Layout");
+		gbc.gridy++;
+		gbc.gridx = 1;
+		gbc.gridwidth = 2;
+		add(createManualLayoutButton,gbc);
+		
 		//Set up the info fields for
 		gbc.gridx = 0;
 		gbc.gridheight = 1;
@@ -231,39 +266,32 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		public void actionPerformed(ActionEvent e) {
 			try{
 				builder.dssm.setDataSetProperties();
-				NodeLayout layout = new NodeLayout();
+				AutomaticNodeLayout layout = null;
 				if(builder.dssm.getSelectedDataSets().size() > 0)
 				{
-					layout.generateLayoutForDataSets(builder.dssm.getSelectedDataSets());
+					layout = new AutomaticNodeLayout(builder.dssm.getSelectedDataSets());
+					layout.doLayout();
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(builder, "Please select at least one Dataset for layouting");	
+					JOptionPane.showMessageDialog(builder, "Please select at least one Dataset for layouting");
+					return;
 				}
 				createFrame(true, layout);
 				createFrame(false, layout);
 
 			}
-			catch(TooManyItemsException ex)
+			catch(TooManyItemsException | ContainerUnplaceableExcpetion | DimensionMismatchException | WrongDatasetTypeException ex)
 			{
 				JOptionPane.showMessageDialog(builder, ex.getMessage());
-			}
-			catch(ContainerUnplaceableExcpetion ex)
-			{
-				JOptionPane.showMessageDialog(builder, ex.getMessage());
-			}
-			catch(DimensionMismatchException ex)
-			{
-				JOptionPane.showMessageDialog(builder, ex.getMessage());
-			}
-
+			}			
 		}
 		/**
 		 * Create the Preview Frame
 		 * @param legend - whether to generate it for a legend frame
 		 * @param layout - Which layout to use
 		 */
-		private void createFrame(boolean legend, NodeLayout layout)
+		private void createFrame(boolean legend, ImageNodeLayout layout)
 		{
 			JDialog current = null;
 			// Get/Reset the correct Dialog/Frame
@@ -335,7 +363,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			{
 				layout.layoutNode(nm.getNode(NodeID).getData(), g);
 			}
-			LayoutUtils.TransferGRaphicsToDocument(doc, null, g);
+			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
 			JSVGCanvas canvas = new JSVGCanvas();
 			canvas.setSVGDocument(doc);
 			current.getContentPane().add(canvas,gbc1);
@@ -385,11 +413,11 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			// TODO Auto-generated method stub
 			if(e.getColumn() == 2)
 			{
-				Vector<ColorMapDataSetBundle> datasets = dssm.getSelectedDataSets();
+				Vector<DataSetLayoutInfoBundle> datasets = dssm.getSelectedDataSets();
 				HashSet<String> commonids = new HashSet<String>();
 				HashSet<String> totalids = new HashSet<String>();
 				boolean init = true;
-				for(ColorMapDataSetBundle ds : datasets)
+				for(DataSetLayoutInfoBundle ds : datasets)
 				{
 					if(init){
 						commonids.addAll(ds.dataset.getNodeIDs());

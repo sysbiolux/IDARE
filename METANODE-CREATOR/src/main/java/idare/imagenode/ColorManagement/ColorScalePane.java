@@ -5,6 +5,7 @@ import idare.imagenode.internal.ColorManagement.ColorScales.ColorScaleProperties
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.LinearGradientPaint;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -41,7 +42,7 @@ public class ColorScalePane extends JPanel{
 	 * @param w The width of the gradient
 	 * @param h the height of the gradient
 	 */
-	private void paintGradient(Graphics g, int w, int h)
+	protected void paintScale(Graphics g, int w, int h)
 	{
 		Graphics2D g2d = (Graphics2D) g;
 		Rectangle2D rec = new Rectangle2D.Double(0,0,w,h);
@@ -60,11 +61,23 @@ public class ColorScalePane extends JPanel{
 		Graphics2D g2d = (Graphics2D) g;
 		int w = getWidth();
 		int h = getHeight();	
-		BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		Graphics g2 = bi.getGraphics();
-		paintGradient(g2, w, h);
+		BufferedImage bi = getImage(w,h);		
 		g2d.drawImage(bi, 0, 0, null);
 	}	
+	
+	/**
+	 * Get an image that represents this ColorScalePane, with the given width and height
+	 * @param width
+	 * @param height
+	 * @return an Image of this colorscalepane
+	 */
+	public BufferedImage getImage(int width, int height)
+	{
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics g2 = bi.getGraphics();
+		paintScale(g2, width, height);
+		return bi;
+	}
 }
 
 

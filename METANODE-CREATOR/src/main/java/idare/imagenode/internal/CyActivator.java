@@ -9,6 +9,7 @@ import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.LegendUpdater;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
+import idare.imagenode.internal.ImageManagement.DefaultLayoutProvider;
 import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
 import idare.internal.IDAREApp;
 import idare.sbmlannotator.internal.Tasks.SBMLAnnotatorTaskFactory;
@@ -37,6 +38,7 @@ import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
+import org.cytoscape.session.events.SessionSavedListener;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.task.NodeViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
@@ -118,7 +120,7 @@ public class CyActivator extends AbstractCyActivator {
 		app.setImageApp(imageapp);
 		imageapp.registerPlugin(new DataSetReaderProvider());
 		imageapp.registerPlugin(new DataSetProvider());				
-		
+		imageapp.registerPlugin(new DefaultLayoutProvider());
 		//Generate the Externally available sErvice
 		IDAREImageNodeAppService appService = new IDAREImageNodeAppService(imageapp);
 			
@@ -153,7 +155,7 @@ public class CyActivator extends AbstractCyActivator {
 				}
 			}
 		}
-		registerAllServices(context, imageapp.getStyleManager(), new Properties());
+		registerService(context, imageapp.getStyleManager(), SessionAboutToBeSavedListener.class, new Properties());
 		registerAllServices(context, pan, new Properties());
 		registerAllServices(context, up, new Properties());
 		//Register the tunable Handlers

@@ -4,6 +4,7 @@ import idare.imagenode.internal.VisualStyle.StyleManager;
 
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.TaskIterator;
@@ -31,7 +32,7 @@ public class AddNodesToStyleTaskFactory extends AbstractTaskFactory implements N
 	@Override
 	public TaskIterator createTaskIterator() {
 		// TODO Auto-generated method stub
-		return new TaskIterator(new AddNodesToStyleTask(mgr));
+		return new TaskIterator(new AddNodesToCurrentStyleTask(mgr));
 	}
 	
 	/**
@@ -41,17 +42,51 @@ public class AddNodesToStyleTaskFactory extends AbstractTaskFactory implements N
 	{
 		dtm.execute(createTaskIterator());
 	}
-		
+	
+	public void addNodesToStyle(VisualStyle style)
+	{
+		dtm.execute(new TaskIterator(new RestoreNodesToStyleTask(mgr,style)));
+	}
+	
 	/**
 	 * The Actual Task to add the nodes.
 	 * @author Thomas Pfau
 	 *
 	 */
-	private class AddNodesToStyleTask extends AbstractTask
+	private class RestoreNodesToStyleTask extends AbstractTask
+	{
+		private StyleManager mgr;
+		private VisualStyle style;
+		
+		public RestoreNodesToStyleTask(StyleManager mgr, VisualStyle style) {
+			// TODO Auto-generated constructor stub
+			this.mgr = mgr;
+			this.style = style;
+		}
+		@Override
+		public void run(TaskMonitor taskMonitor) throws Exception {
+			// TODO Auto-generated method stub
+			taskMonitor.setTitle("Restoring Images to style " + style.getTitle());
+			taskMonitor.setProgress(0.0);
+			//taskMonitor.setStatusMessage("Adding Nodes to Style");
+			mgr.addNodesToStyleDuringLoad(taskMonitor, style);
+		
+			
+		}
+		
+	}
+
+	
+	/**
+	 * The Actual Task to add the nodes.
+	 * @author Thomas Pfau
+	 *
+	 */
+	private class AddNodesToCurrentStyleTask extends AbstractTask
 	{
 		private StyleManager mgr;
 		
-		public AddNodesToStyleTask(StyleManager mgr) {
+		public AddNodesToCurrentStyleTask(StyleManager mgr) {
 			// TODO Auto-generated constructor stub
 			this.mgr = mgr;
 		}
@@ -67,7 +102,7 @@ public class AddNodesToStyleTaskFactory extends AbstractTaskFactory implements N
 		}
 		
 	}
-
+	
 	@Override
 	public TaskIterator createTaskIterator(CyNetworkView arg0) {
 		if(isReady())

@@ -1,6 +1,7 @@
 package idare.Properties;
 
 import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -150,8 +151,12 @@ public class IDARESettingsManager{
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
-	private void addID(Long id) throws IllegalArgumentException
+	private synchronized void addID(Long id) throws IllegalArgumentException
 	{
+		if(id == null)
+		{
+			return;
+		}
 		if(nodeIDs.contains(id)) {
 			throw new IllegalArgumentException("ID already used");
 		}
@@ -170,8 +175,12 @@ public class IDARESettingsManager{
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
-	private void addProteinID(Long id) throws IllegalArgumentException
+	private synchronized void addProteinID(Long id) throws IllegalArgumentException
 	{
+		if(id == null)
+		{
+			return;
+		}
 		if(proteinIDs.contains(id)) {
 			throw new IllegalArgumentException("ID already used");
 		}
@@ -191,8 +200,12 @@ public class IDARESettingsManager{
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
-	private void addGeneID(Long id) throws IllegalArgumentException
+	private synchronized void addGeneID(Long id) throws IllegalArgumentException
 	{
+		if(id == null)
+		{
+			return;
+		}
 		if(geneIDs.contains(id)) {
 			throw new IllegalArgumentException("ID already used");
 		}
@@ -211,8 +224,12 @@ public class IDARESettingsManager{
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
-	private void addProteinComplexID(Long id) throws IllegalArgumentException
+	private synchronized void addProteinComplexID(Long id) throws IllegalArgumentException
 	{
+		if(id == null)
+		{
+			return;
+		}
 		if(proteinComplexIDs.contains(id)) {
 			throw new IllegalArgumentException("ID already used");
 		}
@@ -231,8 +248,12 @@ public class IDARESettingsManager{
 	 * @param id - The id that needs to be checked
 	 * @throws IllegalArgumentException - If the provided ID is already present in this Manager this exception is thrown but the Manager is still valid 
 	 */
-	private void addNetworkID(Long id) throws IllegalArgumentException
+	private synchronized void addNetworkID(Long id) throws IllegalArgumentException
 	{
+		if(id == null)
+		{
+			return;
+		}
 		if(networkIDs.contains(id)) {
 			throw new IllegalArgumentException("ID already used");
 		}
@@ -336,6 +357,7 @@ public class IDARESettingsManager{
 		Set<CyNetwork> networks = arg0.getLoadedSession().getNetworks();
 		HashMap<Long,CyNode> nodematch = new HashMap<Long, CyNode>();
 		HashMap<Long,CyNetwork> networkmatch = new HashMap<Long, CyNetwork>();
+		HashSet<Long> checkedNodes = new HashSet<>();
 		for(CyNetwork network : networks)
 		{
 			
@@ -345,10 +367,19 @@ public class IDARESettingsManager{
 				CyTable NetworkTable = network.getDefaultNetworkTable();
 				for(CyRow row : NodeTable.getAllRows())
 				{
+					if(!checkedNodes.contains(row.get(CyNode.SUID, Long.class)))
+					{
+						checkedNodes.add(row.get(CyNode.SUID, Long.class));
+					}
+					else
+					{
+						//this node was already checked.
+						continue;
+					}
 					Long IDAREID = row.get(IDAREProperties.IDARE_NODE_UID, Long.class);
 					CyNode current = network.getNode(row.get(CyNode.SUID,Long.class));
 					//this happens, if the node is not in this network. As we get the default NOde Table it contains ALL Nodes...) 
-					if(current == null)
+					if(current == null || IDAREID == null)
 					{
 						continue;
 					}
@@ -363,12 +394,18 @@ public class IDARESettingsManager{
 						//PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
 						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()))
 						{
-							//PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
+							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
 							resetNetworks(networks);
 							reset();
 							return;
 						}
+						else
+						{
+							// we can skip the remaining checks as they were already done once.
+							continue;
+						}
 					}
+					
 					if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
 					{
 						String nodename = row.get(IDAREProperties.IDARE_NODE_NAME, String.class);
@@ -376,7 +413,7 @@ public class IDARESettingsManager{
 						{
 							Matcher protMatch = proteinPattern.matcher(nodename);
 							if(protMatch.matches())
-							{
+							{								
 								addProteinID(Long.parseLong(protMatch.group(0)));
 							}
 							Matcher protComplexMatch = proteinComplexPattern.matcher(nodename);
@@ -390,6 +427,8 @@ public class IDARESettingsManager{
 								addGeneID(Long.parseLong(geneMatch.group(0)));
 							}
 						}
+						
+						
 					}
 				}
 				Long NetworkID = NetworkTable.getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
@@ -402,7 +441,7 @@ public class IDARESettingsManager{
 				{
 					if(!networkmatch.get(NetworkID).getSUID().equals(network.getSUID()))
 					{
-						//PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
+						PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
 						resetNetworks(networks);
 						reset();						
 						return;

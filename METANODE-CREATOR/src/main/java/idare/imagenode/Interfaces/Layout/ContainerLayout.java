@@ -2,6 +2,8 @@ package idare.imagenode.Interfaces.Layout;
 
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 
 import java.awt.Rectangle;
 import java.io.Serializable;
@@ -17,15 +19,31 @@ import org.apache.batik.svggen.SVGGraphics2D;
  */
 public abstract class ContainerLayout implements Serializable{
 	private static final long serialVersionUID = 1001;
+	protected Rectangle layoutarea;
 	
 	/**
 	 * Create the Layout for a given set of data, in a specified area using a specified Label for the underlying Dataset.
 	 * @param data The nodeData to use to set up the layout.
 	 * @param area the area in which to create the layout
 	 * @param DataSetLabel the label of the corresponding Dataset to display somewhere in the area.
+	 * @param props the properties to use (commonly those from which the {@link ContainerLayout} was created)
+	 * @throws WrongDatasetTypeException
 	 */
-	public abstract void createLayout(NodeData data, Rectangle area, String DataSetLabel);
-	
+	public final void createLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException
+	{
+		layoutarea = area;
+		setupLayout(data,area,DataSetLabel,props);
+	}
+	/**
+	 * Setup the layout specific positions and data.
+	 * @param data The nodeData to use to set up the layout.
+	 * @param area the area in which to create the layout
+	 * @param DataSetLabel the label of the corresponding Dataset to display somewhere in the area.
+	 * @param props the properties to use (commonly those from which the {@link ContainerLayout} was created)
+	 * @throws WrongDatasetTypeException
+	 */
+	protected abstract void setupLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException;
+		
 	/**
 	 * Layout the Data according to the previously generated layout  
 	 * @param data the data to layout
@@ -35,6 +53,14 @@ public abstract class ContainerLayout implements Serializable{
 	 */
 	public abstract void LayoutDataForNode(NodeData data, SVGGraphics2D context,  boolean Legend, ColorMap coloring );
 		
+	
+	/**
+	 * Update the Label used in this Layout.
+	 */
+	public abstract void updateLabel(String DatasetLabel);
+	
+	
+	
 	/**
 	 * This function allows to get a 
 	 * Range of minimal and maximal values based on a valuerange to determine suitable axes.
@@ -72,5 +98,14 @@ public abstract class ContainerLayout implements Serializable{
 		Double exponent = Math.pow(10, order);
 		Double val = up ? Math.ceil(value/exponent)*exponent :Math.floor(value/exponent)*exponent;
 		return val;
+	}
+	
+	/**
+	 * Get the area assigned to this layout container (in the {@link IMAGENODEPROPERTIES}.IMAGEWIDTH // {@link IMAGENODEPROPERTIES}.IMAGEHEIGHT) range.
+	 * @return a rectangle which should have x,y,width,height > 0 x + width < IMAGEWIDTH, and y+height < IMAGEHEIGHT 
+	 */
+	public Rectangle getLayoutArea()
+	{
+		return layoutarea;
 	}
 }

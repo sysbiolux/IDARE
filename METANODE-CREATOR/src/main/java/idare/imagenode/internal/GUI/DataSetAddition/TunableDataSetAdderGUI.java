@@ -17,6 +17,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.cytoscape.util.swing.FileChooserFilter;
 import org.cytoscape.util.swing.FileUtil;
@@ -32,7 +34,8 @@ public class TunableDataSetAdderGUI extends JPanel{
 	JTextField DataSetDescriptionField;
 	JCheckBox useTwoColCheckBox;
 	JComboBox<String> DataSetTypeSelector;			
-	
+	boolean descriptionModified = false;
+	boolean fileNameUpdate = false;
 	public TunableDataSetAdderGUI(DataSetManager dsm, FileUtil util) {
 		super();
 		// TODO Auto-generated constructor stub
@@ -93,6 +96,28 @@ public class TunableDataSetAdderGUI extends JPanel{
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		DataSetDescriptionField = new JTextField("new Dataset");
+		DataSetDescriptionField.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				if(!fileNameUpdate)
+				{
+					descriptionModified = true;
+				}
+			}
+		});
 		add(DataSetDescriptionField,gbc);
 		
 		gbc.fill = GridBagConstraints.BOTH;
@@ -145,6 +170,12 @@ public class TunableDataSetAdderGUI extends JPanel{
 			// TODO Auto-generated method stub
 			File selectedFile = source.util.getFile(source, "Select Dataset file", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("DataSet Files",new String[]{""})));					
 			source.DataSetFileLocation.setText(selectedFile.getPath());
+			source.fileNameUpdate = true;
+			if(!source.descriptionModified)
+			{
+				source.DataSetDescriptionField.setText(selectedFile.getName());
+			}
+			source.fileNameUpdate = false;
 		}
 		
 	}

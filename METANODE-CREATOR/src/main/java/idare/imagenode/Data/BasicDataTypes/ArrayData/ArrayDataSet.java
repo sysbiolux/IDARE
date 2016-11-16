@@ -14,8 +14,10 @@ import idare.imagenode.Interfaces.DataSets.DataContainer;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.DataSets.NodeValue;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.exceptions.io.DuplicateIDException;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.Data.Array.CircleData.CircleDataSetProperties;
 import idare.imagenode.internal.Data.Array.CircleGridData.CircleGridProperties;
 import idare.imagenode.internal.Data.Array.RectangleData.RectangleDataSetProperties;
@@ -31,6 +33,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+
+import org.junit.validator.TestClassValidator;
 
 /**
  * An Abstract basis class for item based datasets.
@@ -115,18 +119,17 @@ public class ArrayDataSet extends DataSet{
 		defaultEntry = new ArrayNodeData(this);
 		setDefaultOptions();
 	}
-
-	/**
-	 * We also have to determine the Columns and the empty columns.
-	 * @param WB The {@link IDAREWorkbook} from which to obtain properties for setup 
+		
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.Interfaces.DataSets.DataSet#preProcessWorkBook(idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDAREWorkbook)
 	 */
 	@Override
-	public void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
+	public void preProcessWorkBook(IDAREWorkbook WB) throws WrongFormat
 	{
 		//System.out.println("Lets set up the Workbook properties");
 		determineNonEmptyColumns(WB);
-		//readDataPointNames(WB.getSheetAt(0).rowIterator().next().cellIterator());
-		super.setupWorkBook(WB);		
+		//readDataPointNames(WB.getSheetAt(0).rowIterator().next().cellIterator());			
 	}
 	
 	
@@ -261,8 +264,8 @@ public class ArrayDataSet extends DataSet{
 			{
 			e.printStackTrace(System.out);	
 			}
-			PrintFDebugger.Debugging(this,"Generating continous ColorScales");
-			scales = ColorScaleFactory.getContinousColorScales();
+			//PrintFDebugger.Debugging(this,"Generating continous ColorScales");
+			//scales = ColorScaleFactory.getContinousColorScales();
 			 
 			//for(ColorScale scale : scales)
 			//{
@@ -287,7 +290,7 @@ public class ArrayDataSet extends DataSet{
 		}
 		//add some values to the default entry
 		defaultEntry.setData(DefaultValues);
-		PrintFDebugger.Debugging(this,"Done");
+		PrintFDebugger.Debugging(this,"Done");		
 	}
 	
 	/**
@@ -613,17 +616,25 @@ public class ArrayDataSet extends DataSet{
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getContainerForID(java.lang.String)
 	 */
 	@Override
-	public DataContainer getContainerForID(String ID) {		
-		return datasetProperties.newContainerForData(Data.get(ID));
+	public DataContainer getContainerForID(String ID) {
+		try{
+			return datasetProperties.newContainerInstance(this,Data.get(ID));
+		}
+		catch(WrongDatasetTypeException e)
+		{
+			//this should never happen.
+			return null;
+		}
+		
 	}
 	/*
 	 * (non-Javadoc)
 	 * @see idare.imagenode.Interfaces.DataSets.DataSet#getLayoutContainer()
 	 */
 	@Override
-	public DataContainer getLayoutContainer()
+	public DataContainer getLayoutContainer(DataSetLayoutProperties props) throws WrongDatasetTypeException
 	{
-		return datasetProperties.newContainerInstance(this, Data.values().iterator().next()); 
+		return props.newContainerInstance(this, Data.values().iterator().next()); 
 	}
 	
 	/*
