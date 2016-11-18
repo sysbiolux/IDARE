@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Idare by sysbiolux</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Idare</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/sysbiolux/IDARE">View the Project on GitHub <small>sysbiolux/IDARE</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/sysbiolux/IDARE/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sysbiolux/IDARE/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sysbiolux/IDARE">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="idare" class="anchor" href="#idare" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>IDARE</h1>
+
+<p>IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation and data visualisation.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Automated layouting of data using a variety of layout types</li>
+<li>Available visualisation types include scatter plots, graphs, heatmaps, time series and bar charts</li>
+<li>Parseable formats include excel sheets, tab/comma separated value files and GEO SOFT files</li>
+<li>Generation of connected subnetworks and clickable links between these networks</li>
+<li>Addition of gene nodes and further information based on information from COBRA annotations in sbml files (see <a href="http://www.nature.com/nprot/journal/v6/n9/abs/nprot.2011.308.html">Schellenberger et al 2011</a> )</li>
+</ul>
+
+<h2>
+<a id="availability" class="anchor" href="#availability" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Availability</h2>
+
+<p><strong>Cytoscape App store</strong>: <a href="http://apps.cytoscape.org/apps/IDARE">http://apps.cytoscape.org/apps/IDARE</a><br>
+<strong>Compiled JAR</strong> <a href="http://idare.uni.lu/IDAREJars/IDARE-1.0.jar">http://idare.uni.lu/IDAREJars/IDARE-1.0.jar</a><br>
+<strong>Current available plugins</strong> <a href="https://sysbiolux.github.io/IDAREPlugins/">https://sysbiolux.github.io/IDAREPlugins/</a><br>
+<strong>User Manual</strong> <a href="https://github.com/sysbiolux/IDARE/UserManual.pdf">https://github.com/sysbiolux/IDARE/UserManual.pdf</a><br>
+<strong>Example/QuickStart</strong> <a href="https://sysbiolux.github.io/IDARE-Quickstart">https://sysbiolux.github.io/IDARE-Quickstart</a><br>
+<strong>API</strong>: <a href="http://idare.uni.lu/IDAREDoc">http://idare.uni.lu/IDAREDoc</a><br>
+<strong>Source Code</strong>: <a href="https://github.com/sysbiolux/IDARE">https://github.com/sysbiolux/IDARE</a><br>
+<strong>Bug Tracker</strong>: <a href="https://github.com/sysbiolux/IDARE/issues">https://github.com/sysbiolux/IDARE/issues</a>  </p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>There are three options available:</p>
+
+<ul>
+<li>Use the Cytoscape Application manager. In Cytoscape open <code>Apps → App Manager → Install Apps</code> and search for <code>IDARE</code>. </li>
+<li>Download the Jar from the <a href="http://apps.cytoscape.org/apps/IDARE">Cytoscape App store</a>
+</li>
+<li>Download the Jar from the <a href="http://idare-server.uni.lu/IDAREJars/IDARE-1.0.jar">University of Luxembourg</a>
+If you download it manually put it into the apps/installed folder of your Cytoscape configuration folder (commonly %HOME/CytoscapeConfiguration/3/apps/installed).</li>
+</ul>
+
+<h2>
+<a id="building" class="anchor" href="#building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building</h2>
+
+<p>To build the app, you will need to also download the cy3sbml app (<a href="http://apps.cytoscape.org/apps/cy3sbml">http://apps.cytoscape.org/apps/cy3sbml</a>).
+Determine the path of the jar file (likely in the CytoscapeConfiguration folder in your home directory) and install it to your maven repository.</p>
+
+<pre><code>mvn -e install:install-file -Dfile=cy3sbml-v0.2.X.jar -DgroupId=org.cysbml -DartifactId=cy3sbml -Dversion=0.2.1 -Dpackaging=jar
+</code></pre>
+
+<p>Adjust the X to the version you downloaded. IDARE works with version 0.2.1 but we can't guarantee that it works with newer versions.</p>
+
+<p>To build IDARE:</p>
+
+<pre><code>git clone https://github.com/sysbiolux/IDARE.git IDARE
+cd IDARE/METANODE-CREATOR
+mvn install
+</code></pre>
+
+<h2>
+<a id="plugin-development" class="anchor" href="#plugin-development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plugin Development</h2>
+
+<p>To develop plugins, you will have to install the application into your maven repository.
+Navigate to the location of the IDARE-1.0.jar file and run</p>
+
+<pre><code>mvn -e install:install-file -Dfile=IDARE-1.0.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=1.0 -Dpackaging=jar
+</code></pre>
+
+<p>In your pom.xml add</p>
+
+<pre><code>&lt;Cytoscape-App-Dependencies&gt;IDARE;1.0&lt;/Cytoscape-App-Dependencies&gt;
+</code></pre>
+
+<p>to the properties field.</p>
+
+<p>The IDARE dependency is added as follows:</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;IDARE&lt;/groupId&gt;
+    &lt;artifactId&gt;IDARE&lt;/artifactId&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt; 
+&lt;/dependency&gt;
+</code></pre>
+
+<h3>
+<a id="existing-plugins" class="anchor" href="#existing-plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Existing Plugins</h3>
+
+<p>Two plgins exist for the app:<br>
+A reader for GEO SOFT Files that converts them into a format useable by IDARE. The jar can be downloaded from <a href="http://idare-server.uni.lu/IDAREJars/IDAREGEOSOFTPlugin.jar">here</a>, the code can be found <a href="https://github.com/sysbiolux/IDAREGEOSoftReader">here</a>.<br>
+The second plugin allows to create BarCharts as visualisation option and can be downloaded from <a href="http://idare-server.uni.lu/IDAREJars/IDAREBarChartPlugin.jar">here</a>, with code available <a href="https://github.com/sysbiolux/IDAREBarChartsPlugin">here</a></p>
+
+<h3>
+<a id="relevant-literature" class="anchor" href="#relevant-literature" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Relevant Literature</h3>
+
+<p>Galhardo, M.; Sinkkonen, L.; Berninger, P.; Lin, J.; Sauter, T. &amp; Heinäniemi, M. Integrated analysis of transcript-level regulation of metabolism reveals disease-relevant nodes of the human metabolic network. Nucleic Acids Res, 2014, 42, 1474-1496
+<a href="http://dx.doi.org/10.1093/nar/gkt998">http://dx.doi.org/10.1093/nar/gkt998</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/sysbiolux">sysbiolux</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
