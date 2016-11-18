@@ -12,7 +12,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 ##Availability
 **Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE  
 **Compiled JAR** http://idare.uni.lu/IDAREJars/IDARE-1.0.jar  
-**Current available plugins** https://sysbiolux.github.io/IDAREPlugins/ 
+**Current available plugins** https://sysbiolux.github.io/IDAREPlugins/  
 **User Manual** https://github.com/sysbiolux/IDARE/UserManual.pdf  
 **Example/QuickStart** https://sysbiolux.github.io/IDARE-Quickstart  
 **API**: http://idare.uni.lu/IDAREDoc  
