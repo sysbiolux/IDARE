@@ -49,6 +49,7 @@ public interface ColorScale extends Serializable{
 	/**
  	 * Move a point in the 0-1 scale to the target value.
 	 * If Either origval or targetval are outside the 0-1 range, nothing will happen.
+	 * THis should only influence the visual presentation.
 	 * @param origval A value in the range of [0.0,1.0]. that should be moved 
 	 * @param targetval The value the origval shall be moved to in the range of [0.0,1.0]. 
 	 */

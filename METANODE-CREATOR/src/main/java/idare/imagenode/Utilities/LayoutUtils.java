@@ -7,6 +7,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -56,6 +62,16 @@ public class LayoutUtils {
 			canvasdimension = new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT);
 		}
 		g.setSVGCanvasSize(new Dimension(canvasdimension.width,canvasdimension.height));
+		//Debug Code to check what the SVG Images look like, makes it impossible to use the images though.
+//		try{
+//			StringWriter sw = new StringWriter();
+//			g.stream(sw);
+//			System.out.println(sw);
+//		}
+//		catch(IOException e)
+//		{
+//			e.printStackTrace(System.out);
+//		}
 		Element root = doc.getDocumentElement();
 		g.getRoot(root);
 		//PrintFDebugger.Debugging(root, "Setting property viewbox to: " + "0 0 "+ IMAGENODEPROPERTIES.IMAGEWIDTH +" " + (IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT));

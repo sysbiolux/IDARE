@@ -4,6 +4,7 @@ import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Rectangle;
 import java.io.Serializable;
@@ -94,8 +95,8 @@ public abstract class ContainerLayout implements Serializable{
 	 */
 	public static final Double roundToOrder(Double value, boolean up)
 	{
-		int order = (int)Math.floor(Math.log10(Math.abs(value)));
-		Double exponent = Math.pow(10, order);
+		int order = value == 0 ? 0 : (int)Math.floor(Math.log10(Math.abs(value)));
+		Double exponent = Math.pow(10, order);		
 		Double val = up ? Math.ceil(value/exponent)*exponent :Math.floor(value/exponent)*exponent;
 		return val;
 	}

@@ -41,7 +41,7 @@ public abstract class MultiColorScale implements ColorScale {
 	 */
 	public MultiColorScale(Color[] Colors, float[] fractions) {
 		//We will throw an error if the sizes are not equal.
-		this(Colors,fractions,100);
+		this(Colors,fractions,200);
 	}
 	
 	
@@ -76,7 +76,7 @@ public abstract class MultiColorScale implements ColorScale {
 		if(value < 0)
 			value = 0;
 		//this ensure, that even with only 1 color, that color will always be chosen.
-		int entry = (int)(value * (usedColors.length-1));
+		int entry = (int)(Math.round(value * (usedColors.length-1)));
 		return usedColors[entry];
 	}
 	
@@ -172,21 +172,52 @@ public abstract class MultiColorScale implements ColorScale {
 	public void movePointOnScale(float origval, float targetval)
 	{
 		//the first and the last fraction never change.
-		//everything else, that is			
-		float scalelower = targetval / origval;
-		float scaleupper = targetval/(1-origval);
-		if(targetval < origval)
-		{
-			scalelower = targetval / (1-origval);
-			scaleupper =  targetval / origval ;
-		}
+		//everything else, that is		
+		float oldlowerrange = origval;		
+		float oldupperrange = 1-origval;
+		PrintFDebugger.Debugging(this, "Mobving point " + origval + " to " + targetval);
+		float newlowerrange = targetval;
+		float newupperrange = 1 - targetval;
+		
+		float lowerrangechange = newlowerrange / oldlowerrange;
+		float upperrangechange = newupperrange / oldupperrange;
+		
 		for(int i = 1; i < fractions.length-1; i++)
 		{
-			if(fractions[i] < origval)
-				fractions[i] = fractions[i]*scalelower;
+			PrintFDebugger.Debugging(this, "Moving" + fractions[i]+ " to: ");
+			if( fractions[i] < origval)
+			{
+				fractions[i] = targetval + lowerrangechange * (fractions[i]-origval);
+				PrintFDebugger.Debugging(this, ""+fractions[i]);
+				
+			}
 			else
-				fractions[i] = targetval + (fractions[i]-origval) * scaleupper;
+			{
+				fractions[i] = targetval + upperrangechange * (fractions[i]-origval);
+				PrintFDebugger.Debugging(this, ""+fractions[i]);
+			}
 		}
+		initColors();
+//		float scalelower = targetval / origval;
+//		float scaleupper = (1-targetval)/origval;
+//		if(targetval < origval)
+//		{
+//			scalelower = (1-targetval) / origval;
+//			scaleupper =  targetval / origval ;
+//		}
+//		for(int i = 1; i < fractions.length-1; i++)
+//		{
+//			if(fractions[i] < origval)
+//			{
+//				fractions[i] = fractions[i]*scalelower;
+//				PrintFDebugger.Debugging(this, "New Fraction " + fractions[i]);
+//			}
+//			else
+//			{
+//				fractions[i] = targetval + (fractions[i]-origval) * scaleupper;
+//
+//			}
+//		}
 
 	}
 	

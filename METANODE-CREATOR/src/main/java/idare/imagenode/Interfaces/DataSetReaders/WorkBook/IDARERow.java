@@ -36,7 +36,7 @@ public interface IDARERow extends Iterable<IDARECell> {
 	public IDARECell getCell(int arg0, int arg1);
 	/**
 	 * Gets the index of the last cell contained in this row PLUS ONE.!
-	 * @return the first index of a non null cell in this row
+	 * @return the last index of a non null cell in this row
 	 */
 	public short getLastCellNum();
 	/**

@@ -10,6 +10,7 @@ import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.Utilities.LegendLabel;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -296,8 +297,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 			 {
 				 
 				 Vector<Double> LineYValues = vsd.getEntryData();				 
-				 Vector<Double> LineXValues = LineHeaders.get(name);
-//				 System.out.println("Found the Data for the Sheet with a length of " + LineYValues.size() + " while the X values have a size of " + LineXValues.size());
+				 Vector<Double> LineXValues = LineHeaders.get(name);				 
 				 Color linecolor = colors.getColor(name);
 				 Path2D currentpath = getPath(LineXValues, LineYValues, area);
 				 g2d.setPaint(linecolor);
@@ -319,6 +319,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 	 private Path2D getPath(Vector<Double> xvalues, Vector<Double> yvalues, Rectangle2D area)
 	 {
 		 Path2D result = new Path2D.Double();
+//		 PrintFDebugger.Debugging(this, "Creating new path");
 		 boolean pathstarted = false; 
 		 for(int i = 0; i < xvalues.size(); i++)
 		 {
@@ -329,6 +330,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 					 Double val = yvalues.get(i);
 					 Double coord = xvalues.get(i);
 					 Point2D loc = getPlotPoint(coord,val,area.getWidth(),area.getHeight());
+//					 PrintFDebugger.Debugging(this, "Adding new Line to position " + loc);
 					 result.append(new Line2D.Double(loc,loc), false);
 					 pathstarted = true;
 				 }
@@ -340,6 +342,7 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 					 Double val = yvalues.get(i);
 					 Double coord = xvalues.get(i);
 					 Point2D loc = getPlotPoint(coord,val,area.getWidth(),area.getHeight());
+//					 PrintFDebugger.Debugging(this, "Adding new Line to position " + loc);
 					 result.append(new Line2D.Double(loc,loc),true);
 				 }
 
@@ -359,6 +362,8 @@ public class GraphContainerLayout extends MultiArrayContainerLayout {
 	 {
 		 double xval = ((xvalue - xminval) / xrange) * width;
 		 double yval = height - ((yvalue - yminval) / yrange) * height;
+//		 PrintFDebugger.Debugging(this, "xvalue:" + xvalue + "; xminval:" + xminval +"; xrange" + xrange+ "; yvalue:" + yvalue +
+//		 						"yminval:" + yminval+ "; yrange:" + yrange + "; height:" + height + "; width:" + width);
 		 Point2D res = new Point2D.Double(xval,yval);
 		 return res;
 

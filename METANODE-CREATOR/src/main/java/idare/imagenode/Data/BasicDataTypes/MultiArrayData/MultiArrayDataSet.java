@@ -21,6 +21,7 @@ import idare.imagenode.internal.ColorManagement.ColorScales.LineScale;
 import idare.imagenode.internal.Data.MultiArray.GraphData.GraphDataSetProperties;
 import idare.imagenode.internal.Data.MultiArray.ScatterData.LargeScatterProperties;
 import idare.imagenode.internal.Data.MultiArray.ScatterData.SmallScatterProperties;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -212,13 +213,13 @@ public class MultiArrayDataSet extends DataSet{
 			Comparable Header = null;							
 			if(current == null)
 			{
-				throw new WrongFormat("No empty column headers allowed in a " + MultiArrayTypeName );
+				throw new WrongFormat("Empty Column header in column " + (i+1) + " of sheet " + SheetName + " detected.\n No empty column headers allowed in a " + MultiArrayTypeName );
 			}
 			if(current.getCellType() == CellType.STRING)				
 			{
 				if(current.getStringCellValue().equals("")) 
 				{
-					throw new WrongFormat("No empty columns allowed in a " + MultiArrayTypeName);				
+					throw new WrongFormat("Empty Column header in column " + (i+1) + " of sheet " + SheetName + " detected.\n No empty columns allowed in a " + MultiArrayTypeName);				
 				}
 				stringheaders = true;
 				Header = current.getStringCellValue();
@@ -337,8 +338,12 @@ public class MultiArrayDataSet extends DataSet{
 				if(StringUtils.isNumeric(current.getStringCellValue()))
 				{
 
-					Double cvalue = Double.parseDouble(current.getStringCellValue());
+					Double cvalue = Double.parseDouble(current.getStringCellValue());			
 					updateMinMaxVals(cvalue);
+					if(Double.toString(MaxValue).equals("NaN"))
+					{
+						PrintFDebugger.Debugging(this, "In Column " + i + " and row " + row.getRowNum() + " : the Value cvalue was " + cvalue);
+					}
 					LineValues.add(cvalue);					
 				}
 				else

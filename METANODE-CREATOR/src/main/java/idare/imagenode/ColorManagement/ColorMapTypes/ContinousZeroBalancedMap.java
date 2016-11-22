@@ -1,6 +1,7 @@
 package idare.imagenode.ColorManagement.ColorMapTypes;
 
 import idare.imagenode.ColorManagement.ColorScale;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class ContinousZeroBalancedMap extends ContinousColorMap{
 		{
 			return new Color(0.9f,0.9f,0.9f); 
 		}
-
+		
 		return super.getColor(value);
 
 	}

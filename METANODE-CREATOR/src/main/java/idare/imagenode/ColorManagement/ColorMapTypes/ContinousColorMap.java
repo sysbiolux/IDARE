@@ -2,6 +2,7 @@ package idare.imagenode.ColorManagement.ColorMapTypes;
 
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.ColorManagement.ColorScale;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -174,6 +175,7 @@ public abstract class ContinousColorMap extends ColorMap{
 		}
 
 		double entry = (DoubleValue - minval) / (maxval - minval);
+		PrintFDebugger.Debugging(this, "Obtaining Color " + cs.getColor(entry) +  " for value " + entry);
 		return cs.getColor(entry);
 	}
 
