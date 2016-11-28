@@ -112,6 +112,8 @@ public class CyActivator extends AbstractCyActivator {
 		//Obtain all services required for the app.
 		CyApplicationManager cyAppMgr = getService(context, CyApplicationManager.class);	
 		VisualMappingManager vmm = getService(context, VisualMappingManager.class);
+		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);	
+
 		FileUtil util = getService(context, FileUtil.class);
 		
 
@@ -131,7 +133,7 @@ public class CyActivator extends AbstractCyActivator {
 		DataSetControlPanel dcp = imageapp.getDataSetPanel();	
 		
 		//Generate he TunableHandlers
-		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,imageapp.getDatasetManager());		
+		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,imageapp.getDatasetManager(),cySwingApp);		
 		NetworkSetupGUIHandlerFactory nsghf = new NetworkSetupGUIHandlerFactory(imageapp.getNodeManager(), imageapp.getSettingsManager(), cyAppMgr);
 		
 		//Register the Actions of the App.

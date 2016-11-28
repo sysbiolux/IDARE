@@ -715,18 +715,27 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			{
 				if(row.isSet(ColName))
 				{
-					for(Object item : row.getList(ColName, table.getColumn(ColName).getListElementType()))
+					if(row.getList(ColName, table.getColumn(ColName).getListElementType()).contains(value))
 					{
-						if(item.equals(value))
+						if(!matchingRows.contains(row))
 						{
-							if(!matchingRows.contains(row))
-							{
-								matchingRows.add(row);
-							}
+							matchingRows.add(row);
 						}
 					}
 				}
-			}	
+			}
+//					for(Object item : row.getList(ColName, table.getColumn(ColName).getListElementType()))
+//					{
+//						if(item.equals(value))
+//						{
+//							if(!matchingRows.contains(row))
+//							{
+//								matchingRows.add(row);
+//							}
+//						}
+//					}
+//				}
+//			}	
 		}					
 
 		final Set<CyNode> nodes = new HashSet<CyNode>();

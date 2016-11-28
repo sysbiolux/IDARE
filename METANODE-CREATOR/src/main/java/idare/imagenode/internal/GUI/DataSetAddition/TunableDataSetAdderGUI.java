@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.util.swing.FileChooserFilter;
 import org.cytoscape.util.swing.FileUtil;
 /**
@@ -36,7 +37,8 @@ public class TunableDataSetAdderGUI extends JPanel{
 	JComboBox<String> DataSetTypeSelector;			
 	boolean descriptionModified = false;
 	boolean fileNameUpdate = false;
-	public TunableDataSetAdderGUI(DataSetManager dsm, FileUtil util) {
+	CySwingApplication cySwingApp;
+	public TunableDataSetAdderGUI(DataSetManager dsm, FileUtil util, 	CySwingApplication cySwingApp) {
 		super();
 		// TODO Auto-generated constructor stub
 		this.dsm = dsm;
@@ -168,7 +170,7 @@ public class TunableDataSetAdderGUI extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			File selectedFile = source.util.getFile(source, "Select Dataset file", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("DataSet Files",new String[]{""})));					
+			File selectedFile = source.util.getFile(source.cySwingApp.getJFrame(), "Select Dataset file", FileUtil.LOAD,Collections.singletonList(new FileChooserFilter("DataSet Files",new String[]{""})));					
 			source.DataSetFileLocation.setText(selectedFile.getPath());
 			source.fileNameUpdate = true;
 			if(!source.descriptionModified)
