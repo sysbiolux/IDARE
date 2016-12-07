@@ -62,7 +62,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 	HashMap<DataSet,ColorMap> DataSetColors = new HashMap<DataSet, ColorMap>();
 	Vector<DataSet> DatasetOrder = new Vector<DataSet>();
 	private boolean layoutcreated = false;	 
-	private Set<DataSetLayoutInfoBundle> dataSetsToUse = new HashSet<>();
+	private HashMap<DataSet,DataSetLayoutInfoBundle> dataSetsToUse = new HashMap<>();
 		
 	
 	public AutomaticNodeLayout()
@@ -72,7 +72,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 	
 	public AutomaticNodeLayout(Collection<DataSetLayoutInfoBundle> DataSetsToUse) {
 		// TODO Auto-generated constructor stub
-		this.dataSetsToUse.addAll(DataSetsToUse);
+		for(DataSetLayoutInfoBundle bundle : DataSetsToUse)
+		{
+			this.dataSetsToUse.put(bundle.dataset,bundle);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -190,7 +193,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 	
 	public void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{
-		generateLayoutForDataSets(dataSetsToUse);
+		generateLayoutForDataSets(dataSetsToUse.values());
 	}
 	
 	
@@ -381,6 +384,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 			DataSetPositions.remove(e.getSet());
 			DatasetOrder.remove(e.getSet());
 			DataSetLabels.remove(e.getSet());
+			dataSetsToUse.remove(e.getSet());
 			if(layoutcreated)
 			{
 				try{
@@ -418,8 +422,9 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 				DataSetColors.remove(ds);
 				DatasetOrder.remove(ds);
 				DataSetPositions.remove(ds);
-				DataSetLabels.remove(ds);				
-			}
+				DataSetLabels.remove(ds);
+				dataSetsToUse.remove(ds);			
+				}
 			if(layoutcreated)
 			{
 				

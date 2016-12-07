@@ -408,7 +408,7 @@ public class IDARESettingsManager{
 					
 					if(NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) != null)
 					{
-						String nodename = row.get(IDAREProperties.IDARE_NODE_NAME, String.class);
+						String nodename = row.get(IDAREProperties.IDARE_NODE_NAME, String.class);						
 						if(nodename != null)
 						{
 							Matcher protMatch = proteinPattern.matcher(nodename);
@@ -432,6 +432,10 @@ public class IDARESettingsManager{
 					}
 				}
 				Long NetworkID = NetworkTable.getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+				if(NetworkID == null)
+				{
+					continue;
+				}
 				if(!networkmatch.containsKey(NetworkID))
 				{
 					networkmatch.put(NetworkID, network);

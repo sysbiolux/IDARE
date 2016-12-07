@@ -43,6 +43,7 @@ public class TunableDataSetAdderGUI extends JPanel{
 		// TODO Auto-generated constructor stub
 		this.dsm = dsm;
 		this.util = util;
+		this.cySwingApp = cySwingApp;
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		JTextField titleField = new JTextField();

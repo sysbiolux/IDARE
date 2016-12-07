@@ -7,6 +7,7 @@ import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.Automatic.ImageBag.BAGPOSITON;
 
@@ -306,7 +307,10 @@ public class ImageNodeContainer extends JLabel{
 					}					
 				}
 			}
+			
 			addedDataSets.remove(set.getID());
+			PrintFDebugger.Debugging(this, "Removing DataSet with ID " + set.getID() + " there are " + addedDataSets.size() + "Datasets left");
+			PrintFDebugger.Trace(this);
 			containers.remove(set);
 			bundles.remove(set);
 		}
@@ -418,7 +422,9 @@ public class ImageNodeContainer extends JLabel{
 			}
 		}
 		//if we did nto encounter any errors, add this set to the added sets.
-		addedDataSets.add(set.getID());	
+		addedDataSets.add(set.getID());
+		PrintFDebugger.Debugging(this, "Added DataSet with ID " + set.getID() + " there are now" + addedDataSets.size() + "Datasets");
+		PrintFDebugger.Trace(this);
 		containers.put(set, container);
 		bundles.put(set, bundle);
 

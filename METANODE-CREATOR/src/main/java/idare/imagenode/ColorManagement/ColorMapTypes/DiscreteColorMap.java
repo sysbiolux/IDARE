@@ -49,9 +49,9 @@ public class DiscreteColorMap extends ColorMap{
 	public DiscreteColorMap(Collection<Comparable> values, ColorScale cs)
 	{
 		super(cs);
-		PrintFDebugger.Debugging(this, "building new Colormap, super consturctor worked");
+		//PrintFDebugger.Debugging(this, "building new Colormap, super consturctor worked");
 		setup(values);
-		PrintFDebugger.Debugging(this, "building new Colormap, setup worked");
+		//PrintFDebugger.Debugging(this, "building new Colormap, setup worked");
 		
 	}
 	

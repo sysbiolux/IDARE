@@ -294,7 +294,7 @@ public class NodeManager implements DataSetChangeListener{
 		//add the new layout to all those nodes.
 		for(String id : NodeIDs)
 		{
-			PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
+		//	PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
 			activeLayouts.put(id,layout);
 		}
 		monitor.setProgress(0.2);

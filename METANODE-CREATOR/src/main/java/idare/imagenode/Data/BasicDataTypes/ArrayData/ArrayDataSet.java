@@ -246,17 +246,17 @@ public class ArrayDataSet extends DataSet{
 		//If the dataset is discrete, we can actually use multiple additional Colors.
 		if(isdiscreet)
 		{
-			PrintFDebugger.Debugging(this,"Generating discrete ColorScales");
+//			PrintFDebugger.Debugging(this,"Generating discrete ColorScales");
 			Collection<ColorScale> scales = ColorScaleFactory.getDiscreetColorScales(Valueset.size());
-			PrintFDebugger.Debugging(this,"Adding ColorMaps");
+//			PrintFDebugger.Debugging(this,"Adding ColorMaps");
 			try{
 			for(ColorScale scale : scales)
 			{
-				PrintFDebugger.Debugging(this,"Setting Color Count for " + scale.getClass().getSimpleName() + " to " + Valueset.size());
+//				PrintFDebugger.Debugging(this,"Setting Color Count for " + scale.getClass().getSimpleName() + " to " + Valueset.size());
 				scale.setColorCount(Valueset.size());
-				PrintFDebugger.Debugging(this,"Initializing new ColorMap");
+//				PrintFDebugger.Debugging(this,"Initializing new ColorMap");
 				DiscreteColorMap map = new DiscreteColorMap(Valueset, scale);
-				PrintFDebugger.Debugging(this,"Adding new ColorMap");
+//				PrintFDebugger.Debugging(this,"Adding new ColorMap");
 				colormaps.add(map);
 			}	
 			}
