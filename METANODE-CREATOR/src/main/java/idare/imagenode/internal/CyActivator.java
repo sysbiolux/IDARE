@@ -2,6 +2,7 @@ package idare.imagenode.internal;
 
 
 import idare.imagenode.IDAREImageNodeAppService;
+import idare.imagenode.IDARENodeManager;
 import idare.imagenode.internal.DataManagement.DataSetProvider;
 import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
 import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerFactory;
@@ -135,7 +136,7 @@ public class CyActivator extends AbstractCyActivator {
 		//Generate he TunableHandlers
 		DataSetParametersGUIHandlerFactory dsctf = new DataSetParametersGUIHandlerFactory(util,imageapp.getDatasetManager(),cySwingApp);		
 		NetworkSetupGUIHandlerFactory nsghf = new NetworkSetupGUIHandlerFactory(imageapp.getNodeManager(), imageapp.getSettingsManager(), cyAppMgr);
-		
+		registerService(context, imageapp.getNodeManager(), IDARENodeManager.class, new Properties());
 		//Register the Actions of the App.
 		for(CyAction cyAct : imageapp.getActions())
 		{
@@ -180,7 +181,7 @@ public class CyActivator extends AbstractCyActivator {
 		FileUtil FileUtilService = getService(context,FileUtil.class);		
 		CyEventHelper eventHelper = getService(context, CyEventHelper.class);
 		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);
-		
+		CyServiceRegistrar registrar = getService(context, CyServiceRegistrar.class);
 
 		//This is a holder for the cy3sbml SBMLManager class, which can provide that class to the SBMLAnnotationFactory if it is available. 
 		//SBMLReg = new SBMLServiceRegistrar(context,FileUtilService, cySwingApp);
@@ -210,7 +211,7 @@ public class CyActivator extends AbstractCyActivator {
 //		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
 //		registerService(context, Annotator, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);		
 	
-		SBMLAnnotatorTaskFactory Annotator2 = new SBMLAnnotatorTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, new SBMLManagerHolder(FileUtilService, cySwingApp, context), app.getImageNodeApp());
+		SBMLAnnotatorTaskFactory Annotator2 = new SBMLAnnotatorTaskFactory(registrar, new SBMLManagerHolder(FileUtilService, cySwingApp, context), app.getImageNodeApp());
 		registerService(context, Annotator2, NetworkViewTaskFactory.class, addAnnotationPropertiesMenu);
 		registerService(context, Annotator2, NetworkViewTaskFactory.class, addAnnotationPropertiesTask);
 		

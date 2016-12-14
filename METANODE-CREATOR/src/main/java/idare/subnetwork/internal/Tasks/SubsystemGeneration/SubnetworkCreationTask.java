@@ -3,7 +3,7 @@ package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+//import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.NoNetworksToCreateException;
 
@@ -441,7 +441,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			}				
 			//otherwise, this is either an edge to a non reaction node or it is an edge to a reaction node within the subsystem.
 			//so we can simply add it.
-			PrintFDebugger.Debugging(this, "Extending " + Subsystem + " to Nodes" + edge.getSource() + " and " + edge.getTarget());
+//			PrintFDebugger.Debugging(this, "Extending " + Subsystem + " to Nodes" + edge.getSource() + " and " + edge.getTarget());
 			newnodes.add(edge.getSource());
 			newnodes.add(edge.getTarget());
 			subSysEdges.add(edge);
@@ -480,7 +480,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			}
 			for(CyNetwork targetnetwork: OtherNetworks)
 			{
-				PrintFDebugger.Debugging(this, "The target network is " + targetnetwork);				
+//				PrintFDebugger.Debugging(this, "The target network is " + targetnetwork);				
 				CyNode targetnode = targetnetwork.getNode(linkNode.NodeSUID); 
 				if(targetnode != null)
 				{					

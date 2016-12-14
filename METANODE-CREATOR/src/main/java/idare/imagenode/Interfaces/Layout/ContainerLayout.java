@@ -80,8 +80,34 @@ public abstract class ContainerLayout implements Serializable{
 		{
 			return valuerange;
 		}		
-		return new Double[]{roundToOrder(min, false),roundToOrder(max, true)};
+		return roundToCommonOrder(min, max);
 
+	}
+	
+	
+	/**
+	 * Round the number to the numbers Order. Either rounding up or down.
+	 * e.g. 5 rounded up is 10;
+	 * 101 rounded up is 200
+	 * etc.
+	 * @param value the value to round
+	 * @param up whether to round up or down.
+	 * @return the rounded values.
+	 */
+	public static final Double[] roundToCommonOrder(Double lowvalue, Double highvalue)
+	{
+		int orderlow = lowvalue == 0 ? 0 : (int)Math.floor(Math.log10(Math.abs(lowvalue)));
+		int orderhigh= highvalue == 0 ? 0 : (int)Math.floor(Math.log10(Math.abs(highvalue)));
+		int order = orderlow < orderhigh ? orderhigh : orderlow;
+		Double exponent = Math.pow(10, order);
+		Double lowval = Math.floor(lowvalue/exponent)*exponent;
+		Double highval =  Math.ceil(highvalue/exponent)*exponent;
+		if(lowvalue < 0 && highvalue > 0)
+		{
+			Double explow = Math.pow(10, orderlow);
+			lowval = Math.floor(lowvalue/explow)*explow;
+		}
+		return new Double[]{lowval,highval};
 	}
 	
 	/**

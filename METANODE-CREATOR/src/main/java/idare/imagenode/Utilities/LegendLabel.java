@@ -39,4 +39,17 @@ public class LegendLabel implements Serializable
 		svg.drawString(Label, Position.x, Position.y);
 		svg.setFont(OrigFont);
 	}
+	
+	/**
+	 * Draw the Label in the given {@link SVGGraphics2D} context
+	 * @param svg
+	 */
+	public void draw(SVGGraphics2D svg, String Label)
+	{
+		Font OrigFont = svg.getFont();
+		svg.setFont(LabelFont);
+		svg.drawString(Label, Position.x, Position.y);
+		svg.setFont(OrigFont);
+	}
+	
 }

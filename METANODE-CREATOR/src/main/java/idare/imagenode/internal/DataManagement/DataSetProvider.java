@@ -9,6 +9,7 @@ import idare.imagenode.internal.Data.Array.CircleGridData.CircleGridProperties;
 import idare.imagenode.internal.Data.Array.RectangleData.RectangleDataSetProperties;
 import idare.imagenode.internal.Data.Array.TimeSeriesData.TimeSeriesDataSetProperties;
 import idare.imagenode.internal.Data.MultiArray.GraphData.GraphDataSetProperties;
+import idare.imagenode.internal.Data.MultiArray.IndividualGraph.IndividualGraphDataSetProperties;
 import idare.imagenode.internal.Data.MultiArray.ScatterData.LargeScatterProperties;
 import idare.imagenode.internal.Data.MultiArray.ScatterData.SmallScatterProperties;
 
@@ -37,6 +38,7 @@ public class DataSetProvider implements IDAREPlugin {
 			datasetservices.add(new GraphDataSetProperties());
 			datasetservices.add(new LargeScatterProperties());
 			datasetservices.add(new SmallScatterProperties());
+			datasetservices.add(new IndividualGraphDataSetProperties());
 			return datasetservices;
 		
 	}

@@ -336,6 +336,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 				
 
 		Collections.sort(metaboliteList,new SortItems());
+		int reactioncount = network.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_SUBNETWORK_TYPE, IDAREProperties.NodeType.IDARE_REACTION).size();
 		for(SortEntry entry: metaboliteList)
 		{			
 			Vector<Object> row = new Vector<Object>();
@@ -364,7 +365,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 			row.add(entry.value);
 			//if a metabolite is involved in more than 1% of all reactions
 			//Do not use it as a linker
-			if(entry.value > 10 && entry.value > network.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_SUBNETWORK_TYPE, IDAREProperties.NodeType.IDARE_REACTION).size()*0.005)
+			if(entry.value > (int) Math.ceil(Math.sqrt(reactioncount)*0.7))
 			{
 				row.add(true);
 			}
@@ -373,7 +374,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 				row.add(false);
 			}
 			//
-			if(entry.value > 25 && entry.value > network.getDefaultNodeTable().getMatchingRows(IDAREProperties.IDARE_SUBNETWORK_TYPE, IDAREProperties.NodeType.IDARE_REACTION).size()*0.02)
+			if(entry.value > (int) Math.ceil(Math.sqrt(reactioncount)))
 			{
 				row.add(true);
 			}			

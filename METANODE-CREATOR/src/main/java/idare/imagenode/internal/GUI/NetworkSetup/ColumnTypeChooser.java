@@ -23,6 +23,8 @@ import javax.swing.UIDefaults;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyRow;
+
+import idare.Properties.IDAREProperties;
 /**
  * ColumnTypeChoose is a JPanel that Provides multiple comboboxes depending on the number of options provided by a 
  * selected column. 
@@ -245,6 +247,8 @@ public class ColumnTypeChooser extends JPanel{
 			}
 			selectedObjects.put(reactionTypeSelector, reactionTypeSelector.getSelectedItem());
 		}
+		compoundTypeSelector.setSelectedItem(IDAREProperties.NodeType.IDARE_SPECIES);
+		reactionTypeSelector.setSelectedItem(IDAREProperties.NodeType.IDARE_REACTION);
 		compoundTypeSelector.setVisible(true);
 		reactionTypeSelector.setVisible(true);		
 		compoundDesc.setVisible(true);

@@ -2,6 +2,7 @@ package idare.sbmlannotator.internal.Tasks;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.Tunable;
 
@@ -15,9 +16,9 @@ public class SBMLAnnotatorTaskFBC extends SBMLAnnotatorTask {
 	public boolean removeFBCNodes = true;
 
 	
-	public SBMLAnnotatorTaskFBC(SBMLManagerHolder holder, CyNetwork network, IDARESettingsManager ism,
-			CyNetworkView networkView, CyEventHelper eventHelper, SBMLDocument doc) {
-		super(holder, network, ism, networkView, eventHelper,doc);
+	public SBMLAnnotatorTaskFBC(SBMLManagerHolder holder, CyNetwork network,
+			CyNetworkView networkView, IDARESettingsManager ism, CyServiceRegistrar reg, SBMLDocument doc) {
+		super(holder, network, networkView, ism, reg,doc);
 		// TODO Auto-generated constructor stub
 	}
 

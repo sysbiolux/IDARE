@@ -3,7 +3,7 @@ import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.IOUtils;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+//import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -249,7 +249,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	 */
 	public synchronized void addLink(CyNode node, CyNetwork origin, CyNetworkView TargetNetworkView, View<CyNode> TargetNodeView)
 	{
-		PrintFDebugger.Debugging(this, "Creating a Visual link between " + origin + " and " +  TargetNetworkView.getModel() + " for node " + TargetNodeView.getModel());
+//		PrintFDebugger.Debugging(this, "Creating a Visual link between " + origin + " and " +  TargetNetworkView.getModel() + " for node " + TargetNodeView.getModel());
 		targetViews.put(node, new NodeViewLink(TargetNodeView, TargetNetworkView,TargetNetworkView.getModel(),TargetNodeView.getModel(),origin));
 		//PrintFDebugger.Debugging(this, "Adding node " + origin.getRow(node).get(IDAREProperties.IDARE_NODE_UID, Long.class) + " with Network " +  origin.getDefaultNetworkTable().getRow(origin.getSUID()).get(CyNetwork.NAME, String.class ) + " to nodeAndNetwork");
 		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
@@ -276,7 +276,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	 */
 	public synchronized void addNetworkLink(CyNode node,CyNetwork origin, CyNetwork target, CyNode TargetNode)
 	{
-		PrintFDebugger.Debugging(this, "Creating a network link between " + origin + " and " +  target + " for node " + TargetNode);
+//		PrintFDebugger.Debugging(this, "Creating a network link between " + origin + " and " +  target + " for node " + TargetNode);
 		targetViews.put(node, new NodeViewLink(null, null, target, TargetNode,origin));
 		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
 		if(!nodesPointingToNetwork.containsKey(target))
@@ -300,14 +300,14 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		CyNetwork network = view.getModel();
 		if(SilentNodes.containsKey(network))
 		{
-			PrintFDebugger.Debugging(this, "Trying to restore links for network" + network);
+//			PrintFDebugger.Debugging(this, "Trying to restore links for network" + network);
 			//correct the SubNetwors field
 			SubNetworks.put(network, view);
 			//there were nodes pointing to this View so we have to deactivate them.
 			// we also have to remove this View from the ListenedNetworks
 			for(CyNode node : SilentNodes.get(network))
 			{
-				PrintFDebugger.Debugging(this, "Restoring visual link between " + network + " and " + targetViews.get(node).getSourceNetwork() + " using node " + node);
+//				PrintFDebugger.Debugging(this, "Restoring visual link between " + network + " and " + targetViews.get(node).getSourceNetwork() + " using node " + node);
 				//reset the TargetNodeView -> we have to retrieve the target node information from the TargetViews Structure.
 				targetViews.get(node).setTargetNodeView(view.getNodeView(targetViews.get(node).getTargetNode()));
 				//Set the Target view
@@ -329,7 +329,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized void handleEvent(NetworkAboutToBeDestroyedEvent e) {
 //		System.out.println("Calling NetworkAboutToBeDestroyed");		
 		CyNetwork tobeDestroyed = e.getNetwork();
-		PrintFDebugger.Debugging(this, "The Network to be destroyed is " + tobeDestroyed);
+//		PrintFDebugger.Debugging(this, "The Network to be destroyed is " + tobeDestroyed);
 
 		//now we need to get all linkers to this network and remove them.
 		try
@@ -643,13 +643,13 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	{		
 		for(CyNetwork network : NetworkHierarchy.keySet())
 		{
-			PrintFDebugger.Debugging(this, "Parent: " + network);			
+//			PrintFDebugger.Debugging(this, "Parent: " + network);			
 			for(String ColName : NetworkHierarchy.get(network).keySet())
 			{
-				PrintFDebugger.Debugging(this, "\tColumn: " + ColName);
+//				PrintFDebugger.Debugging(this, "\tColumn: " + ColName);
 				for(String networkID : NetworkHierarchy.get(network).get(ColName).keySet())
 				{	
-					PrintFDebugger.Debugging(this, "\t\tNetworkID:  " + networkID);
+//					PrintFDebugger.Debugging(this, "\t\tNetworkID:  " + networkID);
 					System.out.println(NetworkHierarchy.get(network).get(ColName).get(networkID).printWithChildren("\t\t\t"));
 				}
 			}
@@ -661,7 +661,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	{
 		for(CyNetwork node : NetworkNodes.keySet())
 		{
-			PrintFDebugger.Debugging(this, node + ": ");
+//			PrintFDebugger.Debugging(this, node + ": ");
 			if(NetworkNodes.get(node) != null)
 			System.out.println(NetworkNodes.get(node).printWithChildren("\t"));
 		}

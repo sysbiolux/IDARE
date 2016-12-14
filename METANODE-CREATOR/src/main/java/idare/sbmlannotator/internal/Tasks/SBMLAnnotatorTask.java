@@ -5,8 +5,9 @@ import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.CobraUtil;
 import idare.ThirdParty.DelayedVizProp;
+import idare.imagenode.IDARENodeManager;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+//import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Services.JSBML.Annotation;
 import idare.imagenode.internal.Services.JSBML.Association;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
@@ -40,6 +41,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
@@ -159,15 +161,16 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	boolean skipNodes = false;
 	String ErrorMessage = "";
 
-	public SBMLAnnotatorTask(SBMLManagerHolder holder, CyNetwork network, IDARESettingsManager ism,
-			CyNetworkView networkView, CyEventHelper eventHelper, SBMLDocument doc) {
+	IDARENodeManager nodemgr;
+	public SBMLAnnotatorTask(SBMLManagerHolder holder, CyNetwork network,
+			CyNetworkView networkView, IDARESettingsManager ism, CyServiceRegistrar reg, SBMLDocument doc) {
 		// TODO Auto-generated constructor stub
-		this.eventHelper = eventHelper;
+		this.eventHelper = reg.getService(CyEventHelper.class);
 		this.networkView = networkView;		
 		this.doc = doc;
 		this.ism = ism;
 		gm = new GPRManager(ism);
-
+		nodemgr = reg.getService(IDARENodeManager.class);
 		cysbmlNetwork = holder.isSBMLManagerPresent();		
 		if(doc == null)
 		{			
@@ -178,7 +181,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		setupAnnotationDBs();
 		if(!proteinAnnotationDatabases.isEmpty())
 		{
-			PrintFDebugger.Debugging(this, "Setting up the protein AnnotationDatabase IDs");
+//			PrintFDebugger.Debugging(this, "Setting up the protein AnnotationDatabase IDs");
 			ArrayList<String> al = new ArrayList<String>();
 			al.addAll(proteinAnnotationDatabases);
 			proteinAnnotationDataBase = new ListSingleSelection<String>(al);			
@@ -186,13 +189,13 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		}
 		if(!geneAnnotationDatabases.isEmpty())
 		{
-			PrintFDebugger.Debugging(this, "Setting up the gene AnnotationDatabase IDs with " + geneAnnotationDatabases.size() + " Options");
+//			PrintFDebugger.Debugging(this, "Setting up the gene AnnotationDatabase IDs with " + geneAnnotationDatabases.size() + " Options");
 			ArrayList<String> al = new ArrayList<String>();
 			al.addAll(geneAnnotationDatabases);
-			for(String temp : geneAnnotationDatabases)
-			{
-				PrintFDebugger.Debugging(this, "Gene Database Option: " + temp);
-			}
+//			for(String temp : geneAnnotationDatabases)
+//			{
+//				PrintFDebugger.Debugging(this, "Gene Database Option: " + temp);
+//			}
 			geneAnnotationDataBase = new ListSingleSelection<String>(al);
 			hasGeneAnnotation = true;
 		}
@@ -243,12 +246,12 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			sbmlTypecol = sbmltypecolsel.getSelectedValue();
 		}
-		PrintFDebugger.Debugging(this, "The SBML Columns are: ID - " + sbmlIDcol + " ; Type - " + sbmlTypecol);
+//		PrintFDebugger.Debugging(this, "The SBML Columns are: ID - " + sbmlIDcol + " ; Type - " + sbmlTypecol);
 
 
 		taskMonitor.setStatusMessage("Obtaining SBML Document");
 		Model sbmlModel = doc.getModel();
-		PrintFDebugger.Debugging(this, "Found the document ");
+//		PrintFDebugger.Debugging(this, "Found the document ");
 
 		taskMonitor.setStatusMessage("Finding matching nodes");
 		//set up the matching rows
@@ -302,6 +305,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			throw new Exception(ErrorMessage);
 		}
+		nodemgr.updateNetworkNodes();
 	}
 
 	private void buildNonLogicGenes()
@@ -750,7 +754,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 		if(!geneNodes.containsKey(gene))
 		{			
-			PrintFDebugger.Debugging(this, "Adding a new Node for Gene " + gene.toString());
+//			PrintFDebugger.Debugging(this, "Adding a new Node for Gene " + gene.toString());
 			CyNode geneNode = network.addNode();
 			geneNodes.put(gene,geneNode);
 			geneNodeTargets.put(geneNode, new HashSet<CyNode>());
@@ -883,23 +887,23 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			Association assoc = reac.getAssociation();
 			if(assoc == null)
 			{
-				PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has no Association.");
+//				PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has no Association.");
 				continue;
 			}	
-			PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has a GPR Association.");
+//			PrintFDebugger.Debugging(this, "Reaction "+ reac.getId() + " has a GPR Association.");
 			if(matchingNodes.containsKey(reac))
 			{
-				PrintFDebugger.Debugging(this, "Found a reaction node with a matching row, Trying to associate GPR");
+//				PrintFDebugger.Debugging(this, "Found a reaction node with a matching row, Trying to associate GPR");
 				CyNode reacNode = network.getNode(matchingNodes.get(reac).get(CyNode.SUID, Long.class));
 				FBCGPRParser parser = new FBCGPRParser(assoc, doc.getModel() ,geneMap,proteinMap,SBMLObjectIDs);
 				if(!AssociatedGPRs.containsKey(reacNode))
 				{
-					PrintFDebugger.Debugging(this, "Adding GPRs to " + reacNode );
+//					PrintFDebugger.Debugging(this, "Adding GPRs to " + reacNode );
 					AssociatedGPRs.put(reacNode, parser.getGPRAssociation());
 				}
 				else
 				{
-					PrintFDebugger.Debugging(this, "Combining GPRs on " + reacNode );
+//					PrintFDebugger.Debugging(this, "Combining GPRs on " + reacNode );
 					AssociatedGPRs.put(reacNode, combineGPRAnnotations(parser.getGPRAssociation(),AssociatedGPRs.get(reacNode)));
 				}
 			}
@@ -1078,14 +1082,14 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 	private void getMatchingNodes()
 	{
-		PrintFDebugger.Debugging(this, "Setting up SBMLObjectIDs");
+//		PrintFDebugger.Debugging(this, "Setting up SBMLObjectIDs");
 		setupSBMLObjectIDs();
-		PrintFDebugger.Debugging(this, "Matching Row-IDs to sbml IDs.");
+//		PrintFDebugger.Debugging(this, "Matching Row-IDs to sbml IDs.");
 		CyTable tab = network.getDefaultNodeTable();
 		for(CyRow row : tab.getAllRows())
 		{
 			String rowSBMLId = row.get(sbmlIDcol,String.class);
-			PrintFDebugger.Debugging(this, "Looking up an sbml item with id " + rowSBMLId);
+			//PrintFDebugger.Debugging(this, "Looking up an sbml item with id " + rowSBMLId);
 			if(SBMLObjectIDs.containsKey(rowSBMLId))
 			{
 				SBase sbmlitem = SBMLObjectIDs.get(rowSBMLId); 
@@ -1128,7 +1132,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				}
 			}
 		}
-		PrintFDebugger.Debugging(this, "Finished Matching Row-IDs to sbml IDs.");
+//		PrintFDebugger.Debugging(this, "Finished Matching Row-IDs to sbml IDs.");
 
 	}
 
@@ -1145,7 +1149,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			SBMLObjectIDs.put(reac.getId(), reac);
 			//			PrintFDebugger.Debugging(this, "Found a reaction with id " + reac.getId());
 		}
-		PrintFDebugger.Debugging(this, "Finished reading Reactions ");
+//		PrintFDebugger.Debugging(this, "Finished reading Reactions ");
 		if(doc.getModel().isFBCPackageEnabled())
 		{
 			//			PrintFDebugger.Debugging(this, "Checking the model for FBC");
@@ -1363,11 +1367,11 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 		if(doc.getModel().isFBCPackageEnabled())
 		{
-			PrintFDebugger.Debugging(this, "Looking up FBC GeneProducts");	
+//			PrintFDebugger.Debugging(this, "Looking up FBC GeneProducts");	
 			for(GeneProduct cspec : doc.getModel().getListOfGeneProducts())
 			{
 				SBMLObjectIDs.put(cspec.getId(),cspec);
-				PrintFDebugger.Debugging(this, "Annotating a GeneProduct with label" + cspec.getLabel());
+//				PrintFDebugger.Debugging(this, "Annotating a GeneProduct with label" + cspec.getLabel());
 				if(cspec.isSetSBOTerm())
 				{
 

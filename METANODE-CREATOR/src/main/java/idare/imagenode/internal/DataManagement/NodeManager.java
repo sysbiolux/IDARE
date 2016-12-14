@@ -2,6 +2,7 @@ package idare.imagenode.internal.DataManagement;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
+import idare.imagenode.IDARENodeManager;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.EOOMarker;
@@ -49,7 +50,7 @@ import org.cytoscape.work.TaskMonitor;
  * @author Thomas Pfau
  *
  */
-public class NodeManager implements DataSetChangeListener{
+public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 
 	private HashMap<String,ImageNodeModel> Nodes = new HashMap<>();
 	private HashMap<String,ImageNodeLayout> activeLayouts = new HashMap<String, ImageNodeLayout>();
@@ -100,9 +101,7 @@ public class NodeManager implements DataSetChangeListener{
 		Nodes.clear();
 		NetworkIDs.clear();
 	}
-	/**
-	 * Update the set of NetworkNode IDs. This is to allow a minimal number of updates for graphics.
-	 */
+
 	public void updateNetworkNodes()
 	{		
 		Set<String> NodesToUpdate = new HashSet<String>();		

@@ -10,6 +10,7 @@ import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.view.model.CyNetworkView;
@@ -20,18 +21,11 @@ import org.cytoscape.work.TaskIterator;
 public class SBMLAnnotatorTaskFactory extends AbstractTaskFactory implements
 NetworkViewTaskFactory {
 
-	protected CyApplicationManager cyAppMgr;
-	protected CyEventHelper eventHelper;
-	protected final FileUtil fileutil;	
-	protected CySwingApplication cySwingApp;
+	protected CyServiceRegistrar reg;
 	private SBMLManagerHolder SBMLListener;
 	private IDAREImageNodeApp app;	
-	public SBMLAnnotatorTaskFactory(final CyApplicationManager applicationManager,
-			CyEventHelper eventHelper, FileUtil fileutil, CySwingApplication cySwingApp,SBMLManagerHolder SBMLListener, IDAREImageNodeApp app) {
-		this.cyAppMgr = applicationManager;
-		this.fileutil = fileutil;
-		this.eventHelper = eventHelper;
-		this.cySwingApp = cySwingApp;
+	public SBMLAnnotatorTaskFactory(CyServiceRegistrar reg,SBMLManagerHolder SBMLListener, IDAREImageNodeApp app) {
+		this.reg = reg;
 		this.SBMLListener = SBMLListener;
 		this.app = app;
 	}
@@ -44,7 +38,7 @@ NetworkViewTaskFactory {
 	@Override
 	public boolean isReady()
 	{
-		return cyAppMgr.getCurrentNetwork() != null;
+		return reg.getService(CyApplicationManager.class).getCurrentNetwork() != null;
 	}
 	@Override
 	public TaskIterator createTaskIterator(CyNetworkView arg0) {
@@ -64,12 +58,12 @@ NetworkViewTaskFactory {
 	}
 
 	private TaskIterator createTask()
-	{
+	{	
+		CyNetworkView view = reg.getService(CyApplicationManager.class).getCurrentNetworkView();
+		CyNetwork network = view.getModel();
 		
-		CyNetworkView view = cyAppMgr.getCurrentNetworkView();
-		CyNetwork network = view.getModel();		
 		SBMLDocument doc = SBMLListener.readSBML(network);
-		return new TaskIterator(new SBMLDocumentSelectionTask(SBMLListener, network, app.getSettingsManager(), view, eventHelper,doc));
+		return new TaskIterator(new SBMLDocumentSelectionTask(SBMLListener, network, view, app.getSettingsManager(), reg ,doc));
 	}
 
 	
