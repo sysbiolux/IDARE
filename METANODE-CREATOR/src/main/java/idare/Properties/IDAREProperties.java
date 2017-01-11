@@ -23,6 +23,8 @@ public class IDAREProperties {
 	public static final String IDARE_NODE_NAME = "IDARENodeName";
 	public static final String IDARE_NETWORK_ID = "IDARENetworkID";
 	public static final String GENE_EDGE_ID = "IDAREGeneEdge";
+	public static final String DUPLICATED_NODE = "IDAREDuplicatedNode";
+	public static final String ORIGINAL_NODE = "IDAREOriginalNode";
 	/**
 	 * This field should only be set if the corresponding node is a Link Node (i.e. the IDARENodeType is IDARE_LINK)
 	 */
@@ -98,4 +100,5 @@ public class IDAREProperties {
     	typeMap.put(name,IDAREId);	    	
     }
 }
+
 

@@ -1,24 +1,5 @@
-package idare.imagenode.internal;
+package idare.internal;
 
-
-import idare.imagenode.IDAREImageNodeAppService;
-import idare.imagenode.IDARENodeManager;
-import idare.imagenode.internal.DataManagement.DataSetProvider;
-import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
-import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerFactory;
-import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
-import idare.imagenode.internal.GUI.Legend.IDARELegend;
-import idare.imagenode.internal.GUI.Legend.LegendUpdater;
-import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
-import idare.imagenode.internal.ImageManagement.DefaultLayoutProvider;
-import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
-import idare.internal.IDAREApp;
-import idare.sbmlannotator.internal.Tasks.SBMLAnnotatorTaskFactory;
-import idare.subnetwork.internal.NetworkViewSwitcher;
-import idare.subnetwork.internal.SubnetworkSessionManager;
-import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
-import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreatorTaskFactory;
-import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkPropertyColumnGUIHandlerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,7 +20,6 @@ import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
-import org.cytoscape.session.events.SessionSavedListener;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.task.NodeViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
@@ -57,6 +37,26 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.GUITunableHandlerFactory;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
+
+import idare.NodeDuplicator.Internal.NodeDuplicatorFactory;
+import idare.imagenode.IDAREImageNodeAppService;
+import idare.imagenode.IDARENodeManager;
+import idare.imagenode.internal.IDAREImageNodeApp;
+import idare.imagenode.internal.DataManagement.DataSetProvider;
+import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
+import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerFactory;
+import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
+import idare.imagenode.internal.GUI.Legend.IDARELegend;
+import idare.imagenode.internal.GUI.Legend.LegendUpdater;
+import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupGUIHandlerFactory;
+import idare.imagenode.internal.ImageManagement.DefaultLayoutProvider;
+import idare.imagenode.internal.Services.JSBML.SBMLManagerHolder;
+import idare.sbmlannotator.internal.Tasks.SBMLAnnotatorTaskFactory;
+import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.SubnetworkSessionManager;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreationGUIHandlerFactory;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubnetworkCreatorTaskFactory;
+import idare.subnetwork.internal.Tasks.propertySelection.SubnetworkPropertyColumnGUIHandlerFactory;
 
 
 
@@ -105,8 +105,23 @@ public class CyActivator extends AbstractCyActivator {
 		setupimagenodeApp(context);
 		setupNetworkCreatorApp(context);
 		registerSBMLAnnotator(context);
-		
+		registerNodeDuplicator(context);
 	}
+	
+	
+	private void registerNodeDuplicator(BundleContext context)
+	{
+		NodeDuplicatorFactory nodedup = new NodeDuplicatorFactory(getService(context, CyServiceRegistrar.class));
+		Properties duplicateNodeProps = new Properties();		
+		duplicateNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NODE_APPS_MENU);
+		duplicateNodeProps.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		duplicateNodeProps.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		duplicateNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		duplicateNodeProps.setProperty(ServiceProperties.TITLE, "Duplicate Node");		
+		duplicateNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+		registerService(context, nodedup, NodeViewTaskFactory.class, duplicateNodeProps);
+	}
+	
 	@SuppressWarnings("rawtypes")
 	private void setupimagenodeApp(BundleContext context)
 	{

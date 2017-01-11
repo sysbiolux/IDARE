@@ -529,9 +529,10 @@ public class IDARESettingsManager{
 		{
 			// if the column is either not set, or at the default value, initialize it.
 			//furthermore we can initialize the IDARE_TARGET_ID property for save/restore functionality
-			if(!row.isSet(IDAREProperties.IDARE_NODE_UID))
+			//Only assign IDs to non duplicated nodes.
+			if(!row.isSet(IDAREProperties.IDARE_NODE_UID) & !row.get(IDAREProperties.DUPLICATED_NODE, Boolean.class))
 			{
-				//row.set(IDAREProperties.IDARE_NODE_TYPE, row.get(NodeTypeCol,String.class));
+				//row.set(IDAREProperties.IDARE_NODE_TYPE, row.get(NodeTypeCol,String.class));				
 				Long id = IDAREIdmgr.getNextNodeID();
 				row.set(IDAREProperties.IDARE_NODE_UID, id);
 
@@ -749,6 +750,21 @@ public class IDARESettingsManager{
 			NetworkTable.createColumn(IDAREProperties.IDARE_NETWORK_ID, Long.class, false, null);
 		}
 
+		catch(IllegalArgumentException e)
+		{
+			e.printStackTrace(System.out);
+		}
+		try{
+			NetworkTable.createColumn(IDAREProperties.DUPLICATED_NODE, Boolean.class, false, false);
+		}
+		catch(IllegalArgumentException e)
+		{
+			e.printStackTrace(System.out);
+		}
+		
+		try{
+			NetworkTable.createColumn(IDAREProperties.ORIGINAL_NODE, Long.class, false, null);
+		}
 		catch(IllegalArgumentException e)
 		{
 			e.printStackTrace(System.out);

@@ -68,6 +68,7 @@
 						<Export-Package>
 							${bundle.namespace},
 							${bundle.namespace}.subnetwork,
+							${bundle.namespace}.NodeDuplicator,
 							${bundle.namespace}.sbmlannotator,
 							${bundle.namespace}.ThirdParty,
 							${bundle.namespace}.Properties,
@@ -88,11 +89,12 @@
 						<Private-Package>${bundle.namespace}.imagenode.internal.*,
 							${bundle.namespace}.subnetwork.internal.*,
 							${bundle.namespace}.sbmlannotator.internal.*,
+							${bundle.namespace}.NodeDuplicator.Internal.*,
 							${bundle.namespace}.imagenode.ColorManagement.*,
 							${bundle.namespace}.imagenode.*,
 							${bundle.namespace}.internal.*
 						</Private-Package>
-						<Bundle-Activator>${bundle.namespace}.imagenode.internal.CyActivator</Bundle-Activator>
+						<Bundle-Activator>${bundle.namespace}.internal.CyActivator</Bundle-Activator>
 						<Embed-Dependency>*;scope=!provided|test;groupId=!org.cytoscape</Embed-Dependency>
                         <Import-Package>javax.xml.namespace, *;resolution:=optional</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
