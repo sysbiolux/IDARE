@@ -175,7 +175,7 @@ public abstract class ContinousColorMap extends ColorMap{
 		}
 
 		double entry = (DoubleValue - minval) / (maxval - minval);
-		PrintFDebugger.Debugging(this, "Obtaining Color " + cs.getColor(entry) +  " for value " + entry);
+//		PrintFDebugger.Debugging(this, "Obtaining Color " + cs.getColor(entry) +  " for value " + entry);
 		return cs.getColor(entry);
 	}
 

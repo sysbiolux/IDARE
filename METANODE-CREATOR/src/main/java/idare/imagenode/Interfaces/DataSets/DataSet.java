@@ -197,13 +197,13 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public final void setupWorkBook(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
 		preProcessWorkBook(WB);
-		PrintFDebugger.Debugging(this,"Determining Data Properties");
+//		PrintFDebugger.Debugging(this,"Determining Data Properties");
 		determineDataProperties(WB);
 		//now we can go on to read the data appropriately.  
 		//up until this point it was onyl determined, whether the data is discreet (i.e. less than 6 different entries excluding null)
 		// or whether we have continous data. Also the type of data was determined.
 		//readWorkbookdata should also set up the Colormaps, as this is the first time that all items are being looked at.
-		PrintFDebugger.Debugging(this,"reading Data");
+//		PrintFDebugger.Debugging(this,"reading Data");
 		readWorkBookData(WB);
 		setupPropertyOptions();
 	}
@@ -341,12 +341,19 @@ public abstract class DataSet implements IDAREService, Serializable{
 			while(rowIterator.hasNext() && isdiscreet)
 			{				
 				Iterator<IDARECell> cellIterator = rowIterator.next().iterator();			
-				skipLabels(cellIterator);	
+				IDARECell startingCell = skipLabels(cellIterator);	
 				
 				while(cellIterator.hasNext())
 				{
-					
-					IDARECell current = cellIterator.next();
+					IDARECell current; 
+					if(startingCell != null)
+					{
+						current = startingCell;
+						startingCell = null;
+					}
+					else{
+						current = cellIterator.next();
+					}
 					if(current == null)
 					{
 						//skip null Cells 
@@ -420,10 +427,18 @@ public abstract class DataSet implements IDAREService, Serializable{
 			while(rowIterator.hasNext() && isdiscreet)
 			{
 				Iterator<IDARECell> cellIterator = rowIterator.next().iterator();			
-				skipLabels(cellIterator);	
+				IDARECell startingCell = skipLabels(cellIterator);	
 				while(cellIterator.hasNext())
 				{
-					IDARECell current = cellIterator.next();
+					IDARECell current; 
+					if(startingCell != null)
+					{
+						current = startingCell;
+						startingCell = null;
+					}
+					else{
+						current = cellIterator.next();
+					}
 					//blank cells are NA cells
 					if(current.getCellType() == CellType.BLANK)
 					{
@@ -481,6 +496,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 		{
 			if(currentCell != null)
 			{
+				PrintFDebugger.Debugging(this, "Current index is:" + currentCell.getColumnIndex() + " while offset is " + offset);
 				if(currentCell.getColumnIndex() >= offset)
 				{
 					return currentCell;
@@ -556,12 +572,12 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public final boolean addPropertyOption(DataSetLayoutProperties propsToAdd)
 	{
 		try{
-			PrintFDebugger.Debugging(this, "Testing validity" );
+//			PrintFDebugger.Debugging(this, "Testing validity" );
 			propsToAdd.testValidity(this);
-			PrintFDebugger.Debugging(this, "Success" );
+//			PrintFDebugger.Debugging(this, "Success" );
 			if(!propertyOptions.contains(propsToAdd))
 			{
-				PrintFDebugger.Debugging(this, "PropertyOptions dont contain the new properties" );
+//				PrintFDebugger.Debugging(this, "PropertyOptions dont contain the new properties" );
 				propertyOptions.add(propsToAdd);
 				return true;
 			}

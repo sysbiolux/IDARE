@@ -20,7 +20,7 @@ public class NodeDuplicatorFactory implements NodeViewTaskFactory {
 	
 	@Override
 	public TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
-		return new TaskIterator(new NodeDuplicatorImpl(arg0.getModel(), reg));		
+		return new TaskIterator(new NodeDuplicatorImpl(arg0.getModel(),arg1.getModel(), reg));		
 	}
 
 	@Override

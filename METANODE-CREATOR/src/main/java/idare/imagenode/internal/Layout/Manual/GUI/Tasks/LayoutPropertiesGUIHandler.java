@@ -43,7 +43,7 @@ public class LayoutPropertiesGUIHandler extends AbstractGUITunableHandler {
 	 */
 	private void init()
 	{
-		PrintFDebugger.Debugging(this, "Initializing the Panel for the Handler");
+//		PrintFDebugger.Debugging(this, "Initializing the Panel for the Handler");
 		mypanel = new LayoutPropertiesGUI(dsm);
 		panel = mypanel;
 	}

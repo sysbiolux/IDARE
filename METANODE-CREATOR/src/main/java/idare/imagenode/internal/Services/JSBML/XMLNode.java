@@ -28,7 +28,7 @@ public class XMLNode {
 		catch(NoSuchMethodException e)
 		{
 			e.printStackTrace(System.out);
-			PrintFDebugger.Debugging(this,"Available Methods");
+//			PrintFDebugger.Debugging(this,"Available Methods");
 			for(Method m : o.getClass().getMethods())
 			{
 				System.out.println(m.getName());

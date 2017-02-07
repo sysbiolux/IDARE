@@ -29,7 +29,7 @@ public class LayoutPropertiesGUI extends JPanel {
 	 * @param network
 	 */
 	public LayoutPropertiesGUI(DataSetManager dsm){
-		PrintFDebugger.Debugging(this, "Setting up new GUI");			
+//		PrintFDebugger.Debugging(this, "Setting up new GUI");			
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;		

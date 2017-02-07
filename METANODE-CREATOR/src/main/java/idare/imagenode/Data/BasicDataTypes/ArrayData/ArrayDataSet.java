@@ -211,9 +211,9 @@ public class ArrayDataSet extends DataSet{
 	public void readWorkBookData(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException
 	{
 		//We should clear the Data and everything;
-		PrintFDebugger.Debugging(this,"Resetting");
+//		PrintFDebugger.Debugging(this,"Resetting");
 		reset();
-		PrintFDebugger.Debugging(this,"Obtaining first sheet");
+//		PrintFDebugger.Debugging(this,"Obtaining first sheet");
 		IDARESheet DataSheet = WB.getSheetAt(0);
 		Iterator<IDARERow> rowIterator = DataSheet.iterator();
 		//Read the first row, which are the headers (and labels)
@@ -221,7 +221,7 @@ public class ArrayDataSet extends DataSet{
 		Iterator<IDARECell> labelIterator = labelRow.cellIterator();
 		//skip the first row.
 //		System.out.println("Skipping Labels for Header Row")
-		PrintFDebugger.Debugging(this,"Read Datapoint Names");
+//		PrintFDebugger.Debugging(this,"Read Datapoint Names");
 		readDataPointNames(labelIterator);	
 
 		//read the data with the appropriate settings.
@@ -229,18 +229,18 @@ public class ArrayDataSet extends DataSet{
 		{			
 			if(numericstrings)
 			{
-				PrintFDebugger.Debugging(this,"Read numeric data, with numeric strings");
+//				PrintFDebugger.Debugging(this,"Read numeric data, with numeric strings");
 				readNumericData(WB,true);
 			}
 			else
 			{
-				PrintFDebugger.Debugging(this,"Read numeric data without strings");
+//				PrintFDebugger.Debugging(this,"Read numeric data without strings");
 				readNumericData(WB,false);
 			}
 		}
 		else
 		{
-			PrintFDebugger.Debugging(this,"Read String Data");
+//			PrintFDebugger.Debugging(this,"Read String Data");
 			readStringData(WB);
 		}
 		//If the dataset is discrete, we can actually use multiple additional Colors.
@@ -282,7 +282,7 @@ public class ArrayDataSet extends DataSet{
 				colormaps.add(new ContinousZeroBalancedMap(MaxValue,MinValue,scale));
 			}			
 		}
-		PrintFDebugger.Debugging(this,"Generating Setting Default value");
+//		PrintFDebugger.Debugging(this,"Generating Setting Default value");
 		Vector<NodeValue> DefaultValues = new Vector<NodeValue>();
 		for(int i = 0; i < columncount; i++)
 		{
@@ -290,7 +290,7 @@ public class ArrayDataSet extends DataSet{
 		}
 		//add some values to the default entry
 		defaultEntry.setData(DefaultValues);
-		PrintFDebugger.Debugging(this,"Done");		
+//		PrintFDebugger.Debugging(this,"Done");		
 	}
 	
 	/**

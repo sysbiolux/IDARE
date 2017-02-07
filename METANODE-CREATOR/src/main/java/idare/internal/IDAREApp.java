@@ -33,11 +33,11 @@ public class IDAREApp implements SessionLoadedListener{
 	
 	@Override
 	public void handleEvent(SessionLoadedEvent arg0) {
-		PrintFDebugger.Debugging(this, "Restoring the ID Manager");
+//		PrintFDebugger.Debugging(this, "Restoring the ID Manager");
 		mgr.handleSessionLoadedEvent(arg0);
-		PrintFDebugger.Debugging(this, "Restoring the SubNetworks");
+//		PrintFDebugger.Debugging(this, "Restoring the SubNetworks");
 		snsm.handleSessionLoadedEvent(arg0);
-		PrintFDebugger.Debugging(this, "Restoring the ImageNode App");
+//		PrintFDebugger.Debugging(this, "Restoring the ImageNode App");
 		imageapp.handleSessionLoadedEvent(arg0);
 	}
 	/**

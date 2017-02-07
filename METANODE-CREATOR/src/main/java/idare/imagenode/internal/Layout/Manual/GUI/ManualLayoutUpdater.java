@@ -135,7 +135,7 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 	
 	private void updateLegend()
 	{
-		PrintFDebugger.Debugging(this, "Trying to update the legend for Node " + selectedNode + " with layout " + layout + " and data " + manager.getNode(selectedNode));
+//		PrintFDebugger.Debugging(this, "Trying to update the legend for Node " + selectedNode + " with layout " + layout + " and data " + manager.getNode(selectedNode));
 		legend.setLegendData(layout,manager.getNode(selectedNode));
 	}
 	
@@ -166,11 +166,11 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		PrintFDebugger.Debugging(this, "A Frame is closing");
+//		PrintFDebugger.Debugging(this, "A Frame is closing");
 		
 		if(e.getInternalFrame() instanceof DataSetFrame)
 		{
-			PrintFDebugger.Debugging(this, "Removing the frame");
+//			PrintFDebugger.Debugging(this, "Removing the frame");
 			removeFrame((DataSetFrame) e.getInternalFrame());
 		}
 	}
@@ -179,7 +179,7 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 	public void internalFrameActivated(InternalFrameEvent e) {
 		if(e.getInternalFrame() instanceof DataSetFrame)
 		{
-			PrintFDebugger.Debugging(this, "Moving a frame to the front");
+//			PrintFDebugger.Debugging(this, "Moving a frame to the front");
 			layout.moveBundleToFront(((DataSetFrame)e.getInternalFrame()).bundle);
 			updateLegend();
 		}
@@ -190,10 +190,10 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		PrintFDebugger.Debugging(this, "A Frame closed");
+//		PrintFDebugger.Debugging(this, "A Frame closed");
 		if(e.getInternalFrame() instanceof DataSetFrame)
 		{
-			PrintFDebugger.Debugging(this, "Removing the frame");
+//			PrintFDebugger.Debugging(this, "Removing the frame");
 			removeFrame((DataSetFrame) e.getInternalFrame());
 		}
 	}

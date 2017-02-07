@@ -44,7 +44,7 @@ public class LayoutIOManager {
 		try{
 			if(!layoutclasses.containsKey(clazzname))
 			{
-				PrintFDebugger.Debugging(this, "No layout type of class " + clazzname + " Registered with the app.");
+//				PrintFDebugger.Debugging(this, "No layout type of class " + clazzname + " Registered with the app.");
 				return null;
 			}
 			ImageNodeLayout layout = layoutclasses.get(clazzname).newInstance();
@@ -61,7 +61,7 @@ public class LayoutIOManager {
 		}
 		catch(ClassNotFoundException | InstantiationException | IllegalAccessException e)
 		{
-			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
+//			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
 			e.printStackTrace(System.out);
 			return null;
 		}

@@ -272,12 +272,12 @@ SessionLoadedListener, GraphicsChangedListener {
 				IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
 				IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
 				IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
-				PrintFDebugger.Debugging(this, "Checking Style " + curVS.getTitle());				
+//				PrintFDebugger.Debugging(this, "Checking Style " + curVS.getTitle());				
 				
 				if (StylesToRestore.contains(curVS.getTitle()))
 				{
 					
-					PrintFDebugger.Debugging(this, "Restoring properties to style" + curVS.getTitle());
+//					PrintFDebugger.Debugging(this, "Restoring properties to style" + curVS.getTitle());
 					addNodesFactory.addNodesToStyle(curVS);					
 					//saveProperties(curVS,true);
 					//curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
@@ -308,7 +308,7 @@ SessionLoadedListener, GraphicsChangedListener {
 			os.writeObject(VisualStyleTitles);
 			for(String title: VisualStyleTitles)
 			{
-				PrintFDebugger.Debugging(this, "Saving mappings for " + title);				
+//				PrintFDebugger.Debugging(this, "Saving mappings for " + title);				
 			}
 			os.writeObject(lockedenabled);
 			os.close();
@@ -317,7 +317,7 @@ SessionLoadedListener, GraphicsChangedListener {
 		}
 		catch(Exception ex)
 		{
-			PrintFDebugger.Debugging(this, "Could not save Style properties.\n ");
+//			PrintFDebugger.Debugging(this, "Could not save Style properties.\n ");
 			ex.printStackTrace(System.out);
 		}			
 	}

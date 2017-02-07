@@ -44,6 +44,7 @@ import idare.imagenode.IDARENodeManager;
 import idare.imagenode.internal.IDAREImageNodeApp;
 import idare.imagenode.internal.DataManagement.DataSetProvider;
 import idare.imagenode.internal.DataSetReaders.DataSetReaderProvider;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.GUI.DataSetAddition.DataSetParametersGUIHandlerFactory;
 import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
@@ -119,6 +120,7 @@ public class CyActivator extends AbstractCyActivator {
 		duplicateNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		duplicateNodeProps.setProperty(ServiceProperties.TITLE, "Duplicate Node");		
 		duplicateNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+//		PrintFDebugger.Debugging(this, "Adding Node Duplicator");
 		registerService(context, nodedup, NodeViewTaskFactory.class, duplicateNodeProps);
 	}
 	

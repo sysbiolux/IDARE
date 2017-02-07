@@ -29,7 +29,7 @@ public class FBCGPRParser {
 		this.productids = productids;
 		geneMap = genes;
 		proteinMap = proteins;
-		PrintFDebugger.Debugging(this, "Parsing GPR");
+//		PrintFDebugger.Debugging(this, "Parsing GPR");
 		AssociationSet = parseAssoc(assoc);
 	}
 	
@@ -43,7 +43,7 @@ public class FBCGPRParser {
 		
 		if(assoc instanceof Or)
 		{
-			PrintFDebugger.Debugging(this, "Parsing an OR node");
+//			PrintFDebugger.Debugging(this, "Parsing an OR node");
 			Or orNode = (Or) assoc;
 			Set<GPRAssociation> currentassociations = new HashSet<>();
 			for(Association cassoc : orNode.getListOfAssociations())
@@ -54,7 +54,7 @@ public class FBCGPRParser {
 		}
 		if(assoc instanceof And)
 		{
-			PrintFDebugger.Debugging(this, "Parsing an AND node");
+//			PrintFDebugger.Debugging(this, "Parsing an AND node");
 			And andNode = (And) assoc;
 			Vector<Set<GPRAssociation>> currentassociations = new Vector<>();
 			
@@ -69,17 +69,17 @@ public class FBCGPRParser {
 		if(assoc instanceof GeneProductRef)
 		{
 			GeneProductRef gpref = (GeneProductRef) assoc;
-			PrintFDebugger.Debugging(this, "Parsing a Gene Product Reference with name " + gpref.getGeneProduct());		
+//			PrintFDebugger.Debugging(this, "Parsing a Gene Product Reference with name " + gpref.getGeneProduct());		
 			String prod = gpref.getGeneProduct();
 			Set<GPRAssociation> currentassociations = new HashSet<>();
 			if(productids.containsKey(prod))
 			{
 				SBase product = productids.get(prod);
-				PrintFDebugger.Debugging(this, "The Gene Product was found, adding it");
+//				PrintFDebugger.Debugging(this, "The Gene Product was found, adding it");
 				//if the gene Product is a protein, we will add all its Genes to its  
 				if(proteinMap.containsKey(product))
 				{
-					PrintFDebugger.Debugging(this, "as a Protein");
+//					PrintFDebugger.Debugging(this, "as a Protein");
 					GPRAssociation newassoc = new GPRAssociation();
 					newassoc.addGenesByProtein(proteinMap.get(product), proteinMap.get(product).getCodingGenes());
 					currentassociations.add(newassoc);
@@ -87,7 +87,7 @@ public class FBCGPRParser {
 				}
 				if(geneMap.containsKey(product))
 				{
-					PrintFDebugger.Debugging(this, "as a Gene");
+//					PrintFDebugger.Debugging(this, "as a Gene");
 					GPRAssociation newassoc = new GPRAssociation();
 					newassoc.addGene(geneMap.get(product));
 					currentassociations.add(newassoc);

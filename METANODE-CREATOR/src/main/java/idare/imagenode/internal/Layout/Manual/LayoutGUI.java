@@ -151,7 +151,7 @@ implements ActionListener, InternalFrameListener{
 		setBounds(inset, inset,
 				screenSize.width  - inset*2,
 				screenSize.height - inset*2);
-		PrintFDebugger.Debugging(this, "The size of the frame is " + getSize() + " while the size of the contentpane is " + contentpan.getSize());
+//		PrintFDebugger.Debugging(this, "The size of the frame is " + getSize() + " while the size of the contentpane is " + contentpan.getSize());
 		// and update the position of the splitpane divider		
 		setVisible(true);
 		//I don't get why the sizes are not assigned before the Frame is made visible...
@@ -272,7 +272,7 @@ implements ActionListener, InternalFrameListener{
 			 frame = new DataSetFrame(bundle,updater.getNodeID(),desktop);		      
 		 }
 	
-		PrintFDebugger.Debugging(desktop, "The Desktop is located at" + desktop.getBounds());			
+//		PrintFDebugger.Debugging(desktop, "The Desktop is located at" + desktop.getBounds());			
 		desktop.add(frame);		
 		frame.setLocation(0, 0);
 		frame.setOpaque(false);
@@ -286,20 +286,20 @@ implements ActionListener, InternalFrameListener{
 			catch (java.beans.PropertyVetoException e) {}
 			Dimension desktopdim = desktop.getSize();
 			double scalingfactor = Math.min(desktopdim.getHeight()/IMAGENODEPROPERTIES.IMAGEHEIGHT, desktopdim.getWidth()/IMAGENODEPROPERTIES.IMAGEWIDTH);
-			PrintFDebugger.Debugging(this, "The scaling factor is: " + scalingfactor);
+//			PrintFDebugger.Debugging(this, "The scaling factor is: " + scalingfactor);
 			frame.setDefaultSize(scalingfactor);
 			frame.setVisible(true);					
-			PrintFDebugger.Debugging(this, "Updating Frame position");
+//			PrintFDebugger.Debugging(this, "Updating Frame position");
 			frame.updatePosition();
-			PrintFDebugger.Debugging(this, "Updating Frame layoutData");
+//			PrintFDebugger.Debugging(this, "Updating Frame layoutData");
 			frame.layoutData();						
 			//when the frame is created, add the frame to the layout
 			//and update layout and legend
-			PrintFDebugger.Debugging(this, "Updating Layout with frame");
-			PrintFDebugger.Debugging(this, "Revalidating Frame");
+//			PrintFDebugger.Debugging(this, "Updating Layout with frame");
+//			PrintFDebugger.Debugging(this, "Revalidating Frame");
 			frame.revalidate();
 			updater.addFrame(frame);
-			PrintFDebugger.Debugging(this, "Adding Frame to internal resizer");
+//			PrintFDebugger.Debugging(this, "Adding Frame to internal resizer");
 			resizer.internalframes.add(frame);
 			toolbar.updateDataSetOptions(frame.bundle);
 			frame.addMouseMotionListener(draglistener);
@@ -400,19 +400,19 @@ implements ActionListener, InternalFrameListener{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				PrintFDebugger.Debugging(this, "Creating new Layout");
+//				PrintFDebugger.Debugging(this, "Creating new Layout");
 				if(!source.layout.data.isEmpty())
 				{
-					PrintFDebugger.Debugging(this, "Data not empty");
+//					PrintFDebugger.Debugging(this, "Data not empty");
 					Set<DataSet> dataSetsUsed = new HashSet<>();
 					for(DataSetLayoutInfoBundle bundle : source.layout.data)
 					{
 						dataSetsUsed.add(bundle.dataset);
 					}
 					ManualNodeLayout finallayout = layout.getFinalLayout();
-					PrintFDebugger.Debugging(this, "Calling generation");
+//					PrintFDebugger.Debugging(this, "Calling generation");
 					nodeFactory.run(dataSetsUsed, finallayout);
-					PrintFDebugger.Debugging(this, "Disposing GUI");
+//					PrintFDebugger.Debugging(this, "Disposing GUI");
 					source.dispose();
 				}
 			}

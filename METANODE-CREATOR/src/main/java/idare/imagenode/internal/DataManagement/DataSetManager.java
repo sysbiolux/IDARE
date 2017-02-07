@@ -137,7 +137,7 @@ public class DataSetManager{
 	 */
 	public boolean registerPropertiesForDataSet(Class<? extends DataSet> classType, DataSetLayoutProperties properties )
 	{
-		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
+//		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
 
 		if(!dataSetPropertyOptions.containsKey(classType))
 		{
@@ -157,14 +157,14 @@ public class DataSetManager{
 		for(DataSet ds : dataSets.values())
 		{
 			//Check whether the class fits and if it could be added.
-			PrintFDebugger.Debugging(this, "Checking whether the properties fit to the dataset: " + ds.Description);
+//			PrintFDebugger.Debugging(this, "Checking whether the properties fit to the dataset: " + ds.Description);
 			if(ds.getClass().equals(classType))
 			{
 				PrintFDebugger.Debugging(this, "Class Types match");
 			}
 			if(ds.getClass().equals(classType) && ds.addPropertyOption(properties))
 			{
-				PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
+//				PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
 				changedDatasets.add(ds);
 			}
 		}
@@ -184,7 +184,7 @@ public class DataSetManager{
 	 */
 	public Collection<DataSetLayoutProperties> registerPropertiesForDataSet(Class<? extends DataSet> classType, Collection<DataSetLayoutProperties> properties )
 	{
-		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
+//		PrintFDebugger.Debugging(this, "Registering Properties for class " + classType);
 		Vector<DataSetLayoutProperties> propertiesToAdd = new Vector<DataSetLayoutProperties>();
 		Vector<DataSetLayoutProperties> notAddedProperties = new Vector<DataSetLayoutProperties>();
 		if(!dataSetPropertyOptions.containsKey(classType))
@@ -206,7 +206,7 @@ public class DataSetManager{
 			{
 				if(ds.getClass().equals(classType) && ds.addPropertyOption(props))
 				{
-					PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
+//					PrintFDebugger.Debugging(this, "Found a changing Dataset: " + ds.Description);
 					changedDatasets.add(ds);
 				}
 			}
@@ -310,7 +310,7 @@ public class DataSetManager{
 		
 		Set<DataSetAboutToBeChangedListener> calisteners = new HashSet();
 		calisteners.addAll(datasetsAboutToChangeListeners);
-		PrintFDebugger.Debugging(this,"Onforming early listeners");
+//		PrintFDebugger.Debugging(this,"Onforming early listeners");
 
 		for(DataSetAboutToBeChangedListener listener : calisteners)
 		{
@@ -318,7 +318,7 @@ public class DataSetManager{
 		}		
 		Set<DataSetChangeListener> clisteners = new HashSet();
 		clisteners.addAll(datasetsChangedListeners);
-		PrintFDebugger.Debugging(this,"Informing late listeners");
+//		PrintFDebugger.Debugging(this,"Informing late listeners");
 
 		for(DataSetChangeListener listener : clisteners)
 		{
@@ -371,7 +371,7 @@ public class DataSetManager{
 	{
 		newDataSet.setID(idprovider.getNextID());
 		dataSets.put(newDataSet.getID(),newDataSet);
-		PrintFDebugger.Debugging(this,"Fireig update event");
+//		PrintFDebugger.Debugging(this,"Fireig update event");
 		fireDataSetAdded(newDataSet);
 	}
 	/**
@@ -434,7 +434,7 @@ public class DataSetManager{
 		}
 		catch(IOException e)
 		{
-			PrintFDebugger.Debugging(this, "Error while reading the Datasets");
+//			PrintFDebugger.Debugging(this, "Error while reading the Datasets");
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);
 		}
@@ -479,18 +479,18 @@ public class DataSetManager{
 	throws ExecutionException,WrongFormat, InvalidFormatException, DuplicateIDException, IOException, 
 	ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-		PrintFDebugger.Debugging(this,"Generating a dataset with twocolumnheaders set to " + TwoCols);
+//		PrintFDebugger.Debugging(this,"Generating a dataset with twocolumnheaders set to " + TwoCols);
 		DataSet ds = availableDataSetTypes.get(DataSetTypeName).newInstance();		
 		//here we just supply all options available. The DataSet Class will care about a proper selection later during readWorkBookData
-		PrintFDebugger.Debugging(this,"Setting Property options");
+//		PrintFDebugger.Debugging(this,"Setting Property options");
 		ds.setPropertyOptionsUnchecked(dataSetPropertyOptions.get(availableDataSetTypes.get(DataSetTypeName)));
-		PrintFDebugger.Debugging(this,"obtaining new id" );
+//		PrintFDebugger.Debugging(this,"obtaining new id" );
 		ds.setID(idprovider.getNextID());		
 		ds.useTwoColHeaders = TwoCols;
 		ds.Description = SetDescription;
-		PrintFDebugger.Debugging(this,"setting up workbook");
+//		PrintFDebugger.Debugging(this,"setting up workbook");
 		ds.setupWorkBook(dsWorkBook);
-		PrintFDebugger.Debugging(this,"Adding Dataset");
+//		PrintFDebugger.Debugging(this,"Adding Dataset");
 		addDataSet(ds);
 		return ds;
 	}	
@@ -504,10 +504,10 @@ public class DataSetManager{
 	{
 		for(DataSet ds : dataSets.values())
 		{				
-			PrintFDebugger.Debugging(this, "Writing Dataset: " + ds.Description);
+//			PrintFDebugger.Debugging(this, "Writing Dataset: " + ds.Description);
 			os.writeObject(ds);
 		}
-		PrintFDebugger.Debugging(this, "Finished writing Datasets");
+//		PrintFDebugger.Debugging(this, "Finished writing Datasets");
 		os.writeObject(new EOOMarker());
 		
 	}
@@ -542,11 +542,11 @@ public class DataSetManager{
 			}
 			catch(ClassNotFoundException e)
 			{
-				PrintFDebugger.Debugging(this, "Didn't find the datasetclass for a dataset");
+//				PrintFDebugger.Debugging(this, "Didn't find the datasetclass for a dataset");
 				currentObject = null;
 			}
 		}
-		PrintFDebugger.Debugging(this, "Finished reading Datasets");
+//		PrintFDebugger.Debugging(this, "Finished reading Datasets");
 		return datasets;
 		//os.close();
 	}
@@ -569,7 +569,7 @@ public class DataSetManager{
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(this, "Error during writing of the Datasets" );
+//			PrintFDebugger.Debugging(this, "Error during writing of the Datasets" );
 			e.printStackTrace(System.out);
 		}
 	
@@ -582,7 +582,7 @@ public class DataSetManager{
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(this, "Could not save the DataSets.\n ");
+//			PrintFDebugger.Debugging(this, "Could not save the DataSets.\n ");
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);
 		}

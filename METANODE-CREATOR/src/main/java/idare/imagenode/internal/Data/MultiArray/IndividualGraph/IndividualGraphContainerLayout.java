@@ -312,9 +312,9 @@ public class IndividualGraphContainerLayout extends MultiArrayContainerLayout {
 				 }
 			 }
 		 }
-		 PrintFDebugger.Debugging(this,ymin+ " // " + ymax);
+//		 PrintFDebugger.Debugging(this,ymin+ " // " + ymax);
 		 Double[] range = determineDisplayRange(new Double[]{ymin,ymax});
-		 PrintFDebugger.Debugging(this,range[0] + " // " + range[1]);
+//		 PrintFDebugger.Debugging(this,range[0] + " // " + range[1]);
 		 for(String name : ((MultiArrayDataSet)data.getDataSet()).getSetNames())
 		 {
 //			 System.out.println("Plotting Line for Sheet " + name); 

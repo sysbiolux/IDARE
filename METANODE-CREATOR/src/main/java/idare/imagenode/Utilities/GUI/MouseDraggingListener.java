@@ -53,7 +53,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		super.mouseReleased(e);
-		PrintFDebugger.Debugging(this, "Mouse was released");
+//		PrintFDebugger.Debugging(this, "Mouse was released");
 		componentselected = false;
 		target = null;
 	}
@@ -62,18 +62,18 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 	public void mouseDragged(MouseEvent e)
 	{
 		super.mouseDragged(e);
-		PrintFDebugger.Debugging(this, "Got a mouse dragged event from " + e.getSource() + " while dragging");
+//		PrintFDebugger.Debugging(this, "Got a mouse dragged event from " + e.getSource() + " while dragging");
 
 		if(componentselected)
 		{
-			System.out.println("Old bounds were: " + origcomponentpos);			
+//			System.out.println("Old bounds were: " + origcomponentpos);			
 			int dragdistance = e.getXOnScreen() - posX;
 			// min is 0
 			//max is the the width of the desktop;
 			int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);
 			int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
 			target.setBounds(new Rectangle(newXpos, newYpos, origcomponentpos.width,origcomponentpos.height));
-			System.out.println("New Bounds are: " +  target.getBounds());
+//			System.out.println("New Bounds are: " +  target.getBounds());
 			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
 			target.repaint();
 		}
@@ -85,7 +85,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 		super.mouseMoved(e);
 		if(componentselected)
 		{
-			PrintFDebugger.Debugging(this, "Got a mouse moved event from " + e.getSource() + " while dragging");
+//			PrintFDebugger.Debugging(this, "Got a mouse moved event from " + e.getSource() + " while dragging");
 			System.out.println("Old bounds were: " + origcomponentpos);
 
 			int dragdistance = e.getXOnScreen() - posX;
@@ -94,7 +94,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 			int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);
 			int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
 			target.setBounds(new Rectangle(newXpos, newYpos, origcomponentpos.width,origcomponentpos.height));
-			System.out.println("New Bounds are: " +  target.getBounds());
+//			System.out.println("New Bounds are: " +  target.getBounds());
 			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
 			target.repaint();
 		}

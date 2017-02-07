@@ -106,7 +106,7 @@ public class DatasetMenu extends JMenu implements MenuListener, ActionListener{
 			try{
 				DataSetLayoutInfoBundle bundle = new DataSetLayoutInfoBundle();
 				bundle.colormap = mapping.get(((ColorMenuItem)e.getSource()).getPane());
-				PrintFDebugger.Debugging(this, "Selected Map is " + bundle.colormap);
+//				PrintFDebugger.Debugging(this, "Selected Map is " + bundle.colormap);
 				bundle.dataset = set;
 				bundle.properties = props;
 				gui.createFrame(bundle);

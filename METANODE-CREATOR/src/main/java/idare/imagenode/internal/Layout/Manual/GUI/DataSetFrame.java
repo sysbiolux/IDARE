@@ -69,10 +69,10 @@ public class DataSetFrame extends JInternalFrame
 
 	public void setDefaultSize(double scalingfactor) throws WrongDatasetTypeException
 	{
-		PrintFDebugger.Debugging(this, "Getting minimal size of container");		
+//		PrintFDebugger.Debugging(this, "Getting minimal size of container");		
 		Rectangle minsize = cont.getMinimalSize();
 //		PrintFDebugger.Debugging(this, "Setting size to " + minsize.width*20 + "/" +minsize.height*20);
-		PrintFDebugger.Debugging(this, "Setting the size to" + (int)(minsize.width*20*scalingfactor) + "/" + (int)(minsize.height*20*scalingfactor));
+//		PrintFDebugger.Debugging(this, "Setting the size to" + (int)(minsize.width*20*scalingfactor) + "/" + (int)(minsize.height*20*scalingfactor));
 		setSize((int)(minsize.width*20*scalingfactor),(int)(minsize.height*20*scalingfactor));	
 	}
 
@@ -199,25 +199,25 @@ public class DataSetFrame extends JInternalFrame
 
 	public void updatePosition()
 	{
-		PrintFDebugger.Debugging(this, "Getting parental bounds");
+//		PrintFDebugger.Debugging(this, "Getting parental bounds");
 		Rectangle parentalBounds = parent.getBounds();    	
 		double scalingfactor = Math.min(parentalBounds.getWidth()/origdesktopsize.getWidth(),parentalBounds.getHeight()/origdesktopsize.getHeight());
-		PrintFDebugger.Debugging(this, "Parentalbounds are " + parentalBounds + " with scaling factor" + scalingfactor);
-		PrintFDebugger.Debugging(this, "Setting bounds");
+//		PrintFDebugger.Debugging(this, "Parentalbounds are " + parentalBounds + " with scaling factor" + scalingfactor);
+//		PrintFDebugger.Debugging(this, "Setting bounds");
 		setBounds((int)(scalingfactor*origboundingbox.x),(int)(scalingfactor*origboundingbox.y),(int)(scalingfactor*origboundingbox.width),(int)(scalingfactor*origboundingbox.height));
-		PrintFDebugger.Debugging(this, "Updating Layout to current position");
+//		PrintFDebugger.Debugging(this, "Updating Layout to current position");
 		updateLayoutToCurrentPosition();
 	}
 	
 	public Rectangle getScaledBounds()
 	{
-		PrintFDebugger.Debugging(this, "Getting Scaled bounds");
+//		PrintFDebugger.Debugging(this, "Getting Scaled bounds");
 		Rectangle current = getBounds();		
 		Rectangle parentBounds = parent.getBounds();
-		PrintFDebugger.Debugging(this, "Frame bounds are " + current + " while parent bounds are " + parentBounds);
+//		PrintFDebugger.Debugging(this, "Frame bounds are " + current + " while parent bounds are " + parentBounds);
 		double scalingfactor = IMAGENODEPROPERTIES.IMAGEHEIGHT/parentBounds.getHeight();		
 		Rectangle ScaledBounds = new Rectangle((int)(current.getX()*scalingfactor),(int)(current.getY()*scalingfactor),(int)(current.getWidth()*scalingfactor),(int)(current.getHeight()*scalingfactor));
-		PrintFDebugger.Debugging(this, "Scaled bounds are " + ScaledBounds );
+//		PrintFDebugger.Debugging(this, "Scaled bounds are " + ScaledBounds );
 		return ScaledBounds;
 	}
 

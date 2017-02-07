@@ -54,7 +54,7 @@ public class SubnetworkCreationGUIHandler extends AbstractGUITunableHandler {
 	 */
 	private void init()
 	{
-		PrintFDebugger.Debugging(this, "Initializing the Panel for the Handler");
+//		PrintFDebugger.Debugging(this, "Initializing the Panel for the Handler");
 		try{
 			mypanel = new SubnetworkPropertiesSelectionGUI(layoutMap.keySet(), SubNetworkUtils.getNodeTableColumnNames(network), network, nvs,IDCol);
 			panel = mypanel;
@@ -66,14 +66,14 @@ public class SubnetworkCreationGUIHandler extends AbstractGUITunableHandler {
 	}
 	@Override
 	public void handle() {
-		PrintFDebugger.Debugging(this, "Trying to handle the request");
+//		PrintFDebugger.Debugging(this, "Trying to handle the request");
 		try{
 		try{
-			PrintFDebugger.Debugging(this, "Getting the selected properties");
+//			PrintFDebugger.Debugging(this, "Getting the selected properties");
 			SubNetworkProperties props = mypanel.getProperties();
 			if(props != null)
 			{
-				PrintFDebugger.Debugging(this, "Properties are non null");					
+//				PrintFDebugger.Debugging(this, "Properties are non null");					
 				props.layoutAlgorithm = layoutMap.get(props.selectedLayoutAlgorithmName);				
 				props.currentNetworkView = currentNetworkView;
 			}

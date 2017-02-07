@@ -82,9 +82,9 @@ public class ManualNodeLayoutManager implements LayoutManager{
 				- (insets.left + insets.right);
 		int maxHeight = parent.getHeight()
 				- (insets.top + insets.bottom);
-		PrintFDebugger.Debugging(this, "The Enclosing container size is " + parent.getSize());
+//		PrintFDebugger.Debugging(this, "The Enclosing container size is " + parent.getSize());
 		double scaling = Math.min(maxWidth/(double)IMAGENODEPROPERTIES.IMAGEWIDTH, maxHeight/(double)(IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT));
-		PrintFDebugger.Debugging(this, "The Preferred Size is " + new Dimension((int)(IMAGENODEPROPERTIES.IMAGEWIDTH*scaling), (int)((IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT)*scaling)));
+//		PrintFDebugger.Debugging(this, "The Preferred Size is " + new Dimension((int)(IMAGENODEPROPERTIES.IMAGEWIDTH*scaling), (int)((IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT)*scaling)));
 		return new Dimension((int)(IMAGENODEPROPERTIES.IMAGEWIDTH*scaling), (int)((IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT)*scaling));
 
 	}

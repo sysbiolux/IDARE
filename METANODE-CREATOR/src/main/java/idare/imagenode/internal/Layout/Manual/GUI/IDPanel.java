@@ -56,11 +56,11 @@ public class IDPanel extends JPanel {
 		svg.setColor(Color.black);		
 		FontMetrics fm = svg.getFontMetrics();		
 		Rectangle2D bounds = fm.getStringBounds(identifier, svg);
-		PrintFDebugger.Debugging(this, "The size of this panel is " + this.getSize());
-		PrintFDebugger.Debugging(this, "The size of bounds are " + bounds);
+//		PrintFDebugger.Debugging(this, "The size of this panel is " + this.getSize());
+//		PrintFDebugger.Debugging(this, "The size of bounds are " + bounds);
 		int xpos = (int) ((this.getSize().width - bounds.getWidth())/2);		
 		int ypos = fm.getAscent();
-		PrintFDebugger.Debugging(this, "Drawing identifier " + identifier + " at position " + xpos + "/" + ypos);	
+//		PrintFDebugger.Debugging(this, "Drawing identifier " + identifier + " at position " + xpos + "/" + ypos);	
 		svg.drawString(identifier, xpos, ypos);
 		svg.setFont(currentFont);
 	}

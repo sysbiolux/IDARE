@@ -175,7 +175,7 @@ public abstract class MultiColorScale implements ColorScale {
 		//everything else, that is		
 		float oldlowerrange = origval;		
 		float oldupperrange = 1-origval;
-		PrintFDebugger.Debugging(this, "Mobving point " + origval + " to " + targetval);
+//		PrintFDebugger.Debugging(this, "Mobving point " + origval + " to " + targetval);
 		float newlowerrange = targetval;
 		float newupperrange = 1 - targetval;
 		
@@ -184,17 +184,17 @@ public abstract class MultiColorScale implements ColorScale {
 		
 		for(int i = 1; i < fractions.length-1; i++)
 		{
-			PrintFDebugger.Debugging(this, "Moving" + fractions[i]+ " to: ");
+//			PrintFDebugger.Debugging(this, "Moving" + fractions[i]+ " to: ");
 			if( fractions[i] < origval)
 			{
 				fractions[i] = targetval + lowerrangechange * (fractions[i]-origval);
-				PrintFDebugger.Debugging(this, ""+fractions[i]);
+//				PrintFDebugger.Debugging(this, ""+fractions[i]);
 				
 			}
 			else
 			{
 				fractions[i] = targetval + upperrangechange * (fractions[i]-origval);
-				PrintFDebugger.Debugging(this, ""+fractions[i]);
+//				PrintFDebugger.Debugging(this, ""+fractions[i]);
 			}
 		}
 		initColors();

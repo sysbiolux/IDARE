@@ -66,7 +66,7 @@ public class ManualLayout implements ImageNodeLayout {
 	 */
 	public void updatePosition(DataSetLayoutInfoBundle bundle, Rectangle Position) throws WrongDatasetTypeException
 	{
-		PrintFDebugger.Debugging(this, "Updating Bundle Position to " + Position);
+//		PrintFDebugger.Debugging(this, "Updating Bundle Position to " + Position);
 		//Lets bring the current rectangle into a position appropriate for an image node.		
 		updateOrder(bundle, new LayoutArea(Position));
 		//at the same time the Label is assigned (as the position changed this might also have changed)
@@ -138,10 +138,10 @@ public class ManualLayout implements ImageNodeLayout {
 	private void updateOrder(DataSetLayoutInfoBundle current, LayoutArea position)
 	{
 		boolean inserted = false;
-		PrintFDebugger.Debugging(this, "Updating the position of " + current + " which has label " + current.Label);
+//		PrintFDebugger.Debugging(this, "Updating the position of " + current + " which has label " + current.Label);
 		LayoutComparator newelement = new LayoutComparator(position, current);
 		ListIterator<LayoutComparator> iter = order.listIterator();
-		PrintFDebugger.Debugging(this, "Updating Order");
+//		PrintFDebugger.Debugging(this, "Updating Order");
 		while(iter.hasNext())
 		{
 			LayoutComparator comp = iter.next();
@@ -202,10 +202,10 @@ public class ManualLayout implements ImageNodeLayout {
 			//this should never occur
 			e.printStackTrace(System.out);
 		}
-		PrintFDebugger.Debugging(this, "New Order:");
+//		PrintFDebugger.Debugging(this, "New Order:");
 		for(LayoutComparator comp : order)
 		{
-			PrintFDebugger.Debugging(this, comp.bundle.Label + " : " + comp.bundle + " : " + comp.area );	
+//			PrintFDebugger.Debugging(this, comp.bundle.Label + " : " + comp.bundle + " : " + comp.area );	
 		}
 		//lets update the labels if necessary.
 		updateLabels();

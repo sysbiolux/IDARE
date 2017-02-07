@@ -360,7 +360,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 			 MultiArrayDataValue vsd = nd.getData(name);
 			 if(vsd != null)
 			 {
-				 PrintFDebugger.Debugging(this, "Data is not null");
+//				 PrintFDebugger.Debugging(this, "Data is not null");
 				 Vector<Double> LineYValues = vsd.getEntryData();
 				 Color linecolor = colors.getColor(name);
 				 g2d.setPaint(linecolor);

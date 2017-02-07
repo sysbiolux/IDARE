@@ -23,7 +23,7 @@ public class IDAREReaderTask extends ObservableIDARETask {
 		// TODO Auto-generated method stub
 		if(dsri.isDataSetAdded())
 		{
-			PrintFDebugger.Debugging(this, "DataSet was already added. Returning");
+//			PrintFDebugger.Debugging(this, "DataSet was already added. Returning");
 			return;
 		}
 		if(reader.getStatusMessage() == IDAREDatasetReader.IS_READY)
@@ -32,24 +32,24 @@ public class IDAREReaderTask extends ObservableIDARETask {
 
 			IDAREReaderSetupTask setupTask = null;
 			try{
-				PrintFDebugger.Debugging(this, "Trying to obtain SetupTask");
+//				PrintFDebugger.Debugging(this, "Trying to obtain SetupTask");
 				setupTask = reader.getSetupTask(dsri.getInputFile(), dsri.doUseTwoColumns());
 			}
 			catch(Exception e)
 			{
-				PrintFDebugger.Debugging(this, "Couldn't obtain SetupTask");
+//				PrintFDebugger.Debugging(this, "Couldn't obtain SetupTask");
 				dsri.addErrorMessage(reader.getClass().getSimpleName() + ": " + e.getMessage());
 				return;
 			}
 			if(setupTask != null)
 			{				
-				PrintFDebugger.Debugging(this, "Adding a new SetupTask before the ReadWorkBookTask");
+//				PrintFDebugger.Debugging(this, "Adding a new SetupTask before the ReadWorkBookTask");
 				this.insertTasksAfterCurrentTask(new TaskIterator(setupTask, new ReadWorkBookTask(reader,dsri)));
 			}
 			else
 			{
 				//if we do not have a Setup Task, it is obviously not necessary, so the reader is set up and ready.
-				PrintFDebugger.Debugging(this, "No SetupTask provided adding ReadWorkbookTask");
+//				PrintFDebugger.Debugging(this, "No SetupTask provided adding ReadWorkbookTask");
 				reader.setStatusMessage(IDAREDatasetReader.IS_SET_UP);
 				this.insertTasksAfterCurrentTask(new ReadWorkBookTask( reader,dsri));				
 			}

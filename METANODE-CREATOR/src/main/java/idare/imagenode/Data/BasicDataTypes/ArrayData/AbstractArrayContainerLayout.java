@@ -120,7 +120,7 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 	@Override
 	public void setupLayout(NodeData data, Rectangle AreaAndPosition, String DataSetLabel, DataSetLayoutProperties props)  throws WrongDatasetTypeException{
 		//first, determine, whether we have a container with fixed sizes, or a container with flexible sizes		
-		PrintFDebugger.Debugging(this, "Creating layout in area" + AreaAndPosition);
+//		PrintFDebugger.Debugging(this, "Creating layout in area" + AreaAndPosition);
 		ArrayNodeData ndata = (ArrayNodeData) data;
 		upperright = new Point(AreaAndPosition.x,AreaAndPosition.y);
 		//get the rows and columns to use.

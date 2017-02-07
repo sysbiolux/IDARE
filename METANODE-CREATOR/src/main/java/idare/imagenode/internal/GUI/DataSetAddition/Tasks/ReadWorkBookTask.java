@@ -24,11 +24,11 @@ public class ReadWorkBookTask extends ObservableIDARETask{
 		try{
 			if(reader.getStatusMessage() == IDAREDatasetReader.IS_SET_UP)
 			{				
-				PrintFDebugger.Debugging(this, "Reading Workbook");
+//				PrintFDebugger.Debugging(this, "Reading Workbook");
 				IDAREWorkbook wb = reader.readData(dsri.getInputFile());				
 				//We add a success message to the Error Stack for this reader, since now its just the DataSetParsing that can go wrong.
 				dsri.addErrorMessage(reader.getClass().getSimpleName() + ": Workbook read successfully");
-				PrintFDebugger.Debugging(this, "Adding AddDataSetToManagerTask");
+//				PrintFDebugger.Debugging(this, "Adding AddDataSetToManagerTask");
 				insertTasksAfterCurrentTask(new AddDataSetToManagerTask(wb, dsri));
 				
 //				System.out.println("Success");
@@ -36,13 +36,13 @@ public class ReadWorkBookTask extends ObservableIDARETask{
 			else
 			{
 //				System.out.println("Failed");
-				PrintFDebugger.Debugging(this, "Reader not ready");
+//				PrintFDebugger.Debugging(this, "Reader not ready");
 				throw new WrongFormat(reader.getClass().getSimpleName() + ": " + reader.getStatusMessage());
 			}
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(this, "Caught an error");
+//			PrintFDebugger.Debugging(this, "Caught an error");
 			e.printStackTrace(System.out);
 			dsri.addErrorMessage(reader.getClass().getSimpleName() + ": " + e.getMessage());
 		}

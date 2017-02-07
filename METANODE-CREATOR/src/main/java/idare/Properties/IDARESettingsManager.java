@@ -394,7 +394,7 @@ public class IDARESettingsManager{
 						//PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
 						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()))
 						{
-							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
+//							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
 							resetNetworks(networks);
 							reset();
 							return;
@@ -445,7 +445,7 @@ public class IDARESettingsManager{
 				{
 					if(!networkmatch.get(NetworkID).getSUID().equals(network.getSUID()))
 					{
-						PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
+//						PrintFDebugger.Debugging(this, "Found a duplicate network id: " + NetworkID + " ... removing all IDARE Columns");
 						resetNetworks(networks);
 						reset();						
 						return;
@@ -652,7 +652,7 @@ public class IDARESettingsManager{
 		if(EdgeTable.getColumn(IDAREProperties.IDARE_EDGE_PROPERTY) == null || NodeTable.getColumn(IDAREProperties.IDARE_NODE_TYPE) == null 
 				|| 	NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) == null ||	NodeTable.getColumn(IDAREProperties.LINK_TARGET) == null
 				|| NodeTable.getColumn(IDAREProperties.IDARE_NODE_UID) == null || NodeTable.getColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM) == null
-				|| NodeTable.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) == null)
+				|| NodeTable.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) == null || NodeTable.getColumn(IDAREProperties.DUPLICATED_NODE) == null || NodeTable.getColumn(IDAREProperties.ORIGINAL_NODE) == null)
 		{
 			return false;
 		}
@@ -754,8 +754,10 @@ public class IDARESettingsManager{
 		{
 			e.printStackTrace(System.out);
 		}
+		
 		try{
-			NetworkTable.createColumn(IDAREProperties.DUPLICATED_NODE, Boolean.class, false, false);
+//			PrintFDebugger.Debugging(IDARESettingsManager.class, "Adding Duplicated Node Column");
+			NodeTable.createColumn(IDAREProperties.DUPLICATED_NODE, Boolean.class, false, false);
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -763,7 +765,7 @@ public class IDARESettingsManager{
 		}
 		
 		try{
-			NetworkTable.createColumn(IDAREProperties.ORIGINAL_NODE, Long.class, false, null);
+			NodeTable.createColumn(IDAREProperties.ORIGINAL_NODE, Long.class, false, null);
 		}
 		catch(IllegalArgumentException e)
 		{

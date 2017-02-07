@@ -29,7 +29,7 @@ public abstract class ColorMap implements Serializable{
 	 */
 	public ColorMap(ColorScale cs)
 	{
-		PrintFDebugger.Debugging(this, "Setting up new Colormap");
+//		/PrintFDebugger.Debugging(this, "Setting up new Colormap");
 		this.cs = cs;		
 	}
 	

@@ -42,7 +42,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	 * @param network
 	 */
 	public NetworkSetupTunableGUI(CyNetwork network){
-		PrintFDebugger.Debugging(this, "Setting up new GUI");
+//		PrintFDebugger.Debugging(this, "Setting up new GUI");
 		background = getBackground();
 		Collection<CyColumn> cols = network.getDefaultNodeTable().getColumns();
 		Vector<String> columnNames = new Vector<String>();

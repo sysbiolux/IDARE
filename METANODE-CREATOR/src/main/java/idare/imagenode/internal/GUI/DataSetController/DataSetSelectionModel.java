@@ -98,7 +98,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	public void updateDataSetProperties(DataSet ds)
 	{
-		PrintFDebugger.Debugging(this, ds.Description + " has Changed");
+//		PrintFDebugger.Debugging(this, ds.Description + " has Changed");
 		int dsrow = getRowByDataSet(ds);
 		if(dsrow < 0 || getColumnCount() < 1)
 		{
@@ -131,7 +131,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 			renderers.put(ds, null);
 			return;
 		}
-		PrintFDebugger.Debugging(this, "The row to change is " + dsrow + " while the rowcount is " + getRowCount());
+//		PrintFDebugger.Debugging(this, "The row to change is " + dsrow + " while the rowcount is " + getRowCount());
 		if(dsrow < getRowCount())
 		{
 			setValueAt(ds.getPropertyOptions().get(0),dsrow,DATASET_PROPERTIES_POSITION);
@@ -399,7 +399,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	 */
 	private void datasetRemoved(DataSet ds) {
 		int rowindex = getRowByDataSet(ds);
-		PrintFDebugger.Debugging(this, "Removing dataset in row " + rowindex);
+//		PrintFDebugger.Debugging(this, "Removing dataset in row " + rowindex);
 		if(rowindex >=0)
 		{
 			removeRow(rowindex);

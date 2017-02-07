@@ -13,14 +13,14 @@ public class Protein {
 	public Protein(HashMap<String,String> databaseids)	
 	{
 		addAltNames(databaseids);
-		PrintFDebugger.Debugging(this, "Created a new Protein with name " + name + " from a set of databases with size " + databaseids.keySet().size());
+//		PrintFDebugger.Debugging(this, "Created a new Protein with name " + name + " from a set of databases with size " + databaseids.keySet().size());
 	}
 	
 	public Protein(String name, String database)
 	{
 		this.name = name;
 		databasenames.put(database,name);
-		PrintFDebugger.Debugging(this, "Created a new Protein with name " + name);
+//		PrintFDebugger.Debugging(this, "Created a new Protein with name " + name);
 	}
 	
 	public Set<Gene> getCodingGenes()
@@ -32,10 +32,10 @@ public class Protein {
 	{
 		if(name == null)
 		{
-			PrintFDebugger.Debugging(this, "The Current protein has no name");
+//			PrintFDebugger.Debugging(this, "The Current protein has no name");
 			for(String protName : altnames.values())
 			{
-				PrintFDebugger.Debugging(this, "Setting " + protName  + " as the protein name");
+//				PrintFDebugger.Debugging(this, "Setting " + protName  + " as the protein name");
 				name = protName;
 				break;
 			}

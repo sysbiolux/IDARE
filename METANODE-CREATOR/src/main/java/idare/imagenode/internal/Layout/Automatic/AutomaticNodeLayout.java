@@ -142,7 +142,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
+//			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
 			e.printStackTrace(System.out);
 			return false;
 		}
@@ -351,7 +351,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		{
 			DataSetPositions.get(ds).LayoutDataForNode(ds.getDefaultData(), svg, true,DataSetColors.get(ds));
 		}
-		drawIdentifier(svg, "IDENTIFIER");
+		drawIdentifier(svg, datacollection.iterator().next().getLabel());
 
 	}
 	/**

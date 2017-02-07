@@ -47,23 +47,24 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	VisualMappingManager visualMappingManager;
 	UndoSupport undoSup;
 	HashMap<CyNode,CyEdge> OriginalEdges = new HashMap<>(); //Maps Target Nodes to the original Edges
-	HashMap<CyNode,CyEdge> createdNodes = new HashMap<>();
-	HashMap<CyEdge,CyNode> replacementNodes = new HashMap<>(); // Maps from original Edges to the Nodes 
+	HashMap<CyNode,CyEdge> createdNodes = new HashMap<>(); // Map from new Nodes to the corresponding Edges
+	HashMap<CyEdge,CyNode> replacementNodes = new HashMap<>(); // Maps from original Edges to the New Nodes 
 	Vector<CySubNetwork> relevantnetworks = new Vector<>();	
 	HashMap<CyNetworkView, Point2D> originalPos = new HashMap<>();
 	HashMap<CySubNetwork,Collection<CyEdge>> removedEdges = new HashMap<>();
-	HashMap<CySubNetwork,Collection<CyNode>> removedNodes = new HashMap<>();
+	
 	private Map<CyIdentifiable, Map<CyNetworkView, Map<VisualProperty<?>, Object>>> bypassMap = new HashMap<>();
 
 	
 	CyRootNetwork rootnetwork;
 	CyEventHelper helper;
-	public NodeDuplicatorImpl(CyNode OrigNode, CyServiceRegistrar reg) {
+	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg) {
 		// TODO Auto-generated constructor stub
 		super("Duplicate Nodes");
 		helper = reg.getService(CyEventHelper.class);
 		cyViewMgr = reg.getService(CyNetworkViewManager.class);
 		RootNetworkManager = reg.getService(CyRootNetworkManager.class);
+		rootnetwork = RootNetworkManager.getRootNetwork(sourceNetwork);
 		visualMappingManager = reg.getService(VisualMappingManager.class);
 		OriginalNode = OrigNode;
 		undoSup = reg.getService(UndoSupport.class);
@@ -77,7 +78,6 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		relevantnetworks = new Vector<>();
 		originalPos = new HashMap<>();
 		removedEdges = new HashMap<>();
-		removedNodes = new HashMap<>();
 		bypassMap = new HashMap<>();
 
 		
@@ -86,8 +86,11 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	public void redo() {
 		// TODO Auto-generated method stub
 		//Get the Edges around the given node.
-		CyNetwork network = OriginalNode.getNetworkPointer();		
-		rootnetwork = RootNetworkManager.getRootNetwork(network);
+		CyNetwork network = OriginalNode.getNetworkPointer();
+		HashMap<CyNetworkView,Vector<CyNode>> addedNodes= new HashMap<>();
+		HashMap<CyNetworkView,Vector<CyEdge>> addedEdges= new HashMap<>();
+		
+		
 		for(CyEdge Edge : rootnetwork.getAdjacentEdgeList(OriginalNode, CyEdge.Type.ANY))
 		{
 			CyNode targetNode = Edge.getSource().equals(OriginalNode) ? Edge.getTarget() : Edge.getSource();
@@ -96,8 +99,8 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 			
 			CyTable nodeTable = rootnetwork.getDefaultNodeTable();
 			CyTable edgeTable = rootnetwork.getDefaultEdgeTable();
-			CyRow originalNodeRow = nodeTable.getRow(OriginalNode);
-			CyRow newNodeRow = nodeTable.getRow(newNode);
+			CyRow originalNodeRow = nodeTable.getRow(OriginalNode.getSUID());
+			CyRow newNodeRow = nodeTable.getRow(newNode.getSUID());
 			for(CyColumn col : nodeTable.getColumns())
 			{
 				//Don't copy the primary Key and dont copy the UID.
@@ -114,11 +117,11 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 				newNodeRow.set(IDAREProperties.ORIGINAL_NODE,originalNodeRow.get(IDAREProperties.IDARE_NODE_UID, Long.class));
 				
 			}
-			CyEdge newEdge = Edge.getSource().equals(OriginalNode) ? rootnetwork.addEdge(OriginalNode, newNode, Edge.isDirected()) : rootnetwork.addEdge(newNode, OriginalNode, Edge.isDirected());
+			CyEdge newEdge = Edge.getSource().equals(OriginalNode) ? rootnetwork.addEdge(newNode,Edge.getTarget(), Edge.isDirected()) : rootnetwork.addEdge(Edge.getSource(), newNode, Edge.isDirected());
 			createdNodes.put(newNode, newEdge);
 			replacementNodes.put(Edge, newNode);
-			CyRow newEdgeRow = edgeTable.getRow(newEdge);
-			CyRow originalEdgeRow = nodeTable.getRow(OriginalNode);
+			CyRow newEdgeRow = edgeTable.getRow(newEdge.getSUID());
+			CyRow originalEdgeRow = edgeTable.getRow(Edge.getSUID());
 			for(CyColumn col : edgeTable.getColumns())
 			{
 				//Don't copy the primary Key and dont copy the UID.
@@ -146,13 +149,15 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 			{
 				//Determine the Edges to remove in this subnetwork
 				Collection<CyEdge> EdgesToRemove = subnetwork.getAdjacentEdgeList(OriginalNode, CyEdge.Type.ANY);				
-				relevantnetworks.add(subnetwork);
+				relevantnetworks.add(subnetwork);				
 				for(CyNetworkView view : cyViewMgr.getNetworkViews(subnetwork))
 				{
 					//Add the view to those modified	
 					double x = view.getNodeView(OriginalNode).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
 					double y = view.getNodeView(OriginalNode).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-					originalPos.put(view, new Point2D.Double(x,y));					
+					originalPos.put(view, new Point2D.Double(x,y));
+					addedNodes.put(view, new Vector<CyNode>());
+					addedEdges.put(view, new Vector<CyEdge>());
 				}
 				removedEdges.put(subnetwork,EdgesToRemove);
 				//Removing the Views will happen automatically. 						
@@ -162,24 +167,24 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 				for(CyEdge edge : EdgesToRemove)
 				{
 					//Add the Node and the corresponding Edge from the generated set.
-					subnetwork.addNode(replacementNodes.get(edge));
-					subnetwork.addEdge(createdNodes.get(replacementNodes.get(edge)));
+					CyNode nodeToAdd = replacementNodes.get(edge);
+					CyEdge edgeToAdd = createdNodes.get(replacementNodes.get(edge));
+					subnetwork.addNode(nodeToAdd);
+					subnetwork.addEdge(edgeToAdd);
 					
-					helper.flushPayloadEvents();
-					CyNode replacementNode = replacementNodes.get(edge);					
 					for(CyNetworkView view : cyViewMgr.getNetworkViews(subnetwork))
 					{
+						addedNodes.get(view).add(nodeToAdd);
+						addedEdges.get(view).add(edgeToAdd);
 						if(!vizproperties.containsKey(view))
 						{
 							vizproperties.put(view, new Vector<>());
 						}
 						View<CyNode> originalView = view.getNodeView(OriginalNode);
-						vizproperties.get(view).add(new DelayedVizProp(replacementNode, BasicVisualLexicon.NODE_X_LOCATION, originalView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION), false));
-						vizproperties.get(view).add(new DelayedVizProp(replacementNode, BasicVisualLexicon.NODE_Y_LOCATION, originalView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION), false));
-						
-						
-						vizproperties.get(view).addAll(generateLockedValuesDelayedVizPropsCopy(originalView, replacementNode, visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.NODE)));
-						vizproperties.get(view).addAll(generateLockedValuesDelayedVizPropsCopy(view.getEdgeView(edge), createdNodes.get(replacementNodes.get(edge)), visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.EDGE)));
+						vizproperties.get(view).add(new DelayedVizProp(nodeToAdd, BasicVisualLexicon.NODE_X_LOCATION, originalView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION), false));
+						vizproperties.get(view).add(new DelayedVizProp(nodeToAdd, BasicVisualLexicon.NODE_Y_LOCATION, originalView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION), false));												
+						vizproperties.get(view).addAll(generateLockedValuesDelayedVizPropsCopy(originalView, nodeToAdd, visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.NODE)));
+						vizproperties.get(view).addAll(generateLockedValuesDelayedVizPropsCopy(view.getEdgeView(edge), edgeToAdd, visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.EDGE)));
 						saveLockedValues(originalView,view, visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.NODE));
 						saveLockedValues(view.getEdgeView(edge),view, visualMappingManager.getAllVisualLexicon().iterator().next().getAllDescendants(BasicVisualLexicon.EDGE));	
 					}
@@ -193,9 +198,18 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		}
 		for(CyNetworkView view : vizproperties.keySet())
 		{
-			view.updateView();
 			DelayedVizProp.applyAll(view, vizproperties.get(view));
+			VisualStyle style = visualMappingManager.getVisualStyle(view);
+			for(CyNode item : addedNodes.get(view))
+			{
+				style.apply(view.getModel().getRow(item),view.getNodeView(item));
+			}
+			for(CyEdge item : addedEdges.get(view))
+			{
+				style.apply(view.getModel().getRow(item),view.getEdgeView(item));
+			}						
 			view.updateView();
+			
 		}
 		
 	}

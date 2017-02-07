@@ -27,7 +27,7 @@ public class Model {
 		catch(NoSuchMethodException e)
 		{
 			e.printStackTrace();
-			PrintFDebugger.Debugging(this,"Available Methods");
+//			PrintFDebugger.Debugging(this,"Available Methods");
 			for(Method m : o.getClass().getMethods())
 			{
 				System.out.println(m.getName());

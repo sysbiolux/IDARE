@@ -67,7 +67,7 @@ public class SubnetworkSessionManager{
 		for(CyNetwork network : IDARENetworks)
 		{
 			networkIDToNetwork.put(network.getRow(network).get(IDAREProperties.IDARE_NETWORK_ID, Long.class), network);
-			PrintFDebugger.Debugging(this, "Network " + network.getDefaultNetworkTable().getRow(network.getSUID()).get(CyNetwork.NAME, String.class) + " has SUID " + network.getRow(network).get(CyNetwork.SUID, Long.class));
+//			PrintFDebugger.Debugging(this, "Network " + network.getDefaultNetworkTable().getRow(network.getSUID()).get(CyNetwork.NAME, String.class) + " has SUID " + network.getRow(network).get(CyNetwork.SUID, Long.class));
 
 			Collection<CyNode> nodeset = network.getNodeList();
 
@@ -88,13 +88,13 @@ public class SubnetworkSessionManager{
 						if(network.getRow(node).get(IDAREProperties.IDARE_NODE_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_LINK))
 						{
 							//Now, if this is a linker, Lets save it with the network it is in.
-							PrintFDebugger.Debugging(this, "Found a Linker Node: " + node );
+//							PrintFDebugger.Debugging(this, "Found a Linker Node: " + node );
 							LinkerNodes.add(new NodeAndNetworkStruct(node, network));
 						}
 					}
 					catch (IllegalArgumentException ille)
 					{
-						PrintFDebugger.Debugging(this,"Duplicate IDs found in the networks... Something went wrong");						
+//						PrintFDebugger.Debugging(this,"Duplicate IDs found in the networks... Something went wrong");						
 						IDAREToNodeSUID.clear();
 						LinkerNodes.clear();						
 						abort(IDARENetworks);

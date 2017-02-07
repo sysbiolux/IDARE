@@ -33,7 +33,7 @@ public class NetworkNode implements Serializable{
 		}
 		this.colName = ColName;		
 		this.networkID = networkID;
-		PrintFDebugger.Debugging(this, "Created a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
+//		PrintFDebugger.Debugging(this, "Created a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 	}
 	
 	public NetworkNode(CyNetwork reference, IDARESettingsManager ism) {
@@ -130,13 +130,13 @@ public class NetworkNode implements Serializable{
 	
 	public void setupNetworkReferences(CyNetworkManager mgr)
 	{
-		PrintFDebugger.Debugging(this, "Trying to restore network reference with IDAREID " + networkIDAREID);
+//		PrintFDebugger.Debugging(this, "Trying to restore network reference with IDAREID " + networkIDAREID);
 		for(CyNetwork network : mgr.getNetworkSet())
 		{
 			Long NetworkIDAREID = network.getDefaultNetworkTable().getRow(network.getSUID()).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
 			if(NetworkIDAREID!= null  && NetworkIDAREID.equals(networkIDAREID)){
 				networkreference = network;
-				PrintFDebugger.Debugging(this, "Restoring Network Node" + print());
+//				PrintFDebugger.Debugging(this, "Restoring Network Node" + print());
 				break;
 			}
 		}		
@@ -150,7 +150,7 @@ public class NetworkNode implements Serializable{
 	private void writeObject(ObjectOutputStream out)
 	{
 		try{
-			PrintFDebugger.Debugging(this, "Writing a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
+//			PrintFDebugger.Debugging(this, "Writing a Node with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 			out.writeObject(this.colName);
 			out.writeObject(this.networkIDAREID);
 			out.writeObject(this.networkID);
@@ -169,7 +169,7 @@ public class NetworkNode implements Serializable{
 			networkIDAREID = (Long)(in.readObject());
 			networkID = (String)(in.readObject());
 			children = (Vector<NetworkNode>)(in.readObject());
-			PrintFDebugger.Debugging(this, "Successfully read a NetworkNode with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
+//			PrintFDebugger.Debugging(this, "Successfully read a NetworkNode with colName " + colName + "; networkIDAREID "+ networkIDAREID + "; networkID " + networkID + " and " + children.size() + " children"); 
 		}
 		catch(IOException | ClassNotFoundException e)
 		{

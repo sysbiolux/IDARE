@@ -77,7 +77,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		for(DataSetLayoutInfoBundle bundle : alignedlayoutData)
 		{
 			SimpleLink sl = new SimpleLink(bundle.dataset, i++);
-			PrintFDebugger.Debugging(this, "Creating new link " + sl);
+//			PrintFDebugger.Debugging(this, "Creating new link " + sl);
 			bundlelinks.put(bundle, sl);
 			colors.put(sl, bundle.colormap);
 			labels.put(sl, bundle.Label);
@@ -93,7 +93,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 			SimpleLink sl = bundlelinks.get(comp.bundle);
 			
 			layouts.put(sl, comp.bundlelayout);
-			PrintFDebugger.Debugging(this, "Adding " + comp.bundlelayout + " to link for dataset " + sl);
+//			PrintFDebugger.Debugging(this, "Adding " + comp.bundlelayout + " to link for dataset " + sl);
 			order.add(sl);
 		}
 	}
@@ -152,7 +152,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
+//			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
 			e.printStackTrace(System.out);
 			return false;
 		}	}
@@ -218,14 +218,16 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 	
 	private void removeDataSet(DataSet ds)
 	{
-		for(SimpleLink link : linkmap.get(ds))
-		{
-			order.remove(link);
-			layouts.remove(link);
-			labels.remove(link);
-			colors.remove(link);
+		if(linkmap.containsKey(ds)){
+			for(SimpleLink link : linkmap.get(ds))
+			{
+				order.remove(link);
+				layouts.remove(link);
+				labels.remove(link);
+				colors.remove(link);
+			}
+			linkmap.remove(ds);
 		}
-		linkmap.remove(ds);
 	}
 	
 	/**

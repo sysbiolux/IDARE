@@ -43,8 +43,8 @@ public class IOUtils {
 			target = new File(System.getProperty("java.io.tmpdir") + File.separator + IMAGENODEPROPERTIES.IMAGENODE_TEMP_FOLDER + File.separator + FileName + "_" + suffix + Extension);
 			suffix++;
 		}
-		PrintFDebugger.Debugging(IOUtils.class, "New temporary File created at:" + target.toPath().toString());
-		PrintFDebugger.Debugging(IOUtils.class, "File exists?:" + target.exists());
+//		PrintFDebugger.Debugging(IOUtils.class, "New temporary File created at:" + target.toPath().toString());
+//		PrintFDebugger.Debugging(IOUtils.class, "File exists?:" + target.exists());
 		return target;
 	}
 	

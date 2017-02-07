@@ -54,6 +54,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 
 	private HashMap<String,ImageNodeModel> Nodes = new HashMap<>();
 	private HashMap<String,ImageNodeLayout> activeLayouts = new HashMap<String, ImageNodeLayout>();
+	private HashMap<ImageNodeLayout, Integer> layoutCounts = new HashMap<ImageNodeLayout,Integer>();
 	private Set<String> NetworkIDs = new HashSet<String>();
 	private DataSetManager dsm;
 	
@@ -153,7 +154,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		clisteners.addAll(listeners);
 		for(NodeChangedListener listener : clisteners)
 		{
-			PrintFDebugger.Debugging(listener, "Handling update Event from NodeManager (line from NodeManager)");
+//			PrintFDebugger.Debugging(listener, "Handling update Event from NodeManager (line from NodeManager)");
 			listener.handleNodeUpdate(e);
 			
 		}
@@ -285,6 +286,11 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//newLayout.generateLayoutForDataSets(datasets);
 		//get all Nodes, that need to be updated
 		layout.doLayout();
+		//keep track of the layouts.
+		if(!layoutCounts.containsKey(layout))
+		{
+			layoutCounts.put(layout, 0);
+		}
 		Set<String> NodeIDs = new HashSet<String>();
 		for(DataSet set : datasets)
 		{
@@ -294,6 +300,21 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		for(String id : NodeIDs)
 		{
 		//	PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
+			//remove an active layout from its association.
+			if(activeLayouts.containsKey(id))
+			{
+				ImageNodeLayout oldlayout = activeLayouts.get(id); 
+				Integer oldcount = layoutCounts.get(oldlayout) -1;
+				if(oldcount == 0)
+				{
+					layoutCounts.remove(oldlayout);
+					dsm.removeDataSetAboutToBeChangedListener(oldlayout);
+				}
+				else
+				{
+					layoutCounts.put(oldlayout, oldcount);
+				}
+			}
 			activeLayouts.put(id,layout);
 		}
 		monitor.setProgress(0.2);
@@ -318,6 +339,10 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//newLayout.generateLayoutForDataSets(datasets);
 		//get all Nodes, that need to be updated
 		layout.doLayout();
+		if(!layoutCounts.containsKey(layout))
+		{
+			layoutCounts.put(layout, 0);
+		}
 		Set<String> NodeIDs = new HashSet<String>();
 		for(DataSet set : datasets)
 		{
@@ -326,6 +351,20 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//add the new layout to all those nodes.
 		for(String id : NodeIDs)
 		{
+			if(activeLayouts.containsKey(id))
+			{
+				ImageNodeLayout oldlayout = activeLayouts.get(id); 
+				Integer oldcount = layoutCounts.get(oldlayout) -1;
+				if(oldcount == 0)
+				{
+					layoutCounts.remove(oldlayout);
+					dsm.removeDataSetAboutToBeChangedListener(oldlayout);
+				}
+				else
+				{
+					layoutCounts.put(oldlayout, oldcount);
+				}
+			}
 			activeLayouts.put(id,layout);
 		}
 		// if everything went fine, register the layout.
@@ -377,7 +416,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		catch(IOException e)
 		{
 			
-			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
+//			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);
 		}
@@ -386,7 +425,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		}
 		catch(Exception e)
 		{
-			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
+//			PrintFDebugger.Debugging(this, "Could not save the Layouts.\n " + e.toString());
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);			
 		}
@@ -417,7 +456,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		}
 		catch(IOException e)
 		{
-			PrintFDebugger.Debugging(this, "Could not read the Layouts.\n " + e.toString());
+//			PrintFDebugger.Debugging(this, "Could not read the Layouts.\n " + e.toString());
 			e.printStackTrace(System.out);
 			throw new RuntimeException(e);
 		}

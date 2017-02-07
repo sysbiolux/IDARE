@@ -164,7 +164,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	 */
 	public void setLegendData(ImageNodeLayout layout, ImageNodeModel source)
 	{
-		PrintFDebugger.Debugging(this, "Updating Legend");
+//		PrintFDebugger.Debugging(this, "Updating Legend");
 		try{
 //			PrintFDebugger.Debugging(this, "Setting Legend Data");
 			initialize();
