@@ -7,6 +7,7 @@ import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import java.awt.Color;
@@ -109,7 +110,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 */
 	private void fireLayoutChange(Collection<String> IDs)
 	{
-		
+		long start = System.nanoTime();
 		HashMap<String, CyCustomGraphics<CustomGraphicLayer>> newgraphics = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
 		for(String id : IDs)
 		{
@@ -121,6 +122,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		{
 			listener.imageUpdated(new GraphicsChangedEvent(newgraphics));
 		}
+		PrintFDebugger.Debugging(this, "Updating the layout info took " + ((System.nanoTime() -start)/1000000) + " miliseconds");
 
 	}
 	
@@ -389,10 +391,14 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 
 	@Override
 	public Map<String, CyCustomGraphics<CustomGraphicLayer>> getAll() {
+		long start = System.nanoTime();
 		if(setupNeeded)
 		{
 			generateGraphicsForID("", true);
 		}
+		
+		PrintFDebugger.Debugging(this, "Generating all graphics took " + ((System.nanoTime() -start)/1000000) + " miliseconds");
+
 		return graphicsmap;
 	}
 

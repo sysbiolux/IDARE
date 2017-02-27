@@ -9,6 +9,8 @@ import org.cytoscape.model.CyTableUtil;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
+
+import idare.imagenode.internal.Debug.PrintFDebugger;
 /**
  * Simple Task to switch between two network views 
  * @author Thomas Pfau
@@ -33,7 +35,8 @@ public class NetworkViewSwitchTask extends AbstractTask{
 	@Override
 	public void run(TaskMonitor arg0) throws Exception {
 		// If we get a valid object AND the object contains a Valid NetworkView
-		arg0.setTitle("Switching View via Linker Node");
+		//long start = System.nanoTime();
+		//arg0.setTitle("Switching View via Linker Node");
 		if(targetview != null && targetview.getTargetNetworkView() != null) 
 		{
 			appmgr.setCurrentNetworkView(targetview.getTargetNetworkView());
@@ -55,6 +58,7 @@ public class NetworkViewSwitchTask extends AbstractTask{
 			}
 			targetview.getTargetNetworkView().updateView();
 		}
+		//PrintFDebugger.Debugging(this, "The switch was performed within " + ((System.nanoTime() -start)/1000000) + " miliseconds");
 	}
 
 }

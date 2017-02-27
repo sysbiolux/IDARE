@@ -117,6 +117,13 @@ public class SubnetworkSessionManager{
 			Long TargetID = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET, Long.class);			
 			Long TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, Long.class);
 			CyNode TargetNode = node.network.getNode(IDAREToNodeSUID.get(TargetID));
+			if(TargetNode == null)
+			{
+				PrintFDebugger.Debugging(this, "For some reason, the target node of this Link to " + TargetSubSystem + " is null and had id " + TargetID + ". The SUID of the target node was " + IDAREToNodeSUID.get(TargetID) + " This should not happen");
+				PrintFDebugger.Debugging(this, "The originating  network had ID " + node.network.getRow(node.network).get(IDAREProperties.IDARE_NETWORK_ID, Long.class));
+				continue;
+				
+			}
 			@SuppressWarnings("unused")
 			CyNetworkView LinkView = null;
 			CyNetworkView TargetView = null;

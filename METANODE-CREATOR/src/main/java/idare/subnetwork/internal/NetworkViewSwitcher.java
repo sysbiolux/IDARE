@@ -4,6 +4,7 @@ import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.IOUtils;
 //import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -97,7 +98,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	@Override
 	public synchronized TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
 		CyNode node = arg0.getModel();
-		
+		PrintFDebugger.Debugging(this, "Creating a new Switch Task");		
 		return new TaskIterator(new NetworkViewSwitchTask(registrar.getService(CyApplicationManager.class),targetViews.get(node)));
 	}
 	
@@ -449,8 +450,9 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 			//skip if the original item is not a network.
 			return;					
 		}
+		//long start = System.nanoTime();
+		//PrintFDebugger.Debugging(this, "Obtaining a Row Set event ");
 
-		
 		if(e.containsColumn(CyNetwork.NAME))
 		{		
 			Collection<RowSetRecord> temp = e.getColumnRecords(CyNetwork.NAME);
@@ -490,6 +492,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 				}
 			}
 		}
+		//PrintFDebugger.Debugging(this, "Finished handling the row set event in " + ((System.nanoTime() -start)/1000000) + " miliseconds");
 
 	}
 	

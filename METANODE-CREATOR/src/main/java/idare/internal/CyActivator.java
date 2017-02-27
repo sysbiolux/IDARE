@@ -255,10 +255,10 @@ public class CyActivator extends AbstractCyActivator {
 		//Register the diverse tasks of the NetworkViewSwitcher.
 		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
 		registerService(context,nvs,RowsSetListener.class, new Properties());
-		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, doubleClickProperties);
+		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, new Properties());
 		registerService(context,nvs,NetworkAddedListener.class, new Properties());
-		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, doubleClickProperties);
-		registerService(context,nvs,NetworkViewAddedListener.class, doubleClickProperties);
+		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, new Properties());
+		registerService(context,nvs,NetworkViewAddedListener.class, new Properties());
 		registerService(context,nvs,SessionAboutToBeSavedListener.class, new Properties());
 		
 		

@@ -4,6 +4,7 @@ package idare.imagenode.internal.VisualStyle;
 import idare.Properties.IDAREProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
@@ -196,7 +197,8 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	}
 	
 	/**
-	 * Add this Style to the Style options.  
+	 * Add this Style to the Style options.
+	 *   
 	 * @return - The {@link VisualStyle} created by this object.
 	 */
 	private VisualStyle addStyle()
@@ -215,6 +217,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 			VisualStyle curVS = (VisualStyle)it.next();
 			if (curVS.getTitle().equalsIgnoreCase(IDARE_STYLE_TITLE))
 			{
+				PrintFDebugger.Debugging(this, "Updating an old style");
 				oldstyle = curVS;
 				curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
 				curVS.addVisualMappingFunction(LabelTransparency);
@@ -223,7 +226,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
 				curVS.addVisualMappingFunction(imagenodeWidth);
 				curVS.removeVisualMappingFunction(imf.getVisualProperty());
-				curVS.addVisualMappingFunction(imf);
+				curVS.addVisualMappingFunction(imf);				
 				return oldstyle;
 			}
 		}
