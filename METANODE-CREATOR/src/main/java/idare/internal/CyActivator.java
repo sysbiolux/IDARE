@@ -39,6 +39,7 @@ import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
 
 import idare.NodeDuplicator.Internal.NodeDuplicatorFactory;
+import idare.NodeDuplicator.Internal.NodeRegistry;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.IDARENodeManager;
 import idare.imagenode.internal.IDAREImageNodeApp;
@@ -120,8 +121,10 @@ public class CyActivator extends AbstractCyActivator {
 		duplicateNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		duplicateNodeProps.setProperty(ServiceProperties.TITLE, "Duplicate Node");		
 		duplicateNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+		NodeRegistry NR = new NodeRegistry();		
 //		PrintFDebugger.Debugging(this, "Adding Node Duplicator");
 		registerService(context, nodedup, NodeViewTaskFactory.class, duplicateNodeProps);
+		registerService(context, NR, RowsSetListener.class, new Properties());
 	}
 	
 	@SuppressWarnings("rawtypes")

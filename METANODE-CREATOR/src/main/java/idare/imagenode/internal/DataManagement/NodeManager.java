@@ -299,7 +299,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//add the new layout to all those nodes.
 		for(String id : NodeIDs)
 		{
-		//	PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
+			PrintFDebugger.Debugging(this, "Assigning layout to node " + id);
 			//remove an active layout from its association.
 			if(activeLayouts.containsKey(id))
 			{

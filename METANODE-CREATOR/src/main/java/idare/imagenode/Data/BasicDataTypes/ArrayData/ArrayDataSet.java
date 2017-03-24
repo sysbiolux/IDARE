@@ -47,7 +47,7 @@ public class ArrayDataSet extends DataSet{
 	public static String DataSetType = "Array Dataset";	
 	protected HashMap<String,String> NodeLabels= new HashMap<String,String>();
 	protected HashMap<String,ArrayNodeData> Data = new HashMap<>();
-	protected HashMap<Serializable,Double> DiscreetSet = new HashMap<>();	
+	//protected HashMap<Serializable,Double> DiscreetSet = new HashMap<>();	
 	protected ArrayNodeData defaultEntry;
 	protected Vector<ColorMap> colormaps = new Vector<ColorMap>();
 	protected int columncount;
@@ -148,15 +148,13 @@ public class ArrayDataSet extends DataSet{
 			offset++;
 		}
 		//skipLabels(labelIterator);
-		IDARECell CurrentCell = skipLabels(labelIterator);
+		IDARECell cell = null;
 		
 		while (labelIterator.hasNext())
-		{
-			IDARECell cell;
-			if(CurrentCell != null)
+		{			
+			if(cell == null)
 			{
-				cell = CurrentCell;
-				CurrentCell = null;
+				cell = skipLabels(labelIterator);				
 			}
 			else
 			{
@@ -200,7 +198,7 @@ public class ArrayDataSet extends DataSet{
 	{
 		NodeLabels= new HashMap<String,String>();
 		Data = new HashMap<>();
-		DiscreetSet = new HashMap<>();	
+		//DiscreetSet = new HashMap<>();	
 		defaultEntry = new ArrayNodeData(this);
 	}
 	/*
@@ -243,6 +241,7 @@ public class ArrayDataSet extends DataSet{
 //			PrintFDebugger.Debugging(this,"Read String Data");
 			readStringData(WB);
 		}
+		
 		//If the dataset is discrete, we can actually use multiple additional Colors.
 		if(isdiscreet)
 		{
@@ -313,21 +312,28 @@ public class ArrayDataSet extends DataSet{
 		{
 			offset = 2;
 		}
-		
+		PrintFDebugger.Debugging(this, "Reading rows");
+
 		while(rowIterator.hasNext())
 		{							
 			Vector<NodeValue> rowData = new Vector<>();
+			//Get the current row.
 			IDARERow row = rowIterator.next();
 			ArrayNodeData currentData = getNodeData(row);
+			PrintFDebugger.Debugging(this, "Reading Row " + row.getRowNum());
 			if(currentData == null)
 			{
+				PrintFDebugger.Debugging(this, "Row Returned null");
 				continue;
 			}
 			for(int i = 0; i < columncount; i++)
 			{
+				PrintFDebugger.Debugging(this, "Reading Column " + i+offset	);
 				IDARECell currentCell = row.getCell(i+offset,IDARERow.RETURN_BLANK_AS_NULL);
+				//currentCell.getColumnIndex();
 				if(currentCell == null)
 				{
+					PrintFDebugger.Debugging(this, "Cell was null");
 					rowData.add(new NodeValue(true));
 					continue;
 				}
@@ -348,7 +354,7 @@ public class ArrayDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
-//			System.out.println(WB.toString());
+			System.out.println("StringData!");
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 		if(Stringvalues.size() > 6)
@@ -359,12 +365,13 @@ public class ArrayDataSet extends DataSet{
 		
 		sortedStrings.addAll(Stringvalues);
 		Collections.sort(sortedStrings);
-		int Representative = 1;
-		for(String value : sortedStrings)
-		{
-			DiscreetSet.put(value, new Double(Representative));
-			Representative++;
-		}
+		//int Representative = 1;
+		//for(String value : sortedStrings)
+		//{
+		//	DiscreetSet.put(value, new Double(Representative));
+		//	PrintFDebugger.Debugging(this, "Adding " + value + " to the available options");
+		//	Representative++;
+		//}
 		
 	}
 	/**
@@ -425,7 +432,7 @@ public class ArrayDataSet extends DataSet{
 		}
 		if(!hasentries)
 		{
-//			System.out.println(WB.toString());
+			System.out.println("Numeric Data!");
 			throw new WrongFormat("There is no usable data in the Dataset");
 		}
 	}
@@ -700,26 +707,28 @@ public class ArrayDataSet extends DataSet{
 		//The Relevant HEader Row for this type of dataset is the first Row in the first (and only) sheet.
 		IDARERow HeaderRow = WB.getSheetAt(0).iterator().next();
 		Iterator<IDARECell> cellIterator = HeaderRow.iterator();
-		
+		PrintFDebugger.Debugging(this, "Skipping Labels");
 		IDARECell CurrentCell = skipLabels(cellIterator);
-		
+		PrintFDebugger.Debugging(this, "While determining nonempty columns,");
+		CurrentCell.getColumnIndex();
 		int labelcolumns = 1;
 		if(useTwoColHeaders)
 		{
 			labelcolumns++;
 		}
+		PrintFDebugger.Debugging(this, "The number of labelcolumns is : " + labelcolumns);		
 		if(CurrentCell != null)
 		{
 			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
 		}
 		
-//		System.out.println("Trying to determine the number of columns");
 		while(cellIterator.hasNext())
 		{						
-			CurrentCell= cellIterator.next();
+			CurrentCell= cellIterator.next();			
 			columncount = Math.max(columncount, CurrentCell.getColumnIndex()-labelcolumns + 1);
 		}
-//		System.out.println("We have a Workbook with "+ columncount + "Columns");
+		
+		PrintFDebugger.Debugging(this,"We have a Workbook with "+ columncount + "Columns");
 		emptycolumns = new boolean[columncount];
 		for(int i = 0; i < columncount ; i++)
 		{

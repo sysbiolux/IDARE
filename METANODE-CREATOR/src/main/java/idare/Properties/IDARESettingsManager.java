@@ -392,7 +392,7 @@ public class IDARESettingsManager{
 					{
 						//if this is not pointing to the same node, we have to reset the whole IDARE Setup, i.e. we will clear the whole network from Cytoscape Columns.
 						//PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
-						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()))
+						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()) || )
 						{
 //							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
 							resetNetworks(networks);

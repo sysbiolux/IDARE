@@ -1,6 +1,7 @@
 package idare.imagenode.internal.DataSetReaders.POIReader;
 
 import idare.imagenode.Interfaces.DataSetReaders.WorkBook.IDARECell;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Services.POI.POIToIDARETypes;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,6 +23,8 @@ public class POICell implements IDARECell {
 	@Override
 	public int getColumnIndex() {
 		// TODO Auto-generated method stub
+		DataFormatter df = new DataFormatter();
+		PrintFDebugger.Debugging(this, "Getting index " + cell.getColumnIndex() + " for cell with Content " + df.formatCellValue(cell));
 		return cell.getColumnIndex();
 	}
 

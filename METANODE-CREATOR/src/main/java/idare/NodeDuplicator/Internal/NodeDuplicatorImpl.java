@@ -54,10 +54,10 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	HashMap<CySubNetwork,Collection<CyEdge>> removedEdges = new HashMap<>();
 	
 	private Map<CyIdentifiable, Map<CyNetworkView, Map<VisualProperty<?>, Object>>> bypassMap = new HashMap<>();
-
-	
 	CyRootNetwork rootnetwork;
 	CyEventHelper helper;
+	
+	
 	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg) {
 		// TODO Auto-generated constructor stub
 		super("Duplicate Nodes");
@@ -114,7 +114,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 				}
 				//set the properties.
 				newNodeRow.set(IDAREProperties.DUPLICATED_NODE,true);
-				newNodeRow.set(IDAREProperties.ORIGINAL_NODE,originalNodeRow.get(IDAREProperties.IDARE_NODE_UID, Long.class));
+				newNodeRow.set(IDAREProperties.ORIGINAL_NODE,originalNodeRow.get(IDAREProperties.IDARE_NODE_UID, Long.class));				
 				
 			}
 			CyEdge newEdge = Edge.getSource().equals(OriginalNode) ? rootnetwork.addEdge(newNode,Edge.getTarget(), Edge.isDirected()) : rootnetwork.addEdge(Edge.getSource(), newNode, Edge.isDirected());

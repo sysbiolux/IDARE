@@ -253,14 +253,13 @@ public abstract class DataSet implements IDAREService, Serializable{
 		{
 			Iterator<IDARECell> cellIterator = rowIterator.next().iterator();
 			//Skip the first (and potentially second column)
-			IDARECell startingCell = skipLabels(cellIterator);			
+			IDARECell currentcell = null;			
 			while(cellIterator.hasNext())
 			{
-				IDARECell currentcell;
-				if(startingCell != null)
+				
+				if(currentcell == null)
 				{
-					currentcell = startingCell;
-					startingCell = null;
+					currentcell = skipLabels(cellIterator);					
 				}
 				else
 				{
@@ -341,15 +340,13 @@ public abstract class DataSet implements IDAREService, Serializable{
 			while(rowIterator.hasNext() && isdiscreet)
 			{				
 				Iterator<IDARECell> cellIterator = rowIterator.next().iterator();			
-				IDARECell startingCell = skipLabels(cellIterator);	
+				IDARECell current = null; 
 				
 				while(cellIterator.hasNext())
 				{
-					IDARECell current; 
-					if(startingCell != null)
+					if(current == null)
 					{
-						current = startingCell;
-						startingCell = null;
+						current = skipLabels(cellIterator);						
 					}
 					else{
 						current = cellIterator.next();
@@ -411,6 +408,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 				}			
 				if(entries.size()>5)
 				{
+					PrintFDebugger.Debugging(this, "More than 5 items detected");
 					isdiscreet = false;
 				}
 				Valueset.addAll(entrynames);
@@ -427,14 +425,13 @@ public abstract class DataSet implements IDAREService, Serializable{
 			while(rowIterator.hasNext() && isdiscreet)
 			{
 				Iterator<IDARECell> cellIterator = rowIterator.next().iterator();			
-				IDARECell startingCell = skipLabels(cellIterator);	
+				IDARECell current = null;
 				while(cellIterator.hasNext())
 				{
-					IDARECell current; 
-					if(startingCell != null)
+ 
+					if(current == null)
 					{
-						current = startingCell;
-						startingCell = null;
+						current = skipLabels(cellIterator);						
 					}
 					else{
 						current = cellIterator.next();
@@ -480,7 +477,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 			Valueset.addAll(entrynames);
 			Collections.sort(Valueset);
 		}
-
+		PrintFDebugger.Debugging(this, "Type of Wrokbook: String: " + isstring + " Numeric: " + isnumeric + " discreet: " + isdiscreet);
 	}
 	
 	/**
@@ -490,23 +487,17 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public IDARECell skipLabels(Iterator<IDARECell> currentiterator)
 	{
 //		System.out.println("Skipping a column");
-		IDARECell currentCell = currentiterator.next();
+//		IDARECell currentCell = currentiterator.next();		
 		int offset = useTwoColHeaders ? 2 : 1;
+		IDARECell currentCell = null;
 		while(currentiterator.hasNext())
 		{
-			if(currentCell != null)
+			
+			currentCell = currentiterator.next();			
+			if(currentCell.getColumnIndex() >= offset)
 			{
-				PrintFDebugger.Debugging(this, "Current index is:" + currentCell.getColumnIndex() + " while offset is " + offset);
-				if(currentCell.getColumnIndex() >= offset)
-				{
-					return currentCell;
-				}
+				return currentCell;
 			}
-			else
-			{
-				currentCell = currentiterator.next();
-			}
-			currentCell = currentiterator.next();
 		}
 		return null;
 		
