@@ -9,24 +9,30 @@ import org.cytoscape.work.TaskIterator;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
-public class NodeDuplicatorFactory implements NodeViewTaskFactory {
+public class NodeMergerFactory implements NodeViewTaskFactory {
 
 	CyServiceRegistrar reg;
-	public NodeDuplicatorFactory(CyServiceRegistrar reg) {
+	
+	public NodeMergerFactory(CyServiceRegistrar reg) {
 		// TODO Auto-generated constructor stub
 		this.reg = reg;
 	}
 	
 	@Override
 	public TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
-		return new TaskIterator(new NodeDuplicatorImpl(arg0.getModel(),arg1.getModel(), reg));		
+		// TODO Auto-generated method stub
+		return new TaskIterator(new NodeMergerImpl(arg0.getModel(), arg1.getModel(), reg));
 	}
 
 	@Override
 	public boolean isReady(View<CyNode> arg0, CyNetworkView arg1) {
-		//We can duplicate, if this is not a duplicated node and the network is set up for IDARE.
-		return IDARESettingsManager.isSetupNetwork(arg1.getModel()) && !(arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE,Boolean.class));
+		if(IDARESettingsManager.isSetupNetwork(arg1.getModel()))
+		{
+			return arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class);
+		}		
+		return false;
 	}
 
 }
