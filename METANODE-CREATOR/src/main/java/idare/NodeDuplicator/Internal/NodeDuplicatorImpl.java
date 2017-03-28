@@ -3,14 +3,13 @@ package idare.NodeDuplicator.Internal;
 import static org.cytoscape.view.presentation.property.BasicVisualLexicon.NODE_X_LOCATION;
 import static org.cytoscape.view.presentation.property.BasicVisualLexicon.NODE_Y_LOCATION;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
@@ -41,23 +40,35 @@ import idare.ThirdParty.DelayedVizProp;
 
 public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 
+	//Services 
 	CyNetworkViewManager cyViewMgr;
 	CyRootNetworkManager RootNetworkManager;
-	CyNode OriginalNode;
 	VisualMappingManager visualMappingManager;
 	UndoSupport undoSup;
+	CyEventHelper helper;
+	NodeRegistry nodeReg;
+	
+	//Fields constant for undoSupport
+	final CyNode OriginalNode;
+	final CyRootNetwork rootnetwork;
+	
+	
+	//Fields for the Actual Task (and necessary for undo, but filled during redo.
 	HashMap<CyNode,CyEdge> OriginalEdges = new HashMap<>(); //Maps Target Nodes to the original Edges
 	HashMap<CyNode,CyEdge> createdNodes = new HashMap<>(); // Map from new Nodes to the corresponding Edges
 	HashMap<CyEdge,CyNode> replacementNodes = new HashMap<>(); // Maps from original Edges to the New Nodes 
 	Vector<CySubNetwork> relevantnetworks = new Vector<>();	
 	HashMap<CyNetworkView, Point2D> originalPos = new HashMap<>();
 	HashMap<CySubNetwork,Collection<CyEdge>> removedEdges = new HashMap<>();
-	
 	private Map<CyIdentifiable, Map<CyNetworkView, Map<VisualProperty<?>, Object>>> bypassMap = new HashMap<>();
-	CyRootNetwork rootnetwork;
-	CyEventHelper helper;
 	
 	
+	/**
+	 * Default Constructor using a {@link CyNode} with its associated {@link CyNetwork} along with a {@link CyServiceRegistrar}
+	 * @param OrigNode The node to duplicate
+	 * @param sourceNetwork the network in which the node is present.
+	 * @param reg teh {@link CyServiceRegistrar} to obtain services from.
+	 */
 	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg) {
 		// TODO Auto-generated constructor stub
 		super("Duplicate Nodes");
@@ -68,8 +79,12 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		visualMappingManager = reg.getService(VisualMappingManager.class);
 		OriginalNode = OrigNode;
 		undoSup = reg.getService(UndoSupport.class);
+		nodeReg = reg.getService(NodeRegistry.class);
 	}
 	
+	/**
+	 * Clear fields.
+	 */
 	private void init()
 	{
 		OriginalEdges = new HashMap<>(); //Maps Target Nodes to the original Edges
@@ -82,8 +97,12 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 
 		
 	}
+	
 	@Override
 	public void redo() {
+		//clean up old stuff.
+		init();
+		nodeReg.deactivate();
 		// TODO Auto-generated method stub
 		//Get the Edges around the given node.
 		CyNetwork network = OriginalNode.getNetworkPointer();
@@ -113,8 +132,8 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 					newNodeRow.set(col.getName(), originalNodeRow.get(col.getName(), col.getType()));
 				}
 				//set the properties.
-				newNodeRow.set(IDAREProperties.DUPLICATED_NODE,true);
-				newNodeRow.set(IDAREProperties.ORIGINAL_NODE,originalNodeRow.get(IDAREProperties.IDARE_NODE_UID, Long.class));				
+				newNodeRow.set(IDAREProperties.IDARE_DUPLICATED_NODE,true);
+				newNodeRow.set(IDAREProperties.IDARE_ORIGINAL_NODE,originalNodeRow.get(IDAREProperties.IDARE_NODE_UID, Long.class));				
 				
 			}
 			CyEdge newEdge = Edge.getSource().equals(OriginalNode) ? rootnetwork.addEdge(newNode,Edge.getTarget(), Edge.isDirected()) : rootnetwork.addEdge(Edge.getSource(), newNode, Edge.isDirected());
@@ -134,6 +153,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 					newEdgeRow.set(col.getName(), originalEdgeRow.get(col.getName(), col.getType()));
 				}				
 			}
+			
 		}
 
 		//Now, add all Nodes created to the relevant subnetworks, and remove the corresponding nodes.
@@ -211,7 +231,9 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 			view.updateView();
 			
 		}
-		
+		//Flush all Payload events, BEFORE the node Registry starts up again.
+		helper.flushPayloadEvents();
+		nodeReg.activate();
 	}
 
 	
@@ -221,6 +243,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		//restore the Node and edges to the relevant views
 		//remove the created Nodes from the root Network (and all subnetworks)
 		//restore the visual properties
+		nodeReg.deactivate();
 		for(CySubNetwork subNetwork  : relevantnetworks)
 		{
 			//restore the original Nodes and edges
@@ -267,6 +290,9 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		//finally, also remove the created nodes from the root network
 		rootnetwork.removeEdges(createdNodes.values());
 		rootnetwork.removeNodes(createdNodes.keySet());
+		//Flush all Payload events, BEFORE the node Registry starts up again.
+		helper.flushPayloadEvents();
+		nodeReg.activate();
 	}
 
 	@Override

@@ -39,6 +39,7 @@ import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
 
 import idare.NodeDuplicator.Internal.NodeDuplicatorFactory;
+import idare.NodeDuplicator.Internal.NodeMergerFactory;
 import idare.NodeDuplicator.Internal.NodeRegistry;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.IDARENodeManager;
@@ -121,10 +122,21 @@ public class CyActivator extends AbstractCyActivator {
 		duplicateNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		duplicateNodeProps.setProperty(ServiceProperties.TITLE, "Duplicate Node");		
 		duplicateNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
-		NodeRegistry NR = new NodeRegistry();		
+		NodeRegistry NR = new NodeRegistry(getService(context,CyServiceRegistrar.class));
+		NodeMergerFactory nodemerge = new NodeMergerFactory(getService(context, CyServiceRegistrar.class));
+		Properties mergeNodeProps = new Properties();		
+		mergeNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NODE_APPS_MENU);
+		mergeNodeProps.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		mergeNodeProps.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		mergeNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		mergeNodeProps.setProperty(ServiceProperties.TITLE, "Merge Duplicated Nodes");		
+		mergeNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+		
 //		PrintFDebugger.Debugging(this, "Adding Node Duplicator");
 		registerService(context, nodedup, NodeViewTaskFactory.class, duplicateNodeProps);
 		registerService(context, NR, RowsSetListener.class, new Properties());
+		registerService(context,NR,NodeRegistry.class,new Properties());
+		registerService(context,nodemerge,NodeViewTaskFactory.class,mergeNodeProps);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -259,9 +271,9 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(context,nvs,NodeViewTaskFactory.class, doubleClickProperties);
 		registerService(context,nvs,RowsSetListener.class, new Properties());
 		registerService(context,nvs,NetworkAboutToBeDestroyedListener.class, new Properties());
-		registerService(context,nvs,NetworkAddedListener.class, new Properties());
-		registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, new Properties());
-		registerService(context,nvs,NetworkViewAddedListener.class, new Properties());
+		//registerService(context,nvs,NetworkAddedListener.class, new Properties());
+		//registerService(context,nvs,NetworkViewAboutToBeDestroyedListener.class, new Properties());
+		//registerService(context,nvs,NetworkViewAddedListener.class, new Properties());
 		registerService(context,nvs,SessionAboutToBeSavedListener.class, new Properties());
 		
 		
