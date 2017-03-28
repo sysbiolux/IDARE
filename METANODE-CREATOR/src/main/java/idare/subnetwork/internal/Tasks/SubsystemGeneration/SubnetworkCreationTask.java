@@ -576,22 +576,6 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 					CyNetworkView targetSubSystemView = existingNetworks.get(targetnetwork);
 					CyNetworkView sourceSubSystemView = existingNetworks.get(newnetwork);									
 					
-					if(sourceSubSystemView == null)
-					{					
-						nvs.addNetworkLink(targetNetworkNode,  targetnetwork, newnetwork, sourcenode );
-					}
-					else
-					{
-						nvs.addLink(targetNetworkNode, targetnetwork, sourceSubSystemView, sourceSubSystemView.getNodeView(sourcenode));
-					}
-					if(targetSubSystemView == null)
-					{					
-						nvs.addNetworkLink(sourceNetworkNode, newnetwork, targetnetwork, targetnode);
-					}
-					else
-					{
-						nvs.addLink(sourceNetworkNode, newnetwork, targetSubSystemView, targetSubSystemView.getNodeView(targetnode));
-					}
 					if(targetSubSystemView != null)
 					{
 						if(!LinkNodeProps.containsKey(targetSubSystemView))
