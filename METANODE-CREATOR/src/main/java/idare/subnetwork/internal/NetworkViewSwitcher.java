@@ -100,7 +100,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
 		CyNode node = arg0.getModel();
 		PrintFDebugger.Debugging(this, "Creating a new Switch Task");		
-		return new TaskIterator(new NetworkViewSwitchTask(registrar.getService(CyApplicationManager.class),targetViews.get(node)));
+		return new TaskIterator(new NetworkViewSwitchTask(registrar, node, arg1.getModel()));
 	}
 	
 	
