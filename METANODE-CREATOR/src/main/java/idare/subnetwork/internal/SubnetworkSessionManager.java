@@ -114,8 +114,8 @@ public class SubnetworkSessionManager{
 
 		for(NodeAndNetworkStruct node : LinkerNodes)
 		{
-			Long TargetID = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET, Long.class);			
-			Long TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.LINK_TARGET_SUBSYSTEM, Long.class);
+			Long TargetID = node.network.getRow(node.node).get(IDAREProperties.IDARE_LINK_TARGET, Long.class);			
+			Long TargetSubSystem = node.network.getRow(node.node).get(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, Long.class);
 			CyNode TargetNode = node.network.getNode(IDAREToNodeSUID.get(TargetID));
 			if(TargetNode == null)
 			{
@@ -205,7 +205,7 @@ public class SubnetworkSessionManager{
 		{
 			return false;			
 		}
-		if(NodeTable.getColumn(IDAREProperties.LINK_TARGET) == null)
+		if(NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET) == null)
 		{
 			return false;			
 		}
@@ -213,7 +213,7 @@ public class SubnetworkSessionManager{
 		{
 			return false;			
 		}
-		if(NodeTable.getColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM) == null)
+		if(NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM) == null)
 		{
 			return false;			
 		}

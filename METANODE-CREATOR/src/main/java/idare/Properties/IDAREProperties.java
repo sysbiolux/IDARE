@@ -22,13 +22,13 @@ public class IDAREProperties {
 	public static final String IDARE_SUBNETWORK_TYPE = "IDARESubNetworkNodeType";
 	public static final String IDARE_NODE_NAME = "IDARENodeName";
 	public static final String IDARE_NETWORK_ID = "IDARENetworkID";
-	public static final String GENE_EDGE_ID = "IDAREGeneEdge";
-	public static final String DUPLICATED_NODE = "IDAREDuplicatedNode";
-	public static final String ORIGINAL_NODE = "IDAREOriginalNode";
+	public static final String IDARE_GENE_EDGE_ID = "IDAREGeneEdge";
+	public static final String IDARE_DUPLICATED_NODE = "IDAREDuplicatedNode";
+	public static final String IDARE_ORIGINAL_NODE = "IDAREOriginalNode";
 	/**
 	 * This field should only be set if the corresponding node is a Link Node (i.e. the IDARENodeType is IDARE_LINK)
 	 */
-	public static final String LINK_TARGET = "IDARELinkTargets";
+	public static final String IDARE_LINK_TARGET = "IDARELinkTargets";
 	/**	 
 	 * The ID for this node if it is the target of a link. 
 	 * At network creation this will be set to the SUID of the corresponding node.
@@ -39,7 +39,7 @@ public class IDAREProperties {
 	/**
 	 * This is an awkward way to restore the correct linking behaviour since there is otherwise no way to know which SubsystemView a link targeted.
 	 */
-	public static final String LINK_TARGET_SUBSYSTEM = "IDARETargetSubsystem";
+	public static final String IDARE_LINK_TARGET_SUBSYSTEM = "IDARETargetSubsystem";
 	
 	public static final String SBML_EDGE_TYPE = "interaction type";
 	

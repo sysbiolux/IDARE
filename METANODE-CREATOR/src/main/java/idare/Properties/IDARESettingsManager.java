@@ -377,7 +377,26 @@ public class IDARESettingsManager{
 						continue;
 					}
 					Long IDAREID = row.get(IDAREProperties.IDARE_NODE_UID, Long.class);
+					Long IDAREDUPLICATEID = row.get(IDAREProperties.IDARE_ORIGINAL_NODE, Long.class);
 					CyNode current = network.getNode(row.get(CyNode.SUID,Long.class));
+					//Handle a duplicated node.
+					if(current != null && IDAREDUPLICATEID != null)
+					{						
+						try
+						{
+							addID(IDAREDUPLICATEID);
+						}
+						catch(IllegalArgumentException e)
+						{
+							if(nodematch.containsKey(IDAREDUPLICATEID))
+							{
+								//Ok, we got a problem. we have a node with the ID while it is also duplicated. This should not happen!
+								throw(e);
+							}
+							//Otherwise this is ok. 
+						}
+
+} 
 					//this happens, if the node is not in this network. As we get the default NOde Table it contains ALL Nodes...) 
 					if(current == null || IDAREID == null)
 					{
@@ -385,14 +404,24 @@ public class IDARESettingsManager{
 					}
 					if(!nodematch.containsKey(IDAREID))
 					{
-						addID(IDAREID);
-						nodematch.put(IDAREID, current);
+						try
+						{
+							addID(IDAREID);
+							nodematch.put(IDAREID, current);
+						}
+						catch(IllegalArgumentException e)
+						{
+							//this can happen, if we have a duplicated ID added and then encounter a "normal" id.
+							resetNetworks(networks);
+							reset();
+							return;
+}
 					}
 					else
 					{
 						//if this is not pointing to the same node, we have to reset the whole IDARE Setup, i.e. we will clear the whole network from Cytoscape Columns.
 						//PrintFDebugger.Debugging(this, "Determining whether " + nodematch.get(IDAREID) + " has the same SUID as " + current);
-						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()) || )
+						if(!nodematch.get(IDAREID).getSUID().equals(current.getSUID()))
 						{
 //							PrintFDebugger.Debugging(this, "Found a duplicate node id: " + IDAREID + " ... removing all IDARE Columns");
 							resetNetworks(networks);
@@ -477,13 +506,13 @@ public class IDARESettingsManager{
 				{
 					NodeTable.deleteColumn(IDAREProperties.IDARE_NODE_NAME);
 				}
-				if(NodeTable.getColumn(IDAREProperties.LINK_TARGET) != null)
+				if(NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET) != null)
 				{
-					NodeTable.deleteColumn(IDAREProperties.LINK_TARGET);
+					NodeTable.deleteColumn(IDAREProperties.IDARE_LINK_TARGET);
 				}
-				if(NodeTable.getColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM) != null)
+				if(NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM) != null)
 				{
-					NodeTable.deleteColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM);
+					NodeTable.deleteColumn(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM);
 				}
 				if(NodeTable.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) != null)
 				{
@@ -530,7 +559,7 @@ public class IDARESettingsManager{
 			// if the column is either not set, or at the default value, initialize it.
 			//furthermore we can initialize the IDARE_TARGET_ID property for save/restore functionality
 			//Only assign IDs to non duplicated nodes.
-			if(!row.isSet(IDAREProperties.IDARE_NODE_UID) & !row.get(IDAREProperties.DUPLICATED_NODE, Boolean.class))
+			if(!row.isSet(IDAREProperties.IDARE_NODE_UID) & !row.get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class))
 			{
 				//row.set(IDAREProperties.IDARE_NODE_TYPE, row.get(NodeTypeCol,String.class));				
 				Long id = IDAREIdmgr.getNextNodeID();
@@ -650,9 +679,9 @@ public class IDARESettingsManager{
 		CyTable NodeTable = network.getDefaultNodeTable();
 		CyTable EdgeTable = network.getDefaultEdgeTable();
 		if(EdgeTable.getColumn(IDAREProperties.IDARE_EDGE_PROPERTY) == null || NodeTable.getColumn(IDAREProperties.IDARE_NODE_TYPE) == null 
-				|| 	NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) == null ||	NodeTable.getColumn(IDAREProperties.LINK_TARGET) == null
-				|| NodeTable.getColumn(IDAREProperties.IDARE_NODE_UID) == null || NodeTable.getColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM) == null
-				|| NodeTable.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) == null || NodeTable.getColumn(IDAREProperties.DUPLICATED_NODE) == null || NodeTable.getColumn(IDAREProperties.ORIGINAL_NODE) == null)
+				|| 	NodeTable.getColumn(IDAREProperties.IDARE_NODE_NAME) == null ||	NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET) == null
+				|| NodeTable.getColumn(IDAREProperties.IDARE_NODE_UID) == null || NodeTable.getColumn(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM) == null
+				|| NodeTable.getColumn(IDAREProperties.IDARE_SUBNETWORK_TYPE) == null || NodeTable.getColumn(IDAREProperties.IDARE_DUPLICATED_NODE) == null || NodeTable.getColumn(IDAREProperties.IDARE_ORIGINAL_NODE) == null)
 		{
 			return false;
 		}
@@ -714,7 +743,7 @@ public class IDARESettingsManager{
 
 
 		try{
-			NodeTable.createColumn(IDAREProperties.LINK_TARGET, Long.class, false);
+			NodeTable.createColumn(IDAREProperties.IDARE_LINK_TARGET, Long.class, false);
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -730,7 +759,7 @@ public class IDARESettingsManager{
 		}
 
 		try{
-			NodeTable.createColumn(IDAREProperties.LINK_TARGET_SUBSYSTEM, Long.class, false);
+			NodeTable.createColumn(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, Long.class, false);
 		}
 
 		catch(IllegalArgumentException e)
@@ -757,7 +786,7 @@ public class IDARESettingsManager{
 		
 		try{
 //			PrintFDebugger.Debugging(IDARESettingsManager.class, "Adding Duplicated Node Column");
-			NodeTable.createColumn(IDAREProperties.DUPLICATED_NODE, Boolean.class, false, false);
+			NodeTable.createColumn(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class, false, false);
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -765,7 +794,7 @@ public class IDARESettingsManager{
 		}
 		
 		try{
-			NodeTable.createColumn(IDAREProperties.ORIGINAL_NODE, Long.class, false, null);
+			NodeTable.createColumn(IDAREProperties.IDARE_ORIGINAL_NODE, Long.class, false, null);
 		}
 		catch(IllegalArgumentException e)
 		{
