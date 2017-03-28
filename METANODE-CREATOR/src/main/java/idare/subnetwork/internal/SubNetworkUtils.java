@@ -8,8 +8,10 @@ import java.util.Vector;
 
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.service.util.CyServiceRegistrar;
 
 public class SubNetworkUtils {
 
@@ -33,26 +35,29 @@ public class SubNetworkUtils {
 	 * @param Idmgr - the ID Manager
 	 * @param NodeTypeCol - The NodeType Column name
 	 */
-	public static void setupNetworkForSubNetworkCreation(CyNetwork network, IDARESettingsManager Idmgr, String NodeTypeCol)
+	public static void setupNetworkForSubNetworkCreation(CyNetwork network, IDARESettingsManager Idmgr, String NodeTypeCol, CyServiceRegistrar reg)
 	{
-		CyTable NodeTable = network.getDefaultNodeTable();
+		CyTable NodeTable = network.getDefaultNodeTable();		
 		if(!IDARESettingsManager.isSetupNetwork(network))
 		{
-			IDARESettingsManager.initNetwork(network);
+			IDARESettingsManager.initNetwork(network, reg);
 		}
+		CyTable IDARENodeTable = network.getTable(CyNode.class, IDAREProperties.IDARE_NAMESPACE);		
 		List<CyRow> NodeRows = NodeTable.getAllRows();
 		for(CyRow row : NodeRows)
 		{
 			//if the column is either not set, or at the default value, initialize it.
 			//furthermore we can initialize the IDARE_TARGET_ID property for save/restore functionality
-			if(!row.isSet(IDAREProperties.IDARE_NODE_UID))
+			CyRow IDARERow = IDARENodeTable.getRow(row.get(CyNode.SUID, Long.class));
+
+			if(!IDARERow.isSet(IDAREProperties.IDARE_NODE_UID))
 			{
 				Long id = Idmgr.getNextNodeID();
-				row.set(IDAREProperties.IDARE_NODE_UID, id);
+				IDARERow.set(IDAREProperties.IDARE_NODE_UID, id);
 			}			
 			//Always update to the current value!
 
-			row.set(IDAREProperties.IDARE_SUBNETWORK_TYPE,Idmgr.getSubNetworkType(row.get(NodeTypeCol, String.class)));
+			IDARERow.set(IDAREProperties.IDARE_SUBNETWORK_TYPE,Idmgr.getSubNetworkType(row.get(NodeTypeCol, String.class)));
 
 			//row.set(IDAREProperties.IDARE_NODE_NAME, row.get(IDCol,String.class));			
 			//IDAREIDs.add(row.get(IDCol, String.class));
@@ -65,13 +70,14 @@ public class SubNetworkUtils {
 	 * @param ColName - The String identifying the Column to look up the different subsystem identifiers 
 	 * @return a {@link Vector} of column Identifiers
 	 */
-	public static Vector<Object> getDifferentSubSystems(CyTable table, String ColName)
+	public static Vector<Object> getDifferentSubSystems(CyTable IDAREtable, CyTable table, String ColName)
 	{
 		Vector<Object> SubsystemTypes = new Vector<Object>();		
 		List<CyRow> rows = table.getAllRows();
 		//we do not need to make any difference between the objects since they are simply comparable by equals();
 		//lets get the Column first.
 		CyColumn col = table.getColumn(ColName);
+		
 		if(col == null)
 		{
 			return SubsystemTypes;
@@ -80,10 +86,11 @@ public class SubNetworkUtils {
 		{
 			//this is a "normal" column, so we can just go on. 
 			for(CyRow row : rows)
-			{				
+			{			
+				CyRow IDARERow = IDAREtable.getRow(row.get(CyNode.SUID, Long.class));
 				if(row.isSet(ColName))
 				{
-					if(row.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class) == null || !row.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_REACTION))
+					if(IDARERow.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class) == null || !IDARERow.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_REACTION))
 					{
 						//skip anything that is not a species for subnetwork selection, as anything beside species will not be allowed.
 						continue;
@@ -106,7 +113,9 @@ public class SubNetworkUtils {
 
 			for(CyRow row : rows)
 			{
-				if(row.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class) == null || !row.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_REACTION))
+				CyRow IDARERow = IDAREtable.getRow(row.get(CyNode.SUID, Long.class));
+				if(IDARERow.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class) == null || 
+						!IDARERow.get(IDAREProperties.IDARE_SUBNETWORK_TYPE, String.class).equals(IDAREProperties.NodeType.IDARE_REACTION))
 				{
 					//skip anything that is not a species for subnetwork selection, as anything beside species will not be allowed.
 					continue;

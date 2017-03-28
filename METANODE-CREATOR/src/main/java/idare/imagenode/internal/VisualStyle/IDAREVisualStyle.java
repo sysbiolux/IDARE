@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.cytoscape.event.CyEventHelper;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.model.CyNetworkView;
@@ -47,6 +48,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	private CyNetworkViewManager cyNetViewMgr;
 	private VisualStyle vs;
 	
+	
 	private ImageStorage imf;
 	private NodeManager nm;
 	
@@ -75,7 +77,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		this.cyNetViewMgr = cyNetViewMgr;		
 		this.imf = imf;		
 		this.nm = idm;
-				
+		
 		vs = this.addStyle();		
 		this.applyToAll();
 	}
@@ -105,15 +107,15 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				// Reactions are Diamonds with a bluish background
 				// Metabolites are circles with a red/orange background
 				// Genes are Squares (which will hopefully be filled by IDARE nodes 
-		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
+		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
 		//and the sizes of imagenodes get adjusted
-		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		
 		
-		PassthroughMapping NameMapping = (PassthroughMapping) this.vmfFactoryP.createVisualMappingFunction(IDAREProperties.IDARE_NODE_NAME, String.class, BasicVisualLexicon.NODE_LABEL);
+		PassthroughMapping NameMapping = (PassthroughMapping) this.vmfFactoryP.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), String.class, BasicVisualLexicon.NODE_LABEL);
 		// 2. DiscreteMapping - Set node shape based on attribute value
-		DiscreteMapping<String,NodeShape> ShapeMapping = (DiscreteMapping<String, NodeShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_NODE_TYPE, String.class, BasicVisualLexicon.NODE_SHAPE);
+		DiscreteMapping<String,NodeShape> ShapeMapping = (DiscreteMapping<String, NodeShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), String.class, BasicVisualLexicon.NODE_SHAPE);
 		// If attribute value is "diamon", map the nodeShape to DIAMOND
 		ShapeMapping.putMapValue(IDAREProperties.NodeType.IDARE_SPECIES, NodeShapeVisualProperty.ELLIPSE);
 		// If attribute value is "triangle", map the nodeShape to TRIANGLE		
@@ -123,20 +125,20 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		ShapeMapping.putMapValue(IDAREProperties.NodeType.IDARE_LINK, NodeShapeVisualProperty.RECTANGLE);
 
 		
-		DiscreteMapping<String, Integer> NodeLabelSize = (DiscreteMapping<String, Integer>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_NODE_TYPE, String.class, BasicVisualLexicon.NODE_LABEL_FONT_SIZE);
+		DiscreteMapping<String, Integer> NodeLabelSize = (DiscreteMapping<String, Integer>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), String.class, BasicVisualLexicon.NODE_LABEL_FONT_SIZE);
 		NodeLabelSize.putMapValue(IDAREProperties.NodeType.IDARE_LINK, 20);
 		
-		DiscreteMapping<String, ArrowShape> EdgeTargetArrow = (DiscreteMapping<String, ArrowShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_EDGE_PROPERTY, String.class, BasicVisualLexicon.EDGE_TARGET_ARROW_SHAPE);
+		DiscreteMapping<String, ArrowShape> EdgeTargetArrow = (DiscreteMapping<String, ArrowShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_EDGE_PROPERTY.toString(), String.class, BasicVisualLexicon.EDGE_TARGET_ARROW_SHAPE);
 		EdgeTargetArrow.putMapValue(IDAREProperties.EdgeType.REACTION_REVERSIBLE, ArrowShapeVisualProperty.DELTA);
 		EdgeTargetArrow.putMapValue(IDAREProperties.EdgeType.REACTANT_EDGE, ArrowShapeVisualProperty.DELTA);
 		
 		
-		DiscreteMapping<String, ArrowShape> EdgeSourceArrow = (DiscreteMapping<String, ArrowShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_EDGE_PROPERTY, String.class, BasicVisualLexicon.EDGE_SOURCE_ARROW_SHAPE);
+		DiscreteMapping<String, ArrowShape> EdgeSourceArrow = (DiscreteMapping<String, ArrowShape>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_EDGE_PROPERTY.toString(), String.class, BasicVisualLexicon.EDGE_SOURCE_ARROW_SHAPE);
 		EdgeSourceArrow.putMapValue(IDAREProperties.EdgeType.REACTION_REVERSIBLE, ArrowShapeVisualProperty.DELTA);
 		EdgeSourceArrow.putMapValue(IDAREProperties.EdgeType.PRODUCT_EDGE, ArrowShapeVisualProperty.DELTA);
 		
 		
-		DiscreteMapping<String,Paint> NodeColorMapping = (DiscreteMapping<String,Paint>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_NODE_TYPE, String.class, BasicVisualLexicon.NODE_FILL_COLOR);
+		DiscreteMapping<String,Paint> NodeColorMapping = (DiscreteMapping<String,Paint>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), String.class, BasicVisualLexicon.NODE_FILL_COLOR);
 
 		NodeColorMapping.putMapValue(IDAREProperties.NodeType.IDARE_SPECIES, Color.RED);
 		NodeColorMapping.putMapValue(IDAREProperties.NodeType.IDARE_REACTION, Color.BLUE);
@@ -145,14 +147,14 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		NodeColorMapping.putMapValue(IDAREProperties.NodeType.IDARE_LINK, Color.white);
 
 
-		DiscreteMapping<String, Double> BorderMap = (DiscreteMapping<String, Double>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_NODE_TYPE, String.class, BasicVisualLexicon.NODE_BORDER_WIDTH);
+		DiscreteMapping<String, Double> BorderMap = (DiscreteMapping<String, Double>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), String.class, BasicVisualLexicon.NODE_BORDER_WIDTH);
 		BorderMap.putMapValue(IDAREProperties.NodeType.IDARE_SPECIES, 2.);
 		BorderMap.putMapValue(IDAREProperties.NodeType.IDARE_REACTION, 2.);
 		BorderMap.putMapValue(IDAREProperties.NodeType.IDARE_GENE, 2.);
 		BorderMap.putMapValue(IDAREProperties.NodeType.IDARE_PROTEIN, 2.);	
 		BorderMap.putMapValue(IDAREProperties.NodeType.IDARE_LINK, 0.0);
 		
-		DiscreteMapping<String,Integer> BorderTransparancyMap =(DiscreteMapping<String, Integer>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.IDARE_NODE_TYPE, String.class, BasicVisualLexicon.NODE_BORDER_TRANSPARENCY);
+		DiscreteMapping<String,Integer> BorderTransparancyMap =(DiscreteMapping<String, Integer>) this.vmfFactoryD.createVisualMappingFunction(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), String.class, BasicVisualLexicon.NODE_BORDER_TRANSPARENCY);
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_SPECIES, 255);
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_REACTION, 255);
 		BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_GENE, 255);
@@ -161,7 +163,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		//BorderTransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_imagenode, 0);
 		
 
-		IDAREDependentMapper<Integer> TransparancyMap = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_TYPE, BasicVisualLexicon.NODE_TRANSPARENCY,nm,0);
+		IDAREDependentMapper<Integer> TransparancyMap = new IDAREDependentMapper<Integer>(IDAREProperties.ColumnHeaders.IDARE_NODE_TYPE.toString(), BasicVisualLexicon.NODE_TRANSPARENCY,nm,0);
 		TransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_SPECIES, 255);
 		TransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_REACTION, 255);
 		TransparancyMap.putMapValue(IDAREProperties.NodeType.IDARE_GENE, 255);
@@ -206,10 +208,10 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		Iterator it = vmmServiceRef.getAllVisualStyles().iterator();
 		VisualStyle oldstyle = null;
 		
-		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
+		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
 		//and the sizes of imagenodes get adjusted
-		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.ColumnHeaders.IDARE_NODE_NAME.toString(), BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		//IDAREDependentMapper<NodeShape> imagenodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
 		
 

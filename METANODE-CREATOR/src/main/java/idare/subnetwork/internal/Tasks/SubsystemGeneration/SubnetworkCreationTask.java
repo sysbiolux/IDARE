@@ -549,12 +549,12 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 					//Here we set the Metabolite Node that is linking out as target. (Since it is the same node and present in multiple subnetworks.)
 					//Thus we need to refer to this node.
-					newnetwork.getRow(sourceNetworkNode).set(IDAREProperties.LINK_TARGET, originalnetwork.getRow(orignode).get(IDAREProperties.IDARE_NODE_UID, Long.class));
-					targetnetwork.getRow(targetNetworkNode).set(IDAREProperties.LINK_TARGET, originalnetwork.getRow(orignode).get(IDAREProperties.IDARE_NODE_UID, Long.class));
+					newnetwork.getRow(sourceNetworkNode).set(IDAREProperties.IDARE_LINK_TARGET, originalnetwork.getRow(orignode).get(IDAREProperties.IDARE_NODE_UID, Long.class));
+					targetnetwork.getRow(targetNetworkNode).set(IDAREProperties.IDARE_LINK_TARGET, originalnetwork.getRow(orignode).get(IDAREProperties.IDARE_NODE_UID, Long.class));
 					
 					//set the target Subsystem to the Subsystems SUID
-					newnetwork.getRow(sourceNetworkNode).set(IDAREProperties.LINK_TARGET_SUBSYSTEM, targetnetwork.getRow(targetnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
-					targetnetwork.getRow(targetNetworkNode).set(IDAREProperties.LINK_TARGET_SUBSYSTEM, newnetwork.getRow(newnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
+					newnetwork.getRow(sourceNetworkNode).set(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, targetnetwork.getRow(targetnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
+					targetnetwork.getRow(targetNetworkNode).set(IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, newnetwork.getRow(newnetwork).get(IDAREProperties.IDARE_NETWORK_ID,Long.class));
 					
 					try{
 						String labelcolumn = org.cy3sbml.SBML.LABEL;					
@@ -576,22 +576,6 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 					CyNetworkView targetSubSystemView = existingNetworks.get(targetnetwork);
 					CyNetworkView sourceSubSystemView = existingNetworks.get(newnetwork);									
 					
-					if(sourceSubSystemView == null)
-					{					
-						nvs.addNetworkLink(targetNetworkNode,  targetnetwork, newnetwork, sourcenode );
-					}
-					else
-					{
-						nvs.addLink(targetNetworkNode, targetnetwork, sourceSubSystemView, sourceSubSystemView.getNodeView(sourcenode));
-					}
-					if(targetSubSystemView == null)
-					{					
-						nvs.addNetworkLink(sourceNetworkNode, newnetwork, targetnetwork, targetnode);
-					}
-					else
-					{
-						nvs.addLink(sourceNetworkNode, newnetwork, targetSubSystemView, targetSubSystemView.getNodeView(targetnode));
-					}
 					if(targetSubSystemView != null)
 					{
 						if(!LinkNodeProps.containsKey(targetSubSystemView))

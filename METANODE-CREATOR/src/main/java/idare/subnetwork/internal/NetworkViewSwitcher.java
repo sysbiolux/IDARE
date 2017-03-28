@@ -1,6 +1,7 @@
 package idare.subnetwork.internal;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
+import idare.ThirdParty.CytoscapeUtils;
 import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.IOUtils;
 //import idare.imagenode.internal.Debug.PrintFDebugger;
@@ -29,6 +30,7 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNetworkTableManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.CyTableManager;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedEvent;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.model.events.NetworkAddedEvent;
@@ -42,6 +44,7 @@ import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.task.AbstractNodeViewTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
@@ -53,8 +56,7 @@ import org.cytoscape.work.TaskIterator;
  * A Class that acts as switcher between networks.
  * @author Thomas Pfau 
  */
-public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements NetworkViewAboutToBeDestroyedListener, NetworkViewAddedListener,
-																				NetworkAboutToBeDestroyedListener, RowsSetListener, NetworkAddedListener, SessionAboutToBeSavedListener{
+public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements NetworkAboutToBeDestroyedListener, RowsSetListener, SessionAboutToBeSavedListener{
 	//TODO: Think about whether to include the following listeners and how to implement them... AboutToRemoveNodeViewsListener, AboutToRemoveNodesListener
 	private static String SaveFileName = "NETWORKHIERARCHY";
 	private static String appName = "IDARE_NETWORKHIERARCHY";
@@ -99,7 +101,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	public synchronized TaskIterator createTaskIterator(View<CyNode> arg0, CyNetworkView arg1) {
 		CyNode node = arg0.getModel();
 		PrintFDebugger.Debugging(this, "Creating a new Switch Task");		
-		return new TaskIterator(new NetworkViewSwitchTask(registrar.getService(CyApplicationManager.class),targetViews.get(node)));
+		return new TaskIterator(new NetworkViewSwitchTask(registrar, node, arg1.getModel()));
 	}
 	
 	
@@ -238,203 +240,24 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		return subnetworkNames;
 	}
 	
-	
-	
-	/**
-	 * Add a Link between the {@link CyNode} and the target network {@link CyNetworkView}.
-	 * To keep track of these nodes and react properly to closing {@link CyNetworkView}s we need the original {@link CyNetwork} and the target NodeView
-	 * @param node - The {@link CyNode} that will function as a link. Double clicking on a View of this node will switch the current NetworkView to the target  view (if available)
-	 * @param origin - The {@link CyNetwork} of the {@link CyNode}. This is for managing this node depending on the presence of the target network.
-	 * @param TargetNetworkView - The View this link is pointing to
-	 * @param TargetNodeView - The Node this Link will focus on in the target network.
-	 */
-	public synchronized void addLink(CyNode node, CyNetwork origin, CyNetworkView TargetNetworkView, View<CyNode> TargetNodeView)
-	{
-//		PrintFDebugger.Debugging(this, "Creating a Visual link between " + origin + " and " +  TargetNetworkView.getModel() + " for node " + TargetNodeView.getModel());
-		targetViews.put(node, new NodeViewLink(TargetNodeView, TargetNetworkView,TargetNetworkView.getModel(),TargetNodeView.getModel(),origin));
-		//PrintFDebugger.Debugging(this, "Adding node " + origin.getRow(node).get(IDAREProperties.IDARE_NODE_UID, Long.class) + " with Network " +  origin.getDefaultNetworkTable().getRow(origin.getSUID()).get(CyNetwork.NAME, String.class ) + " to nodeAndNetwork");
-		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
-		CyNetwork targetNetwork = TargetNetworkView.getModel();
-		if(!nodesPointingToNetwork.containsKey(targetNetwork))
-		{
-			nodesPointingToNetwork.put(targetNetwork, new HashSet<NodeAndNetworkStruct>());
-		}
-		nodesPointingToNetwork.get(targetNetwork).add(new NodeAndNetworkStruct(node,origin));
-		if(!listenedNetworks.containsKey(TargetNetworkView))
-		{
-			listenedNetworks.put(TargetNetworkView, new LinkedList<CyNode>());			
-		}
-		listenedNetworks.get(TargetNetworkView).add(node);		
-	}
-	
-	/**
-	 * Add a Link between the {@link CyNode} and the target network {@link CyNetwork}.
-	 * This is for a situation were no view exists for the target of this node. If a view is created for the target network, this link will become active
-	 * @param node - The CyNode that will function as a link. Double clicking on a View of this node will switch the current NetworkView to the target  view (if available)
-	 * @param origin - The {@link CyNetwork} of the node. This is for managing this node depending on the presence of the target network.
-	 * @param target - The target network.
-	 * @param TargetNode - The target node in the target network, this link will focus on.
-	 */
-	public synchronized void addNetworkLink(CyNode node,CyNetwork origin, CyNetwork target, CyNode TargetNode)
-	{
-//		PrintFDebugger.Debugging(this, "Creating a network link between " + origin + " and " +  target + " for node " + TargetNode);
-		targetViews.put(node, new NodeViewLink(null, null, target, TargetNode,origin));
-		nodeNetworks.put(node, new NodeAndNetworkStruct(node,origin));
-		if(!nodesPointingToNetwork.containsKey(target))
-		{
-			nodesPointingToNetwork.put(target, new HashSet<NodeAndNetworkStruct>());
-		}
-		nodesPointingToNetwork.get(target).add(new NodeAndNetworkStruct(node,origin));
-		if(!SilentNodes.containsKey(target))
-		{
-			SilentNodes.put(target, new LinkedList<CyNode>());			
-		}
-		SilentNodes.get(target).add(node);			
-	
-	}
-	
-
-	@Override
-	public synchronized void handleEvent(NetworkViewAddedEvent e) {
-		//here we have to check whether this fits...
-		CyNetworkView view = e.getNetworkView();
-		CyNetwork network = view.getModel();
-		if(SilentNodes.containsKey(network))
-		{
-//			PrintFDebugger.Debugging(this, "Trying to restore links for network" + network);
-			//correct the SubNetwors field
-			SubNetworks.put(network, view);
-			//there were nodes pointing to this View so we have to deactivate them.
-			// we also have to remove this View from the ListenedNetworks
-			for(CyNode node : SilentNodes.get(network))
-			{
-//				PrintFDebugger.Debugging(this, "Restoring visual link between " + network + " and " + targetViews.get(node).getSourceNetwork() + " using node " + node);
-				//reset the TargetNodeView -> we have to retrieve the target node information from the TargetViews Structure.
-				targetViews.get(node).setTargetNodeView(view.getNodeView(targetViews.get(node).getTargetNode()));
-				//Set the Target view
-				targetViews.get(node).setTargetNetworkView(view);
-				// and now we have to add the links to the silent Links
-				if(!listenedNetworks.containsKey(view))
-				{					
-					listenedNetworks.put(view,new LinkedList<CyNode>());
-				}
-				//and add the View to the Known views. and the node to the nodes pointing to this view.
-				listenedNetworks.get(view).add(node);
-			}			
-			SilentNodes.remove(network);			
-		}		
-	}
-	
+		
 	
 	@Override
 	public synchronized void handleEvent(NetworkAboutToBeDestroyedEvent e) {
-//		System.out.println("Calling NetworkAboutToBeDestroyed");		
-		CyNetwork tobeDestroyed = e.getNetwork();
-//		PrintFDebugger.Debugging(this, "The Network to be destroyed is " + tobeDestroyed);
-
+		//Here, we have to remove all Nodes that point to this network in all other networks.
+		
+		CyNetwork tobeDestroyed = e.getNetwork();		
+		Long NetworkID = tobeDestroyed.getRow(tobeDestroyed).get(IDAREProperties.IDARE_NETWORK_ID, Long.class);
+				
 		//now we need to get all linkers to this network and remove them.
-		try
+		for(CyNetwork network : registrar.getService(CyNetworkManager.class).getNetworkSet())
 		{
-		Set<NodeAndNetworkStruct> LinksToRemove = new HashSet<NodeAndNetworkStruct>();
-		Set<CyNode> LinkNodes = new HashSet<CyNode>();
-		LinkNodes.addAll(targetViews.keySet());
-		for(CyNode node : LinkNodes)
-		{
-			NodeViewLink Link = targetViews.get(node);
-			if(Link.getTargetNetwork().equals(tobeDestroyed)){
-				LinksToRemove.add(nodeNetworks.get(node));
-			}
-			if(Link.getSourceNetwork().equals(tobeDestroyed))
-			{
-				targetViews.remove(node);
-				nodeNetworks.remove(node);
-			}
+			Set<CyNode> relevantNodes = CytoscapeUtils.getNodesWithValue(network, network.getDefaultNodeTable(), IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, NetworkID);
+			network.removeNodes(relevantNodes);					
 		}
-		for(NodeAndNetworkStruct nodeAndNet : LinksToRemove)
-		{						
-			CyNetwork orignetwork = nodeAndNet.network;
-			Collection<CyEdge> edges = orignetwork.getAdjacentEdgeList(nodeAndNet.node, CyEdge.Type.ANY);
-			orignetwork.removeEdges(edges);
-			orignetwork.removeNodes(Collections.singletonList(nodeAndNet.node));
-			//check whether the other view still exists and if, update it. Otherwise 
-			if(targetViews.get(nodeAndNet.node).getTargetNetworkView() != null)
-			{ 
-				targetViews.get(nodeAndNet.node).getTargetNetworkView().updateView();
-			}
-			else
-			{
-				System.out.println(nodeAndNet.node);
-			}
-			targetViews.remove(nodeAndNet.node);			
-			nodeNetworks.remove(nodeAndNet.node);
-		}
-		}
-		catch(Exception ex)
-		{
-			ex.printStackTrace(System.out);
-		}
-		
-		
-		NetworkNode netNode = NetworkNodes.get(tobeDestroyed);
-		if(netNode != null)
-		{
-			netNode.setNetwork(null,ism);
-		}
-		//if the network is a root network, we have to adjust its children and eliminate the NetworkNode entirely.
-		if(netNode.parent == null)
-		{
-			for(NetworkNode child : netNode.getChildren())
-			{
-				child.parent = null;				
-			}	
-		}		
-		NetworkNodes.remove(tobeDestroyed);
-		NetworkHierarchy.remove(tobeDestroyed);
-		nodesPointingToNetwork.remove(tobeDestroyed);
-		SilentNodes.remove(tobeDestroyed);
-		SubNetworks.remove(tobeDestroyed);
 	}
 	
 	
-	@Override
-	public synchronized void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
-		CyNetworkView view = e.getNetworkView();
-		CyNetwork network = view.getModel();
-//		PrintFDebugger.Debugging(this, "Removing view for: "  + network);
-		if(listenedNetworks.containsKey(view))
-		{
-			//there were nodes pointing to this View so we have to deactivate them.
-			// we also have to remove this View from the ListenedNetworks
-//			PrintFDebugger.Debugging(this, "Deactivating links for the view");	
-			for(CyNode node : listenedNetworks.get(view))
-			{
-//				PrintFDebugger.Debugging(this, "link for node ");	
-				targetViews.get(node).setTargetNodeView(null);
-				targetViews.get(node).setTargetNetworkView(null);
-				// and now we have to add the links to the silent Links
-				if(!SilentNodes.containsKey(network))
-				{
-//					PrintFDebugger.Debugging(this, "Adding List to silentnnodes for network " + network);
-					SilentNodes.put(network,new LinkedList<CyNode>());
-				}
-//				PrintFDebugger.Debugging(this, "Adding node " + node + " to the silent network nodes of network " + network);
-				SilentNodes.get(network).add(node);
-			}		
-			//We also have to place all nodes in other networks pointing to the current one "on hold"
-			//i.e. deactivate them.
-			
-			listenedNetworks.remove(view);	
-			if(SubNetworks.containsKey(network))
-			{
-//				PrintFDebugger.Debugging(this, "Setting NetworkView for: "  + network + " to null");
-				SubNetworks.put(network, null);
-			}
-			else
-			{
-				System.out.println("Network: "  + network.getRow(network).get(CyNetwork.NAME, String.class) + " was already removed");
-			}
-		}		
-	}
 	/**
 	 * Check whether the set row is a network row and if, check whether it refers to a network, 
 	 * we are listening to and update all links accordingly 
@@ -452,12 +275,11 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 		}
 		//long start = System.nanoTime();
 		//PrintFDebugger.Debugging(this, "Obtaining a Row Set event ");
-
+		Set<CyNetwork> alteredNetworks = new HashSet<>();
 		if(e.containsColumn(CyNetwork.NAME))
 		{		
 			Collection<RowSetRecord> temp = e.getColumnRecords(CyNetwork.NAME);
 			
-			boolean changed = false; 
 			
 			for(RowSetRecord rec : temp)
 			{				
@@ -471,24 +293,30 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 				}		
 
 				String newName = rec.getValue().toString(); 
-				
-				for(NodeAndNetworkStruct nodeAndNetwork : nodesPointingToNetwork.get(network))
+				for(CyNetwork othernetwork : registrar.getService(CyNetworkManager.class).getNetworkSet())
 				{
-					changed = true;																	
-					nodeAndNetwork.network.getRow(nodeAndNetwork.node).set(IDAREProperties.IDARE_NODE_NAME, newName);
-					nodeAndNetwork.network.getRow(nodeAndNetwork.node).set(CyNetwork.NAME, newName);
-//					NetworkNames.put(network, network.getRow(network).get(CyNetwork.NAME, String.class));
+					Set<CyNode> relevantNodes = CytoscapeUtils.getNodesWithValue(network, network.getDefaultNodeTable(), IDAREProperties.IDARE_LINK_TARGET_SUBSYSTEM, NetworkID);
+					for(CyNode nodeToAlter : relevantNodes)
+					{
+						alteredNetworks.add(othernetwork);
+						othernetwork.getRow(nodeToAlter).set(IDAREProperties.IDARE_NODE_NAME, newName);
+						othernetwork.getRow(nodeToAlter).set(CyNetwork.NAME, newName);
+					}
+					
 				}
 
 			}
-			
-			if(changed)
-			{	//update the views only if there actually have been any changes.
+			if(alteredNetworks.size() > 0)
+			{				
 				CyEventHelper eventhelper = registrar.getService(CyEventHelper.class);
 				eventhelper.flushPayloadEvents();
-				for(CyNetworkView view : this.listenedNetworks.keySet())
+				CyNetworkViewManager mgr = registrar.getService(CyNetworkViewManager.class);				
+				for(CyNetwork net : alteredNetworks)
 				{
-					view.updateView();
+					for(CyNetworkView view : mgr.getNetworkViews(net))
+					{
+						view.updateView();	
+					}
 				}
 			}
 		}
@@ -496,12 +324,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 
 	}
 	
-	@Override
-	public synchronized void handleEvent(NetworkAddedEvent e) {
-	}
-	
-	
-	
+
 	@Override
 	public void handleEvent(SessionAboutToBeSavedEvent arg0) {		
 		File NetworkHierarchyFile = IOUtils.getTemporaryFile(SaveFileName, "");

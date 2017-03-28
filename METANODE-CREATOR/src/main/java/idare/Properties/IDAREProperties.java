@@ -12,8 +12,64 @@ import java.util.Map;
 public class IDAREProperties {
 
 	
+	public static final String IDARE_NAMESPACE = "idare";
 	private HashMap<String,String> typeMap= new HashMap<String,String>();
+	
+	public enum ColumnHeaders
+	{
+		IDARE_NODE_TYPE("IDARENodeType",String.class,""),
+		IDARE_NODE_NAME("IDARENodeName",String.class,""),
+		IDARE_DUPLICATED_NODE("IDAREDuplicatedNode",Boolean.class,false),
+		IDARE_ORIGINAL_NODE("IDAREOriginalNode",Long.class,null),
+		IDARE_LINK_TARGET_SUBSYSTEM("IDARETargetSubsystem",Long.class,null),
+		IDARE_LINK_TARGET("IDARELinkTargets",Long.class,null),
+		IDARE_NODE_UID("IDARELinkTargetID",Long.class,null),
+		IDARE_SUBNETWORK_TYPE("IDARESubNetworkNodeType",String.class,""),		
+		IDARE_NETWORK_ID("IDARENetworkID",Long.class,null),
+		IDARE_GENE_EDGE_ID("IDAREGeneEdge",Long.class,null),
+		IDARE_EDGE_PROPERTY("IDAREEdgeType",String.class,"");
 		
+		
+		private final String text;
+		private final Class type;
+		private final Object defaultValue;
+		private ColumnHeaders(final String text, Class type, Object defaultValue)
+		{
+			this.text = text;
+			this.defaultValue = defaultValue;
+			this.type = type;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return text;
+		}
+		public Class getType()
+		{
+			return type;
+		}
+		public Object getdefaultValue()
+		{
+			return defaultValue;
+		}
+	}
+
+	public static ColumnHeaders[] NetworkHeaders = {ColumnHeaders.IDARE_NETWORK_ID};
+		
+	public static ColumnHeaders[] EdgeHeaders = {ColumnHeaders.IDARE_GENE_EDGE_ID,ColumnHeaders.IDARE_EDGE_PROPERTY};
+	
+	//All Headers refering to nodes.
+	public static ColumnHeaders[] NodeHeaders = {ColumnHeaders.IDARE_NODE_TYPE,
+												 ColumnHeaders.IDARE_NODE_NAME,
+												 ColumnHeaders.IDARE_DUPLICATED_NODE,
+												 ColumnHeaders.IDARE_LINK_TARGET,
+												 ColumnHeaders.IDARE_LINK_TARGET_SUBSYSTEM,
+												 ColumnHeaders.IDARE_NODE_UID,
+												 ColumnHeaders.IDARE_ORIGINAL_NODE,
+												 ColumnHeaders.IDARE_SUBNETWORK_TYPE
+												 };
+	
 	/**
 	 * IDARE Column Headers
 	 */
@@ -22,13 +78,13 @@ public class IDAREProperties {
 	public static final String IDARE_SUBNETWORK_TYPE = "IDARESubNetworkNodeType";
 	public static final String IDARE_NODE_NAME = "IDARENodeName";
 	public static final String IDARE_NETWORK_ID = "IDARENetworkID";
-	public static final String GENE_EDGE_ID = "IDAREGeneEdge";
-	public static final String DUPLICATED_NODE = "IDAREDuplicatedNode";
-	public static final String ORIGINAL_NODE = "IDAREOriginalNode";
+	public static final String IDARE_GENE_EDGE_ID = "IDAREGeneEdge";
+	public static final String IDARE_DUPLICATED_NODE = "IDAREDuplicatedNode";
+	public static final String IDARE_ORIGINAL_NODE = "IDAREOriginalNode";
 	/**
 	 * This field should only be set if the corresponding node is a Link Node (i.e. the IDARENodeType is IDARE_LINK)
 	 */
-	public static final String LINK_TARGET = "IDARELinkTargets";
+	public static final String IDARE_LINK_TARGET = "IDARELinkTargets";
 	/**	 
 	 * The ID for this node if it is the target of a link. 
 	 * At network creation this will be set to the SUID of the corresponding node.
@@ -39,7 +95,7 @@ public class IDAREProperties {
 	/**
 	 * This is an awkward way to restore the correct linking behaviour since there is otherwise no way to know which SubsystemView a link targeted.
 	 */
-	public static final String LINK_TARGET_SUBSYSTEM = "IDARETargetSubsystem";
+	public static final String IDARE_LINK_TARGET_SUBSYSTEM = "IDARETargetSubsystem";
 	
 	public static final String SBML_EDGE_TYPE = "interaction type";
 	
