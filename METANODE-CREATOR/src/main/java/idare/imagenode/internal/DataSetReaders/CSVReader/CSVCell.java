@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 /**
  * A implementation of a {@link Cell} for use in CSV files.
  * A csv cell can only ever contain numeric, blank or string values. and will act as such. 
@@ -124,7 +125,7 @@ public class CSVCell implements Cell {
 
 	@Override
 	public RichTextString getRichStringCellValue() {				
-		return null;
+		return type == Cell.CELL_TYPE_STRING ? new XSSFRichTextString(StringValue) : new XSSFRichTextString("");
 	}
 
 	@Override

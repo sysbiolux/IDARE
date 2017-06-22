@@ -1,6 +1,7 @@
 package idare.NodeDuplicator.Internal;
 
 import java.util.Collection;
+import java.util.Vector;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetwork;
@@ -13,18 +14,18 @@ import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 
 import idare.Properties.IDAREProperties;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 
 public class NodeRegistry implements RowsSetListener,TaskFactory{
 
 
 	private boolean reactingToRowset = false;
 	private CyEventHelper helper;
-	
+	private Vector<Long> UsedRowIDs;
 	
 	public NodeRegistry(CyServiceRegistrar reg) {
 		// TODO Auto-generated constructor stub
 		helper = reg.getService(CyEventHelper.class);
+		UsedRowIDs = new Vector<Long>();
 	}
 	
 	@Override
@@ -32,9 +33,7 @@ public class NodeRegistry implements RowsSetListener,TaskFactory{
 		// TODO Auto-generated method stub
 		if(!reactingToRowset)
 		{
-			PrintFDebugger.Debugging(this, "Received a Row Set Event while reactingToRowSet was " + reactingToRowset);
 			reactingToRowset = true;
-			PrintFDebugger.Debugging(this, "There were " + arg0.getPayloadCollection().size() + " Records");
 			for(RowSetRecord record : arg0.getPayloadCollection())
 			{				
 				if(record.getColumn().equals(CyNetwork.SELECTED))
@@ -42,11 +41,10 @@ public class NodeRegistry implements RowsSetListener,TaskFactory{
 					//skip SELECTED statements
 					continue;
 				}
-				//we have a duplicated entry
-				if(record.getRow().get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class))
+				//we have a duplicated entry				
+				if(record.getRow().isSet(IDAREProperties.IDARE_DUPLICATED_NODE) && record.getRow().get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class))
 				{
 					Collection<CyRow> matchingRows = record.getRow().getTable().getMatchingRows(IDAREProperties.IDARE_ORIGINAL_NODE,record.getRow().get(IDAREProperties.IDARE_ORIGINAL_NODE, Long.class) );
-					PrintFDebugger.Debugging(this, "Found " + matchingRows.size() + " Duplicates");
 					matchingRows.remove(record.getRow());
 					for(CyRow row : matchingRows)
 					{
@@ -68,11 +66,7 @@ public class NodeRegistry implements RowsSetListener,TaskFactory{
 			reactingToRowset = false;
 		}
 	}
-
-	private synchronized void handleupdate()
-	{
-
-	}
+		
 	public void deactivate()
 	{
 		reactingToRowset = true;

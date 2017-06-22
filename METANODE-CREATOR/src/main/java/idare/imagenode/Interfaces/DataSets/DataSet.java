@@ -242,6 +242,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	 */
 	private final void determineDataProperties(IDAREWorkbook WB) throws WrongFormat
 	{		
+		PrintFDebugger.Debugging(this, "determining Properties");
 		IDARESheet DataSheet = WB.getSheetAt(0);
 		Iterator<IDARERow> rowIterator = DataSheet.iterator();
 		//Skip the HEader row!
@@ -249,9 +250,12 @@ public abstract class DataSet implements IDAREService, Serializable{
 		//skip the label row		
 		boolean uninitialized = true;
 		int maxcolumn = 0;
+		int rownumber = 0;
 		while(rowIterator.hasNext() && uninitialized)
-		{
+		{						
+
 			Iterator<IDARECell> cellIterator = rowIterator.next().iterator();
+			PrintFDebugger.Debugging(this, "Reading Row " + (rownumber++));
 			//Skip the first (and potentially second column)
 			IDARECell currentcell = null;			
 			while(cellIterator.hasNext())
@@ -325,7 +329,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 			}
 
 		}
-		
+		PrintFDebugger.Debugging(this, "Data set properties detected." + isnumeric + "/" + isstring);
 		if(isnumeric && isstring)
 		{
 			throw new WrongFormat("Detected both String and multiple numeric values. Please use either Strings or numeric values as entries.");
@@ -493,7 +497,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 		while(currentiterator.hasNext())
 		{
 			
-			currentCell = currentiterator.next();			
+			currentCell = currentiterator.next();
+			PrintFDebugger.Debugging(DataSet.class, "The current cell is " + currentCell);
 			if(currentCell.getColumnIndex() >= offset)
 			{
 				return currentCell;

@@ -1,10 +1,5 @@
 package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 
-import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.subnetwork.internal.NetworkViewSwitcher;
-import idare.subnetwork.internal.SubNetworkUtils;
-import idare.subnetwork.internal.GUI.SubnetworkPropertiesSelectionGUI;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +10,10 @@ import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.AbstractGUITunableHandler;
+
+import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.SubNetworkUtils;
+import idare.subnetwork.internal.GUI.SubnetworkPropertiesSelectionGUI;
 
 
 public class SubnetworkCreationGUIHandler extends AbstractGUITunableHandler {

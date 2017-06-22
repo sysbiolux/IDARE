@@ -78,9 +78,15 @@ public class ColorScaleFactory {
 		scales.add(new PrismScale());
 		scales.add(new LineScale());
 		scales.add(new HSVScale().getDiscreteColorScale(colorcount));
-		scales.add(new JetScale().getDiscreteColorScale(colorcount));
-		scales.add(new BlueYellowRed().getDiscreteColorScale(colorcount));
-		scales.add(new BlackYellowRed().getDiscreteColorScale(colorcount));
+		scales.add(new JetScale().getDiscreteColorScale(colorcount));		
+		if(colorcount <= 3)
+		{
+			scales.add(new BlueWhiteRedScale().getDiscreteColorScale(colorcount));
+			scales.add(new BlueYellowRed().getDiscreteColorScale(colorcount));
+			scales.add(new BlackYellowRed().getDiscreteColorScale(colorcount));
+			scales.add(new GreenBlackRed().getDiscreteColorScale(colorcount));			
+		}
+				
 		}
 		
 		return scales;

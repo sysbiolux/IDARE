@@ -1,5 +1,8 @@
 package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 
+import idare.NodeDuplicator.Internal.NodeDuplicatorImpl;
+import idare.NodeDuplicator.Internal.NodeRegistry;
+import idare.NodeDuplicator.Internal.Tasks.NodeDuplicationTask;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
@@ -35,6 +38,7 @@ import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.work.AbstractTask;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.RequestsUIHelper;
@@ -106,7 +110,8 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 		CyRootNetworkManager cyRootNetMgr = registry.getService(CyRootNetworkManager.class);
 		CyRootNetwork rootNetwork = cyRootNetMgr.getRootNetwork(originalnetwork);
 		CyTable NodeTable = originalnetwork.getDefaultNodeTable();		
-
+		NodeRegistry nodeReg = registry.getService(NodeRegistry.class);
+		nodeReg.deactivate();
 		//Get the existing Networks (for this SUBNETWORK Column, otherwise we might create LOADS and LOADS of linkers...
 		
 		//HashMap<CyNetwork,CyNetworkView> existingSubSystemViews = nvs.getExistingNetworks(originalnetwork,ColName);
@@ -212,7 +217,9 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 
 
 			}
-		}		
+		}	
+		
+		
 		for(CyNetworkView view : LinkNodeProps.keySet())
 		{
 			//create New Linker Nodes.
@@ -222,6 +229,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 			
 			DelayedVizProp.applyAll(view, LinkNodeProps.get(view));											
 			vmm.setVisualStyle(vmm.getVisualStyle(currentview), currentview);
+			
 			eventHelper.flushPayloadEvents();
 			view.updateView();
 			if(!networkViewManager.getNetworkViewSet().contains(view))
@@ -238,7 +246,12 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 				view.updateView();
 			}			
 		}		
-		
+		//Duplicate all selected nodes.
+		for(CyNode nodeToDup : params.duplicateNodes)
+		{
+			insertTasksAfterCurrentTask(new TaskIterator(new NodeDuplicatorImpl(nodeToDup,originalnetwork,registry,false)));
+		}
+		nodeReg.activate();		
 	}
 	
 	

@@ -61,7 +61,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	HashMap<CyNetworkView, Point2D> originalPos = new HashMap<>();
 	HashMap<CySubNetwork,Collection<CyEdge>> removedEdges = new HashMap<>();
 	private Map<CyIdentifiable, Map<CyNetworkView, Map<VisualProperty<?>, Object>>> bypassMap = new HashMap<>();
-	
+	boolean isundoable;
 	
 	/**
 	 * Default Constructor using a {@link CyNode} with its associated {@link CyNetwork} along with a {@link CyServiceRegistrar}
@@ -69,7 +69,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	 * @param sourceNetwork the network in which the node is present.
 	 * @param reg teh {@link CyServiceRegistrar} to obtain services from.
 	 */
-	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg) {
+	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg, boolean isundoable) {
 		// TODO Auto-generated constructor stub
 		super("Duplicate Nodes");
 		helper = reg.getService(CyEventHelper.class);
@@ -80,6 +80,7 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 		OriginalNode = OrigNode;
 		undoSup = reg.getService(UndoSupport.class);
 		nodeReg = reg.getService(NodeRegistry.class);
+		this.isundoable = isundoable;
 	}
 	
 	/**
@@ -304,7 +305,8 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	@Override
 	public void run(TaskMonitor arg0) throws Exception {
 		// TODO Auto-generated method stub
-		undoSup.postEdit(this);
+		if(isundoable)	//if this task is not undoable, post it.
+			undoSup.postEdit(this);		
 		this.redo();
 	}
 	

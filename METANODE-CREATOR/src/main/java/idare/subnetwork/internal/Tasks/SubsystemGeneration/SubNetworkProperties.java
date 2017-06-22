@@ -17,6 +17,7 @@ public class SubNetworkProperties {
 	public Vector<Object> subSystems;
 	public Set<CyNode> ignoredNodes;
 	public Set<CyNode> noBranchNodes;
+	public Set<CyNode> duplicateNodes;
 	public CyNetwork currentNetwork;
 	public CyNetworkView currentNetworkView;
 	public CyLayoutAlgorithm layoutAlgorithm;

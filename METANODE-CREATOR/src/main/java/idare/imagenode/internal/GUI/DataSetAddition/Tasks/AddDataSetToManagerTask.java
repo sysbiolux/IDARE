@@ -31,7 +31,7 @@ public class AddDataSetToManagerTask extends ObservableIDARETask {
 		{			
 			try{
 				
-//				PrintFDebugger.Debugging(this, "Creating Dataset");
+				PrintFDebugger.Debugging(this, "Creating Dataset for a workbook of type  " + wb.getClass().getSimpleName());
 				dsri.getDataSetManager().createDataSet(dsri.doUseTwoColumns(), dsri.getDataSetType(), dsri.getDataSetDescription(), wb);
 				taskMonitor.setStatusMessage("Added DataSet to IDARE");
 //				PrintFDebugger.Debugging(this, "Updating dsri");

@@ -479,16 +479,16 @@ public class DataSetManager{
 	throws ExecutionException,WrongFormat, InvalidFormatException, DuplicateIDException, IOException, 
 	ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-//		PrintFDebugger.Debugging(this,"Generating a dataset with twocolumnheaders set to " + TwoCols);
+		PrintFDebugger.Debugging(this,"Generating a dataset with twocolumnheaders set to " + TwoCols);
 		DataSet ds = availableDataSetTypes.get(DataSetTypeName).newInstance();		
 		//here we just supply all options available. The DataSet Class will care about a proper selection later during readWorkBookData
-//		PrintFDebugger.Debugging(this,"Setting Property options");
+		PrintFDebugger.Debugging(this,"Setting Property options");
 		ds.setPropertyOptionsUnchecked(dataSetPropertyOptions.get(availableDataSetTypes.get(DataSetTypeName)));
-//		PrintFDebugger.Debugging(this,"obtaining new id" );
+		PrintFDebugger.Debugging(this,"obtaining new id" );
 		ds.setID(idprovider.getNextID());		
 		ds.useTwoColHeaders = TwoCols;
 		ds.Description = SetDescription;
-//		PrintFDebugger.Debugging(this,"setting up workbook");
+		PrintFDebugger.Debugging(this,"setting up workbook");
 		ds.setupWorkBook(dsWorkBook);
 //		PrintFDebugger.Debugging(this,"Adding Dataset");
 		addDataSet(ds);

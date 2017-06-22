@@ -30,7 +30,8 @@ public class NodeMergerFactory implements NodeViewTaskFactory {
 	public boolean isReady(View<CyNode> arg0, CyNetworkView arg1) {
 		if(IDARESettingsManager.isSetupNetwork(arg1.getModel()))
 		{
-			return arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class);
+			
+			return arg1.getModel().getRow(arg0.getModel()).isSet(IDAREProperties.IDARE_DUPLICATED_NODE) && arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE, Boolean.class);
 		}		
 		return false;
 	}

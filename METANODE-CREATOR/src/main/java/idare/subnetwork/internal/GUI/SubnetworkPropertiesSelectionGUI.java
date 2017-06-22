@@ -36,6 +36,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.UIDefaults;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -374,6 +376,14 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 				row.add(false);
 			}
 			//
+			if(entry.value > (int) Math.ceil(Math.sqrt(reactioncount) * 0.7) && (entry.value < (int) Math.ceil(Math.sqrt(reactioncount))))
+			{
+				row.add(true);
+			}			
+			else
+			{
+				row.add(false);
+			}
 			if(entry.value > (int) Math.ceil(Math.sqrt(reactioncount)))
 			{
 				row.add(true);
@@ -381,16 +391,51 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 			else
 			{
 				row.add(false);
-			}			
+			}	
 			row.add(entry.key);
 			metSelMod.addRow(row);
 		}
 		metSelTab.setModel(metSelMod);
 		metSelTab.getColumnModel().getColumn(metSelMod.getExtendCol()).setMaxWidth(130);
 		metSelTab.getColumnModel().getColumn(metSelMod.getRemoveCol()).setMaxWidth(70);
+		metSelTab.getColumnModel().getColumn(metSelMod.getDuplicateCol()).setMaxWidth(70);
 		Dimension dim = metSelTab.getPreferredSize();
 		dim.height = 300;
 		metSelTab.setPreferredScrollableViewportSize(dim);
+		metSelTab.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getColumn() == metSelMod.getDuplicateCol())
+				{
+					for(int i = e.getFirstRow(); i <= e.getLastRow(); i++)
+					{
+						if((Boolean) metSelMod.getValueAt(i, e.getColumn()))
+						{
+							if((Boolean) metSelMod.getValueAt(i, metSelMod.getRemoveCol()))
+							{
+								metSelMod.setValueAt(false, i, metSelMod.getRemoveCol());
+							}
+						}
+					}
+				}
+				if(e.getColumn() == metSelMod.getRemoveCol())
+				{
+					for(int i = e.getFirstRow(); i <= e.getLastRow(); i++)
+					{
+						if((Boolean) metSelMod.getValueAt(i, e.getColumn()))
+						{
+							if((Boolean) metSelMod.getValueAt(i, metSelMod.getDuplicateCol()))
+							{
+								metSelMod.setValueAt(false, i, metSelMod.getDuplicateCol());
+							}
+						}
+					}
+				}
+					
+			}
+		});
 		// and now hide the CyNode Column.
 		TableColumnModel tcm = metSelTab.getColumnModel();
 		tcm.removeColumn(tcm.getColumn(metSelMod.getCyNodeCol()));
@@ -426,8 +471,8 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	public Set<CyNode> getNodesToRemove()
 	{
 
-		int RemPos = metSelMod.usecompartment ? 4 : 3;
-		int ValPos = metSelMod.usecompartment ? 5 : 4;		
+		int RemPos = metSelMod.usecompartment ? 5 : 4;
+		int ValPos = metSelMod.usecompartment ? 6 : 5;		
 		Set<CyNode> NodesToRemove = new HashSet<CyNode>();
 		for(int i=0; i < metSelTab.getModel().getRowCount(); i++)
 		{
@@ -447,7 +492,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	{
 		Set<CyNode> NodesToSkip= new HashSet<CyNode>();
 		int SkipPos = metSelMod.usecompartment ? 3 : 2;
-		int ValPos = metSelMod.usecompartment ? 5 : 4;		
+		int ValPos = metSelMod.usecompartment ? 6 : 5;		
 		for(int i=0; i < metSelTab.getModel().getRowCount(); i++)
 		{
 			
@@ -459,6 +504,28 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		return NodesToSkip;
 		
 	}
+	/**
+	 * Get the {@link CyNode} which should not link to other networks 
+	 * @return a {@link Set} of {@link CyNode}s that are not used to create links
+	 */
+	public Set<CyNode> getNodesToDuplicate()
+	{
+		Set<CyNode> NodesToDuplicate= new HashSet<CyNode>();
+		int DupPos = metSelMod.usecompartment ? 4 : 3;
+		int ValPos = metSelMod.usecompartment ? 6 : 5;		
+		for(int i=0; i < metSelTab.getModel().getRowCount(); i++)
+		{
+			
+			if((Boolean)metSelTab.getModel().getValueAt(i, DupPos))
+			{
+				NodesToDuplicate.add((CyNode)metSelTab.getModel().getValueAt(i, ValPos));
+			}
+		}
+		return NodesToDuplicate;
+		
+	}
+	
+	
 	/**
 	 * A Helper class to obtain a sorting of CyNodes based on additional information.
 	 * @author Thomas Pfau
@@ -596,6 +663,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		props.subSystems = SubSystemsToGenerate();
 		props.ignoredNodes = getNodesToRemove();
 		props.noBranchNodes = getNodesToSkip();
+		props.duplicateNodes = getNodesToDuplicate();
 		props.currentNetwork = network;
 		return props;
 	}
@@ -611,20 +679,20 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	
 		private String[] ColumnName;
 		private int mineditrows = 2;
-		private int maxeditrows = 3;
+		private int maxeditrows = 4;
 		public boolean usecompartment = false;
 		public MetaboliteSelectionModel(String CompName)
 		{
 			
 			if(CompName == null)
 			{
-				ColumnName = new String[]{"Node Name","Edgecount", "Do not extend", "Remove","CyNode"};				
+				ColumnName = new String[]{"Node Name","Edgecount", "Do not extend", "Duplicate", "Remove","CyNode"};				
 			}
 			else
 			{
-				ColumnName = new String[]{"Node Name","Compartment","Edgecount", "Do not extend", "Remove","CyNode"};
+				ColumnName = new String[]{"Node Name","Compartment","Edgecount", "Do not extend", "Duplicate", "Remove","CyNode"};
 				mineditrows = 3;
-				maxeditrows = 4;
+				maxeditrows = 5;
 				usecompartment = true;
 			}			
 			setColumnCount(ColumnName.length);
@@ -646,6 +714,15 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		 * @return index of the remove column
 		 */
 		public int getExtendCol()
+		{
+			return ColumnName.length - 4;
+		}		
+		
+		/**
+		 * get the index of the remove column
+		 * @return index of the remove column
+		 */
+		public int getDuplicateCol()
 		{
 			return ColumnName.length - 3;
 		}		

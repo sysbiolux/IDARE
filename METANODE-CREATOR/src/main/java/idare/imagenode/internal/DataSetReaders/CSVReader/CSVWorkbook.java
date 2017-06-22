@@ -2,6 +2,7 @@ package idare.imagenode.internal.DataSetReaders.CSVReader;
 
 import idare.imagenode.Utilities.StringUtils;
 import idare.imagenode.exceptions.io.WrongFormat;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,6 +64,12 @@ public class CSVWorkbook implements Workbook{
 			Row currentRow = currentSheet.createRow(currentRowNumber);
 			//and create cells for each entry.
 			String[] Cells = currentline.split(separator);
+			String StringArr = "";
+			for(String str : Cells)
+			{
+				StringArr += str + "\t$\t";
+			}
+			PrintFDebugger.Debugging(this, currentline + "\n" + StringArr + " with idColCount " + idColumnCount);
 			//if a line contains less than the id columns than this can't work.
 			if(Cells.length < idColumnCount + 1)
 			{
