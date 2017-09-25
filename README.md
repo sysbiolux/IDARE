@@ -2,31 +2,31 @@
 
 IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation and data visualisation.
 
-##Features
+## Features
 * Automated layouting of data using a variety of layout types
 * Available visualisation types include scatter plots, graphs, heatmaps, time series and bar charts
 * Parseable formats include excel sheets, tab/comma separated value files and GEO SOFT files
 * Generation of connected subnetworks and clickable links between these networks
 * Addition of gene nodes and further information based on information from COBRA annotations in sbml files (see [Schellenberger et al 2011](http://www.nature.com/nprot/journal/v6/n9/abs/nprot.2011.308.html) )
 
-##Availability
+## Availability
 **Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE  
 **Compiled JAR** http://idare.uni.lu/IDAREJars/IDARE-1.0.jar  
 **Current available plugins** https://sysbiolux.github.io/IDAREPlugins/  
-**User Manual** https://github.com/sysbiolux/IDARE/UserManual.pdf  
+**User Manual** https://github.com/sysbiolux/IDARE/blob/master/UserManual.pdf  
 **Example/QuickStart** https://sysbiolux.github.io/IDARE-Quickstart  
 **API**: http://idare.uni.lu/IDAREDoc  
 **Source Code**: https://github.com/sysbiolux/IDARE  
 **Bug Tracker**: https://github.com/sysbiolux/IDARE/issues  
  
-##Installation
+## Installation
 There are three options available:
 * Use the Cytoscape Application manager. In Cytoscape open `Apps → App Manager → Install Apps` and search for `IDARE`. 
 * Download the Jar from the [Cytoscape App store](http://apps.cytoscape.org/apps/IDARE)
 * Download the Jar from the [University of Luxembourg](http://idare-server.uni.lu/IDAREJars/IDARE-1.0.jar)
 If you download it manually put it into the apps/installed folder of your Cytoscape configuration folder (commonly %HOME/CytoscapeConfiguration/3/apps/installed).
 
-##Building
+## Building
 To build the app, you will need to also download the cy3sbml app (http://apps.cytoscape.org/apps/cy3sbml).
 Determine the path of the jar file (likely in the CytoscapeConfiguration folder in your home directory) and install it to your maven repository.
 
