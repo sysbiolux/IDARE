@@ -25,7 +25,7 @@ public class ColorScalePane extends JPanel{
 	/**
 	 * Create a {@link ColorScalePane} using the provided ColorScale.
 	 * This class will assume, that the {@link ColorScale} is continuous and will thus generate a Linear gradient from the {@link ColorScale}.  
-	 * @param cs
+	 * @param cs The {@link ColorScale} to use for this component.
 	 */
 	public ColorScalePane(ColorScale cs) {
 		// TODO Auto-generated constructor stub
@@ -67,8 +67,8 @@ public class ColorScalePane extends JPanel{
 	
 	/**
 	 * Get an image that represents this ColorScalePane, with the given width and height
-	 * @param width
-	 * @param height
+	 * @param width the Width of the image
+	 * @param height The height of the image.
 	 * @return an Image of this colorscalepane
 	 */
 	public BufferedImage getImage(int width, int height)

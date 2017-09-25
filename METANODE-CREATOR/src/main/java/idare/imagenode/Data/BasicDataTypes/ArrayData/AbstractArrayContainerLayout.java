@@ -342,8 +342,8 @@ public abstract class AbstractArrayContainerLayout extends ContainerLayout {
 		protected Rectangle2D position;
 		/***
 		 * A Basic constructor using a shape and a Rectangle as position.
-		 * @param shape
-		 * @param position
+		 * @param shape The shape to use
+		 * @param position the position to use (area to plot in)
 		 */
 		public ShapePosition(Shape shape, Rectangle2D position)
 		{

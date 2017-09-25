@@ -53,7 +53,8 @@ public class ColorScaleFactory {
 	}
 	
 	/**
-	 * Get a set of discreet {@link ColorScale}s.  
+	 * Get a set of discreet {@link ColorScale}s.
+	 * @param colorcount - The number of colors to use for the Discreet scale.  
 	 * @return a Collection of Color Scales which are discreet
 	 */ 
 	public static Collection<ColorScale> getDiscreetColorScales(int colorcount)

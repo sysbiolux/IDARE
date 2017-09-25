@@ -24,8 +24,8 @@ public abstract class MultiArrayEntryDescriptionPane extends JPanel{
 	private int minimalEntryWidth = 40;		
 	/**
 	 * Default constructor receiving the color for this entry along with a descriptive String.
-	 * @param entryColor
-	 * @param descriptionString
+	 * @param entryColor The color to use for this Pane.
+	 * @param descriptionString The description to use for this Pane.
 	 */
 	public MultiArrayEntryDescriptionPane(Color entryColor, String descriptionString)
 	{
@@ -95,7 +95,7 @@ public abstract class MultiArrayEntryDescriptionPane extends JPanel{
 	/**
 	 * Depending on the implementation, this function should return a SetEntryPanel that represents 
 	 * the Entry using a color (e.g. the color of a line, the color and shape of the representing marker, the color used for a bar etc).  
-	 * @param entrycolor
+	 * @param entrycolor The color of this entry.
 	 * @return A {@link MultiArrayEntryPanel} that represents the Layouted shape/color.
 	 */
 	public abstract MultiArrayEntryPanel getEntry(Color entrycolor);		

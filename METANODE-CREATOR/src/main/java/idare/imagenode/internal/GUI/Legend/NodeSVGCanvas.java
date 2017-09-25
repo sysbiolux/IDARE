@@ -18,7 +18,7 @@ public class NodeSVGCanvas extends JSVGCanvas
 	private boolean canupdatepreferredsize = false;
 	/**
 	 * define whether a preferresizeupdate is accepted
-	 * @param can
+	 * @param can Whether the size can be updated.
 	 */
 	public void setCanUpdatePreferredSize(boolean can)
 	{

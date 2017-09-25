@@ -16,7 +16,7 @@ public abstract class NodeData implements Serializable{
 	protected DataSet parent;
 	/**
 	 * Generic contstructor using the source DataSet.
-	 * @param origin
+	 * @param origin The {@link DataSet} containing this Data entry.
 	 */
 	public NodeData(DataSet origin)
 	{

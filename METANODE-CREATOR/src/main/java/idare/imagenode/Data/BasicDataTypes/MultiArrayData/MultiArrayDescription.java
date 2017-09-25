@@ -28,7 +28,7 @@ public abstract class MultiArrayDescription extends JPanel implements SizeAdapta
 	/**
 	 * Create a new LineDataDescription, which is contained in a JScrollPane.
 	 * The ViewPort of the JScrollPane has to show the visible part of this Itemdescription. 
-	 * @param Parent
+	 * @param Parent The ScrollPane to create the Description in.
 	 */
 	public MultiArrayDescription(JScrollPane Parent)
 	{
@@ -38,8 +38,8 @@ public abstract class MultiArrayDescription extends JPanel implements SizeAdapta
 	/**
 	 * Set up the data description using a specific {@link ColorMap} to obtain the line colors and 
 	 * the respective {@link DataSet} to obtain the Line names. 
-	 * @param currentdata
-	 * @param map
+	 * @param currentdata The DataSet for which to set up an item description.
+	 * @param map The {@link ColorMap} to use.
 	 */
 	public void setupItemDescription(DataSet currentdata,ColorMap map) {
 		//First, get the size of the maximal Item to determine the number of rows.			

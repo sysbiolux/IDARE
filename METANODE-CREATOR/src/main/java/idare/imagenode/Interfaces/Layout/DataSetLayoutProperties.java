@@ -44,6 +44,7 @@ public abstract class DataSetLayoutProperties implements IDAREService,Serializab
 	 * @param origin the {@link DataSet} a new Container instance is created for. This {@link DataSet} has to pass the testValididty Method, or the behaviour is undefined. 
 	 * @param data a node data 
 	 * @return A new container for the given {@link DataSet} and {@link NodeData}
+	 * @throws WrongDatasetTypeException if a {@link DataSet} of an incompatible type is supplied. 
 	 */
 	public abstract DataContainer newContainerInstance(DataSet origin, NodeData data) throws WrongDatasetTypeException;
 //	/**
@@ -59,8 +60,8 @@ public abstract class DataSetLayoutProperties implements IDAREService,Serializab
 	public abstract String getTypeName();
 	/**
 	 * Test, whether the provided DataSet is valid to be used with these properties. 
-	 * @param set
-	 * @throws WrongFormat
+	 * @param set the {@link DataSet} to test
+	 * @throws WrongFormat if the supplied set cannot be used.
 	 */
 	public abstract void testValidity(DataSet set) throws WrongFormat;
 	

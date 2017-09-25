@@ -16,7 +16,7 @@ public class IDAREImageNodeAppService {
 	/**
 	 * Default constructor obtaining an IDAREImageNodeApp. this should never be called by an external program.
 	 * Instead the registered service should be requested from the Cytoscape framework.
-	 * @param app
+	 * @param app The {@link IDAREImageNodeApp} this Service belongs to.
 	 */
 	public IDAREImageNodeAppService(IDAREImageNodeApp app) {
 		// TODO Auto-generated constructor stub

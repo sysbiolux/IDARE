@@ -201,8 +201,8 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		createManualLayoutButton.setToolTipText("Create a Manual Layout initially using the selected datasets.");
 		createManualLayoutButton.setText("Manual Layout");
 		gbc.gridy++;
-		gbc.gridx = 1;
-		gbc.gridwidth = 2;
+		gbc.gridx = 0;
+		gbc.gridwidth = 4;
 		add(createManualLayoutButton,gbc);
 		
 		//Set up the info fields for
@@ -214,15 +214,8 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 		gbc.gridwidth = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(commons,gbc);
-		gbc.gridx = 1;
-		add(totals,gbc);
-		gbc.weightx = 0.3;
-		//The Accept button is at position 3 in this row.
 		gbc.gridx = 2;
-		add(moveUp,gbc);
-		//And the prview button at position 4
-		gbc.gridx = 3;
-		add(moveDown,gbc);
+		add(totals,gbc);
 	}
 	/**
 	 * Set the {@link CreateNodesTaskFactory} used by this Panel.

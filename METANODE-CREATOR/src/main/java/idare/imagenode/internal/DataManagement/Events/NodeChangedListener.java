@@ -8,7 +8,7 @@ package idare.imagenode.internal.DataManagement.Events;
 public interface NodeChangedListener {
 	/**
 	 * Handle a {@link NodeUpdateEvent}, that informs that certain nodes were updated.
-	 * @param e
+	 * @param e The {@link NodeUpdateEvent} to handle.
 	 */
 	public void handleNodeUpdate(NodeUpdateEvent e);
 }

@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 /**
- * ItemDataDEscription is a Panel, that manages the description of {@link ArrayNodeData0 using the labels for these items.
+ * ItemDataDescription is a Panel, that manages the description of {@link ArrayNodeData} using the labels for these items.
  * @author Thomas Pfau
  *
  */
@@ -38,7 +38,7 @@ public class ArrayDataDescription extends JPanel{
 	
 	/**
 	 * Get the rows and columns for this panel based on the available width.
-	 * @param width
+	 * @param width The width to plot in.
 	 * @return The dimension representing the rows and Cols for the given width.
 	 */
 	public Dimension getRowsAndCols(int width)

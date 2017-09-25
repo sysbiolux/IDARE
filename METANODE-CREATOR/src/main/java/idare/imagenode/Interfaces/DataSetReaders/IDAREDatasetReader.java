@@ -42,7 +42,8 @@ public abstract class IDAREDatasetReader implements IDAREService{
 	 * if null is returned, it is assumed, that no Task is needed 
 	 * @param inputfile the input file to generate the setup task. This file can be read to extract information for options.
 	 * @param twocolumn whether a {@link IDAREWorkbook} with label and id or a set with only an id is requested.
-	 * @return a Task that can obtain input from the user via {@link Tunable}s, or null if no setup information is necessary 
+	 * @return a Task that can obtain input from the user via {@link Tunable}s, or null if no setup information is necessary
+	 * @throws Exception Multiple Exceptions from IO to other issues. 
 	 */
 	public abstract IDAREReaderSetupTask getSetupTask(File inputfile, boolean twocolumn) throws Exception;
 	
@@ -50,7 +51,6 @@ public abstract class IDAREDatasetReader implements IDAREService{
 	 * Informs about the status of the reader.
 	 * If the reader is ready to provide a SetupTask, it should return <code>IDAREDatasetReader.IS_READY</code>.
 	 * If the reader is set up (i.e. getSetupTask completed successfully) it should return <code>IDAREDatasetReader.IS_SET_UP</code>
-	 * 
 	 * @return  information, where the process of reading failed, or <code>IS_READY</code>
 	 */
 	public final String getStatusMessage()

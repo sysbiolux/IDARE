@@ -50,7 +50,7 @@ public class IOUtils {
 	
 	/**
 	 * Create the Temporary folder (if it does not exist).
-	 * @throws IOException
+	 * @throws IOException if no temporary folder could be created.
 	 */
 	public static void createTemporaryFolder() throws IOException
 	{
@@ -65,7 +65,7 @@ public class IOUtils {
 	
 	/**
 	 * Clear the Temporary folder.
-	 * @throws IOException
+	 * @throws IOException if the temporary folder could not be deleted.
 	 */
 	public static void clearTemporaryFolder() throws IOException
 	{

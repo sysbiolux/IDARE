@@ -20,7 +20,7 @@ public class ColorScalePopupAdjuster extends BoundsPopupMenuListener {
 	int panecount;
 	/**
 	 * Default Constructor indicating how many panes to use.
-	 * @param panecount
+	 * @param panecount the number of panes to use.
 	 */
 	public ColorScalePopupAdjuster(int panecount)
 	{
@@ -60,6 +60,7 @@ public class ColorScalePopupAdjuster extends BoundsPopupMenuListener {
 	
 	/**
 	 * Change the number of items that are being adjusted by this adjuster
+	 * @param count The number of items adjusted by this adjuster.
 	 */
 	public void changeItemCount(int count)
 	{

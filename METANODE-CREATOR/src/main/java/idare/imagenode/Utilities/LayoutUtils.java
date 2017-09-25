@@ -53,7 +53,7 @@ public class LayoutUtils {
 	 * Transfer data that was writen to an {@link SVGGraphics2D} context to a document using a specified canvasdimension.
 	 * @param doc - the {@link SVGDocument} to write to.
 	 * @param canvasdimension - the target canvas dimension (can be <code>null</code>, in which instance default sizes are used (400/290)
-	 * @param g
+	 * @param g - The {@link SVGGraphics2D} Context to write in.
 	 */
 	public static void TransferGraphicsToDocument(SVGDocument doc, Dimension canvasdimension, SVGGraphics2D g )
 	{		

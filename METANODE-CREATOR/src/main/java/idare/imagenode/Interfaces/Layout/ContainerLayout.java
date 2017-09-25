@@ -1,6 +1,7 @@
 package idare.imagenode.Interfaces.Layout;
 
 import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
@@ -10,6 +11,7 @@ import java.awt.Rectangle;
 import java.io.Serializable;
 
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.jena.query.Dataset;
 
 
 /**
@@ -28,7 +30,7 @@ public abstract class ContainerLayout implements Serializable{
 	 * @param area the area in which to create the layout
 	 * @param DataSetLabel the label of the corresponding Dataset to display somewhere in the area.
 	 * @param props the properties to use (commonly those from which the {@link ContainerLayout} was created)
-	 * @throws WrongDatasetTypeException
+	 * @throws WrongDatasetTypeException If an incompatible data set type was used
 	 */
 	public final void createLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException
 	{
@@ -41,7 +43,7 @@ public abstract class ContainerLayout implements Serializable{
 	 * @param area the area in which to create the layout
 	 * @param DataSetLabel the label of the corresponding Dataset to display somewhere in the area.
 	 * @param props the properties to use (commonly those from which the {@link ContainerLayout} was created)
-	 * @throws WrongDatasetTypeException
+	 * @throws WrongDatasetTypeException If an incompatible data set type was used
 	 */
 	protected abstract void setupLayout(NodeData data, Rectangle area, String DataSetLabel, DataSetLayoutProperties props) throws WrongDatasetTypeException;
 		
@@ -57,6 +59,7 @@ public abstract class ContainerLayout implements Serializable{
 	
 	/**
 	 * Update the Label used in this Layout.
+	 * @param DatasetLabel The new label to be used for the {@link DataSet}
 	 */
 	public abstract void updateLabel(String DatasetLabel);
 	
@@ -65,7 +68,7 @@ public abstract class ContainerLayout implements Serializable{
 	/**
 	 * This function allows to get a 
 	 * Range of minimal and maximal values based on a valuerange to determine suitable axes.
-	 * @param valuerange
+	 * @param valuerange the range of values (length 2, min and max value)
 	 * @return Values which are suitable to plot the data range in.
 	 */
 	public static final Double[] determineDisplayRange(Double[] valuerange)
@@ -90,8 +93,8 @@ public abstract class ContainerLayout implements Serializable{
 	 * e.g. 5 rounded up is 10;
 	 * 101 rounded up is 200
 	 * etc.
-	 * @param value the value to round
-	 * @param up whether to round up or down.
+	 * @param lowvalue the lower value to create a common Order
+	 * @param highvalue the upper value to create a common Order.
 	 * @return the rounded values.
 	 */
 	public static final Double[] roundToCommonOrder(Double lowvalue, Double highvalue)
@@ -129,7 +132,7 @@ public abstract class ContainerLayout implements Serializable{
 	
 	/**
 	 * Get the area assigned to this layout container (in the {@link IMAGENODEPROPERTIES}.IMAGEWIDTH // {@link IMAGENODEPROPERTIES}.IMAGEHEIGHT) range.
-	 * @return a rectangle which should have x,y,width,height > 0 x + width < IMAGEWIDTH, and y+height < IMAGEHEIGHT 
+	 * @return a rectangle which should have x,y,width,height &lt; 0 x + width &lt; IMAGEWIDTH, and y+height &lt; IMAGEHEIGHT 
 	 */
 	public Rectangle getLayoutArea()
 	{

@@ -181,7 +181,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	}
 	/**
 	 * Define what type of headers are being used.
-	 * @param twocols
+	 * @param twocols whether to use two column headers when parsing
 	 */
 	public void setTwoColumnHeaders(boolean twocols)
 	{
@@ -209,7 +209,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	}
 
 	/**
-	 * 
+	 * Set up the property options for this {@link DataSet}. 
+	 * @throws WrongFormat if there are no layout properties fitting to this type of dataset.
 	 */
 	public void setupPropertyOptions() throws WrongFormat
 	{
@@ -487,6 +488,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Skip the Cells containing the labels from a cell iterator 
 	 * @param currentiterator the Celliterator for a specific row.
+	 * @return the {@link IDARECell} after skippning columns for the labels.
 	 */
 	public IDARECell skipLabels(Iterator<IDARECell> currentiterator)
 	{
@@ -553,7 +555,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Sets the Options potentially available to this Dataset.
 	 * This call does not check, whether the options supplied are actually viable options for this dataset!
-	 * @param options The possible DataSetproperties for this Dataset
+	 * @param options The possible {@link DataSetLayoutProperties} for this Dataset
 	 */
 	public final void setPropertyOptionsUnchecked(Collection<DataSetLayoutProperties> options) {
 		propertyOptions = new Vector<DataSetLayoutProperties>();
@@ -561,8 +563,8 @@ public abstract class DataSet implements IDAREService, Serializable{
 	}
 	
 	/**
-	 * Add Property options to this Dataset, and indicate whether the addition was successfull. 
-	 * @param propsToAdd
+	 * Add Property options to this Dataset, and indicate whether the addition was successful. 
+	 * @param propsToAdd the {@link DataSetLayoutProperties} to add to this dataset.
 	 * @return whether the Properties were added. Returns false if either the properties are not valid or are already part of the propertyset
 	 */
 	public final boolean addPropertyOption(DataSetLayoutProperties propsToAdd)
@@ -653,20 +655,23 @@ public abstract class DataSet implements IDAREService, Serializable{
 	/**
 	 * Read the Data for this workbook into the dataset.
 	 * This function should also remove any inappropriate property options, as those can only be determined now.
-	 * @param WB
-	 * @throws FormatMismatch
-	 * @throws DuplicateIDException
+	 * @param WB The IDAREWorkbook to read from.
+	 * @throws WrongFormat If there is a format problem in the Workbook (mix numeric/string, invalid string o.ä.) 
+	 * @throws DuplicateIDException If there are duplicate IDs in the Workbook that is being loaded.
 	 */
 	public abstract void readWorkBookData(IDAREWorkbook WB) throws WrongFormat,DuplicateIDException;
 	/**
 	 * Get the appropriate DataContainer for an ID.
+	 * @param ID the ID for which to get a {@link DataContainer}
 	 * @return a Container for a specific ID 
 	 */
 	public abstract DataContainer getContainerForID(String ID);
 	
 	/**
 	 * Get a sample container for Layout purposes
+	 * @param properties The {@link DataSetLayoutProperties} for which to get a {@link DataContainer}. 
 	 * @return a sample container using Default data. 
+	 * @throws WrongDatasetTypeException If the provided {@link DataSetLayoutProperties} cannot be used with this Dataset
 	 */
 	public abstract DataContainer getLayoutContainer(DataSetLayoutProperties properties) throws WrongDatasetTypeException;
 		
@@ -684,7 +689,7 @@ public abstract class DataSet implements IDAREService, Serializable{
 	public abstract Vector<Comparable> getHeaders();
 	/**
 	 * Remove the given PropertyOptions from this dataset.
-	 * @param propsToRemove
+	 * @param propsToRemove The {@link DataSetLayoutProperties} option to remove
 	 * @return whether the property was remoed from the set of properties (i.e. if it had been present)
 	 */
 	public final boolean removePropertyOption(DataSetLayoutProperties propsToRemove)
@@ -694,13 +699,14 @@ public abstract class DataSet implements IDAREService, Serializable{
 	
 	/**
 	 * Get the general Name for this Type of DataSet
+	 * @return The Type of Dataset (as String)
 	 */
 	public abstract String getDataSetTypeName();
 
 	/**
 	 * Do preprocessing for the setup Process. This function is called before the actual data setup.
 	 * @param WB The WorkBook to be preprocessed
-	 * @throws WrongFormat
+	 * @throws WrongFormat if the Workbook does not have a valid Layouting format, or if the WorkBook does not stick to any possible Data Types.
 	 */
 	public void preProcessWorkBook(IDAREWorkbook WB) throws WrongFormat
 	{

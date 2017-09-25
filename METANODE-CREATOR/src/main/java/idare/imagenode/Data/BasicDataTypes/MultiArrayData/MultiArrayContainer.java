@@ -40,8 +40,8 @@ public class MultiArrayContainer implements DataContainer {
 	protected static int minheight = 4;
 	/**
 	 * Standard Constructor using the Source Dataset and a NodeData
-	 * @param origin
-	 * @param data
+	 * @param origin The Origin of this Container
+	 * @param data the data for which to create a container.
 	 */
 	public MultiArrayContainer(DataSet origin, NodeData data)
 	{

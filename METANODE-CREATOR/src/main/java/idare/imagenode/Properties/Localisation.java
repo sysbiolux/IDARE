@@ -11,9 +11,9 @@ public class Localisation {
 	public boolean Flexible;
 	public Position pos;
 	/**
-	 * DEfault constructor using a position and a flexibility idicator
-	 * @param pos
-	 * @param flexibility
+	 * DEfault constructor using a position and a flexibility indicator
+	 * @param pos The position for this localisation
+	 * @param flexibility whether it is a flexible position (can be rescaled).
 	 */
 	public Localisation(Position pos, boolean flexibility )
 	{

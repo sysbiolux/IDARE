@@ -18,9 +18,9 @@ public class LegendLabel implements Serializable
 	Font LabelFont;
 	/**
 	 * Default Constructor providing the Font, position and String used when writing this label.
-	 * @param labelFont
-	 * @param position
-	 * @param Label
+	 * @param labelFont The {@link Font} to use for the label
+	 * @param position the position (lower left) to use
+	 * @param Label The content of the label.
 	 */
 	public LegendLabel(Font labelFont, Point position, String Label)
 	{
@@ -30,7 +30,7 @@ public class LegendLabel implements Serializable
 	}
 	/**
 	 * Draw the Label in the given {@link SVGGraphics2D} context
-	 * @param svg
+	 * @param svg the {@link SVGGraphics2D} context to draw in
 	 */
 	public void draw(SVGGraphics2D svg)
 	{
@@ -42,7 +42,8 @@ public class LegendLabel implements Serializable
 	
 	/**
 	 * Draw the Label in the given {@link SVGGraphics2D} context
-	 * @param svg
+	 * @param svg the {@link SVGGraphics2D} context to draw in
+	 * @param Label The label to write in the context.
 	 */
 	public void draw(SVGGraphics2D svg, String Label)
 	{

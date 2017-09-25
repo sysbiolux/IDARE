@@ -25,7 +25,7 @@ public abstract class ColorMap implements Serializable{
 	
 	/**
 	 * Generate a new {@link ColorMap} using the provided {@link ColorScale}
-	 * @param cs
+	 * @param cs The {@link ColorScale} to use
 	 */
 	public ColorMap(ColorScale cs)
 	{
@@ -36,7 +36,7 @@ public abstract class ColorMap implements Serializable{
 	/**
 	 * Provides appropriate (not too long) representations of the values provided.
 	 * The input values have to be ordered from smallest to largest and it is assumed, that values[0] is the minimum and values[last] is the largest value.
-	 * @param values
+	 * @param values The double values for which to generate Display strings.
 	 * @return A map matching Strings to the provided Double values.
 	 */
 	public static HashMap<Double,String> getDisplayStrings(Double[] values)

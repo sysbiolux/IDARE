@@ -22,7 +22,7 @@ public class MultiArrayDataValue extends NodeValue {
 	
 	/**
 	 * Generate a new NodeValue based on a specific ColorValue (likely the sheet name).
-	 * @param ColorValue
+	 * @param ColorValue The Colorvalues (strings or doubles).
 	 */
 	public MultiArrayDataValue(Comparable ColorValue) {
 		super(false);
@@ -33,7 +33,7 @@ public class MultiArrayDataValue extends NodeValue {
 	/**
 	 * Set the Line Data for this {@link NodeValue}.
 	 * This assumes, that this is containing Double Data.
-	 * @param yValues
+	 * @param yValues the y Values being used.
 	 */
 	public void setEntryData(Vector<Double> yValues)
 	{

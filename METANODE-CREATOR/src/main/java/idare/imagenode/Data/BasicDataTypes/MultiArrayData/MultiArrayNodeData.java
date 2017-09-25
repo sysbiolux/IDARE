@@ -21,7 +21,7 @@ public class MultiArrayNodeData extends NodeData {
 		
 	/**
 	 * Basic constructor providing a source DataSet
-	 * @param origin
+	 * @param origin the Origin of this data.
 	 */
 	public MultiArrayNodeData(DataSet origin) {
 		super(origin);
@@ -32,7 +32,7 @@ public class MultiArrayNodeData extends NodeData {
 	 * Add a new {@link MultiArrayDataValue} to this NodeData, for a specific SetID
 	 * @param newset the NodeData
 	 * @param VectorSetID the SetID (Sheet Name) 
-	 * @throws DuplicateIDException
+	 * @throws DuplicateIDException if the given ID is already in this Data.
 	 */
 	public void addData(MultiArrayDataValue newset,String VectorSetID) throws DuplicateIDException
 	{

@@ -55,8 +55,8 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	/**
 	 * Default constructor given a ContentPane to wrap this scrollerpane around and the 
 	 * {@link NodeManager} to obtain layouts for updated nodes.
-	 * @param ContentPane
-	 * @param manager
+	 * @param ContentPane The contentpane contained in the Legend.
+	 * @param manager The {@link NodeManager} to request information about updated nodes.
 	 */
 	public IDARELegend(JPanel ContentPane, NodeManager manager) {			
 		super(ContentPane);
@@ -73,7 +73,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	}
 	/**
 	 * Set the current Node (by its ID) to display a legend for
-	 * @param ID
+	 * @param ID The ID to set.
 	 */
 	public void setLegendNode(String ID)
 	{
@@ -159,36 +159,26 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	}
 	/**
 	 * Set the Legend Data using the given imagenode for data and the given layout for the node layout. 
-	 * @param layout
-	 * @param source
+	 * @param layout The {@link ImageNodeLayout} to use for the Legend
+	 * @param source The {@link ImageNodeModel} to use as a example.
 	 */
 	public void setLegendData(ImageNodeLayout layout, ImageNodeModel source)
 	{
-//		PrintFDebugger.Debugging(this, "Updating Legend");
 		try{
-//			PrintFDebugger.Debugging(this, "Setting Legend Data");
 			initialize();
 			//Now we have a legend, so lets set the Background and add the node.
 			Content.setBackground(Color.black);
-//			PrintFDebugger.Debugging(this, "Adding Listener");
 			this.addComponentListener(resizer);
-//			PrintFDebugger.Debugging(this, "Adding Node");
 			Content.add(Node);		
-//			PrintFDebugger.Debugging(this, "Creating SVG Document");
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);	
-//			PrintFDebugger.Debugging(this, "Layouting Node");
 			layout.layoutLegendNode(source.getData(), g);		
 			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
 
 			Node.setAlignmentY(NodeSVGCanvas.TOP_ALIGNMENT);
 			Node.setSVGDocument(doc);
-			//Node.flush();
-//			PrintFDebugger.Debugging(this, "Flushing NOde Image Cache");
 			Node.flushImageCache();
-//			PrintFDebugger.Debugging(this, "Updating Node size");
 			updateNodeSize();
-//			PrintFDebugger.Debugging(this, "Setting Legend Description");
 			setDataSetDescriptions(layout);
 			revalidate();
 			repaint();

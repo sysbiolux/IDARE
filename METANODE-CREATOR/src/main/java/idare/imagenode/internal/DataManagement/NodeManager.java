@@ -316,6 +316,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 				}
 			}
 			activeLayouts.put(id,layout);
+			layoutCounts.put(layout, layoutCounts.get(layout) + 1);
 		}
 		monitor.setProgress(0.2);
 		monitor.setStatusMessage("Updating Image Nodes");
@@ -366,6 +367,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 				}
 			}
 			activeLayouts.put(id,layout);
+			layoutCounts.put(layout, layoutCounts.get(layout) + 1);
 		}
 		// if everything went fine, register the layout.
 		dsm.addDataSetAboutToBeChangedListener(layout);
@@ -522,13 +524,15 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 			Object currentobject = os.readObject(); 
 			while(!(currentobject instanceof EOOMarker)) {
 
-				ImageNodeLayout layout = app.getLayoutIOManager().readLayout(os, currentobject, dsm);
+				ImageNodeLayout layout = app.getLayoutIOManager().readLayout(os, currentobject, dsm);				
+				layoutCounts.put(layout, 0);
 				if(layout != null)
 				{
 					Set<String> nodeids = (Set<String>)os.readObject();
 					for(String id : nodeids)
 					{
 						activeLayouts.put(id, layout);
+						layoutCounts.put(layout, layoutCounts.get(layout) + 1);
 						NodeIDsToUpdate.add(id);
 					}
 					dsm.addDataSetAboutToBeChangedListener(layout);

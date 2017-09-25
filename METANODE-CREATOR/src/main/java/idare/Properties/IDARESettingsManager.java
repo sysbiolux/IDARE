@@ -18,7 +18,8 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.session.events.SessionLoadedEvent;
 
 /**
- * Class to keep track of IDARE IDs and complain (throw exceptions) if duplicate IDs are found. hopefully there wont be any instances with > max(long) nodes in one network...
+ * Class to keep track of IDARE IDs and complain (throw exceptions) if duplicate IDs are found. 
+ * hopefully there wont be any instances with &gt; max(long) nodes in one network...
  * 
  * @author thomas
  *
@@ -297,7 +298,7 @@ public class IDARESettingsManager{
 	
 	/**
 	 * Get the Type associated with a specific Name.
-	 * @param name
+	 * @param name the name to request the type for..
 	 * @return the type associated with the given name.
 	 */
 	public String getType(String name)
@@ -307,8 +308,8 @@ public class IDARESettingsManager{
 	
 	/**
 	 * Set the IDAREType associated with a specific Target Type.
-	 * @param IDAREType
-	 * @param targetType
+	 * @param IDAREType The IDAREType for a specified targettype (i.e. entries from {@link IDAREProperties};
+	 * @param targetType The type to match to the given IDAREType
 	 */
 	public void setType(String IDAREType, String targetType)
 	{
@@ -329,8 +330,8 @@ public class IDARESettingsManager{
 	
 	/**
 	 * Set the IDAREType associated with a specific Target Type for subnetwork generation.
-	 * @param IDAREType
-	 * @param targetType
+	 * @param IDAREType The IDAREType to assign a string to
+	 * @param targetType The string the IDAREType should be assigned to.
 	 */
 	public void setSubNetworkType(String IDAREType, String targetType)
 	{
@@ -343,7 +344,8 @@ public class IDARESettingsManager{
 	
 	/**
 	 * Get the IDAREType associated with a specific Target Type for the subnetwork generation.
-	 * @param targetType
+	 * @param targetType the type to extract an IDAREType for.
+	 * @return  the IDARE String associate with the given type
 	 */
 	public String getSubNetworkType(String targetType)
 	{
@@ -351,7 +353,10 @@ public class IDARESettingsManager{
 	}
 	
 	
-
+	/**
+	 * Handle the loading of a session
+	 * @param arg0 - The SessionLoadedEvent to use.
+	 */
 	public void handleSessionLoadedEvent(SessionLoadedEvent arg0) {
 		reset();
 		Set<CyNetwork> networks = arg0.getLoadedSession().getNetworks();
@@ -535,10 +540,10 @@ public class IDARESettingsManager{
 	
 	/**
 	 * Set up the provided network using the Provided IDCol for the IDARE Names and the NodeTypesCol for the IDARE Node Types
-	 * @param network - the network to set up
-	 * @param IDAREIdmgr - A IDARE ID Manager to set up the IDs of all  
-	 * @param NodeTypeCol
-	 * @param IDCol
+	 * @param network the network to set up
+	 * @param IDAREIdmgr A IDARE ID Manager to set up the IDs of all  
+	 * @param NodeTypeCol The Column indicating the node type.
+	 * @param IDCol The Column name indicating the node ID
 	 */
 	public static void SetupNetwork(CyNetwork network, IDARESettingsManager IDAREIdmgr, String NodeTypeCol, String IDCol )
 	{
@@ -619,10 +624,13 @@ public class IDARESettingsManager{
 	 * Set up the provided network using the Provided IDCol for the IDARE Names and the NodeTypesCol for the IDARE Node Types
 	 * @param network - the network to set up
 	 * @param IDAREIdmgr - A IDARE ID Manager to set up the IDs of all  
-	 * @param NodeTypeCol
-	 * @param IDCol
+	 * @param NodeTypeCol The Column indicating the node type.
+	 * @param IDCol The Column name indicating the node ID
+	 * @param overwrite Whether to overwrite existing names and types.
+	 * @param nm The nodemanager, which should be updated according to the overwritten entries. 
 	 */
-	public static void SetNetworkData(CyNetwork network, IDARESettingsManager IDAREIdmgr, String NodeTypeCol, String IDCol, boolean overwrite , NodeManager nm)
+	public static void SetNetworkData(CyNetwork network, IDARESettingsManager IDAREIdmgr, String NodeTypeCol, 
+			String IDCol, boolean overwrite , NodeManager nm)
 	{
 		if(!isSetupNetwork(network))
 		{
@@ -671,7 +679,7 @@ public class IDARESettingsManager{
 	}
 	/**
 	 * Test whether a Network has the table Columns required for usage in IDARE
-	 * @param network
+	 * @param network The network to test.
 	 * @return whether the network is set up to be used with IDARE.
 	 */
 	public static boolean isSetupNetwork(CyNetwork network)

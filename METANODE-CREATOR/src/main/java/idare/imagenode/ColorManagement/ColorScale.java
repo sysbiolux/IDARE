@@ -42,7 +42,7 @@ public interface ColorScale extends Serializable{
 	/**
 	 * Set the number of colors used by this scale. 
 	 * This function does not need to have an effect and can potentially be simply ignored, but it will be called by discreet color maps and potentially other methods.
-	 * @param count
+	 * @param count the number of {@link Color}s to use.
 	 */
 	public void setColorCount(int count);
 	

@@ -21,9 +21,9 @@ import javax.swing.text.JTextComponent;
 public class GUIUtils {
 	/**
 	 * Create a JTextPane that is uneditable and uses background and font as desired.
-	 * @param DescriptionString
-	 * @param background
-	 * @param font
+	 * @param DescriptionString The Text for the JTextPane
+	 * @param background The background {@link Color} of the JTextPane
+	 * @param font The {@link Font} to use.
 	 * @return An uneditable Textpane with the given DescriptionString, background color and font.
 	 */
 	public static JTextPane createSelectionDescription(String DescriptionString, Color background, Font font)
@@ -47,9 +47,9 @@ public class GUIUtils {
 	}
 	/**
 	 * Get the preferred size of a JTextComponent given a specific minimal width and its current dimension
-	 * @param comp - 
-	 * @param origDimension
-	 * @param minwidth
+	 * @param comp the component to get the preferred size.
+	 * @param origDimension The original Dimension of the component.
+	 * @param minwidth The minimal width to use.
 	 * @return the preferred height for the provided {@link JTextComponent} assuming the given minimum width and the actual width from the dimension.
 	 */
 	public static Dimension getPreferredSize(JTextComponent comp, Dimension origDimension, int minwidth )

@@ -19,7 +19,7 @@ public class BasicIDARERow implements IDARERow {
 	
 	/**
 	 * Simple constructor providing the parent sheet.
-	 * @param parent
+	 * @param parent The {@link BasicIDARESheet} containing this Row.
 	 */
 	public BasicIDARERow(BasicIDARESheet parent) {
 		parentSheet = parent;

@@ -88,8 +88,9 @@ public abstract class ContinousColorMap extends ColorMap{
 	
 	/**
 	 * Generate the Color Scale Layout and visual representation based on the Labels used for the respective positions.
-	 * @param translate
+	 * @param translate A Translation between the double values and Strings.
 	 * @param Legend The Legend to build this ColorMap Visualisation for (to listen to resize events).
+	 * @return A {@link JComponent} which plots the ColorMap
 	 */
 	protected JComponent buildColorMapVisualisation(HashMap<Double,String> translate, JScrollPane Legend)
 	{
@@ -206,7 +207,7 @@ public abstract class ContinousColorMap extends ColorMap{
 		Double[] xpositions;		
 		/**
 		 * Generate a layout based on an array of fractions (these fractions have to rage from 0.0 to 1.0 in ascending order!
-		 * @param fractions
+		 * @param fractions The fractions at the positions of colors.
 		 */
 		public ColorScaleLegendLayout(Double[] fractions) {
 			// TODO Auto-generated constructor stub

@@ -18,7 +18,7 @@ public class BasicIDARESheet implements IDARESheet {
 	
 	/**
 	 * Default constructor using the name of the sheet.
-	 * @param sheetname
+	 * @param sheetname the name of this sheet.
 	 */
 	public BasicIDARESheet(String sheetname) {
 		name = sheetname;

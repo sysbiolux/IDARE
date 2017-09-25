@@ -30,15 +30,15 @@ public interface IDARECell {
 	 */
 	public int getColumnIndex();
 	/**
-	 * Get the Numeric Value of this cell, if it can be converted to numeric. 
+	 * Get the Numeric Value of this cell, if it can be converted to numeric.
+	 * Can throw exceptions if the contained value is either not a parsable double or the Cell Type is String. 
 	 * @return the numeric value of this cell
-	 * @throws Exception - Can throw exceptions if the contained value is either not a parsable double or the Cell Type is String.
 	 */
 	public double getNumericCellValue();
 	/**
 	 * Get the string cell value, if the cell is a string cell.
+	 * Can throw exceptions if the cell type is numeric.
 	 * @return the string cell value.
-	 * @throws Exception - Can throw exceptions if the cell type is numeric.
 	 */
 	public String getStringCellValue();
 	/**

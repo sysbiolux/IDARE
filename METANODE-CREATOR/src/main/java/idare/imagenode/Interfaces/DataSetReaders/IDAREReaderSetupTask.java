@@ -21,7 +21,7 @@ public abstract class IDAREReaderSetupTask implements Task{
 	
 	/**
 	 * Default constructor using the reader this Task is supposed to set up.
-	 * @param reader
+	 * @param reader the DataSetReader to use
 	 */
 	public IDAREReaderSetupTask(IDAREDatasetReader reader) {
 		this.reader = reader;
@@ -34,7 +34,7 @@ public abstract class IDAREReaderSetupTask implements Task{
 	/**
 	 * Execute the Task.
 	 * @param taskMonitor the TaskMonitor this Task can use.
-	 * @throws Exception 
+	 * @throws Exception  Multiple Exceptions passed on from Cytoscape
 	 */
 	public abstract void execute(TaskMonitor taskMonitor) throws Exception;
 

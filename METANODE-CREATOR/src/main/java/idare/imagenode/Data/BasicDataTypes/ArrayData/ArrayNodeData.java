@@ -19,7 +19,7 @@ public class ArrayNodeData extends NodeData {
 	private Vector<NodeValue> values;
 	/**
 	 * Basic constructor using the dataset this is originating from
-	 * @param origin
+	 * @param origin The {@link DataSet} this {@link ArrayNodeData} belongs to,
 	 */
 	public ArrayNodeData(DataSet origin)
 	{
@@ -28,7 +28,7 @@ public class ArrayNodeData extends NodeData {
 	
 	/**
 	 * Since {@link ArrayDataSet}s have ordered rows of data, this function can be used to get the position-th item in this data. 
-	 * @param position
+	 * @param position the position of the {@link NodeValue} requested.
 	 * @return the {@link NodeValue} stored at the requested position
 	 */
 	public NodeValue getData(int position) {
@@ -39,7 +39,7 @@ public class ArrayNodeData extends NodeData {
 
 	/**
 	 * Set the Data of this {@link ArrayNodeData}. 
-	 * @param Data
+	 * @param Data The data To set.
 	 */
 	public void setData(Vector<NodeValue> Data) {
 		// TODO Auto-generated method stub
@@ -57,7 +57,7 @@ public class ArrayNodeData extends NodeData {
 	
 	/**
 	 * Check whether the element at a specific position is set.
-	 * @param pos
+	 * @param pos the position to check
 	 * @return true, if the item is not <code>null</code>
 	 */
 	public boolean isValueSet(int pos)
