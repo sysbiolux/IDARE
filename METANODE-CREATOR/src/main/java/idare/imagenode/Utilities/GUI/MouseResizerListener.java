@@ -13,7 +13,7 @@ import javax.swing.event.MouseInputAdapter;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.Manual.GUI.DataSetFrame;
 
-public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapter
+public class MouseResizerListener<T extends JComponent> extends MouseInputAdapter
 {
 	private T target;	
 	private JDesktopPane BoundingComponent;
@@ -25,7 +25,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 	Rectangle origcomponentpos;
 	boolean componentselected = false;
 	Vector<Rectangle> otherFrames; 
-	public MouseDraggingListener(JDesktopPane BoundingComponent, Class<T> clazz)
+	public MouseResizerListener(JDesktopPane BoundingComponent, Class<T> clazz)
 	{	    					
 		this.BoundingComponent = BoundingComponent;		
 		targetclass = clazz;		
@@ -41,7 +41,8 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 		if(target == null)
 		{
 			target = (T) e.getSource();
-		} 		
+		} 
+		
 		posX = e.getXOnScreen();
 		posY = e.getYOnScreen();
 		posXOnFrame = target.getBounds().x;
@@ -58,8 +59,8 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 				otherFrames.add(cframe.getBounds());
 			}
 		}
-		if(e.getX() >  frameInsets.left && e.getX() < origcomponentpos.width - frameInsets.right
-				&& e.getY() > frameInsets.top && e.getY() < origcomponentpos.height - frameInsets.left)
+		if(e.getX() <=  frameInsets.left || e.getX() >= origcomponentpos.width - frameInsets.right
+				|| e.getY() <= frameInsets.top || e.getY() >= origcomponentpos.height - frameInsets.left)
 		{        	
 			componentselected = true;	
 		}
@@ -79,7 +80,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 	{
 		super.mouseDragged(e);
 //		PrintFDebugger.Debugging(this, "Got a mouse dragged event from " + e.getSource() + " while dragging");
-		
+		Rectangle origcomppos = target.getBounds();
 		if(componentselected)
 		{	
 										
@@ -89,43 +90,49 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 			//max is the the width of the desktop;
 			int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);
 			int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
+			int finalWidth = origcomppos.width;
+			int finalHeight = origcomppos.height;
+			int finalX = origcomppos.x;
+			int finalY = origcomppos.y;
 			//Now, check all other frames
 			for(Rectangle rec : otherFrames)
 			{
 				//Coming from left:
 				if(( Math.abs(rec.x + rec.width - newXpos) < 4 ) 
-						&& ((rec.y <= origcomponentpos.y) && (rec.y+rec.height >= origcomponentpos.y) 
-						|| (rec.y >= origcomponentpos.y) && (rec.y <= origcomponentpos.y + origcomponentpos.height )))
+						&& ((rec.y <= origcomppos.y) && (rec.y+rec.height >= origcomppos.y) 
+						|| (rec.y >= origcomppos.y) && (rec.y <= origcomppos.y + origcomppos.height )))
 				{
-					newXpos = rec.x + rec.width;
+					finalX = rec.x + rec.width;
+					finalWidth = origcomppos.width + rec.x + rec.width - newXpos;  
 				}
 				//Coming from right 
-				if(( Math.abs(rec.x - (newXpos + origcomponentpos.width)) < 4 ) 
-						&& ((rec.y <= origcomponentpos.y) && (rec.y+rec.height >= origcomponentpos.y) 
-						|| (rec.y >= origcomponentpos.y) && (rec.y <= origcomponentpos.y + origcomponentpos.height )))
+				if(( Math.abs(rec.x - (newXpos + origcomppos.width)) < 4 ) 
+						&& ((rec.y <= origcomppos.y) && (rec.y+rec.height >= origcomppos.y) 
+						|| (rec.y >= origcomppos.y) && (rec.y <= origcomppos.y + origcomppos.height )))
 				{
-					newXpos = rec.x;
+					finalWidth =  origcomppos.width + rec.x - (newXpos + origcomppos.width);
 				}
 				//Coming from top 
-				if(( Math.abs(rec.y - (newYpos + origcomponentpos.height)) < 4 ) 
-						&& ((rec.x <= origcomponentpos.x) && (rec.x+rec.width >= origcomponentpos.x) 
-						|| (rec.x >= origcomponentpos.x) && (rec.x <= origcomponentpos.x + origcomponentpos.width)))
+				if(( Math.abs(rec.y - (newYpos + origcomppos.height)) < 4 ) 
+						&& ((rec.x <= origcomppos.x) && (rec.x+rec.width >= origcomppos.x) 
+						|| (rec.x >= origcomppos.x) && (rec.x <= origcomppos.x + origcomppos.width)))
 				{
-					newYpos = rec.y;
+					finalHeight =  origcomppos.height + rec.y - (newYpos + origcomppos.height);
 				}
 				//Coming from bottom 
 				if(( Math.abs(rec.y  + rec.height - newYpos) < 4 ) 
-						&& ((rec.x <= origcomponentpos.x) && (rec.x+rec.width >= origcomponentpos.x) 
-						|| (rec.x >= origcomponentpos.x) && (rec.x <= origcomponentpos.x + origcomponentpos.width)))
+						&& ((rec.x <= origcomppos.x) && (rec.x+rec.width >= origcomppos.x) 
+						|| (rec.x >= origcomppos.x) && (rec.x <= origcomppos.x + origcomppos.width)))
 				{
-					newYpos = rec.y;
+					finalY = rec.y + rec.height;
+					finalWidth = origcomppos.height + rec.y + rec.height- newYpos;  
 				}
 			}		
 			
-			target.setBounds(new Rectangle(newXpos, newYpos, origcomponentpos.width,origcomponentpos.height));
+			target.setBounds(new Rectangle(finalX,finalY,finalWidth,finalHeight));
 //			System.out.println("New Bounds are: " +  target.getBounds());
 			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
-			target.repaint();
+			//target.repaint();
 		}
 	}
 
@@ -146,7 +153,7 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 			target.setBounds(new Rectangle(newXpos, newYpos, origcomponentpos.width,origcomponentpos.height));
 //			System.out.println("New Bounds are: " +  target.getBounds());
 			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
-			target.repaint();
+			//target.repaint();
 		}
 	}
 

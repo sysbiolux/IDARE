@@ -16,6 +16,7 @@ import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -39,6 +40,7 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.GUI.MouseDraggingListener;
+import idare.imagenode.Utilities.GUI.MouseResizerListener;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
@@ -69,6 +71,7 @@ implements ActionListener, InternalFrameListener{
 	IDPanel IdentifierPanel;	
 	ManualLayoutUpdater updater;
 	MouseDraggingListener<DataSetFrame> draglistener;
+	MouseResizerListener<DataSetFrame> resizeMouseListener;
 	CreateNodesTaskFactory nodeFactory;
 	public LayoutGUI(DataSetManager dsm, IDAREImageNodeApp app, CreateNodesTaskFactory nodeFactory) {		
 		super("Manual Layout Generation");		
@@ -112,6 +115,7 @@ implements ActionListener, InternalFrameListener{
 		
 		//Set p the MouseDraglistener
 		draglistener = new MouseDraggingListener<DataSetFrame>(desktop, DataSetFrame.class);
+		resizeMouseListener = new MouseResizerListener<DataSetFrame>(desktop, DataSetFrame.class);
 		//desktop.addMouseMotionListener(draglistener);
 		//desktop.addMouseListener(draglistener);
 		//set up the IDentifierPanel
@@ -248,6 +252,7 @@ implements ActionListener, InternalFrameListener{
 			for(JInternalFrame frame : desktop.getAllFrames())
 			{
 				frame.dispose();
+				resizer.internalframes.remove(frame);
 			}
 		} 
 		if("REMOVECURRENT".equals(e.getActionCommand())) { //new
@@ -304,6 +309,8 @@ implements ActionListener, InternalFrameListener{
 			toolbar.updateDataSetOptions(frame.bundle);
 			frame.addMouseMotionListener(draglistener);
 			frame.addMouseListener(draglistener);
+			frame.addMouseListener(resizeMouseListener);
+			frame.addMouseMotionListener(resizeMouseListener);
 		}
 		catch(WrongDatasetTypeException ex)
 		{			
