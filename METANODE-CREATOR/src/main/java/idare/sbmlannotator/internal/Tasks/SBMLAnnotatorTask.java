@@ -362,15 +362,20 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	private void assignPositions()
 	{
 		//make sure, views exist for all nodes!
+		networkView.updateView();
 		eventHelper.flushPayloadEvents();
 		//then assign their position
 		assignPositionsSurroundingReacs();
+		networkView.updateView();
 		eventHelper.flushPayloadEvents();
 		assignPositionsSouroundingComplexes();
+		networkView.updateView();
 		eventHelper.flushPayloadEvents();
 		assignProteinPositions();
-		eventHelper.flushPayloadEvents();
+		networkView.updateView();
+		eventHelper.flushPayloadEvents();		
 		assignPositionsSurroundingProteins();
+		networkView.updateView();
 		eventHelper.flushPayloadEvents();
 		assignGenePositions();
 		networkView.updateView();

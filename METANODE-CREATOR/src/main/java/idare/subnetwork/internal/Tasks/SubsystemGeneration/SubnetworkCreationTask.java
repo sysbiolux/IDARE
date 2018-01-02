@@ -6,6 +6,7 @@ import idare.NodeDuplicator.Internal.Tasks.NodeDuplicationTask;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 //import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.subnetwork.internal.NetworkViewSwitcher;
 import idare.subnetwork.internal.NoNetworksToCreateException;
@@ -178,6 +179,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 					if(orignode != null)
 					{
 						View<CyNode> cview = currentview.getNodeView(orignode);
+						PrintFDebugger.Debugging(this, "Setting properties for a view " + cview);
 						newModelView.getNodeView(node).setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, cview.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION));
 						newModelView.getNodeView(node).setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, cview.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION));
 					}

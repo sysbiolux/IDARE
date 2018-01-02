@@ -23,7 +23,8 @@ public class MouseResizerListener<T extends JComponent> extends MouseInputAdapte
 	int posXOnFrame;
 	int posYOnFrame;
 	Rectangle origcomponentpos;
-	boolean componentselected = false;
+	boolean xchange = false;
+	boolean ychange = false;
 	Vector<Rectangle> otherFrames; 
 	public MouseResizerListener(JDesktopPane BoundingComponent, Class<T> clazz)
 	{	    					
@@ -59,19 +60,23 @@ public class MouseResizerListener<T extends JComponent> extends MouseInputAdapte
 				otherFrames.add(cframe.getBounds());
 			}
 		}
-		if(e.getX() <=  frameInsets.left || e.getX() >= origcomponentpos.width - frameInsets.right
-				|| e.getY() <= frameInsets.top || e.getY() >= origcomponentpos.height - frameInsets.left)
+		
+		if(e.getX() <=  frameInsets.left || e.getX() >= origcomponentpos.width - frameInsets.right)				
 		{        	
-			componentselected = true;	
+			xchange = true;	
 		}
+		if ( e.getY() <= frameInsets.top || e.getY() >= origcomponentpos.height - frameInsets.left)
+		{
+			ychange = true;
+		}		
 	}
 
 	@Override	
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		super.mouseReleased(e);
-//		PrintFDebugger.Debugging(this, "Mouse was released");
-		componentselected = false;
+		xchange = false;
+		ychange = false;
 		target = null;
 	}
 
@@ -81,19 +86,22 @@ public class MouseResizerListener<T extends JComponent> extends MouseInputAdapte
 		super.mouseDragged(e);
 //		PrintFDebugger.Debugging(this, "Got a mouse dragged event from " + e.getSource() + " while dragging");
 		Rectangle origcomppos = target.getBounds();
-		if(componentselected)
+		int dragdistance = e.getXOnScreen() - posX;
+		int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);			
+		int newWidth = origcomponentpos.width + dragdistance;
+		int dragdistanceY = e.getXOnScreen() - posY;
+		int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
+		int newHeight = origcomponentpos.height + dragdistanceY;
+
+		if(xchange)
 		{	
 										
 //			System.out.println("Old bounds were: " + origcomponentpos);			
-			int dragdistance = e.getXOnScreen() - posX;
+			
 			// min is 0
 			//max is the the width of the desktop;
-			int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);
-			int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
-			int finalWidth = origcomppos.width;
-			int finalHeight = origcomppos.height;
-			int finalX = origcomppos.x;
-			int finalY = origcomppos.y;
+			
+			
 			//Now, check all other frames
 			for(Rectangle rec : otherFrames)
 			{
@@ -102,34 +110,49 @@ public class MouseResizerListener<T extends JComponent> extends MouseInputAdapte
 						&& ((rec.y <= origcomppos.y) && (rec.y+rec.height >= origcomppos.y) 
 						|| (rec.y >= origcomppos.y) && (rec.y <= origcomppos.y + origcomppos.height )))
 				{
-					finalX = rec.x + rec.width;
-					finalWidth = origcomppos.width + rec.x + rec.width - newXpos;  
+					newXpos = rec.x + rec.width;
+					newWidth = newWidth + rec.x + rec.width - newXpos;
+					//We only fit to one
+					break;
 				}
 				//Coming from right 
-				if(( Math.abs(rec.x - (newXpos + origcomppos.width)) < 4 ) 
+				if(( Math.abs(rec.x - (newXpos + newWidth)) < 4 ) 
 						&& ((rec.y <= origcomppos.y) && (rec.y+rec.height >= origcomppos.y) 
 						|| (rec.y >= origcomppos.y) && (rec.y <= origcomppos.y + origcomppos.height )))
 				{
-					finalWidth =  origcomppos.width + rec.x - (newXpos + origcomppos.width);
+					newWidth =  newWidth + rec.x - (newXpos + newWidth);
+					break;
 				}
+			}
+		}
+		if(ychange)
+		{
+			
+			for(Rectangle rec : otherFrames)
+			{
 				//Coming from top 
-				if(( Math.abs(rec.y - (newYpos + origcomppos.height)) < 4 ) 
+				if(( Math.abs(rec.y - (newYpos + newHeight)) < 4 ) 
 						&& ((rec.x <= origcomppos.x) && (rec.x+rec.width >= origcomppos.x) 
 						|| (rec.x >= origcomppos.x) && (rec.x <= origcomppos.x + origcomppos.width)))
 				{
-					finalHeight =  origcomppos.height + rec.y - (newYpos + origcomppos.height);
+					newHeight =  newHeight + rec.y - (newYpos + newHeight);
+					break;
 				}
 				//Coming from bottom 
 				if(( Math.abs(rec.y  + rec.height - newYpos) < 4 ) 
 						&& ((rec.x <= origcomppos.x) && (rec.x+rec.width >= origcomppos.x) 
 						|| (rec.x >= origcomppos.x) && (rec.x <= origcomppos.x + origcomppos.width)))
 				{
-					finalY = rec.y + rec.height;
-					finalWidth = origcomppos.height + rec.y + rec.height- newYpos;  
+					newYpos = rec.y + rec.height;
+					newHeight = newHeight + rec.y + rec.height- newYpos;
+					break;
 				}
 			}		
-			
-			target.setBounds(new Rectangle(finalX,finalY,finalWidth,finalHeight));
+		}
+		if(xchange || ychange) 
+		{
+			System.out.println("The updated Properties were W: " + newWidth +"; H: " + newHeight+"; X: " + newXpos+"; Y: " + newYpos);		
+			target.setBounds(new Rectangle(newXpos,newYpos,newWidth,newHeight));
 //			System.out.println("New Bounds are: " +  target.getBounds());
 			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
 			//target.repaint();
@@ -140,21 +163,6 @@ public class MouseResizerListener<T extends JComponent> extends MouseInputAdapte
 	public void mouseMoved(MouseEvent e)
 	{
 		super.mouseMoved(e);
-		if(componentselected)
-		{
-//			PrintFDebugger.Debugging(this, "Got a mouse moved event from " + e.getSource() + " while dragging");
-			System.out.println("Old bounds were: " + origcomponentpos);
-
-			int dragdistance = e.getXOnScreen() - posX;
-			// min is 0
-			//max is the the width of the desktop;
-			int newXpos =  Math.min(Math.max(0, origcomponentpos.x + dragdistance), BoundingComponent.getWidth()-origcomponentpos.width);
-			int newYpos = Math.min(Math.max(0, origcomponentpos.y + e.getYOnScreen() - posY),BoundingComponent.getHeight() - origcomponentpos.height);
-			target.setBounds(new Rectangle(newXpos, newYpos, origcomponentpos.width,origcomponentpos.height));
-//			System.out.println("New Bounds are: " +  target.getBounds());
-			//frame.setLocation(origframepos.x + e.getXOnScreen() - posX , origframepos.y + e.getYOnScreen() - posY);
-			//target.repaint();
-		}
 	}
 
 }

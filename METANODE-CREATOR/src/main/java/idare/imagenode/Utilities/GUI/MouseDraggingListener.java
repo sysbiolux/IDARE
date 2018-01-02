@@ -93,32 +93,32 @@ public class MouseDraggingListener<T extends JComponent> extends MouseInputAdapt
 			for(Rectangle rec : otherFrames)
 			{
 				//Coming from left:
-				if(( Math.abs(rec.x + rec.width - newXpos) < 4 ) 
+				if(( Math.abs(rec.x + rec.width - newXpos) < 5 ) 
 						&& ((rec.y <= origcomponentpos.y) && (rec.y+rec.height >= origcomponentpos.y) 
 						|| (rec.y >= origcomponentpos.y) && (rec.y <= origcomponentpos.y + origcomponentpos.height )))
 				{
 					newXpos = rec.x + rec.width;
 				}
 				//Coming from right 
-				if(( Math.abs(rec.x - (newXpos + origcomponentpos.width)) < 4 ) 
+				if(( Math.abs(rec.x - (newXpos + origcomponentpos.width)) < 5 ) 
 						&& ((rec.y <= origcomponentpos.y) && (rec.y+rec.height >= origcomponentpos.y) 
 						|| (rec.y >= origcomponentpos.y) && (rec.y <= origcomponentpos.y + origcomponentpos.height )))
 				{
-					newXpos = rec.x;
+					newXpos = rec.x - origcomponentpos.width;
 				}
 				//Coming from top 
-				if(( Math.abs(rec.y - (newYpos + origcomponentpos.height)) < 4 ) 
+				if(( Math.abs(rec.y - (newYpos + origcomponentpos.height)) < 5 ) 
 						&& ((rec.x <= origcomponentpos.x) && (rec.x+rec.width >= origcomponentpos.x) 
 						|| (rec.x >= origcomponentpos.x) && (rec.x <= origcomponentpos.x + origcomponentpos.width)))
 				{
-					newYpos = rec.y;
+					newYpos = rec.y - origcomponentpos.height;
 				}
 				//Coming from bottom 
-				if(( Math.abs(rec.y  + rec.height - newYpos) < 4 ) 
+				if(( Math.abs(rec.y  + rec.height - newYpos) < 5 ) 
 						&& ((rec.x <= origcomponentpos.x) && (rec.x+rec.width >= origcomponentpos.x) 
 						|| (rec.x >= origcomponentpos.x) && (rec.x <= origcomponentpos.x + origcomponentpos.width)))
 				{
-					newYpos = rec.y;
+					newYpos = rec.y + rec.height;
 				}
 			}		
 			

@@ -54,7 +54,7 @@ public class ColorScalePopupAdjuster extends BoundsPopupMenuListener {
 			JScrollPane c = (JScrollPane)SwingUtilities.getAncestorOfClass(JScrollPane.class, popup.getList());
 			Dimension preferredDim = popup.getList().getPreferredSize();
 			c.setPreferredSize(new Dimension(preferredDim.width,Math.min(200,preferredDim.height)));
-			c.setPreferredSize(popup.getList().getPreferredSize());
+			c.setPreferredSize(new Dimension(c.getWidth(),popup.getList().getPreferredSize().height));
 		}
 	}
 	

@@ -43,11 +43,11 @@ public class DataSetFrame extends JInternalFrame
 	public boolean autoresize = false;
 
 	public DataSetFrame(DataSetLayoutInfoBundle bundle, String LayoutID, JComponent parent) throws WrongDatasetTypeException{
-		super("Document #" + (++openFrameCount), 
+		super(LayoutID, 
 				true, //resizable
 				true, //closable
-				true, //maximizable
-				true);//iconifiable
+				false, //maximizable
+				false);//iconifiable
 		this.setUI(new BasicInternalFrameUI(this));
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
 		

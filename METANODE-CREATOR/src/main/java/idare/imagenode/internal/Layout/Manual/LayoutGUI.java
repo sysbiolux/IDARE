@@ -71,7 +71,7 @@ implements ActionListener, InternalFrameListener{
 	IDPanel IdentifierPanel;	
 	ManualLayoutUpdater updater;
 	MouseDraggingListener<DataSetFrame> draglistener;
-	MouseResizerListener<DataSetFrame> resizeMouseListener;
+//	MouseResizerListener<DataSetFrame> resizeMouseListener;
 	CreateNodesTaskFactory nodeFactory;
 	public LayoutGUI(DataSetManager dsm, IDAREImageNodeApp app, CreateNodesTaskFactory nodeFactory) {		
 		super("Manual Layout Generation");		
@@ -115,7 +115,7 @@ implements ActionListener, InternalFrameListener{
 		
 		//Set p the MouseDraglistener
 		draglistener = new MouseDraggingListener<DataSetFrame>(desktop, DataSetFrame.class);
-		resizeMouseListener = new MouseResizerListener<DataSetFrame>(desktop, DataSetFrame.class);
+		//resizeMouseListener = new MouseResizerListener<DataSetFrame>(desktop, DataSetFrame.class);
 		//desktop.addMouseMotionListener(draglistener);
 		//desktop.addMouseListener(draglistener);
 		//set up the IDentifierPanel
@@ -309,8 +309,8 @@ implements ActionListener, InternalFrameListener{
 			toolbar.updateDataSetOptions(frame.bundle);
 			frame.addMouseMotionListener(draglistener);
 			frame.addMouseListener(draglistener);
-			frame.addMouseListener(resizeMouseListener);
-			frame.addMouseMotionListener(resizeMouseListener);
+			//frame.addMouseListener(resizeMouseListener);
+			//frame.addMouseMotionListener(resizeMouseListener);
 		}
 		catch(WrongDatasetTypeException ex)
 		{			
