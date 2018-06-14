@@ -92,18 +92,4 @@ public class Reaction extends SBase{
 		return null;
 	}
 	
-	@Override
-	public String getName()
-	{
-		{
-			try{
-				return getName.invoke(SBMLBase).toString();
-			}
-			catch(InvocationTargetException | IllegalAccessException e)
-			{
-				return "";
-			}
-		}
-	}
-	
 }

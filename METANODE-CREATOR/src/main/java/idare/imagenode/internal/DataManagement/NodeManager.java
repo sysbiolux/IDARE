@@ -56,10 +56,10 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	private HashMap<String,ImageNodeLayout> activeLayouts = new HashMap<String, ImageNodeLayout>();
 	private HashMap<ImageNodeLayout, Integer> layoutCounts = new HashMap<ImageNodeLayout,Integer>();
 	private Set<String> NetworkIDs = new HashSet<String>();
-	private DataSetManager dsm;
-	
+	private DataSetManager dsm;	
 	private Vector<NodeChangedListener> listeners = new Vector<NodeChangedListener>();
 	private CyNetworkManager cyNetMgr;
+	
 	public NodeManager(CyNetworkManager cyNetMgr)
 	{
 		this.cyNetMgr = cyNetMgr;

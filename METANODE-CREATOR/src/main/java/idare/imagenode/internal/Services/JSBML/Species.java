@@ -7,13 +7,11 @@ public class Species extends SBase{
 	
 
 	private Method compartment;
-	private Method getName;
 	public Species(Object o) 
 	{
 		super(o);
 		try{
 			compartment = o.getClass().getMethod("getCompartment");
-			getName = o.getClass().getMethod("getName");
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -28,22 +26,6 @@ public class Species extends SBase{
 		{
 			try{
 				return compartment.invoke(SBMLBase).toString();
-			}
-			catch(InvocationTargetException | IllegalAccessException e)
-			{
-				return "";
-			}
-		}
-	}
-
-
-
-	@Override
-	public String getName()
-	{
-		{
-			try{
-				return getName.invoke(SBMLBase).toString();
 			}
 			catch(InvocationTargetException | IllegalAccessException e)
 			{

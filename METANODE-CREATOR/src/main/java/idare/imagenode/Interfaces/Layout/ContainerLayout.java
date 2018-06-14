@@ -1,17 +1,15 @@
 package idare.imagenode.Interfaces.Layout;
 
+import java.awt.Rectangle;
+import java.io.Serializable;
+
+import org.apache.batik.svggen.SVGGraphics2D;
+
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
-import idare.imagenode.internal.Debug.PrintFDebugger;
-
-import java.awt.Rectangle;
-import java.io.Serializable;
-
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.jena.query.Dataset;
 
 
 /**

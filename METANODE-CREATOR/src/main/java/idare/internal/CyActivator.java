@@ -79,7 +79,7 @@ public class CyActivator extends AbstractCyActivator {
 		// Set the default logging position for the App.
 		
 		//The following lines allow access to the yFiles layouts for subnetwork generation tasks.
-		final NetworkViewTaskFactory organic = getService(context,NetworkViewTaskFactory.class, "(title=Organic)");
+/*		final NetworkViewTaskFactory organic = getService(context,NetworkViewTaskFactory.class, "(title=Organic)");
 		final NetworkViewTaskFactory orthogonal = getService(context,NetworkViewTaskFactory.class,
 				"(title=Orthogonal)");
 		final NetworkViewTaskFactory hierarchic = getService(context,NetworkViewTaskFactory.class,
@@ -103,7 +103,7 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(context,wrapped1,CyLayoutAlgorithm.class, yproperties);
 		registerService(context,wrapped2,CyLayoutAlgorithm.class, yproperties);
 		registerService(context,wrapped3,CyLayoutAlgorithm.class, yproperties);
-		registerService(context,wrapped4,CyLayoutAlgorithm.class, yproperties);		
+		registerService(context,wrapped4,CyLayoutAlgorithm.class, yproperties);		*/
 		reg = getService(context, CyServiceRegistrar.class);
 		setupimagenodeApp(context);
 		setupNetworkCreatorApp(context);

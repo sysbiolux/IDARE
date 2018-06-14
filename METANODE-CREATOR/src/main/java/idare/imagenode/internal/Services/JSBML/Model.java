@@ -12,6 +12,7 @@ public class Model {
 	private Method ListOfSpecies;
 	private Method ListOfReactions;
 	private Method hasFBCExtension;
+	private Method getExtension;
 	//private Method getListOfGeneProducts;
 	private Object SBMLModel;
 
@@ -22,6 +23,7 @@ public class Model {
 			//getListOfGeneProducts = o.getClass().getMethod("getListOfGeneProducts");
 			ListOfReactions = o.getClass().getMethod("getListOfReactions");
 			ListOfSpecies= o.getClass().getMethod("getListOfSpecies");
+			getExtension = o.getClass().getMethod("getExtension", String.class);
 			hasFBCExtension = o.getClass().getMethod("isPackageEnabled", String.class);		
 		}
 		catch(NoSuchMethodException e)
@@ -116,6 +118,18 @@ public class Model {
 			return new LinkedList<GeneProduct>();
 		}
 	}
+	
+	public GroupModelPlugin getGroupExtension()
+	{
+		try{
+			return new GroupModelPlugin(getExtension.invoke(SBMLModel, "groups"));
+		}
+		catch(InvocationTargetException | IllegalAccessException e)
+		{
+			return null;
+		}
+	}
+	
 }
 	
 

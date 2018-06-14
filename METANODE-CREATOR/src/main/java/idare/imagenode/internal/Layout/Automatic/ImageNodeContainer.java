@@ -422,9 +422,7 @@ public class ImageNodeContainer extends JLabel{
 			}
 		}
 		//if we did nto encounter any errors, add this set to the added sets.
-		addedDataSets.add(set.getID());
-//		PrintFDebugger.Debugging(this, "Added DataSet with ID " + set.getID() + " there are now" + addedDataSets.size() + "Datasets");
-		PrintFDebugger.Trace(this);
+		addedDataSets.add(set.getID());		
 		containers.put(set, container);
 		bundles.put(set, bundle);
 

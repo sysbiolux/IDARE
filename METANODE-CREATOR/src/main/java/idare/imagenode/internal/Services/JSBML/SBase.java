@@ -14,6 +14,8 @@ public abstract class SBase {
 	private Method annotation;
 	private Method setAnnotation;
 	private Method getNotes;
+	private Method getName;
+
 	public SBase(Object o)
 	{
 		SBMLBase = o;
@@ -26,6 +28,7 @@ public abstract class SBase {
 			annotation = o.getClass().getMethod("getAnnotation");
 			setAnnotation = o.getClass().getMethod("isSetAnnotation");
 			getNotes = o.getClass().getMethod("getNotes");
+			getName = o.getClass().getMethod("getName");
 		}
 		catch(NoSuchMethodException e)
 		{
@@ -142,9 +145,18 @@ public abstract class SBase {
 		}
 	}
 	
-	
-	public abstract String getName();	
-	
+	public String getName()
+	{
+		{
+			try{
+				return getName.invoke(SBMLBase).toString();
+			}
+			catch(InvocationTargetException | IllegalAccessException e)
+			{
+				return "";
+			}
+		}
+	}
 	
 	@Override
 	public int hashCode() {
@@ -171,6 +183,8 @@ public abstract class SBase {
 			return false;
 		return true;
 	}
+	
+	
 	
 	
 

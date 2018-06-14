@@ -7,11 +7,14 @@ import idare.ThirdParty.CobraUtil;
 import idare.ThirdParty.DelayedVizProp;
 import idare.imagenode.IDARENodeManager;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 //import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Services.JSBML.Annotation;
 import idare.imagenode.internal.Services.JSBML.Association;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
 import idare.imagenode.internal.Services.JSBML.GeneProduct;
+import idare.imagenode.internal.Services.JSBML.Group;
+import idare.imagenode.internal.Services.JSBML.Member;
 import idare.imagenode.internal.Services.JSBML.Model;
 import idare.imagenode.internal.Services.JSBML.Reaction;
 import idare.imagenode.internal.Services.JSBML.SBMLDocument;
@@ -29,6 +32,7 @@ import idare.sbmlannotator.internal.gpr.Protein;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -265,6 +269,9 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			getCobraReactions();
 		}
+		
+		annotateGroups();
+		
 		if(cysbmlNetwork & generateGeneNodes & removeFBCNodes)
 		{
 			removeFBCNodes();			
@@ -338,6 +345,50 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		}
 	}
 
+	private void annotateGroups()
+	{
+		CyTable nodeTable = network.getDefaultNodeTable();
+		try{
+			nodeTable.createListColumn("SBML_GROUPS", String.class, false, null);
+		}
+		catch(IllegalArgumentException e)
+		{
+			//This should only happen if the annotation was done twice (for whatever reason)
+		}			
+		List<Group> groupList = doc.getModel().getGroupExtension().getListOfGroups();
+		for(Group current : groupList )
+		{
+			String groupName = current.getName();
+			PrintFDebugger.Debugging(this, "Annotating Group " + groupName);
+			for(Member mem: current.getListOfMembers())
+			{
+				String sbmlID = mem.getIdRef();
+				PrintFDebugger.Debugging(this, "Member: " + sbmlID);
+				if(SBMLObjectIDs.containsKey(sbmlID))
+				{
+						
+					PrintFDebugger.Debugging(this, "Found SBML object");
+					if(matchingNodes.containsKey((SBMLObjectIDs.get(sbmlID))))
+					{
+						PrintFDebugger.Debugging(this, "Annotated" );
+						if(matchingNodes.get(SBMLObjectIDs.get(sbmlID)).getList("SBML_GROUPS", String.class) == null )
+						{
+							//create the list if missing
+							matchingNodes.get(SBMLObjectIDs.get(sbmlID)).set("SBML_GROUPS", new LinkedList<String>());
+						}
+						matchingNodes.get(SBMLObjectIDs.get(sbmlID)).getList("SBML_GROUPS",String.class).add(groupName);
+						
+					}
+					else
+					{
+						PrintFDebugger.Debugging(this, "SBML Object not in matchingNodes" );
+					}
+				}
+			}
+		}
+	}
+	
+	
 	private void buildGPRs(TaskMonitor taskMonitor)
 	{
 		if(generateGeneNodes)
@@ -396,10 +447,13 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			if(geneNodeTargets.containsKey(geneNode))
 			{
 				for(CyNode node : geneNodeTargets.get(geneNode))
-				{
+				{					
 					View<CyNode> nodeView = networkView.getNodeView(node);
-					xpos += nodeView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-					ypos += nodeView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
+					if(nodeView != null)
+					{
+						xpos += nodeView.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
+						ypos += nodeView.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
+					}
 				}
 
 				if(geneNodeTargets.get(geneNode).size() != 0)
@@ -449,7 +503,11 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			int i = 0;	
 			//place them in a distance of 2*Node Width starting with the "Top" position and then circling around.		
 			View<CyNode> proteinNodeView = networkView.getNodeView(proteinNode);
-
+			if(proteinNodeView == null)
+			{
+				//If there is no view available skip it.
+				continue;
+			}
 			Double width = IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
 			for(CyNode neighbourNode : surroundingNodes)
 			{

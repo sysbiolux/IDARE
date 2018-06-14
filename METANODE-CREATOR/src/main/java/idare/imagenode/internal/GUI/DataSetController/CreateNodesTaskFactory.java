@@ -1,19 +1,7 @@
 package idare.imagenode.internal.GUI.DataSetController;
 
-import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.exceptions.layout.TooManyItemsException;
-import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
-import idare.imagenode.internal.Layout.ImageNodeLayout;
-import idare.imagenode.internal.Layout.Automatic.AutomaticNodeLayout;
-
-import java.util.Collection;
 import java.util.Set;
 
-import org.apache.jena.query.Dataset;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.TaskFactory;
@@ -22,6 +10,13 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.TaskMonitor.Level;
 import org.cytoscape.work.swing.DialogTaskManager;
+
+import idare.imagenode.Interfaces.DataSets.DataSet;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
 /**
  * A {@link TaskFactory} that initializes the generation of Imagenodes.
  * @author Thomas Pfau
