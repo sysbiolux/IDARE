@@ -31,6 +31,7 @@ import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.model.events.NetworkViewAddedListener;
 import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.events.VisualStyleSetListener;
 import org.cytoscape.work.AbstractTaskFactory;
 import org.cytoscape.work.ServiceProperties;
 import org.cytoscape.work.TaskIterator;
@@ -151,7 +152,7 @@ public class CyActivator extends AbstractCyActivator {
 		
 
 		//initialize and register the app components.
-		IDAREImageNodeApp imageapp = new IDAREImageNodeApp(reg, app.getSettingsManager());
+		IDAREImageNodeApp imageapp = new IDAREImageNodeApp(reg, app.getSettingsManager());		
 		app.setImageApp(imageapp);
 		imageapp.registerPlugin(new DataSetReaderProvider());
 		imageapp.registerPlugin(new DataSetProvider());				
@@ -190,6 +191,7 @@ public class CyActivator extends AbstractCyActivator {
 				}
 			}
 		}
+		registerService(context, imageapp.getActiveNodeManager(), VisualStyleSetListener.class, new Properties());
 		registerService(context, imageapp.getStyleManager(), SessionAboutToBeSavedListener.class, new Properties());
 		registerAllServices(context, pan, new Properties());
 		registerAllServices(context, up, new Properties());

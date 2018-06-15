@@ -5,6 +5,7 @@ import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.IOUtils;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
@@ -58,6 +59,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	private CyEventHelper eventHelper;	
 	private CyApplicationManager cyAppMgr;
 	private NodeManager nm;
+	private ActiveNodeManager anm;
 	private ImageStorage imf;
 	private AddNodesToStyleTaskFactory addNodesFactory;
 	/**
@@ -68,11 +70,13 @@ SessionLoadedListener, GraphicsChangedListener {
 	 * @param eventHelper
 	 * @param nm
 	 * @param cyAppMgr
+	 * @param anm 
 	 */
 	public StyleManager(ImageStorage imf, VisualMappingManager vmmServiceRef, CyNetworkViewManager cyNetViewMgr,
-			CyEventHelper eventHelper, NodeManager nm, CyApplicationManager cyAppMgr)
+			CyEventHelper eventHelper, NodeManager nm, CyApplicationManager cyAppMgr, ActiveNodeManager anm)
 	{		
 		this.imf = imf;
+		this.anm = anm;
 		this.vmmServiceRef = vmmServiceRef;
 		this.cyNetViewMgr = cyNetViewMgr;
 		this.eventHelper = eventHelper;
@@ -96,7 +100,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	 * Update all Views that could need an update due to a change in nodes.
 	 */
 	private void updateRelevantViews()
-	{
+	{		
 		//Generate all Node Images, if they don't exist.
 		imf.getAll();
 		
@@ -135,18 +139,19 @@ SessionLoadedListener, GraphicsChangedListener {
 		VisualStyle currentstyle = vmmServiceRef.getVisualStyle(CurrentView);
 		String StyleTitle = currentstyle.getTitle();
 		monitor.setStatusMessage("Adding Nodes to Style " + StyleTitle);
+		anm.addStyleUsingNodes(StyleTitle);
 		if(!VisualStyleTitles.contains(StyleTitle) && !StyleTitle.equalsIgnoreCase(IDAREVisualStyle.IDARE_STYLE_TITLE))
 		{
 			monitor.setStatusMessage("Saving old Properties for " + StyleTitle);
 			saveProperties(currentstyle, false);
 			setMappings(currentstyle);
 			VisualStyleTitles.add(StyleTitle);			
-		}	
-		monitor.setProgress(0.1);
-		monitor.setStatusMessage("Updating Views");
+		}			
+		monitor.setProgress(0.1);		
+		monitor.setStatusMessage("Updating Views");		
 		updateRelevantViews();
 		monitor.setProgress(1.0);
-
+		
 	}
 
 	/**
@@ -158,6 +163,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	{
 		String StyleTitle = styleToModify.getTitle();
 		monitor.setStatusMessage("Adding Nodes to Style " + StyleTitle);
+		anm.addStyleUsingNodes(StyleTitle);
 		if(!VisualStyleTitles.contains(StyleTitle) && !StyleTitle.equalsIgnoreCase(IDAREVisualStyle.IDARE_STYLE_TITLE))
 		{
 			monitor.setStatusMessage("Saving old Properties for " + StyleTitle);
@@ -200,6 +206,7 @@ SessionLoadedListener, GraphicsChangedListener {
 		VisualStyle currentstyle = vmmServiceRef.getVisualStyle(CurrentView);		
 		String StyleTitle = currentstyle.getTitle();
 		monitor.setStatusMessage("Removing Nodes from Style " + StyleTitle);
+		anm.removeStyleUsingNodes(StyleTitle);
 		if(VisualStyleTitles.contains(StyleTitle))
 		{
 			monitor.setStatusMessage("Restoring Properties of " + StyleTitle);

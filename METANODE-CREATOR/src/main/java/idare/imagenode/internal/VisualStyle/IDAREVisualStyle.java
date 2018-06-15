@@ -5,6 +5,7 @@ import idare.Properties.IDAREProperties;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
@@ -49,6 +50,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	
 	private ImageStorage imf;
 	private NodeManager nm;
+	private ActiveNodeManager anm;
 	
 	public static String IDARE_STYLE_TITLE = "IDARE Visual Style";
 /**
@@ -61,10 +63,11 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
  * @param imf - The IDARE specific mapping function for images.
  * @param cyNetViewMgr - A Cytoscape Network View Manager
  * @param idm - The Nodemanager of IDARE
+ * @param anm - The ActiveNodeManager of IDARE
  */
 	public IDAREVisualStyle(VisualStyleFactory visualStyleFactoryServiceRef,	VisualMappingManager vmmServiceRef,
 			VisualMappingFunctionFactory vmfFactoryD,VisualMappingFunctionFactory vmfFactoryP, CyEventHelper eventHelper,
-			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm)
+			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm,ActiveNodeManager anm)
 	{
 		//super("Setup Network for IDARE Style");		
 		this.visualStyleFactoryServiceRef = visualStyleFactoryServiceRef;
@@ -75,7 +78,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		this.cyNetViewMgr = cyNetViewMgr;		
 		this.imf = imf;		
 		this.nm = idm;
-				
+	    this.anm = anm;
 		vs = this.addStyle();		
 		this.applyToAll();
 	}
@@ -194,6 +197,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		//vs.addVisualMappingFunction(BorderColorMapping);
 		vs.addVisualMappingFunction(BorderTransparancyMap);
 		//vs.addVisualMappingFunction(imagenodeShape);
+		anm.addStyleUsingNodes(vs.getTitle());
 	}
 	
 	/**

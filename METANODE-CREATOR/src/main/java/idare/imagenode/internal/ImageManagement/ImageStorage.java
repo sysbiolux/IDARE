@@ -134,6 +134,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	{		
 		imagenodes.remove(id);
 		graphicsmap.remove(id);
+		PrintFDebugger.Debugging(this, "Setting setupNeeded to true");
 		setupNeeded = true;		
 		generateGraphicsForID(id, false);	
 		fireLayoutChange(Collections.singleton(id));
@@ -152,6 +153,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			imagenodes.remove(id);
 			graphicsmap.remove(id);
 		}
+		PrintFDebugger.Debugging(this, "Setting setupNeeded to true");
 		setupNeeded = true;
 		generateGraphicsForIDs(changedIDs);
 		fireLayoutChange(changedIDs);
@@ -164,7 +166,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 */
 	public BufferedImage getimagenodeImageForItem(String ID)
 	{	
-		if(!imagenodes.containsKey(ID) && nodeManager.isNodeLayouted(ID))
+		if(!imagenodes.containsKey(ID) && nodeManager.isNodeActive(ID))
 		{
 
 			SVGDocument doc = LayoutUtils.createSVGDoc();
@@ -174,8 +176,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			//Element root = doc.getDocumentElement();
 			//g.getRoot(root);
 			//root.setAttribute("viewBox", "0 0 400 270");
-
+			PrintFDebugger.Debugging(this,"Creating Image for Node: " + ID);
 			imagenodes.put(ID, SVGToBufferedImage(doc, IMAGENODEPROPERTIES.IMAGEWIDTH));
+			
 			
 		}			
 		return imagenodes.get(ID);
@@ -223,6 +226,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 				graphicsmap.put(id, getInstance(id));
 			}			
 		}
+		PrintFDebugger.Debugging(this, "Setting setupNeeded to false");
 		setupNeeded = false;
 		//fireLayoutChange(IDs);
 	}
@@ -240,7 +244,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			Vector<String> changedIDs = new Vector<String>();
 			for(String id : nodeManager.getLayoutedIDs())
 			{
-				if(nodeManager.isNodeLayouted(id)){
+				PrintFDebugger.Debugging(this, "Node " + id + " was layouted");
+				if(nodeManager.isNodeActive(id)){
+					PrintFDebugger.Debugging(this, "Node " + id + " was active");
 					//If we are during the loading of NOdes, we replace old ones.
 					//do this only, if its not 
 					if(!graphicsmap.containsKey(id))
@@ -252,13 +258,13 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			}
 			if(changedIDs.size() > 0)
 			{
-				fireLayoutChange(nodeManager.getLayoutedIDs());
+				fireLayoutChange(nodeManager.getActiveIDs());
 			}
 		}
 		else if(ID != null)
 		{			
 			//for now, we will just create these things "on the fly and don't check whether there is a suitable 
-			if(nodeManager.isNodeLayouted(ID)){
+			if(nodeManager.isNodeActive(ID)){
 				//If we are during the loading of NOdes, we replace old ones.
 				if(!graphicsmap.containsKey(ID)){
 					graphicsmap.put(ID, getInstance(ID));				
@@ -266,6 +272,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 				}			
 			}			
 		}
+		PrintFDebugger.Debugging(this, "Setting setupNeeded to false");
 		setupNeeded = false;
 	}
 
@@ -392,9 +399,14 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	@Override
 	public Map<String, CyCustomGraphics<CustomGraphicLayer>> getAll() {
 		long start = System.nanoTime();
+		
 		if(setupNeeded)
 		{
 			generateGraphicsForID("", true);
+		}
+		else
+		{
+			PrintFDebugger.Trace(this);
 		}
 		
 		PrintFDebugger.Debugging(this, "Generating all graphics took " + ((System.nanoTime() -start)/1000000) + " miliseconds");
@@ -438,6 +450,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	@Override
 	public void handleNodeUpdate(NodeUpdateEvent e) {
 		// TODO Auto-generatd method stub
+		PrintFDebugger.Debugging(this, "Got a Node Update event");
 		invalidate(e.getupdatedIDs());
 	}
 	

@@ -17,6 +17,7 @@ import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
 import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
 import idare.imagenode.internal.Layout.Automatic.AutomaticNodeLayout;
@@ -59,10 +60,12 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	private DataSetManager dsm;	
 	private Vector<NodeChangedListener> listeners = new Vector<NodeChangedListener>();
 	private CyNetworkManager cyNetMgr;
+	private ActiveNodeManager anm;
 	
-	public NodeManager(CyNetworkManager cyNetMgr)
+	public NodeManager(CyNetworkManager cyNetMgr, ActiveNodeManager anm)
 	{
 		this.cyNetMgr = cyNetMgr;
+		this.anm = anm;
 	}
 
 	/**
@@ -103,8 +106,14 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		NetworkIDs.clear();
 	}
 
+	public void updateActiveNodes(Collection<String> updatedIDs)
+	{
+		fireNodesChanged(updatedIDs);
+	}
+	
 	public void updateNetworkNodes()
 	{		
+		PrintFDebugger.Debugging(this, "Updating Nodes");
 		Set<String> NodesToUpdate = new HashSet<String>();		
 		Set<String> NewNodeIDs = new HashSet<String>();
 		//new node ids contains all node ids from all networks
@@ -121,7 +130,8 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		NodesToUpdate.addAll(NetworkIDs);
 		//Fire update events for those nodes and reassign the current nodes.
 		fireNetworkNodesChanged(NodesToUpdate);		
-		NetworkIDs = NewNodeIDs;		
+		NetworkIDs = NewNodeIDs;
+		anm.updateVisualCounts();
 	}
 	/**
 	 * Update nodes to to a change in the network nodes.
@@ -131,6 +141,8 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	{		
 		//only update those were Layouts exist.
 		updatedNodeIDs.retainAll(activeLayouts.keySet());
+		updatedNodeIDs.retainAll(anm.getActiveNodeIDs());
+		PrintFDebugger.Debugging(this, updatedNodeIDs.size() + " Nodes will be updated");
 		//we only need to update things, that are actually in the networks.		
 		NodeUpdateEvent e = new NodeUpdateEvent(updatedNodeIDs);
 		//Create a copy in case some listener is unregistering itself, while updating.
@@ -146,17 +158,21 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	 * @param updatedNodeIDs The nodeIds that were Updated
 	 */
 	private void fireNodesChanged(Collection<String> updatedNodeIDs)
-	{		
+	{	
+		PrintFDebugger.Trace(this);
 		//we only need to update things, that are actually in the networks.
 		updatedNodeIDs.retainAll(NetworkIDs);
+		PrintFDebugger.Debugging(this, updatedNodeIDs.size() + " are in stored");
+		//Also exclude everything that currently does not need to be updated.
+		updatedNodeIDs.retainAll(anm.getActiveNodeIDs());
+		PrintFDebugger.Debugging(this, updatedNodeIDs.size() + " Nodes will be updated");
 		NodeUpdateEvent e = new NodeUpdateEvent(updatedNodeIDs);		
 		Vector<NodeChangedListener> clisteners = new Vector<NodeChangedListener>(); 
 		clisteners.addAll(listeners);
 		for(NodeChangedListener listener : clisteners)
 		{
 //			PrintFDebugger.Debugging(listener, "Handling update Event from NodeManager (line from NodeManager)");
-			listener.handleNodeUpdate(e);
-			
+			listener.handleNodeUpdate(e);			
 		}
 	}
 
@@ -382,6 +398,16 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	{
 		return activeLayouts.containsKey(id);
 	}
+	
+	/**
+	 * Check whether the node with the given ID is layouted and needs an image.
+	 * @param id
+	 * @return true if there is a layout for the given ID, and it is needed.false otherwise. THis does not check, whether the node exists at all.
+	 */	 
+	public boolean isNodeActive(String id)
+	{		
+		return anm.getActiveNodeIDs().contains(id);
+	}
 	/**
 	 * Get the layout for a specific id
 	 * @param id
@@ -397,11 +423,26 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	 */
 	public Collection<String> getLayoutedIDs()
 	{
+
 		HashSet<String> layoutedNodeIDs = new HashSet<String>();
 		layoutedNodeIDs.addAll(activeLayouts.keySet());
 		layoutedNodeIDs.retainAll(NetworkIDs);
 		return layoutedNodeIDs;
 	}
+	
+	/**
+	 * Get a Collection of IDs for which layouts exist and which are active.
+	 * @return A {@link Collection} of Strings containing all IDs with an associated Layout
+	 */
+	public Collection<String> getActiveIDs()
+	{
+		HashSet<String> activeNodeIDs = new HashSet<String>();		
+		activeNodeIDs.addAll(activeLayouts.keySet());
+		activeNodeIDs.retainAll(NetworkIDs);
+		activeNodeIDs.retainAll(anm.getActiveNodeIDs());
+		return activeNodeIDs;
+	}
+	
 	/**
 	 * Handle a {@link SessionAboutToBeSavedEvent}. Since the order in which the event is handles by the different components of the app is important,
 	 * This Object does not itself implement the listener, but requires another function to call the handling operation.

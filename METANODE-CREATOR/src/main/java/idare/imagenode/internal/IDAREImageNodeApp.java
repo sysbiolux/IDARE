@@ -14,6 +14,7 @@ import idare.imagenode.internal.GUI.DataSetController.DataSetControlPanel;
 import idare.imagenode.internal.GUI.Legend.IDARELegend;
 import idare.imagenode.internal.GUI.Legend.Tasks.CreateNodeImagesTaskFactory;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupTaskFactory;
+import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
 import idare.imagenode.internal.Layout.io.LayoutIOManager;
@@ -74,6 +75,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	IDARELegend legend;
 	DataSetControlPanel dcp; 
 	StyleManager styleManager;
+	ActiveNodeManager anm;
 	HashMap<AbstractTaskFactory,Vector<Properties>> taskFactories = new HashMap<AbstractTaskFactory, Vector<Properties>>();	
 	Vector<AbstractCyAction> cyActions = new  Vector<AbstractCyAction>();
 	HashMap<IDAREPlugin,Vector<IDAREService>> plugins = new HashMap<IDAREPlugin, Vector<IDAREService>>();	
@@ -94,8 +96,9 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP = (VisualProperty<CyCustomGraphics<CustomGraphicLayer>>)currentLexicon.lookup(CyNode.class, "NODE_CUSTOMGRAPHICS_1");		
 		storage = new ImageStorage(VisualcustomGraphiVP);
 		dsm = new DataSetManager();		
-		nm = new NodeManager(reg.getService(CyNetworkManager.class));
-		
+		anm = new ActiveNodeManager(reg.getService(CyNetworkViewManager.class), reg.getService(VisualMappingManager.class));
+		nm = new NodeManager(reg.getService(CyNetworkManager.class),anm);
+		anm.setNodeManager(nm);
 		storage.setNodeManager(nm);
 		nm.setDataSetManager(dsm);
 		nm.addNodeChangeListener(storage);
@@ -103,7 +106,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		ids = new IDAREVisualStyle(reg.getService(VisualStyleFactory.class), reg.getService(VisualMappingManager.class),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=discrete)"),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)"),				
-								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),nm);
+								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),nm,anm);		
 		storage.setVisualStyle(ids);
 		Settings = ism;
 		legend = new IDARELegend(new JPanel(),nm);
@@ -111,7 +114,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		nm.updateNetworkNodes();
 		storage.addImageLayoutChangedListener(ids);
 		styleManager = new StyleManager(storage, reg.getService(VisualMappingManager.class), reg.getService(CyNetworkViewManager.class),
-										reg.getService(CyEventHelper.class), nm, reg.getService(CyApplicationManager.class));
+										reg.getService(CyEventHelper.class), nm, reg.getService(CyApplicationManager.class),anm);
 		storage.addImageLayoutChangedListener(styleManager);
 		dcp = new DataSetControlPanel(reg.getService(CySwingApplication.class), this);
 		layoutIOmanager = new LayoutIOManager();
@@ -176,6 +179,14 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	 */
 	public DataSetManager getDatasetManager() {
 		return dsm;
+	}
+	
+	/**
+	 * Get the {@link ActiveNodeManager} created by this App
+	 * @return The {@link ActiveNodeManager} used by this instance
+	 */
+	public ActiveNodeManager getActiveNodeManager() {
+		return anm;
 	}
 	/**
 	 * Register a the type of a dataset provided to the set of avilable {@link DataSet} classes
