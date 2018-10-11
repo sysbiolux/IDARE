@@ -1,13 +1,7 @@
 package idare.subnetwork.internal.GUI;
 
 
-import idare.Properties.IDAREProperties;
-import idare.ThirdParty.BoundsPopupMenuListener;
-import idare.subnetwork.internal.NetworkViewSwitcher;
-import idare.subnetwork.internal.NoNetworksToCreateException;
-import idare.subnetwork.internal.SubNetworkUtils;
-import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubNetworkProperties;
-
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -28,7 +22,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,6 +45,13 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+
+import idare.Properties.IDAREProperties;
+import idare.ThirdParty.BoundsPopupMenuListener;
+import idare.subnetwork.internal.NetworkViewSwitcher;
+import idare.subnetwork.internal.NoNetworksToCreateException;
+import idare.subnetwork.internal.SubNetworkUtils;
+import idare.subnetwork.internal.Tasks.SubsystemGeneration.SubNetworkProperties;
 
 /**
  * A GUI for the selection of the properties for SubNetwork Generation.
@@ -198,8 +201,42 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 		Dimension dim = subNetSelTab.getPreferredSize();
 		dim.height = 200;
 		subNetSelTab.setPreferredScrollableViewportSize(dim);
-		MiddlePane.add(subSysPane,gbc);		
+		JButton SelectAllButton = new JButton(new AbstractAction() {						
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int nrows = subNetSelTab.getModel().getRowCount();
+				for(int i = 0; i < nrows; i++)
+				{
+					subNetSelTab.getModel().setValueAt(true, i, 1);
+				}
+			}
+		});
 		
+		SelectAllButton.setText("Select All");
+		JButton DeSelectAllButton = new JButton(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int nrows = subNetSelTab.getModel().getRowCount();
+				for(int i = 0; i < nrows; i++)
+				{
+					subNetSelTab.getModel().setValueAt(false, i, 1);
+				}
+			}
+		});
+		JPanel ButtonPanel = new JPanel();
+		ButtonPanel.setLayout(new BorderLayout(5,0));
+		DeSelectAllButton.setText("Clear Selection");
+		MiddlePane.add(subSysPane,gbc);
+		gbc.gridy = gbc.gridy+1;
+		gbc.gridx = 1;
+		JPanel P2 = new JPanel();
+		P2.add(SelectAllButton);
+		P2.add(DeSelectAllButton);
+		ButtonPanel.add(P2,BorderLayout.LINE_END);			
+		MiddlePane.add(ButtonPanel,gbc);		
 	}
 	/**
 	 * Create the TableModel for the SubSystem Selection
