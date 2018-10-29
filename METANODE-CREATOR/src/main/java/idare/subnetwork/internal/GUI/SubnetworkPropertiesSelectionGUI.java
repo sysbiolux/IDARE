@@ -242,6 +242,7 @@ public class SubnetworkPropertiesSelectionGUI extends JPanel{
 	 * Create the TableModel for the SubSystem Selection
 	 * @param network - the {@link CyNetwork}Subsystems are created for
 	 * @return A {@link TableModel} containing a list of potential Subnetworks
+	 * @throws NoNetworksToCreateException if all selected networks are already created or none are equested.
 	 */
 	public TableModel createSubNetworkTableModel(CyNetwork network) throws NoNetworksToCreateException
 	{

@@ -9,7 +9,7 @@ public class And extends Association{
 
 	/**
 	 * Wraps the provided object
-	 * @param o
+	 * @param o the And Association object to initialize this object.
 	 */
 	public And(Object o)
 	{

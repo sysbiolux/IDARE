@@ -18,7 +18,9 @@ public class DataSetChangedEvent {
 	 * Create a New Event with the changing set, the {@link DataSetManager} this event originates from and an indicator whether the set is added or removed. 
 	 * @param source The {@link DataSetManager} this event originates from
 	 * @param setchanged The Set that is changing
-	 * @param added whether the set is added or removed.
+	 * @param added whether the set is added
+	 * @param removed whether the set was removed
+	 * @param changed Whether the Event indicates a change in the set
 	 */
 	public DataSetChangedEvent(DataSetManager source, DataSet setchanged, boolean added, boolean removed, boolean changed)
 	{

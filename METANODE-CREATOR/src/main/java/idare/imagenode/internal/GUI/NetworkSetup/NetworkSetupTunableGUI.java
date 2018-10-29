@@ -39,7 +39,7 @@ public class NetworkSetupTunableGUI extends JPanel {
 	public String TypeCol;
 	/**
 	 * Generate the Requesting fields using the given network  
-	 * @param network
+	 * @param network the network to build the tunable from
 	 */
 	public NetworkSetupTunableGUI(CyNetwork network){
 //		PrintFDebugger.Debugging(this, "Setting up new GUI");

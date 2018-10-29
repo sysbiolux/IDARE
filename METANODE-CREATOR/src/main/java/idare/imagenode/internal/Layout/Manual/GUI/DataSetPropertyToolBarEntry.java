@@ -46,6 +46,7 @@ public class DataSetPropertyToolBarEntry extends JPanel {
 	
 	/**
 	 * Get the Colormap corresponding to the selected scale
+	 * @return LayoutProperties for the currently selected element.
 	 */
 	public DataSetLayoutProperties getSelectedProperties()
 	{

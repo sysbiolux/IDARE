@@ -12,7 +12,7 @@ public class NodeUpdateEvent {
 	private Collection<String> nodeIDs;
 	/**
 	 * Default constructor with a provided set of IDs.
-	 * @param updatedIDs
+	 * @param updatedIDs the IDs that were updated
 	 */
 	public NodeUpdateEvent(Collection<String> updatedIDs) {
 		// TODO Auto-generated constructor stub

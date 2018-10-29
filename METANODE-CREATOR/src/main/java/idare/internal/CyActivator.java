@@ -39,9 +39,9 @@ import org.cytoscape.work.swing.GUITunableHandlerFactory;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
 
-import idare.NodeDuplicator.Internal.NodeDuplicatorFactory;
-import idare.NodeDuplicator.Internal.NodeMergerFactory;
-import idare.NodeDuplicator.Internal.NodeRegistry;
+import idare.NodeDuplicator.internal.NodeDuplicatorFactory;
+import idare.NodeDuplicator.internal.NodeMergerFactory;
+import idare.NodeDuplicator.internal.NodeRegistry;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.IDARENodeManager;
 import idare.imagenode.internal.IDAREImageNodeApp;

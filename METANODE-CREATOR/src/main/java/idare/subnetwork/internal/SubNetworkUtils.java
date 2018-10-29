@@ -16,6 +16,8 @@ public class SubNetworkUtils {
 
 	/**
 	 *  Get all Columns present in the node Table of the provided network
+	 *  @param network The network to get the Column names for.
+	 *  @return a Vector containing all the Column names of the network.
 	 */
 	public static Vector<String> getNodeTableColumnNames(CyNetwork network)
 	{
@@ -155,6 +157,7 @@ public class SubNetworkUtils {
 
 	/**
 	 * Check whether a given Object is either empty or an empty String
+	 * @param Entry The Entry to check (whether its null or an empty string)
 	 * @return Whether the entry is empty or represented by an empty string
 	 */
 	public static boolean isempty(Object Entry)

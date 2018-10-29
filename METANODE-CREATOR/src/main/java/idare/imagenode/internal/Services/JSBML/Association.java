@@ -17,7 +17,7 @@ public class Association {
 	Method getListOfAssociations;
 	/**
 	 * A Wrapper that takes a hopefully) Association object
-	 * @param o
+	 * @param o Association object to initialize this object.
 	 */
 	public Association(Object o)
 	{

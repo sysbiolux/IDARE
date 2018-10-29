@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -215,8 +216,8 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 
 	/**
 	 * Update the Manager/Nodes with the new DataSet, either adding it or removing it form the nodes.
-	 * @param ds
-	 * @param added
+	 * @param ds the dataset to update
+	 * @param added whether the dataset was added
 	 */
 	public void update(DataSet ds, boolean added)
 	{
@@ -289,10 +290,12 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link DataSetLayoutInfoBundle}s provided.
 	 * This version is to be used if the created nodes are created by a {@link Task}.
 	 * @param datasets The datasets to create nodes for 
+	 * @param layout the layout to use for the nodes
 	 * @param monitor The TaskMonitor that keeps track of progress.
-	 * @throws TooManyItemsException
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
+	 * @throws TooManyItemsException if there are too many items
+	 * @throws ContainerUnplaceableExcpetion if a container cannot be placed
+	 * @throws DimensionMismatchException if the dimensions dont fit.
+	 * @throws WrongDatasetTypeException if a dataset cannot be layout out with the layout.
 	 */
 	public void generateLayoutsForNodes(Set<DataSet> datasets, ImageNodeLayout layout ,TaskMonitor monitor) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{
@@ -343,10 +346,12 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	
 	/**
 	 * Generate Layouts for All nodes in the {@link DataSet}s present in the {@link DataSetLayoutInfoBundle}s provided.
-	 * @param datasets
-	 * @throws TooManyItemsException
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
+	 * @param datasets the datasets t generate layouts for
+	 * @param layout the layout to use for the nodes
+	 * @throws TooManyItemsException if too many items were in the datasets
+	 * @throws ContainerUnplaceableExcpetion if a container could not be placed
+	 * @throws DimensionMismatchException if dimensions could not fit
+	 * @throws WrongDatasetTypeException if a dataset could not be layout out with the selected type of layout
 	 */
 	public void generateLayoutsForNodes(Set<DataSet> datasets, ImageNodeLayout layout ) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException	
 	{
@@ -391,7 +396,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	}
 	/**
 	 * Check whether a tge node with the given ID is layouted
-	 * @param id
+	 * @param id The node id to check
 	 * @return true if there is a layout for the given ID, or false otherwise. THis does not check, whether the node exists at all.
 	 */
 	public boolean isNodeLayouted(String id)
@@ -401,7 +406,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	
 	/**
 	 * Check whether the node with the given ID is layouted and needs an image.
-	 * @param id
+	 * @param id The node ID to check
 	 * @return true if there is a layout for the given ID, and it is needed.false otherwise. THis does not check, whether the node exists at all.
 	 */	 
 	public boolean isNodeActive(String id)
@@ -410,7 +415,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	}
 	/**
 	 * Get the layout for a specific id
-	 * @param id
+	 * @param id The node ID to get the layout for
 	 * @return the layout associated with the ID, or null if the ID has no associated layout.
 	 */
 	public ImageNodeLayout getLayoutForNode(String id)
@@ -446,7 +451,8 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	/**
 	 * Handle a {@link SessionAboutToBeSavedEvent}. Since the order in which the event is handles by the different components of the app is important,
 	 * This Object does not itself implement the listener, but requires another function to call the handling operation.
-	 * @param arg0
+	 * @param arg0 the event to handle
+	 * @param app the {@link IDAREImageNodeApp} to use for reference
 	 */
 	public void handleEvent(SessionAboutToBeSavedEvent arg0, IDAREImageNodeApp app) {
 
@@ -478,7 +484,8 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	 * Restore the data of this nodemanager.
 	 * Since we need to have a specific order for {@link DataSetManager} and {@link NodeManager} restoration, this cannot simply be achieved
 	 * by implementing the {@link SessionLoadedListener} interface
-	 * @param arg0
+	 * @param arg0 the event to handle
+	 * @param app the {@link IDAREImageNodeApp} for reference
 	 */
 	public void handleEvent(SessionLoadedEvent arg0, IDAREImageNodeApp app) {
 		
@@ -507,7 +514,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	}
 	/**
 	 * Create a Collection of IDs that are associated with a specific Layout.
-	 * @param Layout
+	 * @param Layout the layout to get nodes for
 	 * @return the Nodes IDs assigned to the provided {@link ImageNodeLayout} 
 	 */
 	public Collection<String> getNodesForLayout(ImageNodeLayout Layout)
@@ -525,8 +532,9 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	}
 	/**
 	 * Write a structure that can be read again by a nodemanager to restore the current state of the manager.
-	 * @param LayoutFile
-	 * @throws IOException
+	 * @param LayoutFile the File to write the lyouts to 
+	 * @param app the {@link IDAREImageNodeApp} as reference
+	 * @throws IOException if something goes wrong during IO
 	 */
 	public void writeNodeLayouts(File LayoutFile, IDAREImageNodeApp app) throws IOException
 	{
@@ -552,8 +560,9 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	}
 	/**
 	 * Read Layout data saved in a given File to restore old nodemanager data.
-	 * @param LayoutFile
-	 * @throws IOException
+	 * @param LayoutFile The {@link File} to read the layouts from
+	 * @param app the {@link IDAREImageNodeApp} as reference
+	 * @throws IOException if something goes wrong during IO
 	 */
 	public void readNodeLayouts(File LayoutFile, IDAREImageNodeApp app) throws IOException
 	{

@@ -14,8 +14,8 @@ public class NodeAndNetworkStruct {
 	public CyNetwork network;
 	/**
 	 * Default constructor using a {@link CyNode} and a {@link CyNetwork}
-	 * @param Node
-	 * @param network
+	 * @param Node the node in the struct
+	 * @param network the network pointed to by the node
 	 */
 	public NodeAndNetworkStruct(CyNode Node, CyNetwork network)
 	{

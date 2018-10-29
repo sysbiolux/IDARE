@@ -16,7 +16,7 @@ public class Annotation {
 	private Method ListOfCVTerms;
 	/**
 	 * Wrap the provided Object (which should be an org.sbml.jsbml.Annotation object 
-	 * @param o
+	 * @param o the Annotation object to initialize this object.
 	 */
 	public Annotation(Object o)
 	{

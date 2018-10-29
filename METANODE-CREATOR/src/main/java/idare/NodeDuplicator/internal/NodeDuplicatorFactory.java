@@ -1,4 +1,4 @@
-package idare.NodeDuplicator.Internal;
+package idare.NodeDuplicator.internal;
 
 import org.cytoscape.model.CyNode;
 import org.cytoscape.service.util.CyServiceRegistrar;

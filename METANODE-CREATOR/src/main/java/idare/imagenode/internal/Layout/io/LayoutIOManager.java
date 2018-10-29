@@ -24,6 +24,7 @@ public class LayoutIOManager {
 	/**
 	 * Register a specific type of Layout.
 	 * This will be stored using its name and can be retrieved in the same way.
+	 * @param layout the layout to register
 	 */
 	public void registerLayout(ImageNodeLayout layout)
 	{
@@ -31,13 +32,21 @@ public class LayoutIOManager {
 	}
 	
 	/**
-	 * DeRegister a specific type of Layout, it will no longer be available. 
+	 * DeRegister a specific type of Layout, it will no longer be available.
+	 * @param layout The NodeLayout type to deregister 
 	 */
 	public void deRegisterLayout(ImageNodeLayout layout)
 	{
 		layoutclasses.remove(layout.getClass().getName());
 	}
-	
+	/**
+	 * Read a Layout from a stream
+	 * @param os the stream to read from
+	 * @param currentobject the current object
+	 * @param dsm the Datasetmanager to store info to
+	 * @return the ImageNodeLayout read
+	 * @throws IOException if errors occur during IO
+	 */
 	public ImageNodeLayout readLayout(ObjectInputStream os, Object currentobject, DataSetManager dsm) throws IOException
 	{
 		String clazzname = (String) currentobject;

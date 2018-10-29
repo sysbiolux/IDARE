@@ -1,4 +1,4 @@
-package idare.NodeDuplicator.Internal;
+package idare.NodeDuplicator.internal;
 
 import java.util.Collection;
 import java.util.Vector;

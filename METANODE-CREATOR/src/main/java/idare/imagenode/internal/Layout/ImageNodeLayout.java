@@ -42,7 +42,7 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	/**
 	 * Write all data that is relevant to restore this nodelayout to a {@link ObjectOutputStream}
 	 * @param os The {@link ObjectOutputStream} to write the dlayout infromation to
-	 * @throws IOException
+	 * @throws IOException If errors occur with the given stream
 	 */
 	void writeLayout(ObjectOutputStream os) throws IOException;
 
@@ -52,15 +52,16 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 * @param os The {@link ObjectInputStream} to read from
 	 * @param currentobject The last object read in the {@link ObjectInputStream} provided (the first object of the nodelayout save
 	 * @return true, if reading was successful, false if there was a non {@link IOException}.
-	 * @throws IOException
+	 * @throws IOException If errors occur with the given stream
 	 */
 	boolean readLayout(DataSetManager dsm, ObjectInputStream os, Object currentobject) throws IOException;
 
 	/**
 	 * Produce the layout based on the added DataSets.
-	 * @throws TooManyItemsException
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
+	 * @throws TooManyItemsException If there are too many Items to layout
+	 * @throws ContainerUnplaceableExcpetion If a container is not placeable
+	 * @throws DimensionMismatchException If the given dimensions don't fit.
+	 * @throws WrongDatasetTypeException IF the given Dataset does not it to the layout  
 	 */
 	void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException;
 

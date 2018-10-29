@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.internal.DataManagement.DataSetManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupProperties;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.Manual.GUI.ColorToolBarEntry;
@@ -24,12 +23,13 @@ public class LayoutPropertiesGUI extends JPanel {
 	private ColorToolBarEntry colorselector = new ColorToolBarEntry();
 	private JComboBox<DataSetLayoutProperties> propertySelector;
 	private JComboBox<DataSet> datasetSelector;
+	
 	/**
 	 * Generate the Requesting fields using the given dataset  
-	 * @param network
+	 * @param dsm The {@link DataSetManager} to request datasets from. 
 	 */
+	
 	public LayoutPropertiesGUI(DataSetManager dsm){
-//		PrintFDebugger.Debugging(this, "Setting up new GUI");			
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;		
@@ -65,22 +65,11 @@ public class LayoutPropertiesGUI extends JPanel {
 		gbc.gridy++;
 		gbc.gridx = 0;
 		this.add(new JLabel("Select ColorScale:"));
-		gbc.gridx++;
-		createColorBarSelector((DataSet)datasetSelector.getSelectedItem());
+		gbc.gridx++;		
 		this.add(colorselector, gbc);
 		//this.setSize(new Dimension(400,300));
 		this.setVisible(true);		
 	}	
-
-	/**
-	 * Set up the ColorBarselector 
-	 * @return A {@link JPanel} with the Type and ID selection boxes and LAbels.
-	 */
-	private void createColorBarSelector(DataSet ds)
-	{
-	//	colorselector.updateColorScalePane(ds);		
-	}
-
 
 	/**
 	 * Get the properties selected in this GUI

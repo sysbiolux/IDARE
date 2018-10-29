@@ -95,6 +95,7 @@ public class ColorToolBarEntry extends JPanel{
 
 	/**
 	 * Get the Colormap corresponding to the selected scale
+	 * @return The {@link ColorMap} currently selected
 	 */
 	public ColorMap getSelectedMap()
 	{

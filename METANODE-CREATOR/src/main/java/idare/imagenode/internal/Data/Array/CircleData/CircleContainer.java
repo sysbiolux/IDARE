@@ -16,8 +16,8 @@ public class CircleContainer extends AbstractArrayContainer{
 
 	/**
 	 * Basic Constructor using the source dataset and an instance of the data.
-	 * @param origin 
-	 * @param data
+	 * @param origin the {@link DataSet} this container is part of
+	 * @param data the Data contained in this container
 	 */
 	public CircleContainer(DataSet origin, ArrayNodeData data)
 	{

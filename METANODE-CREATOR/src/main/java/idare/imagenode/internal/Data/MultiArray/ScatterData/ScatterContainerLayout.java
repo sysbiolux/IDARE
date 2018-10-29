@@ -68,6 +68,7 @@ public class ScatterContainerLayout extends MultiArrayContainerLayout {
 	protected HashMap<String,Vector<Double>> LineHeaders = new HashMap<String, Vector<Double>>();
 	/**
 	 * Default Constructor
+	 * @param LabelSize the labelsize to use
 	 */
 	 public ScatterContainerLayout(int LabelSize) {
 		 super();

@@ -61,8 +61,9 @@ public class ManualLayout implements ImageNodeLayout {
 	/**
 	 * Update the position of a Dataset in the layoutbundle.
 	 * The position is assumed to be in the IMAGENODEPROPERTIES.IMAGEWIDTH / IMAGENODEPROPERTIES.IMAGEHEIGHT range.  
-	 * @param bundle
-	 * @param Position
+	 * @param bundle  the LayoutInfoBundle to use
+	 * @param Position The position to update
+	 * @throws WrongDatasetTypeException If the used dataset is invalid.
 	 */
 	public void updatePosition(DataSetLayoutInfoBundle bundle, Rectangle Position) throws WrongDatasetTypeException
 	{
@@ -96,9 +97,9 @@ public class ManualLayout implements ImageNodeLayout {
 	}
 
 	/**
-	 * 
-	 * @param bundle
-	 * @throws WrongDatasetTypeException
+	 * Update the properties of the bundle
+	 * @param bundle The bundle to update
+	 * @throws WrongDatasetTypeException if the Dataset in the bundle is invalid for the bundle.
 	 */
 	public void updateProperties(DataSetLayoutInfoBundle bundle) throws WrongDatasetTypeException
 	{
@@ -109,9 +110,9 @@ public class ManualLayout implements ImageNodeLayout {
 	/**
 	 * Add a dataset to this Layout. The set is represented by the appropriate bundle.
 	 * It also has a position at which it is added, which will be used to assign its position in the order of datasets.
-	 * @param bundle
-	 * @param Position
-	 * @throws WrongDatasetTypeException
+	 * @param bundle The layoutinfo and Dataset to add
+	 * @param Position the position to add the layout to
+	 * @throws WrongDatasetTypeException IF the Dataset/Layout don't fit.
 	 */	
 	public void addDataSet(DataSetLayoutInfoBundle bundle, Rectangle Position) throws WrongDatasetTypeException
 	{				
@@ -132,8 +133,8 @@ public class ManualLayout implements ImageNodeLayout {
 	
 	/**
 	 * Update the order of the Layouts (to provide the correct labeling.
-	 * @param current
-	 * @param position
+	 * @param current the current Layout info
+	 * @param position the are to layout in.
 	 */
 	private void updateOrder(DataSetLayoutInfoBundle current, LayoutArea position)
 	{
@@ -212,7 +213,7 @@ public class ManualLayout implements ImageNodeLayout {
 	}
 	/**
 	 * Remove a dataset represented by the given bundle. 
-	 * @param bundle
+	 * @param bundle The bundle containing the layout to remove
 	 */
 	public void removeDataSet(DataSetLayoutInfoBundle bundle)
 	{
@@ -226,7 +227,7 @@ public class ManualLayout implements ImageNodeLayout {
 
 	/**
 	 * Set the size of the display. (to calculate the actual size)
-	 * @param rec
+	 * @param rec the position to set the display size to.
 	 */
 	public void setDisplaySize(Rectangle rec)
 	{
@@ -257,7 +258,7 @@ public class ManualLayout implements ImageNodeLayout {
 
 	/**
 	 * Move a specific bundle to the front (i.e. it will be plotted last overwriting any former containerlayouts 
-	 * @param bundle
+	 * @param bundle the bundle to move to the front.
 	 */
 	public void moveBundleToFront(DataSetLayoutInfoBundle bundle)
 	{

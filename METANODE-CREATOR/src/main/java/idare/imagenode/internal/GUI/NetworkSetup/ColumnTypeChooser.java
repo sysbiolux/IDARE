@@ -57,8 +57,8 @@ public class ColumnTypeChooser extends JPanel{
 	JTextPane proteinDesc;
 	/**
 	 * Default Constructor using the available columnNames 
-	 * @param network
-	 * @param ColumnNames
+	 * @param network the {@link CyNetwork} to select the columns from
+	 * @param ColumnNames The available column names to display.
 	 */
 	public ColumnTypeChooser(CyNetwork network, Vector<String> ColumnNames) {
 		// TODO Auto-generated constructor stub		

@@ -114,6 +114,7 @@ public class ImageNodeContainer extends JLabel{
 	 * @throws ContainerUnplaceableExcpetion if the container is not placeable due to its properties
 	 * @throws DimensionMismatchException if a containers dimensions are too large
 	 * @throws TooManyItemsException if there are too many items and not enough room left.
+	 * @throws WrongDatasetTypeException if a Dataset cannot be placed
 	 */
 	public HashMap<ImageBag,HashMap<JPanel,DataContainer>> createLayout(JFrame frame ) throws ContainerUnplaceableExcpetion,DimensionMismatchException, TooManyItemsException, WrongDatasetTypeException
 	{
@@ -318,8 +319,9 @@ public class ImageNodeContainer extends JLabel{
 	}
 	/**
 	 * Add A {@link DataSet}. If the Set is already added, nothing will be done.
-	 * @param set - The {@link DataSet} to add to the {@link ImageNodeContainer}
-	 * @throws TooManyItemsException
+	 * @param bundle The LayoutInfo and DataSet bundle to add
+	 * @throws TooManyItemsException If there are too many items to add
+	 * @throws WrongDatasetTypeException if the supplied bundle is invalid
 	 */
 	public void addDataSet(DataSetLayoutInfoBundle bundle) throws TooManyItemsException, WrongDatasetTypeException
 	{

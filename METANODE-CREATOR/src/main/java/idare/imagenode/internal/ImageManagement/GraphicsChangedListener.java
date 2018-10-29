@@ -10,7 +10,7 @@ public interface GraphicsChangedListener  {
 
 	/**
 	 * Update according to the updated images provided in this event.
-	 * @param e
+	 * @param e the {@link GraphicsChangedEvent} to process
 	 */
 	public void imageUpdated(GraphicsChangedEvent e);
 }

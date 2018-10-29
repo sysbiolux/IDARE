@@ -24,9 +24,9 @@ public class HeaderDescription extends ArrayDataDescription {
 	/**
 	 * Set up the Description for a specific set of data and a given DataSetLabel.
 	 * Adjust the size accoring to changes in the Legend provided.
-	 * @param currentdata
-	 * @param DataSetLabel
-	 * @param Legend
+	 * @param currentdata the data to use
+	 * @param DataSetLabel the Label to use
+	 * @param Legend the legend to link to
 	 */
 	@Override
 	public void setupItemDescription(NodeData currentdata, String DataSetLabel, JScrollPane Legend) {

@@ -19,7 +19,7 @@ public class GraphicsChangedEvent {
 	
 	/**
 	 * Default constructor using a HAshMap with Strings mapping to the new graphics for those strings.
-	 * @param newgraphics
+	 * @param newgraphics the new graphics used
 	 */
 	GraphicsChangedEvent(HashMap<String,CyCustomGraphics<CustomGraphicLayer>> newgraphics)
 	{
@@ -38,7 +38,7 @@ public class GraphicsChangedEvent {
 	
 	/**
 	 * get The {@link CyCustomGraphics} object for the requested ID, or <code>null</code> if it is not part of this event.
-	 * @param id
+	 * @param id the id of the graphic to obtain
 	 * @return {@link CyCustomGraphics} - the graphics associated with the given id.
 	 */
 	public CyCustomGraphics<CustomGraphicLayer> getGraphicForID(String id)

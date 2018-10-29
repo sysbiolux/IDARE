@@ -191,8 +191,6 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	/**
 	 * Register a the type of a dataset provided to the set of avilable {@link DataSet} classes
 	 * @param ds An instance of a {@link DataSet} which is of the class to register.
-	 * @throws IllegalAccessException if there was an illegal access to the dataset class.
-	 * @throws InstantiationException if things went wrong in the Instantiation of the class
 	 * @throws DuplicateIDException if there are two datasets with the same type name
 	 */
 	public void registerDataSetType(DataSet ds) throws DuplicateIDException 
@@ -460,6 +458,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 	
 	/**
 	 * Get The LayoutIOManager
+	 * @return The Layoutmanager of this app
 	 */
 	public LayoutIOManager getLayoutIOManager()
 	{

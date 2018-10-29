@@ -78,6 +78,7 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 	/**
 	 * Constructs a NetworkView Switcher for the current application. 
 	 * @param reg - A CyServiceRegistrar to obtain relevant services 
+	 * @param ism The {@link IDARESettingsManager} to use
 	 */
 	public NetworkViewSwitcher(CyServiceRegistrar reg, IDARESettingsManager ism)
 	{
@@ -191,8 +192,8 @@ public class NetworkViewSwitcher extends AbstractNodeViewTaskFactory implements 
 
 	/**
 	 * Get the subnetworks that currently exist for the provided column present in any parent network 
-	 * @param selectedColumn The Column to obtain the Network-> View pairs for
-	 * @return A {@link Map} of {@link CyNetwork} -> {@link CyNetworkView} pairs. The Views can be null, if there is no existing view for the given network. 
+	 * @param selectedColumn The Column to obtain the Network to View pairs for
+	 * @return A {@link Map} of {@link CyNetwork} to {@link CyNetworkView} pairs. The Views can be null, if there is no existing view for the given network. 
 	 */
 	public synchronized HashMap<CyNetwork, CyNetworkView> getExistingNetworksForColumn(String selectedColumn)
 	{		

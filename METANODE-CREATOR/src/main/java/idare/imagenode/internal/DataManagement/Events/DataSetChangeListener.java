@@ -10,13 +10,13 @@ public interface DataSetChangeListener {
 
 	/**
 	 * Inform that there was a change in the {@link DataSet}s 
-	 * @param e
+	 * @param e the {@link DataSetChangedEvent} to process
 	 */
 	public void datasetChanged(DataSetChangedEvent e);
 
 	/**
 	 * Inform that a Collection of {@link DataSet}s changed.
-	 * @param e
+	 * @param e The {@link DataSetsChangedEvent} to process
 	 */
 	public void datasetsChanged(DataSetsChangedEvent e);
 }

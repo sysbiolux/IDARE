@@ -58,7 +58,8 @@ public class SBMLAnnotaterTask extends AbstractTask{
 	 * @param SBMLDoc The {@link SBMLDocument} to obtain the annotation from
 	 * @param GenerateGeneNodes whether to generate gene (and potentially protein) nodes
 	 * @param eventHelper The {@link CyEventHelper} used to update the views. 
-	 * @param GeneAnnotDB The identifier used for protein name annotation , 
+	 * @param GeneAnnotDB The identifier used for protein name annotation ,
+	 * @param ProtAnnotDB The name of the protein annotation database to be used.  
 	 * @param ProtAnnot a {@link Map} associating the protein names with their CVTerms,
 	 * @param sbmlTypeCol The column of the in which the SBML Types are stored
 	 * @param sbmlIDCol The nodeTable column in which the SBML IDs are stored

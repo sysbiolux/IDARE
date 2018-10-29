@@ -36,6 +36,7 @@ public class CSVSheet implements Sheet {
 	/**
 	 * Simple constructor. The data is simply stored in a vector.
 	 * @param workbook - the enclosing workbook.
+	 * @param SheetName The name of the Sheet
 	 */
 	public CSVSheet(CSVWorkbook workbook, String SheetName)
 	{
@@ -53,7 +54,7 @@ public class CSVSheet implements Sheet {
 
 	/**
 	 * get the row position of a row.
-	 * @param row
+	 * @param row The row to get the row number for
 	 * @return the position of the provided row
 	 */
 	public int getRowNumber(Row row)

@@ -53,7 +53,8 @@ public class ActiveNodeManager implements VisualStyleSetListener{
 	}
 	
 	/**
-	 * 
+	 * Get the set of active Nodes
+	 * @return A collection of the Active nodes
 	 */
 	public Collection<String> getActiveNodeIDs()
 	{

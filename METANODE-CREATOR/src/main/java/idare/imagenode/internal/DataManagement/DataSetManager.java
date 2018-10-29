@@ -102,6 +102,7 @@ public class DataSetManager{
 	 * Register a DataSetType that can be accessed by the TypeName.
 	 * @param TypeName the TypeName (string description) of the registered DataSetType
 	 * @param dataSetClass The Class of the DataSet
+	 * @throws DuplicateIDException IF an ID for a type of dataset is already present
 	 */
 	public void registerDataSetType(String TypeName, Class<? extends DataSet> dataSetClass) throws DuplicateIDException
 	{
@@ -376,7 +377,7 @@ public class DataSetManager{
 	}
 	/**
 	 * Remove a {@link DataSet} from this Manager
-	 * @param setToRemove
+	 * @param setToRemove the Dataset to remove
 	 */
 	public void removeDataSet(DataSet setToRemove)
 	{
@@ -472,7 +473,11 @@ public class DataSetManager{
 	 * @throws WrongFormat Depending on the Dataset specific properties have to be matched by the file
 	 * @throws InvalidFormatException Depending on the Dataset specific properties have to be matched by the file
 	 * @throws DuplicateIDException Depending on the Dataset specific properties have to be matched by the file
-	 * @throws IOException
+	 * @throws IOException if IO on the workbook failed
+	 * @throws ExecutionException if something during the processing went wrong
+	 * @throws ClassNotFoundException if the class for the Dataset is not found
+	 * @throws IllegalAccessException if something wents off with access
+	 * @throws InstantiationException if the Dataset cannot be instantiated
 	 */
 	public DataSet createDataSet(boolean TwoCols, String DataSetTypeName , 
 			String SetDescription, IDAREWorkbook dsWorkBook) 

@@ -29,7 +29,8 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	/**
 	 * Standard constructor of the Mapper
 	 * @param MappedColumnName - The column that is mapped from 
-	 * @param vp - the {@link VisualProperty} mapped to by this mapper 
+	 * @param vp - the {@link VisualProperty} mapped to by this mapper
+	 * @param nm The NodeManager to obtain information from 
 	 * @param mappedValue - the Value used for imagenodes.
 	 */
 	public IDAREDependentMapper(String MappedColumnName, VisualProperty<S> vp,NodeManager nm,S mappedValue ) {

@@ -98,11 +98,11 @@ public class RectangleContainerLayout extends AbstractArrayContainerLayout{
 		private Font labelFont;
 		/**
 		 * Default Constructor
-		 * @param shape
-		 * @param position
-		 * @param ItemID
-		 * @param FontPosition
-		 * @param labelfont
+		 * @param shape the {@link Shape} to use
+		 * @param position the Position to use
+		 * @param ItemID the ID to use
+		 * @param FontPosition the FontPosition to use
+		 * @param labelfont the {@link Font} to use
 		 */
 		public RectangleLegendShapePosition(Shape shape, Rectangle2D position, String ItemID, Point2D FontPosition, Font labelfont)
 		{

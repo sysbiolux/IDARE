@@ -38,8 +38,9 @@ public class NetworkViewSwitchTask extends AbstractTask{
 	CyNetwork origin;
 	/**
 	 * A Task switching the current view to the View in the TargetView and focusing on the NodeView listed.
-	 * @param appmgr - The {@link CyApplicationManager} of this application
-	 * @param targetview - The {@link NodeViewLink} struct containing the target View information. 
+	 * @param reg  The {@link CyServiceRegistrar}  for reference
+	 * @param node The {@link CyNode} that was clicked
+	 * @param origin The Original {@link CyNetwork} this task comes from 
 	 */
 	public NetworkViewSwitchTask(CyServiceRegistrar reg,
 			CyNode node, CyNetwork origin) {

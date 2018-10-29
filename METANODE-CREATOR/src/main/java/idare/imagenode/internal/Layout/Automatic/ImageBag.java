@@ -87,6 +87,7 @@ public class ImageBag extends Container{
 	 * Add a {@link DataSet}, if there is sufficient space left in this bag. Otherwise throw a too many items exception.  
 	 * @param set the {@link DataSet} to add to this Bag.
 	 * @throws TooManyItemsException if there are too many items in the provided {@link DataSet} and not enough room left in this Bag
+	 * @throws WrongDatasetTypeException if the LayoutBundle is invalid.
 	 */
 	public void addContainer(DataSetLayoutInfoBundle set) throws TooManyItemsException,WrongDatasetTypeException
 	{
@@ -134,6 +135,7 @@ public class ImageBag extends Container{
 	 * @return A Map matching {@link JPanel} s to their respective {@link DataContainer}s. 
 	 * @throws DimensionMismatchException if the dimensions of a container don't fit.
 	 * @throws ContainerUnplaceableExcpetion if there is not enough space
+	 * @throws WrongDatasetTypeException if a Dataset cannot be placed
 	 */
 	public HashMap<JPanel,DataContainer> createLayout() throws DimensionMismatchException, ContainerUnplaceableExcpetion, WrongDatasetTypeException
 	{

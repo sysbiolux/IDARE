@@ -9,6 +9,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
 import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.DataManagement.NodeManager;
@@ -36,14 +37,18 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 	
 	/**
 	 * Inform the layout that properties have changed. This can be either the Properties or the colors.
-	 * @param bundle
-	 * @throws WrongDatasetTypeException
+	 * @param bundle the bundle to update the properties
+	 * @throws WrongDatasetTypeException if the bundle contains an invalid {@link DataSet}
 	 */
 	public void updateProperties(DataSetLayoutInfoBundle bundle) throws WrongDatasetTypeException
 	{
 		layout.updateProperties(bundle);
 	}
-	
+	/**
+	 * Add a frame to this layout
+	 * @param frame the frame to add
+	 * @throws WrongDatasetTypeException if the DataSet contained in the frame is invalid.
+	 */
 	public void addFrame(DataSetFrame frame) throws WrongDatasetTypeException
 	{
 		layout.addDataSet(frame.bundle, frame.getScaledBounds());

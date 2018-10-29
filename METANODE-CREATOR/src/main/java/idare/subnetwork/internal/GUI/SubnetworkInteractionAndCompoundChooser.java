@@ -37,8 +37,8 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	JTextPane reactionDesc;
 	/**
 	 * Default Constructor using the available columnNames 
-	 * @param network
-	 * @param ColumnNames
+	 * @param network the network for this chooser
+	 * @param ColumnNames the Column names that could indicate Subnetworks
 	 */
 	public SubnetworkInteractionAndCompoundChooser(CyNetwork network, Vector<String> ColumnNames) {
 		// TODO Auto-generated constructor stub		
@@ -164,7 +164,7 @@ public class SubnetworkInteractionAndCompoundChooser extends JPanel {
 	/**
 	 * Update the Choose ComboBoxes according to a selected Column.
 	 * The Items of the selected columns  will be investigated for options.
-	 * @param colSelected
+	 * @param colSelected the position of the selected column
 	 */
 	public void updateChoosers(int colSelected)
 	{

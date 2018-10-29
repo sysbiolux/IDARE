@@ -42,8 +42,10 @@ public class CSVWorkbook implements Workbook{
 	/**
 	 * Create a new Workbook using a specific file and a defined separator.
 	 * @param F - The file to read from.
-	 * @param separator
-	 * @throws IOException
+	 * @param separator the separator used in the Workbook
+	 * @param idColumnCount how many ID columns there are
+	 * @throws IOException if something goes wrong during IO
+	 * @throws WrongFormat if the format of the workbook is not proper CSV
 	 */
 	public CSVWorkbook(File F, String separator, int idColumnCount ) throws IOException, WrongFormat
 	{

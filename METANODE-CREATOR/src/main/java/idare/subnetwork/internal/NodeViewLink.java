@@ -18,12 +18,14 @@ public class NodeViewLink {
 	private CyNetwork sourceNetwork;
 	/**
 	 * Default Constructor to Combine the {@link View} of a target {@link CyNode} wth the respective {@link CyNetwork}, {@link CyNetworkView} and the {@link CyNode} 
-	 * @param targetNodeView
-	 * @param targetNetworkView
-	 * @param targetnetwork
-	 * @param targetnode
+	 * @param targetNodeView the NOdeView this link targets
+	 * @param targetNetworkView the NetworkView this link targets
+	 * @param targetnetwork the Target {@link CyNetwork}
+	 * @param targetnode the Target {@link CyNode}
+	 * @param sourceNetwork the Network this Link comes from.
 	 */
-	public NodeViewLink(View<CyNode> targetNodeView, CyNetworkView targetNetworkView,CyNetwork targetnetwork, CyNode targetnode, CyNetwork sourceNetwork) {
+	public NodeViewLink(View<CyNode> targetNodeView, CyNetworkView targetNetworkView,
+			CyNetwork targetnetwork, CyNode targetnode, CyNetwork sourceNetwork) {
 		this.targetNodeView = targetNodeView;
 		this.targetNetworkView = targetNetworkView;
 		this.targetNetwork = targetnetwork;
@@ -66,14 +68,14 @@ public class NodeViewLink {
 	
 	/**
 	 * Set the target {@link View} for the node of this Link.
-	 * @param nodeView
+	 * @param nodeView the nodeView to set the current viewpoint to.
 	 */
 	public void setTargetNodeView(View<CyNode> nodeView) {
 		this.targetNodeView = nodeView;
 	}
 	/**
 	 * Set the target {@link CyNetworkView} for the node of this Link.
-	 * @param networkView
+	 * @param networkView the {@link CyNetworkView} to set the current viewpoint to.
 	 */
 	public void setTargetNetworkView(CyNetworkView networkView) {
 		this.targetNetworkView = networkView;

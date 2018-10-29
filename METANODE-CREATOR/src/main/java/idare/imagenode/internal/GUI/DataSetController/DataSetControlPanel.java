@@ -79,9 +79,8 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 
 	/**
 	 * The Constructor for a DataSetControlPanel.
-	 * @param cySwingApp - The App which this Panel will become a part of.
-	 * @param dsm - The {@link DataSetManager}, this panel will represent
-	 * @param nmr - The {@link NodeManager} used for node preview
+	 * @param cySwingApp The {@link CySwingApplication} which this Panel will become a part of.
+	 * @param app The {@link IDAREImageNodeApp} to use
 	 */
 	public DataSetControlPanel(CySwingApplication cySwingApp, IDAREImageNodeApp app) {
 		//initialize the fields;
@@ -219,7 +218,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 	}
 	/**
 	 * Set the {@link CreateNodesTaskFactory} used by this Panel.
-	 * @param nodeFactory
+	 * @param nodeFactory the {@link CreateNodesTaskFactory} to use
 	 */
 	public void setNodeFactory(CreateNodesTaskFactory nodeFactory) {
 		this.nodeFactory = nodeFactory;
@@ -227,7 +226,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 
 	/**
 	 * Set the {@link DataSetAdderTaskFactory} used by this Panel.
-	 * @param dsadderFactory
+	 * @param dsadderFactory The {@link DataSetAdderTaskFactory} to use 
 	 */
 	public void setDatasetAdderFactory(DataSetAdderTaskFactory dsadderFactory) {
 		this.dsatf = dsadderFactory;

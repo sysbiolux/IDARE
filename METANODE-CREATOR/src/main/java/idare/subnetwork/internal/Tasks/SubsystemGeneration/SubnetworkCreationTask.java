@@ -1,8 +1,8 @@
 package idare.subnetwork.internal.Tasks.SubsystemGeneration;
 
-import idare.NodeDuplicator.Internal.NodeDuplicatorImpl;
-import idare.NodeDuplicator.Internal.NodeRegistry;
-import idare.NodeDuplicator.Internal.Tasks.NodeDuplicationTask;
+import idare.NodeDuplicator.internal.NodeDuplicatorImpl;
+import idare.NodeDuplicator.internal.NodeRegistry;
+import idare.NodeDuplicator.internal.Tasks.NodeDuplicationTask;
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.ThirdParty.DelayedVizProp;
@@ -671,6 +671,7 @@ public class SubnetworkCreationTask extends AbstractTask implements RequestsUIHe
 	}
 	/**
 	 * Check whether a given Object is either empty or an empty String
+	 * @param Entry the Object to check
 	 * @return Whether the entry is empty or represented by an empty string
 	 */
 	public static boolean isempty(Object Entry)

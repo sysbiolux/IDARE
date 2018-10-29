@@ -54,7 +54,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	
 	/**
 	 * Default Constructor defining the {@link VisualProperty} that this {@link VisualMappingFunction} maps to. 
-	 * @param VisualcustomGraphiVP
+	 * @param VisualcustomGraphiVP The VisualProperty to use
 	 */
 	public ImageStorage(VisualProperty<CyCustomGraphics<CustomGraphicLayer>>  VisualcustomGraphiVP) {
 		//this class is responsible to create the Images and map IDs to the appropriate images.
@@ -70,7 +70,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	
 	/**
 	 * set the {@link IDAREVisualStyle} linked to this {@link ImageStorage}
-	 * @param ids
+	 * @param ids the IDAREVisualStyle to use
 	 */
 	public void setVisualStyle(IDAREVisualStyle ids)
 	{
@@ -79,6 +79,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	
 	/**
 	 *  Set the {@link NodeManager} linked to this {@link ImageStorage}
+	 *  @param nm The NodeManager to use
 	 */
 	
 	public void setNodeManager(NodeManager nm)
@@ -87,7 +88,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	}
 	/**
 	 * Add a listener that listens to changed images (and updates accordingly)
-	 * @param listener
+	 * @param listener the listener to add
 	 */
 	public void addImageLayoutChangedListener(GraphicsChangedListener listener)
 	{

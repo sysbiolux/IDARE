@@ -21,8 +21,8 @@ public class AddNodesToStyleTaskFactory extends AbstractTaskFactory implements N
 	private DialogTaskManager dtm;
 	/**
 	 * Default Constructor 
-	 * @param mgr
-	 * @param dtm
+	 * @param mgr The {@link StyleManager} to use
+	 * @param dtm The {@link DialogTaskManager} to use
 	 */
 	public AddNodesToStyleTaskFactory(StyleManager mgr, DialogTaskManager dtm) {
 		// TODO Auto-generated constructor stub

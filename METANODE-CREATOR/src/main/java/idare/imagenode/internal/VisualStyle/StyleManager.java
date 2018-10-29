@@ -64,13 +64,13 @@ SessionLoadedListener, GraphicsChangedListener {
 	private AddNodesToStyleTaskFactory addNodesFactory;
 	/**
 	 * Default Constructor. 
-	 * @param imf
-	 * @param vmmServiceRef
-	 * @param cyNetViewMgr
-	 * @param eventHelper
-	 * @param nm
-	 * @param cyAppMgr
-	 * @param anm 
+	 * @param imf The ImageStore for the Manager
+	 * @param vmmServiceRef the {@link VisualMappingManager} to use
+	 * @param cyNetViewMgr The {@link CyNetworkViewManager} to use
+	 * @param eventHelper the {@link CyEventHelper} to use
+	 * @param nm the {@link NodeManager} to use 
+	 * @param cyAppMgr the {@link CyApplicationManager} to use
+	 * @param anm the {@link ActiveNodeManager} to use
 	 */
 	public StyleManager(ImageStorage imf, VisualMappingManager vmmServiceRef, CyNetworkViewManager cyNetViewMgr,
 			CyEventHelper eventHelper, NodeManager nm, CyApplicationManager cyAppMgr, ActiveNodeManager anm)
@@ -123,7 +123,8 @@ SessionLoadedListener, GraphicsChangedListener {
 	}	
 	
 	/**
-	 * 
+	 * set the AddNodesTaskFactory
+	 * @param factory The Factory to use
 	 */
 	public void setAddNodesTaskFactory(AddNodesToStyleTaskFactory factory)
 	{
@@ -131,7 +132,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	}
 	/**
 	 * Add nodes to the currently used Style, and update the TaskMonitor to indicate the current activity.
-	 * @param monitor
+	 * @param monitor the {@link TaskMonitor} to use
 	 */
 	public synchronized void addNodes(TaskMonitor monitor)
 	{
@@ -157,7 +158,8 @@ SessionLoadedListener, GraphicsChangedListener {
 	/**
 	 * Add nodes to the defined Style, and update the TaskMonitor to indicate the current activity.
 	 * Add the Nodes to the style assuming this is happening during a session load (i.e. we only store the default values).
-	 * @param monitor
+	 * @param monitor the {@link TaskMonitor} to use
+	 * @param styleToModify the style to add nodes to
 	 */
 	public synchronized void addNodesToStyleDuringLoad(TaskMonitor monitor, VisualStyle styleToModify)
 	{
@@ -181,6 +183,7 @@ SessionLoadedListener, GraphicsChangedListener {
 
 	/**
 	 * Set the Mappings for IDARE to the current style.
+	 * @param currentstyle the visualstyle to add Mappings to.
 	 */
 	private void setMappings(VisualStyle currentstyle)
 	{
@@ -198,7 +201,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	}
 	/**
 	 * Remove the IDARE Ndoes from the current Visualstyle (if they were added) and restore default values.
-	 * @param monitor
+	 * @param monitor the {@link TaskMonitor} to use
 	 */
 	public synchronized void removeNodes(TaskMonitor monitor)
 	{
@@ -413,7 +416,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	}
 	/**
 	 * Test whether a given Style uses IDARE Image Nodes.
-	 * @param StyleName
+	 * @param StyleName The Style to test
 	 * @return whether the provided StyleName is one of the names of styles using image nodes
 	 */
 	public boolean styleUsed(String StyleName)

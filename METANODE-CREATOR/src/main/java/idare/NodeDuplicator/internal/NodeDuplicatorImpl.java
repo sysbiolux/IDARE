@@ -1,4 +1,4 @@
-package idare.NodeDuplicator.Internal;
+package idare.NodeDuplicator.internal;
 
 import static org.cytoscape.view.presentation.property.BasicVisualLexicon.NODE_X_LOCATION;
 import static org.cytoscape.view.presentation.property.BasicVisualLexicon.NODE_Y_LOCATION;
@@ -62,12 +62,13 @@ public class NodeDuplicatorImpl extends AbstractCyEdit implements Task {
 	HashMap<CySubNetwork,Collection<CyEdge>> removedEdges = new HashMap<>();
 	private Map<CyIdentifiable, Map<CyNetworkView, Map<VisualProperty<?>, Object>>> bypassMap = new HashMap<>();
 	boolean isundoable;
-	
+
 	/**
 	 * Default Constructor using a {@link CyNode} with its associated {@link CyNetwork} along with a {@link CyServiceRegistrar}
 	 * @param OrigNode The node to duplicate
 	 * @param sourceNetwork the network in which the node is present.
 	 * @param reg teh {@link CyServiceRegistrar} to obtain services from.
+	 * @param isundoable whether this task is undoable or not.
 	 */
 	public NodeDuplicatorImpl(CyNode OrigNode, CyNetwork sourceNetwork, CyServiceRegistrar reg, boolean isundoable) {
 		// TODO Auto-generated constructor stub

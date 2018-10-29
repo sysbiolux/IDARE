@@ -1,4 +1,4 @@
-package idare.NodeDuplicator.Internal;
+package idare.NodeDuplicator.internal;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;

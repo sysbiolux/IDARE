@@ -165,7 +165,10 @@ implements ActionListener, InternalFrameListener{
 	}
 
 	
-	//
+	/**
+	 * Create the selected Frames
+	 * @param dssm the datasetModel to create frames for.
+	 */
 	public void createSelectedFrames(DataSetSelectionModel dssm)
 	{
 				
@@ -260,7 +263,12 @@ implements ActionListener, InternalFrameListener{
 		}
 	}
 
-	//Create a new internal frame.
+	/**
+	 * create A Frame for the given Bundle
+	 * @param bundle the bundle to create a frame for
+	 * @return the created DatasetFrame
+	 * @throws WrongDatasetTypeException if an invalid dataset was supplied
+	 */
 	public DataSetFrame createFrame(DataSetLayoutInfoBundle bundle) throws WrongDatasetTypeException{
 		
 		//Give the bundle a temporary label: X ( which should fit most letters
@@ -323,11 +331,13 @@ implements ActionListener, InternalFrameListener{
 		return frame;
 	}
 	
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
+	/**
+	 * Build the gui
+	 * @param dssm THe DatasetSelectionModel to use
+	 * @param dsm The {@link DataSetManager} to get Datasets
+	 * @param app The {@link IDAREImageNodeApp} to obtain information
+	 * @param nodeFactory the {@link CreateNodesTaskFactory} to activate if layout is requested
+	 */
     public static void createAndShowGUI(DataSetSelectionModel dssm, DataSetManager dsm, IDAREImageNodeApp app, CreateNodesTaskFactory nodeFactory) {
         //Make sure we have nice window decorations.
         JFrame.setDefaultLookAndFeelDecorated(true);

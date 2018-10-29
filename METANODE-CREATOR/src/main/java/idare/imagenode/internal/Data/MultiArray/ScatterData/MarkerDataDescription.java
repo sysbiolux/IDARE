@@ -20,7 +20,7 @@ public class MarkerDataDescription extends MultiArrayDescription {
 	/**
 	 * Create a new LineDataDescription, which is contained in a JScrollPane.
 	 * The ViewPort of the JScrollPane has to show the visible part of this Itemdescription. 
-	 * @param Parent
+	 * @param Parent the parent scroll pane
 	 */
 	public MarkerDataDescription(JScrollPane Parent)
 	{

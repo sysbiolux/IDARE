@@ -17,7 +17,7 @@ public class ImageNodeModel {
 	private Vector<DataSet> nodeDataEntries;
 	/**
 	 * Default constructor using the ID of this Node
-	 * @param ID
+	 * @param ID the id of the model.
 	 */
 	public ImageNodeModel(String ID)
 	{

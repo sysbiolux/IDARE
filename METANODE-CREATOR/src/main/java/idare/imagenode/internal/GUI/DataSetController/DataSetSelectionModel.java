@@ -56,7 +56,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	/**
 	 * Create a new {@link DataSetSelectionModel} by providing the {@link DataSetManager}, which is used to build the model on. 
 	 * The {@link DataSetManager} will initially be querried for all data of its {@link DataSet}s.
-	 * @param dsm 
+	 * @param dsm the {@link DataSetManager} to use in this model
 	 */
 	public DataSetSelectionModel(DataSetManager dsm) {
 		super();
@@ -73,8 +73,8 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	/**
 	 * Set up the ColorPaneSelection. This creates the renderers and editors necessary for this field in the Table.
-	 * @param panes
-	 * @param ds
+	 * @param panes The color panes available for this panel
+	 * @param ds The dataset for this selection
 	 */
 	private void setupColorPaneSelection(Vector<ColorScalePane > panes, DataSet ds)
 	{
@@ -94,7 +94,8 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	
 	/**
-	 * 
+	 * Update the dataset Properties
+	 * @param ds The dataset to update the properties
 	 */
 	public void updateDataSetProperties(DataSet ds)
 	{
@@ -191,7 +192,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 
 	/**
 	 * Move a {@link DataSet} up in the table (supplying the row of the dataset to move up
-	 * @param row
+	 * @param row the row to move up
 	 */
 	public void moveRowUp(int row)
 	{
@@ -200,7 +201,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	/**
 	 * Move a {@link DataSet} down in the table (supplying the row of the dataset to move down
-	 * @param row
+	 * @param row the row to move down
 	 */
 	public void moveRowDown(int row)
 	{
@@ -209,7 +210,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	/**
 	 * Get the renderer for the properties in the specified row.
-	 * @param row
+	 * @param row the row to get the {@link ComboBoxRenderer} for
 	 * @return a ComboBoxRenderer for the appropriate properties
 	 */
 	public ComboBoxRenderer getPropertiesRenderer(int row)
@@ -219,7 +220,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	
 	/**
 	 * Get the renderer for the {@link ColorScalePane} in the specified row.
-	 * @param row
+	 * @param row the row to get the {@link ColorBoxRenderer} for.
 	 * @return a ColorBoxRenderer for the appropriate {@link ColorScalePane}
 	 */
 	public ColorBoxRenderer getColorScaleRenderer(int row)
@@ -228,7 +229,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	}
 	/**
 	 * Get the Editor for the appropriate {@link ColorScalePane} renderer.
-	 * @param row
+	 * @param row the row to get the Editor for
 	 * @return The {@link DefaultCellEditor} for the {@link ColorScalePane} in the requested row
 	 */
 	public DefaultCellEditor getColorScaleEditor(int row)
@@ -238,7 +239,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	
 	/**
 	 * Get the Editor for the appropriate {@link DataSet} renderer.
-	 * @param row
+	 * @param row the row to get the {@link TableCellEditor} for
 	 * @return the {@link TableCellEditor} for the {@link DataSet} represented by the requested row
 	 */
 	public TableCellEditor getDataSetEditor(int row)
@@ -248,7 +249,7 @@ public class DataSetSelectionModel extends DefaultTableModel implements DataSetC
 	
 	/**
 	 * Get the Editor for the appropriate {@link DataSetLayoutProperties} renderer.
-	 * @param row
+	 * @param row the row to get the Editor for
 	 * @return get the {@link DefaultCellEditor} for the appropriate {@link DataSetLayoutProperties}
 	 */
 	public DefaultCellEditor getPropertiesEditor(int row)

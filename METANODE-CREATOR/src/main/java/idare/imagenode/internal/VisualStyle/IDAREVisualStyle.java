@@ -246,7 +246,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	
 	/**
 	 * Apply the contained visualstyle to a given Networkview and update that view.
-	 * @param view
+	 * @param view the view to apply the style to
 	 */
 	public void applyStyleToNetwork(CyNetworkView view) {
 		// TODO Auto-generated method stub

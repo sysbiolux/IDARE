@@ -11,13 +11,13 @@ import idare.imagenode.Interfaces.DataSets.DataSet;
 public interface DataSetAboutToBeChangedListener {
 	/**
 	 * Inform that there will be a change in the {@link DataSet}s 
-	 * @param e
+	 * @param e the {@link DataSetChangedEvent} to process
 	 */
 	public void datasetChanged(DataSetChangedEvent e);
 
 	/**
 	 * Inform that a Collection of changes coming up in the {@link DataSet}s.
-	 * @param e
+	 * @param e the {@link DataSetChangedEvent} to process
 	 */
 	public void datasetsChanged(DataSetsChangedEvent e);
 	

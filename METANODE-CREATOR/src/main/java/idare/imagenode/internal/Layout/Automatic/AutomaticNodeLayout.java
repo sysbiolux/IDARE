@@ -70,6 +70,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		
 	}
 	
+	/**
+	 * Generate an automatic layout for a set of DataSetLayouts
+	 * @param DataSetsToUse the Datasets and layouts to use.
+	 */
 	public AutomaticNodeLayout(Collection<DataSetLayoutInfoBundle> DataSetsToUse) {
 		// TODO Auto-generated constructor stub
 		for(DataSetLayoutInfoBundle bundle : DataSetsToUse)
@@ -178,9 +182,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 	/**
 	 * Generate a Layout for a given set of {@link DataSet}s.
 	 * @param Datasets the {@link DataSet}s to generate a layout for.
-	 * @throws TooManyItemsException
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
+	 * @throws TooManyItemsException If there are too many items
+	 * @throws ContainerUnplaceableExcpetion if a container is unplaceable 
+	 * @throws DimensionMismatchException if the given dimensions cant fit 
+	 * @throws WrongDatasetTypeException if an Invalid DatasetLayoutinfo bundle is added
 	 */
 	public void generateLayoutForDataSets(Collection<DataSetLayoutInfoBundle> Datasets) throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{		
@@ -190,7 +195,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		}		
 		calculateLayout();
 	}
-	
+	/* (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageLayout#doLayout()
+	 */
+	@Override
 	public void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{
 		generateLayoutForDataSets(dataSetsToUse.values());
@@ -199,10 +207,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 	
 	/**
 	 * Calculate the layout with the Sets to use provided during construction.
-	 * @throws TooManyItemsException
-	 * @throws ContainerUnplaceableExcpetion
-	 * @throws DimensionMismatchException
-	 * @throws WrongDatasetTypeException
+	 * @throws TooManyItemsException if there are too many items to place
+	 * @throws ContainerUnplaceableExcpetion if a container is unplacable
+	 * @throws DimensionMismatchException if dimensions dont match
+	 * @throws WrongDatasetTypeException if an Invalid DatasetLayoutinfo bundle is added
 	 */
 	private synchronized void calculateLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException, WrongDatasetTypeException
 	{

@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<cytoscape.api.version>3.4.0</cytoscape.api.version>
 		<apache.batik.version>1.6</apache.batik.version>
-		<apache.batik.groupID>batik</apache.batik.groupID>		
+		<apache.batik.groupID>batik</apache.batik.groupID>
 	</properties>
 
 
@@ -27,8 +27,8 @@
 
 	<name>IDARE [${bundle.namespace}]</name>
 	<description> The IDARE Data Visualisation Tool</description>
-	
-		
+
+
 	<build>
 		<resources>
 			<resource>
@@ -54,7 +54,14 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+				<excludePackageNames>idare.imagenode.internal.*:*.internal.*</excludePackageNames>
+				</configuration>
+			</plugin>
 			<!-- Generates the OSGi metadata based on the osgi.bnd file. -->
 			<plugin>
 				<groupId>org.apache.felix</groupId>
@@ -81,6 +88,7 @@
 							${bundle.namespace}.imagenode.exceptions.io,
 							${bundle.namespace}.imagenode.exceptions.layout,
 							${bundle.namespace}.imagenode.Utilities,
+							${bundle.namespace}.imagenode.Utilities.GUI,
 							${bundle.namespace}.imagenode.GUI.Legend.Utilities,
 							${bundle.namespace}.imagenode.ColorManagement.*,
 							org.apache.batik.*,
@@ -96,24 +104,24 @@
 						</Private-Package>
 						<Bundle-Activator>${bundle.namespace}.internal.CyActivator</Bundle-Activator>
 						<Embed-Dependency>*;scope=!provided|test;groupId=!org.cytoscape</Embed-Dependency>
-                        <Import-Package>javax.xml.namespace, *;resolution:=optional</Import-Package>
+						<Import-Package>javax.xml.namespace, *;resolution:=optional</Import-Package>
 						<DynamicImport-Package>*</DynamicImport-Package>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>
-			            <!-- resources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
-            </plugin>
-                        <!-- jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-            </plugin>  
+			<!-- resources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.1</version>
+			</plugin>
+			<!-- jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -189,11 +197,11 @@
 			<name>EBI Snapshot repository</name>
 			<url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
 		</repository>
-        
-        <repository>
-            <id>in-project</id>
-            <name>In project repository</name>
-            <url>file:${project.basedir}/lib</url>
+
+		<repository>
+			<id>in-project</id>
+			<name>In project repository</name>
+			<url>file:${project.basedir}/lib</url>
 		</repository>
 		<!-- resolves javax.jms:jms:jar:1.1 see http://stackoverflow.com/questions/3622773/java-net-maven-repo-jms-artifact-missing -->
 		<repository>
@@ -273,7 +281,7 @@
 			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
-	    <!-- CySBML -->
+		<!-- CySBML -->
 		<dependency>
 			<groupId>org.cysbml</groupId>
 			<artifactId>cy3sbml</artifactId>
@@ -292,7 +300,7 @@
 					<artifactId>commons-codec</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -443,7 +451,7 @@
 			<artifactId>registry-lib</artifactId>
 			<version>1.1.1</version>
 		</dependency>
-		
+
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -452,50 +460,30 @@
 		</dependency>
 
 		<dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.1.7</version>
-        </dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.1.7</version>
+		</dependency>
 
 		<!-- JSBML -->
 
-    <dependency>
-      <groupId>org.sbml.jsbml</groupId>
-      <artifactId>jsbml</artifactId>
-      <version>1.1</version>
-    </dependency>
-<!-- <dependency>
+		<dependency>
 			<groupId>org.sbml.jsbml</groupId>
 			<artifactId>jsbml</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
-
-
-		<dependency>
-			<groupId>org.biojava</groupId>
-			<artifactId>biojava-ontology</artifactId>
-			<version>4.0.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-slf4j-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
- -->		
+		<!-- <dependency> <groupId>org.sbml.jsbml</groupId> <artifactId>jsbml</artifactId> 
+			<version>1.2-SNAPSHOT</version> </dependency> <dependency> <groupId>org.biojava</groupId> 
+			<artifactId>biojava-ontology</artifactId> <version>4.0.0</version> <exclusions> 
+			<exclusion> <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-slf4j-impl</artifactId> 
+			</exclusion> <exclusion> <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-core</artifactId> 
+			</exclusion> <exclusion> <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-api</artifactId> 
+			</exclusion> </exclusions> </dependency> -->
 
 	</dependencies>
 </project>

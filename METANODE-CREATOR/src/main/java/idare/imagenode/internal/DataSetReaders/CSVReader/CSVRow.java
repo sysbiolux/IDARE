@@ -23,7 +23,7 @@ public class CSVRow implements Row {
 	CSVSheet sheet;
 	/**
 	 * Basic constructor with the enclosing sheet.
-	 * @param sheet
+	 * @param sheet the Sheet containing this row
 	 */
 	public CSVRow(CSVSheet sheet)
 	{
@@ -36,8 +36,8 @@ public class CSVRow implements Row {
 	
 	/**
 	 * Add a Cell with a specified value.
-	 * @param numeric
-	 * @param value
+	 * @param numeric whether the added cell is numeric
+	 * @param value the value of the cell
 	 */	
 	public void addCell(boolean numeric, String value)
 	{
@@ -61,7 +61,7 @@ public class CSVRow implements Row {
 	
 	/**
 	 * Get the Column number of a specific cell.
-	 * @param cell
+	 * @param cell the cell to get the column for
 	 * @return the position of the requested cell in this row.
 	 */
 	public int getColumnNumber(Cell cell)

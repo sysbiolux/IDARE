@@ -69,7 +69,7 @@ public class CobraUtil {
   &lt;/body&gt;
 </pre>
 
-   * @param sbase
+   * @param sbase the SBase object
    * @return a {@link Properties} object that store all the KEY/VALUE pair found in the notes. If the given {@link SBase}
    * has no notes or if the notes are not of the expected format, an empty {@link Properties} object is returned.
    */

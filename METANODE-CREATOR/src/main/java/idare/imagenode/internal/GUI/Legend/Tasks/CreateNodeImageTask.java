@@ -1,13 +1,5 @@
 package idare.imagenode.internal.GUI.Legend.Tasks;
 
-import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Utilities.LayoutUtils;
-import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.GUI.Legend.IDARELegend;
-import idare.imagenode.internal.Layout.DataSetLink;
-import idare.imagenode.internal.Layout.ImageNodeLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
@@ -37,6 +29,13 @@ import org.cytoscape.work.TaskMonitor.Level;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.GUI.Legend.IDARELegend;
+import idare.imagenode.internal.Layout.DataSetLink;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
+
 public class CreateNodeImageTask extends AbstractTask {
 
 	IDARELegend legend;
@@ -46,10 +45,10 @@ public class CreateNodeImageTask extends AbstractTask {
 	File targetFile;
 	/**
 	 * Default Constructor
-	 * @param legend
-	 * @param targetFile
-	 * @param manager
-	 * @param FileExtension
+	 * @param legend The reference {@link IDARELegend}
+	 * @param targetFile the target to write the data to
+	 * @param manager the NodeManager used to obtain nodes to create
+	 * @param FileExtension The file extension (svg or png) to generate the images in.
 	 */
 	public CreateNodeImageTask(IDARELegend legend, File targetFile,
 			NodeManager manager, String FileExtension) {
