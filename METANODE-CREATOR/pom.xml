@@ -97,7 +97,7 @@
 						<Private-Package>${bundle.namespace}.imagenode.internal.*,
 							${bundle.namespace}.subnetwork.internal.*,
 							${bundle.namespace}.sbmlannotator.internal.*,
-							${bundle.namespace}.NodeDuplicator.Internal.*,
+							${bundle.namespace}.NodeDuplicator.internal.*,
 							${bundle.namespace}.imagenode.ColorManagement.*,
 							${bundle.namespace}.imagenode.*,
 							${bundle.namespace}.internal.*
