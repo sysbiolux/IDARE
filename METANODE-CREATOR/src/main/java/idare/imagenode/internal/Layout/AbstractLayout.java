@@ -9,18 +9,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 
 import idare.imagenode.ColorManagement.ColorMap;
-import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Utilities.EOOMarker;
 import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
@@ -35,7 +30,16 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 	private Dimension imageDimension;
 	private boolean printLabel;
 	
-	
+	/**
+	 * Default layout, with default sizes, printing the label.
+	 */
+	public AbstractLayout()
+	{
+		int width = IMAGENODEPROPERTIES.IMAGEWIDTH;
+		int height = IMAGENODEPROPERTIES.IMAGEHEIGHT;
+		printLabel = true;
+		imageDimension = new Dimension(width, height);
+	}	
 	@Override
 	public abstract boolean isValid();
 
@@ -129,6 +133,28 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
 		svg.drawString(identifier, xpos, ypos);
 		svg.setFont(currentFont);
+	}
+
+	
+	/**
+	 * Get the Dimension of the object displayed on the nodes in a network.
+	 * @return The dimensions of the object in the network view.
+	 */
+	public Dimension getDisplayDimensions()
+	{
+		Dimension imageDim = new Dimension();
+		Double width = imageDimension.getWidth()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+		Double height = 0.;
+		if(printLabel)
+		{
+			height = imageDimension.getHeight()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR + IMAGENODEPROPERTIES.LABELHEIGHT*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+		}
+		else
+		{
+			height = imageDimension.getHeight()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+		}
+		imageDim.setSize(width, height);
+		return imageDim;
 	}
 
 }

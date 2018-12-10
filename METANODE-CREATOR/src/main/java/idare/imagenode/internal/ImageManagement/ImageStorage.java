@@ -44,8 +44,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	private HashMap<String, BufferedImage> imagenodes;
 	private NodeManager nodeManager;
 	private HashMap<String,CyCustomGraphics<CustomGraphicLayer>> graphicsmap;
-	private int width;
-	private int height;
+	//private int width;
+	//private int height;
 	private Vector<GraphicsChangedListener> listeners;
 	private IDAREVisualStyle visualstyle;
 	
@@ -63,8 +63,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		listeners = new Vector<GraphicsChangedListener>();
 		imagenodes = new HashMap<String, BufferedImage>();
 		graphicsmap = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
-		this.width = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
-		this.height = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+		//this.width = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
+		//this.height = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
 		setupNeeded = false;
 	}
 	
@@ -303,8 +303,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			double imageheight = imagenode.getHeight();
 			double imagewidth = imagenode.getWidth();
 			//now, get the maximal extension
-			double heightscale = imageheight/height;
-			double widthscale = imagewidth/width;
+			double heightscale = imageheight/nodeManager.getLayoutForNode(input).getDisplayDimensions().getHeight();
+			double widthscale = imagewidth/nodeManager.getLayoutForNode(input).getDisplayDimensions().getWidth();
 			double scalefactor = Math.max(heightscale, widthscale);
 			int usedwidth = (int)Math.floor(imagewidth/scalefactor);
 			int usedheight = (int)Math.floor(imageheight/scalefactor);
@@ -327,23 +327,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	@Override
 	public Class<? extends CyCustomGraphics> getSupportedClass() {
 		return IDARECustomGraphics.class;
-	}
-	/**
-	 * Set the width of the graphics created by this factory
-	 * @param width - the width to be used
-	 */
-	public void setWidth(int width)
-	{
-		this.width = width;    	
-	}
-	/**
-	 * Set the height of the graphics created by this factory
-	 * @param height - the height to be used
-	 */
-	public void setHeight(int height)
-	{
-		this.height = height;
-	}
+	}	
 	/**
 	 * Update all views using the visualstyle set for this Storage
 	 */

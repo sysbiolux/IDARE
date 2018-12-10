@@ -21,6 +21,7 @@ import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.VisualProperty;
 import org.cytoscape.view.presentation.property.ArrowShapeVisualProperty;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
@@ -51,6 +52,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	private ImageStorage imf;
 	private NodeManager nm;
 	private ActiveNodeManager anm;
+	private VisualProperty nodeLabelProperty;
 	
 	public static String IDARE_STYLE_TITLE = "IDARE Visual Style";
 /**
@@ -65,9 +67,9 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
  * @param idm - The Nodemanager of IDARE
  * @param anm - The ActiveNodeManager of IDARE
  */
-	public IDAREVisualStyle(VisualStyleFactory visualStyleFactoryServiceRef,	VisualMappingManager vmmServiceRef,
+	public IDAREVisualStyle(VisualStyleFactory visualStyleFactoryServiceRef, VisualMappingManager vmmServiceRef,
 			VisualMappingFunctionFactory vmfFactoryD,VisualMappingFunctionFactory vmfFactoryP, CyEventHelper eventHelper,
-			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm,ActiveNodeManager anm)
+			ImageStorage imf, CyNetworkViewManager cyNetViewMgr, NodeManager idm, ActiveNodeManager anm, VisualProperty NodeLabelProperty)
 	{
 		//super("Setup Network for IDARE Style");		
 		this.visualStyleFactoryServiceRef = visualStyleFactoryServiceRef;
@@ -81,7 +83,8 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 	    this.anm = anm;
 		vs = this.addStyle();		
 		this.applyToAll();
-	}
+		this.nodeLabelProperty = NodeLabelProperty;
+		}
 		
 	/**
 	 * Remove the Visualstyle from Cytoscape.
@@ -108,10 +111,10 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				// Reactions are Diamonds with a bluish background
 				// Metabolites are circles with a red/orange background
 				// Genes are Squares (which will hopefully be filled by IDARE nodes 
-		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
-		//and the sizes of imagenodes get adjusted
-		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
+		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
 		
 		
 		PassthroughMapping NameMapping = (PassthroughMapping) this.vmfFactoryP.createVisualMappingFunction(IDAREProperties.IDARE_NODE_NAME, String.class, BasicVisualLexicon.NODE_LABEL);
@@ -181,6 +184,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		vs.addVisualMappingFunction(LabelTransparency);
 		vs.addVisualMappingFunction(imagenodeHeight);
 		vs.addVisualMappingFunction(imagenodeWidth);
+		vs.addVisualMappingFunction(nodeLabelPosition);
 		vs.addVisualMappingFunction(NameMapping);		
 		vs.addVisualMappingFunction(ShapeMapping);
 		vs.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.TRIANGLE);
@@ -215,6 +219,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
 		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
+		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
 		
 		
 		while (it.hasNext()){
@@ -229,6 +234,8 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 				curVS.addVisualMappingFunction(imagenodeHeight);
 				curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
 				curVS.addVisualMappingFunction(imagenodeWidth);
+				curVS.removeVisualMappingFunction(nodeLabelPosition.getVisualProperty());
+				curVS.addVisualMappingFunction(nodeLabelPosition);
 				curVS.removeVisualMappingFunction(imf.getVisualProperty());
 				curVS.addVisualMappingFunction(imf);				
 				return oldstyle;
