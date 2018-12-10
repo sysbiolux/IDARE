@@ -1,5 +1,6 @@
 package idare.imagenode.internal.VisualStyle;
 
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 
 import java.util.HashMap;
@@ -18,14 +19,13 @@ import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
  *
  * @param <S> - The Class of the Mapping to be used as values
  */
-public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,DiscreteMapping<String, S>{
+public class IDARELabelPositionMapper implements VisualMappingFunction<String,Object>,DiscreteMapping<String, Object>{
 	
 	NodeManager nm;
 	boolean active;
-	S imagenodeValue;	
-	VisualProperty<S> vp;
+	VisualProperty<Object> vp;
 	String mappedColumnName;
-	HashMap<String, S> mappedValues;
+	HashMap<String, Object> mappedValues;
 	/**
 	 * Standard constructor of the Mapper
 	 * @param MappedColumnName - The column that is mapped from 
@@ -33,36 +33,21 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	 * @param nm The NodeManager to obtain information from 
 	 * @param mappedValue - the Value used for imagenodes.
 	 */
-	public IDAREDependentMapper(String MappedColumnName, VisualProperty<S> vp,NodeManager nm,S mappedValue , boolean returnID) {
+	public IDARELabelPositionMapper(String MappedColumnName, VisualProperty<Object> vp,NodeManager nm) {
 		super();
 		this.nm = nm;
 		active = false;
-		imagenodeValue = mappedValue;
-		
-		this.vp = vp;
+		this.vp = vp;		
 		mappedColumnName = MappedColumnName;
-		mappedValues = new HashMap<String, S>();	
+		mappedValues = new HashMap<String, Object>();
 	}
-
 	
 	@Override
-	public Map<String, S> getAll() {
-		//Return a Map containing the properly mapped values and the imagenode Value for all imagenodes. 
-		HashMap<String, S> returnVals = new HashMap<String, S>();
-		returnVals.putAll(mappedValues);
-		for(String ID : nm.getLayoutedIDs())
-		{
-			returnVals.put(ID, imagenodeValue);
-		}
-		return returnVals;
-	}
-
-	@Override
-	public S getMapValue(String arg0) {
+	public Object getMapValue(String arg0) {
 		//Return either the properly mapped value OR The imagenode Value if the requested ID is a valid ID. 
 		if(nm.isNodeLayouted(arg0))
-		{
-			return imagenodeValue;
+		{			
+			return vp.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING);
 		}
 		else
 		{
@@ -71,47 +56,66 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	}
 
 	@Override
-	public <T extends S> void putAll(Map<String, T> arg0) {
+	public Map<String, Object> getAll() {
+		HashMap<String, Object> returnVals = new HashMap<String, Object>();
+		returnVals.putAll(mappedValues);
+		for(String ID : nm.getLayoutedIDs())
+		{
+			returnVals.put(ID, getMapValue(ID));
+		}
+		return returnVals;			
+	}
+
+	@Override
+	public <T> void putAll(Map<String, T> arg0) {
+		// TODO Auto-generated method stub
 		mappedValues.putAll(arg0);
 	}
 
 	@Override
-	public <T extends S> void putMapValue(String arg0, T arg1) {
+	public <T> void putMapValue(String arg0, T arg1) {
+		// TODO Auto-generated method stub
 		mappedValues.put(arg0, arg1);
 	}
 
 	@Override
 	public void apply(CyRow arg0, View<? extends CyIdentifiable> arg1) {
+		// TODO Auto-generated method stub
 		arg1.setVisualProperty(vp, getMappedValue(arg0));
 	}
 
 	@Override
-	public S getMappedValue(CyRow arg0) {
-		//Return either the properly mapped value OR The imagenode Value if the requested row corresponds to a imagenode 
-
-		if(nm.isNodeLayouted(arg0.get(mappedColumnName, String.class)))
-		{
-			return imagenodeValue;
+	public Object getMappedValue(CyRow arg0) {
+		// TODO Auto-generated method stub
+		String id = arg0.get(mappedColumnName, String.class);
+		if(nm.isNodeLayouted(id))
+		{			
+			return vp.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING);
 		}
 		else
 		{
-			return mappedValues.get(arg0.get(mappedColumnName,String.class));
-		}		
+			return mappedValues.get(arg0);
+		}	
 	}
 
 	@Override
 	public String getMappingColumnName() {
-		return mappedColumnName;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Class<String> getMappingColumnType() {
-		return String.class;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public VisualProperty<S> getVisualProperty() {
-		return vp;
+	public VisualProperty<Object> getVisualProperty() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+
 
 }

@@ -15,6 +15,8 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -110,6 +112,8 @@ public class LayoutUtils {
 	    return font.deriveFont(fontSize);
 	}
 	
+	
+	
 	/**
 	 * Get alphanumeric unique labels for a set of entries (i.e. for labeling items or similar things)
 	 * This function provides the same labels when called with the same entries 
@@ -125,6 +129,5 @@ public class LayoutUtils {
 			Labels.put(comp,lab.getLabel());
 		}
 		return Labels;
-	}
-
+	}	
 }

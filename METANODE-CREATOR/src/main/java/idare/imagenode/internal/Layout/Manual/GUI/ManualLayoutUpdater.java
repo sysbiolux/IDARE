@@ -138,7 +138,7 @@ public class ManualLayoutUpdater extends ComponentAdapter implements InternalFra
 		updateLegend();
 	}
 	
-	private void updateLegend()
+	public void updateLegend()
 	{
 //		PrintFDebugger.Debugging(this, "Trying to update the legend for Node " + selectedNode + " with layout " + layout + " and data " + manager.getNode(selectedNode));
 		legend.setLegendData(layout,manager.getNode(selectedNode));

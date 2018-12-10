@@ -67,7 +67,7 @@ public class ManualNodeLayoutManager implements LayoutManager{
 	 */
 	@Override
 	public Dimension minimumLayoutSize(Container parent) {
-		return new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT);
+		return new Dimension(nodeDimension.width,nodeDimension.height+IDDimension.height);
 	}
 
 	/*
@@ -83,15 +83,45 @@ public class ManualNodeLayoutManager implements LayoutManager{
 		int maxHeight = parent.getHeight()
 				- (insets.top + insets.bottom);
 //		PrintFDebugger.Debugging(this, "The Enclosing container size is " + parent.getSize());
-		double scaling = Math.min(maxWidth/(double)IMAGENODEPROPERTIES.IMAGEWIDTH, maxHeight/(double)(IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT));
+		double scaling = Math.min(maxWidth/(double)nodeDimension.width, maxHeight/(double)(nodeDimension.height+IDDimension.height));
 //		PrintFDebugger.Debugging(this, "The Preferred Size is " + new Dimension((int)(IMAGENODEPROPERTIES.IMAGEWIDTH*scaling), (int)((IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT)*scaling)));
-		return new Dimension((int)(IMAGENODEPROPERTIES.IMAGEWIDTH*scaling), (int)((IMAGENODEPROPERTIES.IMAGEHEIGHT+IMAGENODEPROPERTIES.LABELHEIGHT)*scaling));
+		return new Dimension((int)(nodeDimension.width*scaling), (int)((nodeDimension.height+IDDimension.height)*scaling));
 
 	}
 	@Override
 	public void removeLayoutComponent(Component comp) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * Set the image node layout dimensions.
+	 * @param imageheight - the height of the image
+	 * @param imagewidth - the width of the image
+	 * @param labelheight - the height of the label
+	 */
+	public void setImageAndLabelSizes(int imageheight, int imagewidth, int labelheight)
+	{
+		this.IDDimension = new Dimension(imagewidth, labelheight);
+		this.nodeDimension = new Dimension(imagewidth, imageheight);
+	}
+	
+	/**
+	 * Get the image node layout dimensions.
+	 * @return the Dimension of the image
+	 */
+	public Dimension getCurrentImageDimensions()
+	{
+		return this.nodeDimension;
+	}
+	
+	/**
+	 * Get the label layout dimensions.
+	 * @return the Dimension of the image
+	 */
+	public Dimension getCurrentLabelDimensions()
+	{
+		return this.IDDimension;
 	}
 
 }

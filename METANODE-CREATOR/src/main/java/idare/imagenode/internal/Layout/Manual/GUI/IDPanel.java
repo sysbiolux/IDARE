@@ -15,6 +15,7 @@ import org.w3c.dom.svg.SVGDocument;
 
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.Utilities.StringDrawer;
 import idare.imagenode.Utilities.GUI.JSVGGlassCanvas;
 import idare.imagenode.internal.Debug.PrintFDebugger;
 
@@ -51,7 +52,9 @@ public class IDPanel extends JPanel {
 	 */
 	private void drawIdentifier(SVGGraphics2D svg, String identifier)
 	{
-		Font currentFont = svg.getFont();		
+		StringDrawer drawer = new StringDrawer(identifier);
+		drawer.drawInArea(0, this.getSize().width, this.getSize().height, svg);
+/*		Font currentFont = svg.getFont();		
 		svg.setFont(LayoutUtils.scaleFont(this.getSize(), IMAGENODEPROPERTIES.IDFont,svg, identifier));
 		svg.setColor(Color.black);		
 		FontMetrics fm = svg.getFontMetrics();		
@@ -63,7 +66,7 @@ public class IDPanel extends JPanel {
 //		PrintFDebugger.Debugging(this, "Drawing identifier " + identifier + " at position " + xpos + "/" + ypos);	
 		svg.drawString(identifier, xpos, ypos);
 		svg.setFont(currentFont);
-	}
+*/	}
 
 	
 }

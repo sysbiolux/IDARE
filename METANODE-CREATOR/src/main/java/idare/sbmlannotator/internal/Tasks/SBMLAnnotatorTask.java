@@ -508,7 +508,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				//If there is no view available skip it.
 				continue;
 			}
-			Double width = IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+			Double width = IMAGENODEPROPERTIES.IMAGEHEIGHT * IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
 			for(CyNode neighbourNode : surroundingNodes)
 			{
 				if(neighbourNode == null)
@@ -601,7 +601,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			//place them in a distance of 2*Node Width starting with the "Top" position and then circling around.		
 			View<CyNode> ReacNodeView = networkView.getNodeView(proteinComplexNode);
 
-			Double width = IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+			Double width = IMAGENODEPROPERTIES.IMAGEHEIGHT * IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
 			for(CyNode neighbourNode : surroundingNodes)
 			{
 				if(neighbourNode == null)
@@ -653,7 +653,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			//place them in a distance of 2*Node Width starting with the "Top" position and then circling around.		
 			View<CyNode> ReacNodeView = networkView.getNodeView(reacNode);
 
-			Double width = IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+			Double width = IMAGENODEPROPERTIES.IMAGEHEIGHT * IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
 			for(CyNode neighbourNode : surroundingNodes)
 			{
 				if(neighbourNode == null)

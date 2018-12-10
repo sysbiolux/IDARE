@@ -11,6 +11,7 @@ import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Collection;
@@ -44,8 +45,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	private HashMap<String, BufferedImage> imagenodes;
 	private NodeManager nodeManager;
 	private HashMap<String,CyCustomGraphics<CustomGraphicLayer>> graphicsmap;
-	private int width;
-	private int height;
+	private int widthfactor;
+	private int heightfactor;
 	private Vector<GraphicsChangedListener> listeners;
 	private IDAREVisualStyle visualstyle;
 	
@@ -63,8 +64,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 		listeners = new Vector<GraphicsChangedListener>();
 		imagenodes = new HashMap<String, BufferedImage>();
 		graphicsmap = new HashMap<String, CyCustomGraphics<CustomGraphicLayer>>();
-		this.width = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH;
-		this.height = (int)IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT;
+		this.widthfactor = 1;
+		this.heightfactor = 1;
 		setupNeeded = false;
 	}
 	
@@ -172,8 +173,9 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);	
-			nodeManager.getLayoutForNode(ID).layoutNode(nodeManager.getNode(ID).getData(), g);
-			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
+			nodeManager.getLayoutForNode(ID).layoutNode(nodeManager.getNode(ID).getData(), g);			
+			Dimension correctDim = new Dimension(nodeManager.getLayoutForNode(ID).getImageDimensions());			
+			LayoutUtils.TransferGraphicsToDocument(doc, correctDim, g);
 			//Element root = doc.getDocumentElement();
 			//g.getRoot(root);
 			//root.setAttribute("viewBox", "0 0 400 270");
@@ -303,11 +305,8 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			double imageheight = imagenode.getHeight();
 			double imagewidth = imagenode.getWidth();
 			//now, get the maximal extension
-			double heightscale = imageheight/height;
-			double widthscale = imagewidth/width;
-			double scalefactor = Math.max(heightscale, widthscale);
-			int usedwidth = (int)Math.floor(imagewidth/scalefactor);
-			int usedheight = (int)Math.floor(imageheight/scalefactor);
+			int usedwidth = (int)Math.floor(imagewidth*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR);
+			int usedheight = (int)Math.floor(imageheight*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR);
 			IDARECustomGraphics myCustomGraphics = new IDARECustomGraphics(imagenode,usedwidth,usedheight);
 			myCustomGraphics.setDisplayName(input);
 			return myCustomGraphics;
@@ -334,7 +333,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 */
 	public void setWidth(int width)
 	{
-		this.width = width;    	
+		this.widthfactor = width;    	
 	}
 	/**
 	 * Set the height of the graphics created by this factory
@@ -342,7 +341,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	 */
 	public void setHeight(int height)
 	{
-		this.height = height;
+		this.heightfactor = height;
 	}
 	/**
 	 * Update all views using the visualstyle set for this Storage

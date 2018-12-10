@@ -32,6 +32,8 @@ public class IMAGENODEPROPERTIES {
 	public static String LAYOUT_FILES = "NODE_LAYOUTS";
 	public static String LAYOUT_FILE_NAME = "IDARE_NODE_LAYOUTS";
 	
+	public static String NODE_LABEL_POSITION_STRING = "S,N,c,0.00,0.00"; 
+	
 	public static int IMAGEWIDTH = 400;
 	public static int IMAGEHEIGHT = 240;
 	public static int LABELHEIGHT = 50;
@@ -40,10 +42,19 @@ public class IMAGENODEPROPERTIES {
 	/**
 	 * Visual Properties of IMAGENODEs
 	 */	
-	public static double IDARE_NODE_DISPLAY_WIDTH = 80.; 
-	public static double IDARE_NODE_DISPLAY_HEIGHT = 290./400 * 80;
+	public static double IDARE_DISPLAY_SIZE_FACTOR = 0.2; //Default factor is 0.2, which is the scaling for the display images.
+	
 	public static NodeShape IDARE_NODE_DISPLAY_SHAPE = NodeShapeVisualProperty.RECTANGLE;
 	public static Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,IMAGENODEPROPERTIES.LABELHEIGHT-2);
 
 	public static int LEGEND_DESCRIPTION_OPTIMAL_WIDTH = 300;
+	
+	/**
+	 * Adapt the display size of the images.
+	 * @param factor
+	 */
+	public static void changeDisplaySize(double factor)
+	{
+		IDARE_DISPLAY_SIZE_FACTOR*=factor;
+	}
 }

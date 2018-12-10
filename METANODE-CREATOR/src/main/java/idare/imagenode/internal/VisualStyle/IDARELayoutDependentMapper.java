@@ -1,5 +1,6 @@
 package idare.imagenode.internal.VisualStyle;
 
+import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.internal.DataManagement.NodeManager;
 
 import java.util.HashMap;
@@ -18,14 +19,19 @@ import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
  *
  * @param <S> - The Class of the Mapping to be used as values
  */
-public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,DiscreteMapping<String, S>{
+public class IDARELayoutDependentMapper implements VisualMappingFunction<String,Double>,DiscreteMapping<String, Double>{
 	
+	public static enum MAPPINGTYPES
+	{
+		NODEIMAGEHEIGHT,
+		NODEIMAGEWIDTH		
+	}
 	NodeManager nm;
 	boolean active;
-	S imagenodeValue;	
-	VisualProperty<S> vp;
+	VisualProperty<Double> vp;
 	String mappedColumnName;
-	HashMap<String, S> mappedValues;
+	HashMap<String, Double> mappedValues;
+	MAPPINGTYPES maptarget;
 	/**
 	 * Standard constructor of the Mapper
 	 * @param MappedColumnName - The column that is mapped from 
@@ -33,36 +39,53 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	 * @param nm The NodeManager to obtain information from 
 	 * @param mappedValue - the Value used for imagenodes.
 	 */
-	public IDAREDependentMapper(String MappedColumnName, VisualProperty<S> vp,NodeManager nm,S mappedValue , boolean returnID) {
+	public IDARELayoutDependentMapper(String MappedColumnName, VisualProperty<Double> vp,NodeManager nm,MAPPINGTYPES type) {
 		super();
 		this.nm = nm;
 		active = false;
-		imagenodeValue = mappedValue;
-		
 		this.vp = vp;
 		mappedColumnName = MappedColumnName;
-		mappedValues = new HashMap<String, S>();	
+		mappedValues = new HashMap<String, Double>();
+		maptarget = type;
 	}
 
-	
 	@Override
-	public Map<String, S> getAll() {
+	public Map<String, Double> getAll() {
 		//Return a Map containing the properly mapped values and the imagenode Value for all imagenodes. 
-		HashMap<String, S> returnVals = new HashMap<String, S>();
+		HashMap<String, Double> returnVals = new HashMap<String, Double>();
 		returnVals.putAll(mappedValues);
 		for(String ID : nm.getLayoutedIDs())
 		{
-			returnVals.put(ID, imagenodeValue);
+			returnVals.put(ID, getValueForMapping(ID));
 		}
 		return returnVals;
 	}
 
+	
+	private Double getValueForMapping(String ID)
+	{
+		switch(maptarget)
+		{
+		case NODEIMAGEHEIGHT:
+		{
+			return new Double(nm.getLayoutForNode(ID).getImageHeight() +nm.getLayoutForNode(ID).getLabelHeight())*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+			
+		}
+		case NODEIMAGEWIDTH:			
+		{
+			return new Double(nm.getLayoutForNode(ID).getImageWidth())*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;			
+		}
+		}
+		// this should never be reached.
+		return new Double(0);
+	}
+	
 	@Override
-	public S getMapValue(String arg0) {
+	public Double getMapValue(String arg0) {
 		//Return either the properly mapped value OR The imagenode Value if the requested ID is a valid ID. 
 		if(nm.isNodeLayouted(arg0))
-		{
-			return imagenodeValue;
+		{			
+			return getValueForMapping(arg0);
 		}
 		else
 		{
@@ -71,12 +94,12 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	}
 
 	@Override
-	public <T extends S> void putAll(Map<String, T> arg0) {
+	public <T extends Double> void putAll(Map<String, T> arg0) {
 		mappedValues.putAll(arg0);
 	}
 
 	@Override
-	public <T extends S> void putMapValue(String arg0, T arg1) {
+	public <T extends Double> void putMapValue(String arg0, T arg1) {
 		mappedValues.put(arg0, arg1);
 	}
 
@@ -86,12 +109,12 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	}
 
 	@Override
-	public S getMappedValue(CyRow arg0) {
+	public Double getMappedValue(CyRow arg0) {
 		//Return either the properly mapped value OR The imagenode Value if the requested row corresponds to a imagenode 
-
-		if(nm.isNodeLayouted(arg0.get(mappedColumnName, String.class)))
+		String id = arg0.get(mappedColumnName, String.class);
+		if(nm.isNodeLayouted(id))
 		{
-			return imagenodeValue;
+			return getValueForMapping(id);
 		}
 		else
 		{
@@ -110,7 +133,7 @@ public class IDAREDependentMapper<S> implements VisualMappingFunction<String,S>,
 	}
 
 	@Override
-	public VisualProperty<S> getVisualProperty() {
+	public VisualProperty<Double> getVisualProperty() {
 		return vp;
 	}
 

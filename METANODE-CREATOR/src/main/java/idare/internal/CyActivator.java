@@ -28,8 +28,11 @@ import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
+import org.cytoscape.view.model.VisualLexicon;
+import org.cytoscape.view.model.VisualProperty;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.model.events.NetworkViewAddedListener;
+import org.cytoscape.view.presentation.RenderingEngine;
 import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.events.VisualStyleSetListener;
 import org.cytoscape.work.AbstractTaskFactory;
@@ -146,8 +149,7 @@ public class CyActivator extends AbstractCyActivator {
 		//Obtain all services required for the app.
 		CyApplicationManager cyAppMgr = getService(context, CyApplicationManager.class);	
 		VisualMappingManager vmm = getService(context, VisualMappingManager.class);
-		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);	
-
+		CySwingApplication cySwingApp = getService(context, CySwingApplication.class);			
 		FileUtil util = getService(context, FileUtil.class);
 		
 

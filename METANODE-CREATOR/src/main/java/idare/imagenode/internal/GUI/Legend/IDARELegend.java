@@ -122,8 +122,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 		//Remove all Components that were listening to resize events from this legend.
 		clearResizeListeners();
 		//Clear the old content.
-		Content.removeAll();
-
+		Content.removeAll();		
 		//this.removeComponentListener(resizer);
 		Content.setBackground(Color.white);
 		Content.setLayout(new BoxLayout(Content,BoxLayout.PAGE_AXIS));		
@@ -139,11 +138,7 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 		}
 		Node.dispose();
 		Node = new NodeSVGCanvas();
-
-
-		//updateNodeSize();
-		//Add the NodeResize Listener.
-		resizer = new NodeResizer(Node);		
+				
 		//And Add the Node to the content (still empty)				
 		revalidate();
 	}
@@ -166,6 +161,8 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	{
 		try{
 			initialize();
+			//Add a Node Resize Listener for the layout
+			resizer = new NodeResizer(Node, layout);
 			//Now we have a legend, so lets set the Background and add the node.
 			Content.setBackground(Color.black);
 			this.addComponentListener(resizer);
@@ -173,12 +170,12 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);	
 			layout.layoutLegendNode(source.getData(), g);		
-			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
+			LayoutUtils.TransferGraphicsToDocument(doc, new Dimension(layout.getImageWidth(), layout.getImageHeight()+layout.getLabelHeight()), g);
 
 			Node.setAlignmentY(NodeSVGCanvas.TOP_ALIGNMENT);
 			Node.setSVGDocument(doc);
 			Node.flushImageCache();
-			updateNodeSize();
+			updateNodeSize(layout);
 			setDataSetDescriptions(layout);
 			revalidate();
 			repaint();
@@ -191,19 +188,28 @@ public class IDARELegend extends JScrollPane implements CytoPanelComponent, Node
 	/**
 	 *	Update the Node size (with a certain minimal width and a maximal width which is the native width of the image.  
 	 */
-	private void updateNodeSize()
+	private void updateNodeSize(ImageNodeLayout layout)
 	{
 		int availablewidth = getViewport().getSize().width-1;
 		Node.setCanUpdatePreferredSize(true);
-		if(availablewidth < IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
+		int imageheight = layout.getImageHeight();
+		int labelheight = layout.getLabelHeight();
+		int imagewidth = layout.getImageWidth(); 
+		if(currentNode != null)
 		{
+			imageheight = manager.getLayoutForNode(currentNode).getImageHeight();
+			labelheight = manager.getLayoutForNode(currentNode).getLabelHeight();
+			imagewidth = manager.getLayoutForNode(currentNode).getImageWidth();
+		}				
+		if(availablewidth < IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
+		{			
 			Node.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
-					(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / IMAGENODEPROPERTIES.IMAGEWIDTH)));
+					(int)((imageheight + labelheight) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / imagewidth)));
 		}
 		else
 		{
-			int optwidth = Math.min(availablewidth,IMAGENODEPROPERTIES.IMAGEWIDTH); 
-			Node.setPreferredSize(new Dimension(optwidth,(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / IMAGENODEPROPERTIES.IMAGEWIDTH)));
+			int optwidth = Math.min(availablewidth,imagewidth); 
+			Node.setPreferredSize(new Dimension(optwidth,(int)((imageheight + labelheight)  * (double)optwidth / imagewidth)));
 		}
 		Node.setSize(Node.getPreferredSize());
 		Node.setCanUpdatePreferredSize(false);

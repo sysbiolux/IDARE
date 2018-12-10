@@ -47,6 +47,7 @@ import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.VisualLexicon;
 import org.cytoscape.view.model.VisualProperty;
+import org.cytoscape.view.presentation.RenderingEngine;
 import org.cytoscape.view.presentation.customgraphics.CustomGraphicLayer;
 import org.cytoscape.view.presentation.customgraphics.CyCustomGraphics;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
@@ -102,11 +103,13 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		storage.setNodeManager(nm);
 		nm.setDataSetManager(dsm);
 		nm.addNodeChangeListener(storage);
-		dsm.addDataSetChangeListener(nm);		
+		dsm.addDataSetChangeListener(nm);	
+		RenderingEngine engine = reg.getService(RenderingEngine.class);
+		VisualProperty NodeLabelProperty = engine.getVisualLexicon().lookup(CyNode.class, "NODE_LABEL_POSITION");
 		ids = new IDAREVisualStyle(reg.getService(VisualStyleFactory.class), reg.getService(VisualMappingManager.class),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=discrete)"),
 								   reg.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)"),				
-								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),nm,anm);		
+								   reg.getService(CyEventHelper.class), storage, reg.getService(CyNetworkViewManager.class),nm,anm, NodeLabelProperty);		
 		storage.setVisualStyle(ids);
 		Settings = ism;
 		legend = new IDARELegend(new JPanel(),nm);
@@ -114,7 +117,7 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		nm.updateNetworkNodes();
 		storage.addImageLayoutChangedListener(ids);
 		styleManager = new StyleManager(storage, reg.getService(VisualMappingManager.class), reg.getService(CyNetworkViewManager.class),
-										reg.getService(CyEventHelper.class), nm, reg.getService(CyApplicationManager.class),anm);
+										reg.getService(CyEventHelper.class), nm, reg.getService(CyApplicationManager.class),anm, NodeLabelProperty);
 		storage.addImageLayoutChangedListener(styleManager);
 		dcp = new DataSetControlPanel(reg.getService(CySwingApplication.class), this);
 		layoutIOmanager = new LayoutIOManager();

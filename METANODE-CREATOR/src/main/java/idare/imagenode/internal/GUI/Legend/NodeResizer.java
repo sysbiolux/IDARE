@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 
 import idare.imagenode.GUI.Legend.Utilities.LegendSizeListener;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
+import idare.imagenode.internal.Layout.ImageNodeLayout;
 
 /**
  * The NOde Resizer will resize the Canvas containing the layouted node. 
@@ -17,9 +18,11 @@ import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 public class NodeResizer extends ComponentAdapter implements LegendSizeListener
 {
 	NodeSVGCanvas canvas;
-	public NodeResizer(NodeSVGCanvas canvas)
+	ImageNodeLayout layout;
+	public NodeResizer(NodeSVGCanvas canvas, ImageNodeLayout layout)
 	{
 		this.canvas = canvas;
+		this.layout = layout;
 	}
 	@Override
 	public void componentResized(ComponentEvent e)
@@ -31,12 +34,12 @@ public class NodeResizer extends ComponentAdapter implements LegendSizeListener
 		if(availablewidth < IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH)
 		{
 			canvas.setPreferredSize(new Dimension(IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH, 
-					(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / IMAGENODEPROPERTIES.IMAGEWIDTH)));
+					(int)((layout.getImageHeight()+ layout.getLabelHeight()) * (double)IMAGENODEPROPERTIES.LEGEND_DESCRIPTION_OPTIMAL_WIDTH / layout.getImageWidth())));
 		}
 		else
 		{
 			int optwidth = Math.min(availablewidth,IMAGENODEPROPERTIES.IMAGEWIDTH); 
-			canvas.setPreferredSize(new Dimension(optwidth,(int)((IMAGENODEPROPERTIES.IMAGEHEIGHT + IMAGENODEPROPERTIES.LABELHEIGHT)  * (double)optwidth / IMAGENODEPROPERTIES.IMAGEWIDTH)));
+			canvas.setPreferredSize(new Dimension(optwidth,(int)((layout.getImageHeight() + layout.getLabelHeight())  * (double)optwidth / layout.getImageWidth())));
 		}
 		canvas.setCanUpdatePreferredSize(false);
 		

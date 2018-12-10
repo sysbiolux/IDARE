@@ -112,7 +112,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 					if(dssm.getSelectedDataSets().size() > 0)
 					{
 						Collection<DataSetLayoutInfoBundle> bundles = dssm.getSelectedDataSets();
-						AutomaticNodeLayout layout = new AutomaticNodeLayout(bundles);
+						AutomaticNodeLayout layout = new AutomaticNodeLayout(bundles, IMAGENODEPROPERTIES.IMAGEHEIGHT, IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT);
 						Set<DataSet> usedDataSets = new HashSet<DataSet>();
 						for(DataSetLayoutInfoBundle bundle : bundles)
 						{
@@ -261,7 +261,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 				AutomaticNodeLayout layout = null;
 				if(builder.dssm.getSelectedDataSets().size() > 0)
 				{
-					layout = new AutomaticNodeLayout(builder.dssm.getSelectedDataSets());
+					layout = new AutomaticNodeLayout(builder.dssm.getSelectedDataSets(),IMAGENODEPROPERTIES.IMAGEHEIGHT, IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT);
 					layout.doLayout();
 				}
 				else
@@ -355,7 +355,7 @@ public class DataSetControlPanel extends JPanel implements CytoPanelComponent{
 			{
 				layout.layoutNode(nm.getNode(NodeID).getData(), g);
 			}
-			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
+			LayoutUtils.TransferGraphicsToDocument(doc, new Dimension(layout.getImageWidth(),layout.getImageHeight()), g);
 			JSVGCanvas canvas = new JSVGCanvas();
 			canvas.setSVGDocument(doc);
 			current.getContentPane().add(canvas,gbc1);

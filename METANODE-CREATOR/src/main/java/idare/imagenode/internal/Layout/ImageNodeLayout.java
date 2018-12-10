@@ -1,10 +1,6 @@
 package idare.imagenode.internal.Layout;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,8 +12,6 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
@@ -94,6 +88,7 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 
 	/**
 	 * Lay out the legend for a specific set of node data
+	 * Always needs to also layout the ID of the node in addition to the image
 	 * @param datacollection The data to be used for drawing
 	 * @param svg the {@link SVGGraphics2D} to draw in
 	 */
@@ -111,6 +106,57 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 */
 	void datasetsChanged(DataSetsChangedEvent e);
 
-
+	/**
+	 * Set the image height (only the image not the label);
+	 * @param height
+	 */
+	void setImageHeight(int height);
 	
+	/**
+	 * Get the image height (only the image not the label);
+	 * @return The height of the image
+	 */
+	int getImageHeight();
+	
+	/**
+	 * Set the image  width (only the image not the label);
+	 * @param width
+	 */
+	void setImageWidth(int width);
+	
+	/**
+	 * Get the image width (only the image not the label);
+	 * @return The width of the image
+	 */
+	int getImageWidth();
+	
+	/**
+	 * Set the image dimensions (only the image not the label);
+	 * @param dim The dimensions of the image 
+	 */
+	void setImageDimensions(Dimension dim);
+	
+	/**
+	 * Get the image dimensions (only the image not the label);
+	 * @return The dimensions of the image 
+	 */
+	Dimension getImageDimensions();
+	
+	/**
+	 * Set the label height 
+	 * @param height The height of the label 
+	 */
+	void setLabelHeight(int height);
+	
+	/**
+	 * Get the label height 
+	 * @return The height of the label 
+	 */
+	int getLabelHeight();
+	
+	/**
+	 * Whether the layout in question does print a label on image nodes.
+	 * @return Whether the layout prints a label on the image nodes.
+	 */
+	boolean printsLabel();
 }

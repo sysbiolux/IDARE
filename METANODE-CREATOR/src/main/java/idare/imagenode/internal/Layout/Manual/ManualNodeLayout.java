@@ -1,10 +1,5 @@
 package idare.imagenode.internal.Layout.Manual;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,10 +16,8 @@ import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Properties.LabelGenerator;
 import idare.imagenode.Utilities.EOOMarker;
-import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
@@ -33,10 +26,9 @@ import idare.imagenode.internal.IDAREService;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Layout.AbstractLayout;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.DataSetLink;
-import idare.imagenode.internal.Layout.ImageNodeLayout;
 import idare.imagenode.internal.Layout.SimpleLink;
 import idare.imagenode.internal.Layout.Manual.Utilities.LayoutComparator;
 
@@ -48,7 +40,7 @@ import idare.imagenode.internal.Layout.Manual.Utilities.LayoutComparator;
  * @author thomas
  *
  */
-public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
+public class ManualNodeLayout extends AbstractLayout implements IDAREService {
 
 	Vector<SimpleLink> alignment = new Vector<>();
 	Vector<SimpleLink> order = new Vector<>();	
@@ -60,9 +52,9 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 	/**
 	 * Create an empty layout. only usable when set up. 
 	 */
-	public ManualNodeLayout()
+	public ManualNodeLayout(int ImageHeight, int ImageWidth, int LabelHeight)
 	{
-		
+		super(ImageHeight,ImageWidth,LabelHeight);
 	}
 	
 	/**
@@ -180,7 +172,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		
 		//Replace by the actual nodelabel (we need a link to the appropriate imagenode for this
 		layoutNode(datacollection,svg, false);
-		drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		//drawIdentifier(svg, datacollection.iterator().next().getLabel());
 	}
 
 	@Override
@@ -278,23 +270,6 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 			}
 		}
 
-	}
-	/**
-	 * Lay out the legend for a specific set of node data
-	 * @param svg the {@link SVGGraphics2D} to draw in
-	 * @param identifier the identifier to draw
-	 */
-	private void drawIdentifier(SVGGraphics2D svg, String identifier)
-	{
-		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IMAGENODEPROPERTIES.IDFont, svg, identifier));
-		svg.setColor(Color.black);		
-		FontMetrics fm = svg.getFontMetrics();		
-		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
-		int xpos = (int) ((IMAGENODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
-		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
-		svg.drawString(identifier, xpos, ypos);
-		svg.setFont(currentFont);
 	}
 
 	@Override

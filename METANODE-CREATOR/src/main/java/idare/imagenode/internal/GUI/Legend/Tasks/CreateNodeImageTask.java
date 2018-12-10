@@ -121,8 +121,9 @@ public class CreateNodeImageTask extends AbstractTask {
 		manager.getLayoutForNode(NodeID).layoutNode(manager.getNode(NodeID).getData(), g2);
 		Element root2 = svgdoc2.getDocumentElement();
 		g2.getRoot(root2);
-		
-		LayoutUtils.TransferGraphicsToDocument(svgdoc2, null, g2);		
+		ImageNodeLayout clayout = manager.getLayoutForNode(NodeID); 
+		Dimension correctDim = new Dimension(clayout.getImageWidth(),clayout.getImageHeight() + clayout.getLabelHeight());
+		LayoutUtils.TransferGraphicsToDocument(svgdoc2, correctDim, g2);		
 		
 		//OutputStream os2 = new FileOutputStream(F);
 		if(coder == null)

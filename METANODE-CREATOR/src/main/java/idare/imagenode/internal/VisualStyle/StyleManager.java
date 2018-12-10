@@ -9,6 +9,7 @@ import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedEvent;
 import idare.imagenode.internal.ImageManagement.GraphicsChangedListener;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
+import idare.imagenode.internal.VisualStyle.IDARELayoutDependentMapper.MAPPINGTYPES;
 import idare.imagenode.internal.VisualStyle.Tasks.AddNodesToStyleTaskFactory;
 
 import java.io.File;
@@ -62,6 +63,7 @@ SessionLoadedListener, GraphicsChangedListener {
 	private ActiveNodeManager anm;
 	private ImageStorage imf;
 	private AddNodesToStyleTaskFactory addNodesFactory;
+	private VisualProperty nodeLabelPositionProperty;
 	/**
 	 * Default Constructor. 
 	 * @param imf The ImageStore for the Manager
@@ -73,7 +75,8 @@ SessionLoadedListener, GraphicsChangedListener {
 	 * @param anm the {@link ActiveNodeManager} to use
 	 */
 	public StyleManager(ImageStorage imf, VisualMappingManager vmmServiceRef, CyNetworkViewManager cyNetViewMgr,
-			CyEventHelper eventHelper, NodeManager nm, CyApplicationManager cyAppMgr, ActiveNodeManager anm)
+			CyEventHelper eventHelper, NodeManager nm, CyApplicationManager cyAppMgr, ActiveNodeManager anm,
+			VisualProperty nodeLabelPositionProperty)
 	{		
 		this.imf = imf;
 		this.anm = anm;
@@ -86,6 +89,7 @@ SessionLoadedListener, GraphicsChangedListener {
 		storedProperties.addElement(BasicVisualLexicon.NODE_WIDTH);
 		storedProperties.addElement(BasicVisualLexicon.NODE_HEIGHT);
 		storedProperties.addElement(imf.getVisualProperty());
+		this.nodeLabelPositionProperty = nodeLabelPositionProperty;
 	}
 	
 	private void reset()
@@ -187,11 +191,15 @@ SessionLoadedListener, GraphicsChangedListener {
 	 */
 	private void setMappings(VisualStyle currentstyle)
 	{
-		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);		
-		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
-		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
-		currentstyle.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
-		currentstyle.addVisualMappingFunction(LabelTransparency);
+		//IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);		
+		IDAREDependentMapper<Object> LabelPosition = new IDAREDependentMapper<Object>(IDAREProperties.IDARE_NODE_NAME, nodeLabelPositionProperty,nm,nodeLabelPositionProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
+		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,MAPPINGTYPES.NODEIMAGEHEIGHT);
+		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,MAPPINGTYPES.NODEIMAGEWIDTH);
+		
+		//currentstyle.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
+		//currentstyle.addVisualMappingFunction(LabelTransparency);
+		currentstyle.removeVisualMappingFunction(LabelPosition.getVisualProperty());
+		currentstyle.addVisualMappingFunction(LabelPosition);
 		currentstyle.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
 		currentstyle.addVisualMappingFunction(imagenodeHeight);
 		currentstyle.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
@@ -279,9 +287,6 @@ SessionLoadedListener, GraphicsChangedListener {
 
 			while (it.hasNext()){
 				VisualStyle curVS = (VisualStyle)it.next();
-				IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
-				IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT-2);
-				IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH-2);
 //				PrintFDebugger.Debugging(this, "Checking Style " + curVS.getTitle());				
 				
 				if (StylesToRestore.contains(curVS.getTitle()))
@@ -289,15 +294,7 @@ SessionLoadedListener, GraphicsChangedListener {
 					
 //					PrintFDebugger.Debugging(this, "Restoring properties to style" + curVS.getTitle());
 					addNodesFactory.addNodesToStyle(curVS);					
-					//saveProperties(curVS,true);
-					//curVS.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
-					//curVS.addVisualMappingFunction(LabelTransparency);
-					//curVS.removeVisualMappingFunction(imagenodeHeight.getVisualProperty());
-//					curVS.addVisualMappingFunction(imagenodeHeight);
-//					curVS.removeVisualMappingFunction(imagenodeWidth.getVisualProperty());
-//					curVS.addVisualMappingFunction(imagenodeWidth);
-//					curVS.removeVisualMappingFunction(imf.getVisualProperty());
-//					curVS.addVisualMappingFunction(imf);
+
 				}
 			}
 		}
