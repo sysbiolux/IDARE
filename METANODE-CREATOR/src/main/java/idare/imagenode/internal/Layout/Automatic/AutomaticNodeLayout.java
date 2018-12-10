@@ -1,36 +1,6 @@
 package idare.imagenode.internal.Layout.Automatic;
 
-import idare.imagenode.ColorManagement.ColorMap;
-import idare.imagenode.Interfaces.DataSets.DataContainer;
-import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Interfaces.Layout.ContainerLayout;
-import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Properties.LabelGenerator;
-import idare.imagenode.Utilities.EOOMarker;
-import idare.imagenode.Utilities.LayoutUtils;
-import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
-import idare.imagenode.exceptions.layout.DimensionMismatchException;
-import idare.imagenode.exceptions.layout.TooManyItemsException;
-import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
-import idare.imagenode.internal.IDAREService;
-import idare.imagenode.internal.DataManagement.DataSetManager;
-import idare.imagenode.internal.DataManagement.Events.DataSetAboutToBeChangedListener;
-import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
-import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
-import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
-import idare.imagenode.internal.Layout.DataSetLink;
-import idare.imagenode.internal.Layout.ImageNodeLayout;
-import idare.imagenode.internal.Layout.SimpleLink;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -47,12 +17,33 @@ import javax.swing.JPanel;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 
+import idare.imagenode.ColorManagement.ColorMap;
+import idare.imagenode.Interfaces.DataSets.DataContainer;
+import idare.imagenode.Interfaces.DataSets.DataSet;
+import idare.imagenode.Interfaces.DataSets.NodeData;
+import idare.imagenode.Interfaces.Layout.ContainerLayout;
+import idare.imagenode.Interfaces.Layout.DataSetLayoutProperties;
+import idare.imagenode.Properties.LabelGenerator;
+import idare.imagenode.Utilities.EOOMarker;
+import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
+import idare.imagenode.exceptions.layout.DimensionMismatchException;
+import idare.imagenode.exceptions.layout.TooManyItemsException;
+import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
+import idare.imagenode.internal.IDAREService;
+import idare.imagenode.internal.DataManagement.DataSetManager;
+import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
+import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
+import idare.imagenode.internal.Layout.AbstractLayout;
+import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
+import idare.imagenode.internal.Layout.DataSetLink;
+import idare.imagenode.internal.Layout.SimpleLink;
+
 /**
  * Te NodeLAyout stores the localisation of different Containerlayouts and sets them up using the Datasets in this layout.
  * @author Thomas Pfau
  *
  */
-public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
+public class AutomaticNodeLayout extends AbstractLayout implements IDAREService{
 
 	//private Vector<DataContainer> containers = new Vector<>();
 	ImageNodeContainer cont = new ImageNodeContainer();
@@ -122,6 +113,12 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		DataSetLabels = new HashMap<DataSet, String>();
 		DatasetOrder = new Vector<DataSet>();
 		try{
+			currentobject = os.readObject();
+			boolean success = super.readLayout(dsm, os, currentobject);
+			if(success)
+			{
+				currentobject = os.readObject();
+			}
 			//Object currentobject = os.readObject();			
 			while(!(currentobject instanceof EOOMarker))
 			{
@@ -332,7 +329,10 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 			DataSetPositions.get(ds).LayoutDataForNode(ds.getDefaultData(), svg, false, DataSetColors.get(ds));
 		}
 		//Replace by the actual nodelabel (we need a link to the appropriate imagenode for this
-		drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		if(imageIncludesLabel())
+		{
+			drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		}
 
 	}
 	/* (non-Javadoc)
@@ -362,24 +362,7 @@ public class AutomaticNodeLayout implements ImageNodeLayout,IDAREService{
 		drawIdentifier(svg, datacollection.iterator().next().getLabel());
 
 	}
-	/**
-	 * Lay out the legend for a specific set of node data
-	 * @param svg the {@link SVGGraphics2D} to draw in
-	 * @param identifier the identifier to draw
-	 */
-	private void drawIdentifier(SVGGraphics2D svg, String identifier)
-	{
-		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IMAGENODEPROPERTIES.IDFont, svg, identifier));
-		svg.setColor(Color.black);		
-		FontMetrics fm = svg.getFontMetrics();		
-		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
-		int xpos = (int) ((IMAGENODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
-		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
-		svg.drawString(identifier, xpos, ypos);
-		svg.setFont(currentFont);
-	}
-
+	
 	/* (non-Javadoc)
 	 * @see idare.imagenode.internal.Layout.ImageLayout#datasetChanged(idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent)
 	 */

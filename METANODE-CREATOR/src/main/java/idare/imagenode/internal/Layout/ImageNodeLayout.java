@@ -1,10 +1,6 @@
 package idare.imagenode.internal.Layout;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,8 +12,6 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import idare.imagenode.ColorManagement.ColorMap;
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.Interfaces.DataSets.NodeData;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
@@ -111,6 +105,36 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 */
 	void datasetsChanged(DataSetsChangedEvent e);
 
-
+	/**
+	 * Get the Dimension of the image
+	 * @return The dimension of the image
+	 */
+	Dimension getImageSize();
 	
+	/**
+	 * Set the dimension of the image
+	 * @return set the Dimension of the Image.
+	 */
+	void setImageDimension(Dimension imageDimension);
+	
+	
+	/**
+	 * Determine, whether this Layout includes the label or not.
+	 * @return Whether the image contains the label or not.
+	 */
+	boolean imageIncludesLabel();
+	
+	/**
+	 * Set whether to include the label in the image or not.
+	 * @param includeLabel whether to include the label in the image or not.
+	 */
+	void  setImageIncludesLabel(boolean includeLabel);
+	
+	/**
+	 * Get the Dimension of the object displayed on the nodes in a network.
+	 * @return The dimensions of the object in the network view.
+	 */
+	Dimension getDisplayDimensions();
+	
+		
 }

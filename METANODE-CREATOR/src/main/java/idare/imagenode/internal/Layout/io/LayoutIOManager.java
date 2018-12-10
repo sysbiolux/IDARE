@@ -58,7 +58,7 @@ public class LayoutIOManager {
 			}
 			ImageNodeLayout layout = layoutclasses.get(clazzname).newInstance();
 			
-			boolean readsuccess = layout.readLayout(dsm, os, os.readObject());
+			boolean readsuccess = layout.readLayout(dsm, os, null);
 			if(readsuccess)
 			{
 				return layout;
@@ -68,7 +68,7 @@ public class LayoutIOManager {
 				return null;
 			}
 		}
-		catch(ClassNotFoundException | InstantiationException | IllegalAccessException e)
+		catch(InstantiationException | IllegalAccessException e)
 		{
 //			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
 			e.printStackTrace(System.out);

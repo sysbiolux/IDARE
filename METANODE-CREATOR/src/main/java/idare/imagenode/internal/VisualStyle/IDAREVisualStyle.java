@@ -210,13 +210,13 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		Iterator it = vmmServiceRef.getAllVisualStyles().iterator();
 		VisualStyle oldstyle = null;
 		
-		IDAREDependentMapper<Integer> LabelTransparency = new IDAREDependentMapper<Integer>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,0);
 		//and the sizes of imagenodes get adjusted
-		IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
-		IDAREDependentMapper<Double> imagenodeWidth = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
-		//IDAREDependentMapper<NodeShape> imagenodeShape = new IDAREDependentMapper<NodeShape>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_SHAPE,idm,METANODEPROPERTIES.IDARE_NODE_DISPLAY_SHAPE);
+		//IDAREDependentMapper<Double> imagenodeHeight = new IDAREDependentMapper<Double>(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);		
+		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
+		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
+		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
 		
-
+		
 		while (it.hasNext()){
 			VisualStyle curVS = (VisualStyle)it.next();
 			if (curVS.getTitle().equalsIgnoreCase(IDARE_STYLE_TITLE))

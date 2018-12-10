@@ -1,22 +1,14 @@
 package idare.imagenode.internal.Layout.Manual;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -28,7 +20,6 @@ import idare.imagenode.Interfaces.DataSets.NodeData;
 import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Properties.LabelGenerator;
-import idare.imagenode.Utilities.LayoutUtils;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
@@ -36,15 +27,13 @@ import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
-import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Layout.AbstractLayout;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.DataSetLink;
-import idare.imagenode.internal.Layout.ImageNodeLayout;
-import idare.imagenode.internal.Layout.Manual.GUI.DataSetFrame;
 import idare.imagenode.internal.Layout.Manual.Utilities.LayoutArea;
 import idare.imagenode.internal.Layout.Manual.Utilities.LayoutComparator;
 
-public class ManualLayout implements ImageNodeLayout {
+public class ManualLayout extends AbstractLayout {
 
 	Font IDFont = new Font(Font.MONOSPACED,Font.BOLD,IMAGENODEPROPERTIES.LABELHEIGHT-2);
 
@@ -274,24 +263,6 @@ public class ManualLayout implements ImageNodeLayout {
 		return layout;
 	}
 
-	/**
-	 * Lay out the legend for a specific set of node data
-	 * @param svg the {@link SVGGraphics2D} to draw in
-	 * @param identifier the identifier to draw
-	 */
-	private void drawIdentifier(SVGGraphics2D svg, String identifier)
-	{		
-		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IDFont, svg, identifier));
-		svg.setColor(Color.black);		
-		FontMetrics fm = svg.getFontMetrics();		
-		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
-		int xpos = (int) ((IMAGENODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
-		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
-		svg.drawString(identifier, xpos, ypos);
-		svg.setFont(currentFont);
-	}
-	
 	@Override
 	public Vector<DataSetLink> getDatasetsInOrder() {
 		Vector<DataSetLink> orderedsets = new Vector<>();
@@ -343,8 +314,10 @@ public class ManualLayout implements ImageNodeLayout {
 			cdata = cdata != null ? cdata : bundle.dataset.getDefaultData(); 
 			comparators.get(bundle).bundlelayout.LayoutDataForNode(cdata, svg, legend, bundle.colormap);			
 		}	
-
-		drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		if(imageIncludesLabel())
+		{
+			drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		}
 	}
 
 

@@ -34,6 +34,7 @@ import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
 import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.Layout.AbstractLayout;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.DataSetLink;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
@@ -48,7 +49,7 @@ import idare.imagenode.internal.Layout.Manual.Utilities.LayoutComparator;
  * @author thomas
  *
  */
-public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
+public class ManualNodeLayout extends AbstractLayout implements IDAREService {
 
 	Vector<SimpleLink> alignment = new Vector<>();
 	Vector<SimpleLink> order = new Vector<>();	
@@ -107,6 +108,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 	@Override
 	public void writeLayout(ObjectOutputStream os) throws IOException {
 		// TODO Auto-generated method stub
+		super.writeLayout(os);
 		for(SimpleLink link : alignment)
 		{			
 			os.writeObject(new Integer(link.getDataSet().getID()));
@@ -118,9 +120,14 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 	}
 
 	@Override
-	public boolean readLayout(DataSetManager dsm, ObjectInputStream os, Object currentobject) throws IOException {
-		// TODO Auto-generated method stub
+	public boolean readLayout(DataSetManager dsm, ObjectInputStream os, Object currentobject) throws IOException {				
 		try{
+			currentobject = os.readObject();
+			boolean success = super.readLayout(dsm, os, currentobject);
+			if(success)
+			{
+				currentobject = os.readObject();
+			}
 			//Object currentobject = os.readObject();			
 			while(!(currentobject instanceof EOOMarker))
 			{
@@ -129,7 +136,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 				{
 					linkmap.put(currentDataSet, new Vector<>());
 				}
-				
+
 				Integer orderpos = (Integer) os.readObject();
 				SimpleLink sl = new SimpleLink(currentDataSet, orderpos);
 				alignment.add(sl);
@@ -152,10 +159,11 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		}
 		catch(Exception e)
 		{
-//			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
+			//			PrintFDebugger.Debugging(e, "Could not read layout due to the exception.");
 			e.printStackTrace(System.out);
 			return false;
-		}	}
+		}	
+	}
 
 	@Override
 	public String getDataSetLabel(DataSetLink ds) {
@@ -180,7 +188,10 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		
 		//Replace by the actual nodelabel (we need a link to the appropriate imagenode for this
 		layoutNode(datacollection,svg, false);
-		drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		if(imageIncludesLabel())
+		{
+			drawIdentifier(svg, datacollection.iterator().next().getLabel());
+		}
 	}
 
 	@Override
@@ -279,23 +290,7 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		}
 
 	}
-	/**
-	 * Lay out the legend for a specific set of node data
-	 * @param svg the {@link SVGGraphics2D} to draw in
-	 * @param identifier the identifier to draw
-	 */
-	private void drawIdentifier(SVGGraphics2D svg, String identifier)
-	{
-		Font currentFont = svg.getFont();		
-		svg.setFont(LayoutUtils.scaleFont(new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH, IMAGENODEPROPERTIES.LABELHEIGHT),IMAGENODEPROPERTIES.IDFont, svg, identifier));
-		svg.setColor(Color.black);		
-		FontMetrics fm = svg.getFontMetrics();		
-		Rectangle2D bounds = fm.getStringBounds(identifier, svg);		
-		int xpos = (int) ((IMAGENODEPROPERTIES.IMAGEWIDTH - bounds.getWidth())/2);		
-		int ypos = IMAGENODEPROPERTIES.IMAGEHEIGHT + fm.getAscent();
-		svg.drawString(identifier, xpos, ypos);
-		svg.setFont(currentFont);
-	}
+
 
 	@Override
 	public void doLayout() throws TooManyItemsException, ContainerUnplaceableExcpetion, DimensionMismatchException,
