@@ -9,6 +9,7 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.TaskMonitor.Level;
+import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.DialogTaskManager;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
@@ -66,6 +67,9 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 		NodeManager nodeManager;
 		ImageNodeLayout layout;
 		Set<DataSet> setsToLayout;
+		@Tunable(description="Include Labels in the Nodes")
+		boolean printLabel;
+		
 		/**
 		 * A Default constructor that adds the given {@link ImageNodeLayout} to all Nodes in the network also present in the provided {@link DataSet}s according to the {@link NodeManager}.
 		 * @param nodeManager
@@ -74,6 +78,7 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 		 */
 		  
 		public CreateNodesTask(NodeManager nodeManager,Set<DataSet> SetsToLayout, ImageNodeLayout layout ) {
+			super();
 			this.nodeManager = nodeManager;
 			this.setsToLayout = SetsToLayout;
 			this.layout = layout;			
@@ -82,6 +87,7 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 		public void run(TaskMonitor arg0) throws Exception {
 			// TODO Auto-generated method stub
 			try{
+				layout.setImageIncludesLabel(printLabel);
 				arg0.setTitle("Creating Image Nodes");
 				arg0.setProgress(0.);
 				arg0.setStatusMessage("Setting DataSetProperties");
