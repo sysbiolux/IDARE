@@ -24,6 +24,7 @@ import idare.imagenode.exceptions.layout.WrongDatasetTypeException;
 import idare.imagenode.internal.DataManagement.DataSetManager;
 import idare.imagenode.internal.DataManagement.Events.DataSetChangedEvent;
 import idare.imagenode.internal.DataManagement.Events.DataSetsChangedEvent;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 public abstract class AbstractLayout implements ImageNodeLayout {
 
@@ -113,6 +114,7 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 	@Override
 	public void  setImageIncludesLabel(boolean includeLabel)
 	{
+		PrintFDebugger.Debugging(this, "Setting printlabel to " + includeLabel);
 		printLabel = includeLabel;
 	}
 	
@@ -142,16 +144,34 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 	 */
 	public Dimension getDisplayDimensions()
 	{
+		return getNodeDimension(IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR);
+	}
+	/**
+	 * Get the Dimension of the image on its own.
+	 * @return The dimensions of image of the node
+	 */
+	public Dimension getLayoutDimension()
+	{
+		return getNodeDimension(1);
+	}
+	
+	/**
+	 * Get the dimensions with the given scaling.
+	 * @param ScalingFactor
+	 * @return
+	 */
+	private Dimension getNodeDimension(double ScalingFactor)
+	{
 		Dimension imageDim = new Dimension();
-		Double width = imageDimension.getWidth()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+		Double width = imageDimension.getWidth()*ScalingFactor;
 		Double height = 0.;
 		if(printLabel)
 		{
-			height = imageDimension.getHeight()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR + IMAGENODEPROPERTIES.LABELHEIGHT*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+			height = imageDimension.getHeight()*ScalingFactor + IMAGENODEPROPERTIES.LABELHEIGHT*ScalingFactor;
 		}
 		else
 		{
-			height = imageDimension.getHeight()*IMAGENODEPROPERTIES.IDARE_DISPLAY_SIZE_FACTOR;
+			height = imageDimension.getHeight()*ScalingFactor;
 		}
 		imageDim.setSize(width, height);
 		return imageDim;

@@ -1,9 +1,5 @@
 package idare.subnetwork.internal.Tasks.propertySelection;
 
-import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.subnetwork.internal.SubNetworkUtils;
-import idare.subnetwork.internal.GUI.SubnetworkPropertyColumnChooser;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,6 +7,9 @@ import java.lang.reflect.Method;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.AbstractGUITunableHandler;
+
+import idare.subnetwork.internal.SubNetworkUtils;
+import idare.subnetwork.internal.GUI.SubnetworkPropertyColumnChooser;
 
 
 public class SubnetworkPropertyColumnGUIHandler extends AbstractGUITunableHandler {

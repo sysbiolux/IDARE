@@ -81,9 +81,9 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		this.imf = imf;		
 		this.nm = idm;
 	    this.anm = anm;
-		vs = this.addStyle();		
-		this.applyToAll();
 		this.nodeLabelProperty = NodeLabelProperty;
+	    vs = this.addStyle();		
+		this.applyToAll();
 		}
 		
 	/**
@@ -114,7 +114,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
 		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
-		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
+		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.LABELPOSITION,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
 		
 		
 		PassthroughMapping NameMapping = (PassthroughMapping) this.vmfFactoryP.createVisualMappingFunction(IDAREProperties.IDARE_NODE_NAME, String.class, BasicVisualLexicon.NODE_LABEL);
@@ -219,8 +219,7 @@ public class IDAREVisualStyle implements SessionLoadedListener, GraphicsChangedL
 		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
 		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
-		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
-		
+		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.LABELPOSITION,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));		
 		
 		while (it.hasNext()){
 			VisualStyle curVS = (VisualStyle)it.next();

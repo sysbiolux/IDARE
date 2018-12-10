@@ -1,6 +1,7 @@
 package idare.imagenode.internal.VisualStyle;
 
 import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,37 +59,66 @@ public class IDARELayoutDependentMapper implements VisualMappingFunction<String,
 		returnVals.putAll(mappedValues);
 		for(String ID : nm.getLayoutedIDs())
 		{
-			switch(target)
-			{
-			case IMAGEHEIGHT:
-			{
-				returnVals.put(ID,nm.getLayoutForNode(ID).getDisplayDimensions().getHeight());
-			}
-			case IMAGEWIDTH:
-			{
-				returnVals.put(ID,nm.getLayoutForNode(ID).getDisplayDimensions().getWidth());
-			}
-			case TRANSPARENCY:
-			{
-				if(nm.getLayoutForNode(ID).imageIncludesLabel())
-				{
-					returnVals.put(ID, imagenodeValue);
-				}
-			}
-			default:
-				returnVals.put(ID,imagenodeValue);
-			}
-			
+				returnVals.put(ID,getValueForID(ID));						
 		}
 		return returnVals;
 	}
 
+	private Object getValueForID(String ID)
+	{
+		switch(target)
+		{
+		case IMAGEHEIGHT:
+		{
+			return nm.getLayoutForNode(ID).getDisplayDimensions().getHeight();			
+		}
+		case IMAGEWIDTH:
+		{
+			return nm.getLayoutForNode(ID).getDisplayDimensions().getWidth();
+		}
+		case TRANSPARENCY:
+		{
+			if(nm.getLayoutForNode(ID).imageIncludesLabel())
+			{
+				PrintFDebugger.Debugging(this,"Requested Transparency value for ID " + ID + " Returned " + imagenodeValue.toString());
+				return imagenodeValue;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		case LABELPOSITION:
+		{
+			if(!nm.getLayoutForNode(ID).imageIncludesLabel())
+			{
+				PrintFDebugger.Debugging(this,"Requested label position for ID " + ID + " Returned " + imagenodeValue.toString());
+				return imagenodeValue;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		default:
+			return null;
+		}
+	}
+	
 	@Override
 	public Object getMapValue(String arg0) {
 		//Return either the properly mapped value OR The imagenode Value if the requested ID is a valid ID. 
 		if(nm.isNodeLayouted(arg0))
 		{
-			return imagenodeValue;
+			Object returnvalue = getValueForID(arg0);
+			if(returnvalue != null)
+			{
+				return returnvalue;
+			}
+			else
+			{
+				return mappedValues.get(arg0);	
+			}
 		}
 		else
 		{
@@ -117,7 +147,7 @@ public class IDARELayoutDependentMapper implements VisualMappingFunction<String,
 
 		if(nm.isNodeLayouted(arg0.get(mappedColumnName, String.class)))
 		{
-			return imagenodeValue;
+			return getValueForID(arg0.get(mappedColumnName,String.class));
 		}
 		else
 		{

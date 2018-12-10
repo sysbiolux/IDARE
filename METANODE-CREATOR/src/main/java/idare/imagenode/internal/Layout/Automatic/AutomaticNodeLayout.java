@@ -89,6 +89,7 @@ public class AutomaticNodeLayout extends AbstractLayout implements IDAREService{
 	@Override
 	public void writeLayout(ObjectOutputStream os) throws IOException
 	{
+		super.writeLayout(os);
 		//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(LayoutFile));
 		for(DataSet ds : DatasetOrder)
 		{			

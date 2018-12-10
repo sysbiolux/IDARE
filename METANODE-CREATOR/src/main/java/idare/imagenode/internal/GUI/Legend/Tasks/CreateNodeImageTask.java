@@ -117,12 +117,18 @@ public class CreateNodeImageTask extends AbstractTask {
 	private void writeNodeImageToFile(OutputStreamWriter zipout, Transcoder coder, String NodeID) throws IOException
 	{
 		SVGDocument svgdoc2 = LayoutUtils.createSVGDoc();
-		SVGGraphics2D g2 = new SVGGraphics2D(svgdoc2);
-		manager.getLayoutForNode(NodeID).layoutNode(manager.getNode(NodeID).getData(), g2);
+		SVGGraphics2D g2 = new SVGGraphics2D(svgdoc2);		
+		
+		ImageNodeLayout cLayout = manager.getLayoutForNode(NodeID);
+		boolean withLabel = cLayout.imageIncludesLabel();
+		cLayout.setImageIncludesLabel(true);
+		cLayout.layoutNode(manager.getNode(NodeID).getData(), g2);
+		Dimension LayoutDimension = cLayout.getLayoutDimension();
+		cLayout.setImageIncludesLabel(withLabel);
 		Element root2 = svgdoc2.getDocumentElement();
 		g2.getRoot(root2);
 		
-		LayoutUtils.TransferGraphicsToDocument(svgdoc2, null, g2);		
+		LayoutUtils.TransferGraphicsToDocument(svgdoc2, LayoutDimension, g2);		
 		
 		//OutputStream os2 = new FileOutputStream(F);
 		if(coder == null)

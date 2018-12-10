@@ -83,11 +83,12 @@ SessionLoadedListener, GraphicsChangedListener {
 		this.eventHelper = eventHelper;
 		this.nm = nm;
 		this.cyAppMgr = cyAppMgr;
+		this.nodeLabelProperty = nodeLabelProperty;
 		storedProperties.addElement(BasicVisualLexicon.NODE_LABEL_TRANSPARENCY);
 		storedProperties.addElement(BasicVisualLexicon.NODE_WIDTH);
 		storedProperties.addElement(BasicVisualLexicon.NODE_HEIGHT);
+		storedProperties.addElement(nodeLabelProperty);
 		storedProperties.addElement(imf.getVisualProperty());
-		this.nodeLabelProperty = nodeLabelProperty;
 	}
 	
 	private void reset()
@@ -192,7 +193,7 @@ SessionLoadedListener, GraphicsChangedListener {
 		IDARELayoutDependentMapper imagenodeHeight = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_HEIGHT,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_HEIGHT);
 		IDARELayoutDependentMapper imagenodeWidth = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_WIDTH,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEWIDTH,IMAGENODEPROPERTIES.IDARE_NODE_DISPLAY_WIDTH);
 		IDARELayoutDependentMapper LabelTransparency = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME, BasicVisualLexicon.NODE_LABEL_TRANSPARENCY,nm,IDARELayoutDependentMapper.layoutProperties.TRANSPARENCY,0);
-		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.IMAGEHEIGHT,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
+		IDARELayoutDependentMapper nodeLabelPosition = new IDARELayoutDependentMapper(IDAREProperties.IDARE_NODE_NAME,nodeLabelProperty ,nm,IDARELayoutDependentMapper.layoutProperties.LABELPOSITION,nodeLabelProperty.parseSerializableString(IMAGENODEPROPERTIES.NODE_LABEL_POSITION_STRING));
 		currentstyle.removeVisualMappingFunction(LabelTransparency.getVisualProperty());
 		currentstyle.addVisualMappingFunction(LabelTransparency);
 		currentstyle.removeVisualMappingFunction(nodeLabelPosition.getVisualProperty());

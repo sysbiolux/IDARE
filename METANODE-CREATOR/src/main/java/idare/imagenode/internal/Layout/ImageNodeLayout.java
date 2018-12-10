@@ -83,9 +83,10 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 * Layout a specific node in a given context.
 	 * @param datacollection The data to be used for drawing
 	 * @param svg the {@link SVGGraphics2D} to draw in
+	 * @param withLabel override switch for 
 	 */
-	void layoutNode(Collection<NodeData> datacollection, SVGGraphics2D svg);
-
+	void layoutNode(Collection<NodeData> datacollection, SVGGraphics2D svg);	
+			
 	/**
 	 * Lay out the legend for a specific set of node data
 	 * @param datacollection The data to be used for drawing
@@ -110,13 +111,19 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 * @return The dimension of the image
 	 */
 	Dimension getImageSize();
+
+	/**
+	 * Get the Dimension of the whole node (including the label
+	 * @return The dimension of the whole node, including the label
+	 */
+	Dimension getLayoutDimension();
+
 	
 	/**
 	 * Set the dimension of the image
 	 * @return set the Dimension of the Image.
 	 */
 	void setImageDimension(Dimension imageDimension);
-	
 	
 	/**
 	 * Determine, whether this Layout includes the label or not.

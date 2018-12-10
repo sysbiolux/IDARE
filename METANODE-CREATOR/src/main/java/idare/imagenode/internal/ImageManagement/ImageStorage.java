@@ -1,15 +1,5 @@
 package idare.imagenode.internal.ImageManagement;
 
-import idare.Properties.IDAREProperties;
-import idare.ThirdParty.BufferedImageTranscoder;
-import idare.imagenode.Properties.IMAGENODEPROPERTIES;
-import idare.imagenode.Utilities.LayoutUtils;
-import idare.imagenode.internal.DataManagement.NodeManager;
-import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
-import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
-import idare.imagenode.internal.Debug.PrintFDebugger;
-import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -33,6 +23,15 @@ import org.cytoscape.view.presentation.customgraphics.CyCustomGraphicsFactory;
 import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 import org.w3c.dom.svg.SVGDocument;
+
+import idare.Properties.IDAREProperties;
+import idare.ThirdParty.BufferedImageTranscoder;
+import idare.imagenode.Utilities.LayoutUtils;
+import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.DataManagement.Events.NodeChangedListener;
+import idare.imagenode.internal.DataManagement.Events.NodeUpdateEvent;
+import idare.imagenode.internal.Debug.PrintFDebugger;
+import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 /**
  * The {@link ImageStorage} functions as both {@link CyCustomGraphicsFactory} and management for images used by IDARE.
  * In addition it provides the mapping function between Strings and the respective IDARE images.
@@ -44,8 +43,7 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 	private HashMap<String, BufferedImage> imagenodes;
 	private NodeManager nodeManager;
 	private HashMap<String,CyCustomGraphics<CustomGraphicLayer>> graphicsmap;
-	//private int width;
-	//private int height;
+
 	private Vector<GraphicsChangedListener> listeners;
 	private IDAREVisualStyle visualstyle;
 	
@@ -173,12 +171,12 @@ public class ImageStorage implements CyCustomGraphicsFactory,VisualMappingFuncti
 			SVGDocument doc = LayoutUtils.createSVGDoc();
 			SVGGraphics2D g = new SVGGraphics2D(doc);	
 			nodeManager.getLayoutForNode(ID).layoutNode(nodeManager.getNode(ID).getData(), g);
-			LayoutUtils.TransferGraphicsToDocument(doc, null, g);
+			LayoutUtils.TransferGraphicsToDocument(doc, nodeManager.getLayoutForNode(ID).getLayoutDimension(), g);
 			//Element root = doc.getDocumentElement();
 			//g.getRoot(root);
 			//root.setAttribute("viewBox", "0 0 400 270");
 			PrintFDebugger.Debugging(this,"Creating Image for Node: " + ID);
-			imagenodes.put(ID, SVGToBufferedImage(doc, IMAGENODEPROPERTIES.IMAGEWIDTH));
+			imagenodes.put(ID, SVGToBufferedImage(doc, nodeManager.getLayoutForNode(ID).getLayoutDimension().width));
 			
 			
 		}			

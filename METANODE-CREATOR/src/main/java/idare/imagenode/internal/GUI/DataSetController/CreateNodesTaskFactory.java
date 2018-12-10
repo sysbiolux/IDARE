@@ -11,12 +11,15 @@ import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.TaskMonitor.Level;
 import org.cytoscape.work.Tunable;
 import org.cytoscape.work.swing.DialogTaskManager;
+import org.cytoscape.work.swing.RequestsUIHelper;
+import org.cytoscape.work.swing.TunableUIHelper;
 
 import idare.imagenode.Interfaces.DataSets.DataSet;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
 import idare.imagenode.internal.DataManagement.NodeManager;
+import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
 /**
  * A {@link TaskFactory} that initializes the generation of Imagenodes.
@@ -62,13 +65,14 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 	 * @author Thomas Pfau
 	 *
 	 */
-	private class CreateNodesTask extends AbstractTask
+	private class CreateNodesTask extends AbstractTask implements RequestsUIHelper
 	{
 		NodeManager nodeManager;
 		ImageNodeLayout layout;
 		Set<DataSet> setsToLayout;
-		@Tunable(description="Include Labels in the Nodes")
-		boolean printLabel;
+		
+		@Tunable(description="Include Labels in the Nodes", context=Tunable.BOTH_CONTEXT)
+		public boolean printLabel;
 		
 		/**
 		 * A Default constructor that adds the given {@link ImageNodeLayout} to all Nodes in the network also present in the provided {@link DataSet}s according to the {@link NodeManager}.
@@ -87,6 +91,7 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 		public void run(TaskMonitor arg0) throws Exception {
 			// TODO Auto-generated method stub
 			try{
+				PrintFDebugger.Debugging(this, "Assigning Layout Printlabel to " + printLabel);
 				layout.setImageIncludesLabel(printLabel);
 				arg0.setTitle("Creating Image Nodes");
 				arg0.setProgress(0.);
@@ -130,6 +135,11 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 			{
 				arg0.showMessage(Level.ERROR, ex.getMessage());
 			}
+		}
+		@Override
+		public void setUIHelper(TunableUIHelper arg0) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
