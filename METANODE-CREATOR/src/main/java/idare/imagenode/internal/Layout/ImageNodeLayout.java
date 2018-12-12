@@ -143,5 +143,14 @@ public interface ImageNodeLayout extends DataSetAboutToBeChangedListener {
 	 */
 	Dimension getDisplayDimensions();
 	
-		
+	/**
+	 * Add a Layout Change listener to this layout which will be informed, if this layout changes.
+	 */
+	void addLayoutListener(LayoutChangedListener listener);
+
+	/**
+	 * Remove a Layout Change listener from this layout.
+	 */
+	void removeLayoutListener(LayoutChangedListener listener);
+
 }

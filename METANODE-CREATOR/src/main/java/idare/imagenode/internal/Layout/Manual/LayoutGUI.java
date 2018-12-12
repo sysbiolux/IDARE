@@ -3,6 +3,7 @@ package idare.imagenode.internal.Layout.Manual;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -20,16 +22,20 @@ import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.basic.BasicDesktopPaneUI;
@@ -73,6 +79,8 @@ implements ActionListener, InternalFrameListener{
 	MouseDraggingListener<DataSetFrame> draglistener;
 //	MouseResizerListener<DataSetFrame> resizeMouseListener;
 	CreateNodesTaskFactory nodeFactory;
+	ManualNodeLayoutManager nodeLayoutManager;
+	
 	public LayoutGUI(DataSetManager dsm, IDAREImageNodeApp app, CreateNodesTaskFactory nodeFactory) {		
 		super("Manual Layout Generation");		
 		layout = new ManualLayout();
@@ -122,12 +130,12 @@ implements ActionListener, InternalFrameListener{
 		IdentifierPanel = new IDPanel();
 		//IdentifierPanel.setID(selectedNodeID);
 		//Add Visualisation to the left panel
-		
+		nodeLayoutManager = new ManualNodeLayoutManager(desktop,IdentifierPanel, new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT),new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.LABELHEIGHT));
 		LeftPanel.add(desktop);
 		LeftPanel.add(IdentifierPanel);
 		//Set minimal size and initialize resizer
 		LeftPanel.setMinimumSize(new Dimension(400,290));		
-		LeftPanel.setLayout(new ManualNodeLayoutManager(desktop,IdentifierPanel, new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.IMAGEHEIGHT),new Dimension(IMAGENODEPROPERTIES.IMAGEWIDTH,IMAGENODEPROPERTIES.LABELHEIGHT)));
+		LeftPanel.setLayout(nodeLayoutManager);
 		
 		//Set up the Right Panel
 		JPanel RightPanel = new JPanel();
@@ -244,6 +252,14 @@ implements ActionListener, InternalFrameListener{
 		removeMenu.add(removeAll);
 		
 		menuBar.add(removeMenu);
+		JMenu adaptNodeSizeMenu = new JMenu("Node and Label Sizes");
+		JMenuItem changeImageSize = new JMenuItem("Change Image Size");
+		changeImageSize.setActionCommand("ADAPTIMAGE");
+		changeImageSize.addActionListener(this);
+		adaptNodeSizeMenu.add(changeImageSize);
+		
+		menuBar.add(adaptNodeSizeMenu);
+		
 		return menuBar;
 	}
 
@@ -251,15 +267,43 @@ implements ActionListener, InternalFrameListener{
 	
 	//React to menu selections.
 	public void actionPerformed(ActionEvent e) {
-		if ("REMOVEALL".equals(e.getActionCommand())) { //new
-			for(JInternalFrame frame : desktop.getAllFrames())
+		String ccommand =  e.getActionCommand();
+		switch(ccommand)
+		{
+			case("REMOVEALL"):
 			{
-				frame.dispose();
-				resizer.internalframes.remove(frame);
+				for(JInternalFrame frame : desktop.getAllFrames())
+				{
+					frame.dispose();
+					resizer.internalframes.remove(frame);
+				}
 			}
-		} 
-		if("REMOVECURRENT".equals(e.getActionCommand())) { //new
-			desktop.getSelectedFrame().dispose();
+			case("REMOVECURRENT"):
+			{
+				desktop.getSelectedFrame().dispose();
+			}
+			case("ADAPTIMAGE"):
+			{
+				String imageHeight = "Image Height: ";
+				String imageWidth = "Image Width: ";
+				Dimension cDims = nodeLayoutManager.getCurrentImageDimensions();
+				DataRequest dr = new DataRequest(new String[]{imageHeight,imageWidth}, new int[]{cDims.height,cDims.width});
+				int result = JOptionPane.showConfirmDialog(null, dr, "Select Values for properties", JOptionPane.OK_CANCEL_OPTION);
+				if(result == JOptionPane.OK_OPTION)
+				{			        	
+					nodeLayoutManager.setImageSize(dr.getValueForElement(imageHeight),
+							dr.getValueForElement(imageHeight));
+					layout.setImageDimension(new Dimension(dr.getValueForElement(imageWidth),dr.getValueForElement(imageHeight)));
+				}
+				updater.updateLegend();
+				desktop.validate();
+				desktop.doLayout();
+				this.validate();
+				this.doLayout();
+				desktop.validate();
+				desktop.doLayout();				
+			}
+
 		}
 	}
 
@@ -436,39 +480,6 @@ implements ActionListener, InternalFrameListener{
 		
     }
     
-//    private class NodeResizer extends ComponentAdapter
-//    {
-//    	private JComponent Node;
-//    	private JComponent ID;
-//    	private Dimension nodeDimension;
-//    	private Dimension IDDimension;
-//    	public NodeResizer(JComponent Node, JComponent ID, Dimension NodeDimension, Dimension IDDimension)
-//    	{
-//    		this.Node = Node;
-//    		this.ID = ID;
-//    		this.nodeDimension = NodeDimension;
-//    		this.IDDimension = IDDimension;
-//    	}
-//    	
-//    	@Override
-//    	public void componentResized(ComponentEvent e)
-//    	{
-//    		       
-//    		
-//    		Dimension dim = e.getComponent().getSize();
-//    		
-//    		System.out.println("New enclosing size is" + dim);
-//    		double scalingfactor = Math.min(dim.getHeight()/(nodeDimension.getHeight() + IDDimension.getHeight()), dim.getWidth()/IDDimension.getWidth());
-//    		
-//    		Rectangle nodeBounds = new Rectangle(0,0,(int)(scalingfactor*nodeDimension.getWidth()),(int)(scalingfactor * nodeDimension.getHeight()));
-//    		Rectangle idBounds = new Rectangle(0,(int)(scalingfactor * nodeDimension.getHeight()),(int)(scalingfactor*IDDimension.getWidth()),(int)(scalingfactor * IDDimension.getHeight()));
-////    		PrintFDebugger.Debugging(this, "Setting the bounds of the desktop to: " + nodeBounds + " and the ID dimension to " + idBounds);
-//    		Node.setBounds(nodeBounds);
-//    		ID.setBounds(idBounds);
-//    		//Node.revalidate();
-//    		//ID.revalidate();
-//    	}
-//    }
 
 
 
@@ -523,6 +534,92 @@ implements ActionListener, InternalFrameListener{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	private class DataRequest extends JPanel
+	{
+		private HashMap<String,FieldChangedListener> fieldListeners;		
+		public DataRequest(String[] requests, int[] defaults)
+		{
+			fieldListeners = new HashMap<>();
+			this.setLayout(new GridLayout(requests.length+1,1));
+			this.add(new JLabel("Please enter values for the following properties"));
+			
+			for(int i =0; i < requests.length; i++)
+			{
+				String request = requests[i];			
+				JPanel cpan = new JPanel();
+				JLabel Lab = new JLabel(request);
+				cpan.add(Lab);
+				//Build the TextField
+				JTextField field = new JTextField();
+				field.setText(Integer.toString(defaults[i]));
+				FieldChangedListener fl = new FieldChangedListener(field, defaults[i]);
+				fieldListeners.put(request, fl);
+				field.getDocument().addDocumentListener(fl);
+				cpan.add(field);
+				this.add(cpan);
+			}			
+		}
+		public int getValueForElement(String element)
+		{			
+			return fieldListeners.get(element).getValue();
+		}
+		private class FieldChangedListener implements DocumentListener
+		{
+			JTextField textField;
+			int defaultValue;
+			public FieldChangedListener( JTextField textField, int defaultValue) {
+				this.textField = textField;
+				this.defaultValue = defaultValue;
+			}
+			
+			public int getValue()
+			{
+				try{
+					return Integer.parseInt(textField.getText());
+				}
+				catch(NumberFormatException e)
+				{
+					JOptionPane.showMessageDialog(null,
+							"Value '" + textField.getText() + "' is not a valid integer. Using " + defaultValue + " instead", "Error Message",
+							JOptionPane.ERROR_MESSAGE);
+					return defaultValue;
+				}
+				
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+				try
+				{
+					if(Integer.parseInt(textField.getText()) <=10)
+					{
+						JOptionPane.showMessageDialog(null,
+								"Error: Sizes have to be at least 10 pixels ", "Error Message",
+								JOptionPane.ERROR_MESSAGE);
+					};
+				}
+				catch(NumberFormatException e)
+				{
+					JOptionPane.showMessageDialog(null,
+							"Please enter a number larger than 10", "Error Message",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			
+		}
+}
 }
 

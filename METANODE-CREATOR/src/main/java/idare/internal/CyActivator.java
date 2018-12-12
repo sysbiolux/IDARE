@@ -42,6 +42,7 @@ import org.osgi.framework.BundleContext;
 import idare.NodeDuplicator.internal.NodeDuplicatorFactory;
 import idare.NodeDuplicator.internal.NodeMergerFactory;
 import idare.NodeDuplicator.internal.NodeRegistry;
+import idare.Properties.IDAREProperties;
 import idare.imagenode.IDAREImageNodeAppService;
 import idare.imagenode.IDARENodeManager;
 import idare.imagenode.internal.IDAREImageNodeApp;
@@ -117,21 +118,23 @@ public class CyActivator extends AbstractCyActivator {
 	{
 		NodeDuplicatorFactory nodedup = new NodeDuplicatorFactory(getService(context, CyServiceRegistrar.class));
 		Properties duplicateNodeProps = new Properties();		
-		duplicateNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NODE_APPS_MENU);
+		duplicateNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_NETWORK_MENU_STRING);
 		duplicateNodeProps.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
 		duplicateNodeProps.setProperty(ServiceProperties.IN_MENU_BAR, "true");
 		duplicateNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		duplicateNodeProps.setProperty(ServiceProperties.TITLE, "Duplicate Node");		
 		duplicateNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+		duplicateNodeProps.setProperty(ServiceProperties.MENU_GRAVITY, "2.0");
 		NodeRegistry NR = new NodeRegistry(getService(context,CyServiceRegistrar.class));
 		NodeMergerFactory nodemerge = new NodeMergerFactory(getService(context, CyServiceRegistrar.class));
 		Properties mergeNodeProps = new Properties();		
-		mergeNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NODE_APPS_MENU);
+		mergeNodeProps.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_NETWORK_MENU_STRING);
 		mergeNodeProps.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
 		mergeNodeProps.setProperty(ServiceProperties.IN_MENU_BAR, "true");
 		mergeNodeProps.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		mergeNodeProps.setProperty(ServiceProperties.TITLE, "Merge Duplicated Nodes");		
 		mergeNodeProps.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES);
+		mergeNodeProps.setProperty(ServiceProperties.MENU_GRAVITY, "3.0");
 		
 //		PrintFDebugger.Debugging(this, "Adding Node Duplicator");
 		registerService(context, nodedup, NodeViewTaskFactory.class, duplicateNodeProps);
@@ -225,20 +228,23 @@ public class CyActivator extends AbstractCyActivator {
 		//Set up properties for the Context and menu items for SBML annotation.
 		Properties addAnnotationPropertiesMenu = new Properties();
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		addAnnotationPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		addAnnotationPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_MENU_STRING);
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.IN_MENU_BAR, "true");
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.TITLE, "Add SBML Annotations");		
 		addAnnotationPropertiesMenu.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		addAnnotationPropertiesMenu.setProperty(ServiceProperties.MENU_GRAVITY, "4.0");
+
 
 		Properties addAnnotationPropertiesTask = new Properties();
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		addAnnotationPropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NETWORK_APPS_MENU);
+		addAnnotationPropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_MENU_STRING);
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.TITLE, "Add SBML Annotations");		
 		addAnnotationPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);	
+		addAnnotationPropertiesTask.setProperty(ServiceProperties.MENU_GRAVITY, "4.0");
 
 		//Create and register the SBMLAnnotationFactory.
 //		SBMLAnnotationTaskFactory Annotator = new SBMLAnnotationTaskFactory(cyApplicationManager, eventHelper, FileUtilService, cySwingApp, SBMLReg.getHolder(), app.getImageNodeApp());
@@ -290,20 +296,22 @@ public class CyActivator extends AbstractCyActivator {
 		//create and register the subnetworkgeneratorTaskFactory, with the appropriate properties.
 		Properties createSubnetworkPropertiesMenu = new Properties();
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_NETWORK_MENU_STRING);
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.IN_MENU_BAR, "true");
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.TITLE, "Create Subnetworks");		
 		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
+		createSubnetworkPropertiesMenu.setProperty(ServiceProperties.MENU_GRAVITY, "3.0");
 
 		Properties createSubnetworkPropertiesTask = new Properties();
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		createSubnetworkPropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NETWORK_APPS_MENU);
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, IDAREProperties.IDARE_NETWORK_MENU_STRING);
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.TITLE, "Create Subnetworks");		
 		createSubnetworkPropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
+		createSubnetworkPropertiesTask.setProperty(ServiceProperties.MENU_GRAVITY, "3.0");
 
 		
 		SubnetworkCreatorTaskFactory snctf = new SubnetworkCreatorTaskFactory(reg,nvs,app.getSettingsManager(),sncghf);

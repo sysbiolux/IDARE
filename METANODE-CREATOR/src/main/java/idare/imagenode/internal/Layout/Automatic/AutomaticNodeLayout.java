@@ -52,7 +52,9 @@ public class AutomaticNodeLayout extends AbstractLayout implements IDAREService{
 	HashMap<DataSet,String> DataSetLabels = new HashMap<DataSet, String>();
 	HashMap<DataSet,ColorMap> DataSetColors = new HashMap<DataSet, ColorMap>();
 	Vector<DataSet> DatasetOrder = new Vector<DataSet>();
-	private boolean layoutcreated = false;	 
+	private boolean layoutcreated = false;	
+	
+	
 	private HashMap<DataSet,DataSetLayoutInfoBundle> dataSetsToUse = new HashMap<>();
 		
 	

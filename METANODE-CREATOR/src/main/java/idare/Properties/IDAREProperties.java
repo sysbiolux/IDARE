@@ -25,6 +25,7 @@ public class IDAREProperties {
 	public static final String IDARE_GENE_EDGE_ID = "IDAREGeneEdge";
 	public static final String IDARE_DUPLICATED_NODE = "IDAREDuplicatedNode";
 	public static final String IDARE_ORIGINAL_NODE = "IDAREOriginalNode";
+	
 	/**
 	 * This field should only be set if the corresponding node is a Link Node (i.e. the IDARENodeType is IDARE_LINK)
 	 */
@@ -72,6 +73,12 @@ public class IDAREProperties {
 		public static final String PRODUCT_EDGE = "reaction-product";
 		public static final String REACTANT_EDGE = "reaction-reactant";
 	}
+	
+	public static String IDARE_MENU_STRING = "Apps.IDARE";
+	public static String IDARE_IMAGE_MENU_STRING = IDARE_MENU_STRING + ".Images[1.0]";
+	public static String IDARE_NETWORK_MENU_STRING = IDARE_MENU_STRING + ".Network Structure[2.0]";
+	public static String IDARE_SELECTEDNODE_IMAGE_MENU_STRING = IDARE_IMAGE_MENU_STRING + ".Layout of Selected Node[3.0]";
+	public static String IDARE_ALLNODES_IMAGE_MENU_STRING = IDARE_IMAGE_MENU_STRING + ".All Layouts[4.0]";
 	
 	/**
 	 * Some specifications for SBML data fields

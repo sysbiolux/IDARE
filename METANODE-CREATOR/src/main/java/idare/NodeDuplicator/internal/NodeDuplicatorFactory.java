@@ -27,7 +27,7 @@ public class NodeDuplicatorFactory implements NodeViewTaskFactory {
 	@Override
 	public boolean isReady(View<CyNode> arg0, CyNetworkView arg1) {
 		//We can duplicate, if this is not a duplicated node and the network is set up for IDARE.
-		return IDARESettingsManager.isSetupNetwork(arg1.getModel()) && !arg1.getModel().getRow(arg0.getModel()).isSet(IDAREProperties.IDARE_DUPLICATED_NODE) || !(arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE,Boolean.class));
+		return IDARESettingsManager.isSetupNetwork(arg1.getModel()) && !arg1.getModel().getRow(arg0.getModel()).isSet(IDAREProperties.IDARE_DUPLICATED_NODE) && !(arg1.getModel().getRow(arg0.getModel()).get(IDAREProperties.IDARE_DUPLICATED_NODE,Boolean.class));
 	}
 
 }

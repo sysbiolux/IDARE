@@ -1,5 +1,29 @@
 package idare.imagenode.internal.DataManagement;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+import java.util.prefs.NodeChangeListener;
+
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.CyRow;
+import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
+import org.cytoscape.session.events.SessionLoadedEvent;
+import org.cytoscape.session.events.SessionLoadedListener;
+import org.cytoscape.work.Task;
+import org.cytoscape.work.TaskMonitor;
+
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.IDARENodeManager;
@@ -20,43 +44,18 @@ import idare.imagenode.internal.Debug.PrintFDebugger;
 import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.Layout.DataSetLayoutInfoBundle;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
-import idare.imagenode.internal.Layout.Automatic.AutomaticNodeLayout;
-import idare.internal.IDAREApp;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-import java.util.prefs.NodeChangeListener;
-
-import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNetworkManager;
-import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
-import org.cytoscape.session.events.SessionLoadedEvent;
-import org.cytoscape.session.events.SessionLoadedListener;
-import org.cytoscape.work.Task;
-import org.cytoscape.work.TaskMonitor;
+import idare.imagenode.internal.Layout.LayoutChangedListener;
 
 /**
  * NodeManager manages the nodes used in the IDARE App. 
  * @author Thomas Pfau
  *
  */
-public class NodeManager implements DataSetChangeListener, IDARENodeManager{
+public class NodeManager implements DataSetChangeListener, LayoutChangedListener, IDARENodeManager{
 
 	private HashMap<String,ImageNodeModel> Nodes = new HashMap<>();
 	private HashMap<String,ImageNodeLayout> activeLayouts = new HashMap<String, ImageNodeLayout>();
-	private HashMap<ImageNodeLayout, Integer> layoutCounts = new HashMap<ImageNodeLayout,Integer>();
+	private HashMap<ImageNodeLayout, Set<String>> layoutIDs = new HashMap<ImageNodeLayout,Set<String>>();
 	private Set<String> NetworkIDs = new HashSet<String>();
 	private DataSetManager dsm;	
 	private Vector<NodeChangedListener> listeners = new Vector<NodeChangedListener>();
@@ -68,7 +67,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		this.cyNetMgr = cyNetMgr;
 		this.anm = anm;
 	}
-
+		
 	/**
 	 * Add a listener that listens to changes in nodes in this manager.
 	 * @param listener the {@link NodeChangeListener} to add
@@ -175,6 +174,16 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 //			PrintFDebugger.Debugging(listener, "Handling update Event from NodeManager (line from NodeManager)");
 			listener.handleNodeUpdate(e);			
 		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.LayoutChangedListener#layoutsChanged(idare.imagenode.internal.Layout.ImageNodeLayout)
+	 */
+	@Override
+	public void layoutsChanged(ImageNodeLayout layout)
+	{
+		fireNodesChanged(layoutIDs.get(layout));
 	}
 
 	/*
@@ -306,10 +315,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//get all Nodes, that need to be updated
 		layout.doLayout();
 		//keep track of the layouts.
-		if(!layoutCounts.containsKey(layout))
-		{
-			layoutCounts.put(layout, 0);
-		}
+
 		Set<String> NodeIDs = new HashSet<String>();
 		for(DataSet set : datasets)
 		{
@@ -322,21 +328,18 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 			//remove an active layout from its association.
 			if(activeLayouts.containsKey(id))
 			{
-				ImageNodeLayout oldlayout = activeLayouts.get(id); 
-				Integer oldcount = layoutCounts.get(oldlayout) -1;
-				if(oldcount == 0)
+				ImageNodeLayout oldlayout = activeLayouts.get(id);
+				Set<String> oldIDs = layoutIDs.get(oldlayout); 
+				oldIDs.remove(id);				
+				if(oldIDs.size() == 0)
 				{
-					layoutCounts.remove(oldlayout);
+					layoutIDs.remove(oldlayout);
 					dsm.removeDataSetAboutToBeChangedListener(oldlayout);
-				}
-				else
-				{
-					layoutCounts.put(oldlayout, oldcount);
-				}
+				}				
 			}
-			activeLayouts.put(id,layout);
-			layoutCounts.put(layout, layoutCounts.get(layout) + 1);
+			activeLayouts.put(id,layout);			
 		}
+		layoutIDs.put(layout,NodeIDs);
 		monitor.setProgress(0.2);
 		monitor.setStatusMessage("Updating Image Nodes");
 		// if everything went fine, register the layout.
@@ -361,10 +364,6 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		//newLayout.generateLayoutForDataSets(datasets);
 		//get all Nodes, that need to be updated
 		layout.doLayout();
-		if(!layoutCounts.containsKey(layout))
-		{
-			layoutCounts.put(layout, 0);
-		}
 		Set<String> NodeIDs = new HashSet<String>();
 		for(DataSet set : datasets)
 		{
@@ -375,21 +374,18 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		{
 			if(activeLayouts.containsKey(id))
 			{
-				ImageNodeLayout oldlayout = activeLayouts.get(id); 
-				Integer oldcount = layoutCounts.get(oldlayout) -1;
-				if(oldcount == 0)
+				ImageNodeLayout oldlayout = activeLayouts.get(id);
+				Set<String> oldIDs = layoutIDs.get(oldlayout); 
+				oldIDs.remove(id);				
+				if(oldIDs.size() == 0)
 				{
-					layoutCounts.remove(oldlayout);
+					layoutIDs.remove(oldlayout);
 					dsm.removeDataSetAboutToBeChangedListener(oldlayout);
-				}
-				else
-				{
-					layoutCounts.put(oldlayout, oldcount);
 				}
 			}
 			activeLayouts.put(id,layout);
-			layoutCounts.put(layout, layoutCounts.get(layout) + 1);
 		}
+		layoutIDs.put(layout,NodeIDs);
 		// if everything went fine, register the layout.
 		dsm.addDataSetAboutToBeChangedListener(layout);
 		fireNodesChanged(NodeIDs);
@@ -421,6 +417,15 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	public ImageNodeLayout getLayoutForNode(String id)
 	{
 		return activeLayouts.get(id);
+	}
+	
+	/**
+	 * Get the set of currently used layouts
+	 * @return The Collection of all active layouts
+	 */
+	public Collection<ImageNodeLayout> getCurrentLayouts()
+	{
+		return layoutIDs.keySet();
 	}
 	/**
 	 * Get a Collection of IDs for which layouts exist.
@@ -575,16 +580,16 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 			while(!(currentobject instanceof EOOMarker)) {
 
 				ImageNodeLayout layout = app.getLayoutIOManager().readLayout(os, currentobject, dsm);				
-				layoutCounts.put(layout, 0);
+				layoutIDs.put(layout, new HashSet<>());
 				if(layout != null)
 				{
 					Set<String> nodeids = (Set<String>)os.readObject();
 					for(String id : nodeids)
 					{
-						activeLayouts.put(id, layout);
-						layoutCounts.put(layout, layoutCounts.get(layout) + 1);
+						activeLayouts.put(id, layout);						
 						NodeIDsToUpdate.add(id);
 					}
+					layoutIDs.put(layout, nodeids);
 					dsm.addDataSetAboutToBeChangedListener(layout);
 				}
 				currentobject = os.readObject();
@@ -598,5 +603,10 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		os.close();
 		fireNodesChanged(NodeIDsToUpdate);
 		//imagestore.invalidate(NodeIDsToUpdate);		
+	}
+	
+	public String getIDAREName(CyRow arg0)
+	{		
+		return arg0.get(IDAREProperties.IDARE_NODE_NAME, String.class);
 	}
 }

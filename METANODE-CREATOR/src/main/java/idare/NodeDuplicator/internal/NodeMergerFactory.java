@@ -9,7 +9,6 @@ import org.cytoscape.work.TaskIterator;
 
 import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
-import idare.imagenode.internal.Debug.PrintFDebugger;
 
 public class NodeMergerFactory implements NodeViewTaskFactory {
 

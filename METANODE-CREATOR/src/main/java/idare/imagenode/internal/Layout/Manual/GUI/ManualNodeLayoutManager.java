@@ -93,6 +93,24 @@ public class ManualNodeLayoutManager implements LayoutManager{
 		// TODO Auto-generated method stub
 
 	}
-
+	/**
+	 * Set the image node layout dimensions.
+	 * @param imageheight - the height of the image
+	 * @param imagewidth - the width of the image 
+	 */
+	public void setImageSize(int imageheight, int imagewidth)
+	{
+		this.nodeDimension = new Dimension(imagewidth, imageheight);
+		
+	}
+	
+	/**
+	 * Get the image node layout dimensions.
+	 * @return the Dimension of the image
+	 */
+	public Dimension getCurrentImageDimensions()
+	{
+		return this.nodeDimension;
+}
 }
 

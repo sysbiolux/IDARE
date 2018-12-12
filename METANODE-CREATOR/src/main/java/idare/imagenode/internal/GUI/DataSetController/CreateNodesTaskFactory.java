@@ -99,7 +99,7 @@ public class CreateNodesTaskFactory extends AbstractTaskFactory{
 				builder.dssm.setDataSetProperties();				
 				arg0.setProgress(0.1);
 				arg0.setStatusMessage("Creating Layouts");
-				if(builder.dssm.getSelectedDataSets().size() > 0)
+				if(builder.dssm.getSelectedDataSets().size() > 0 || layout.getDatasetsInOrder().size() > 0)
 				{
 					nodeManager.generateLayoutsForNodes(setsToLayout,layout,arg0);
 				}

@@ -1,5 +1,6 @@
 package idare.imagenode.internal;
 
+import idare.Properties.IDAREProperties;
 import idare.Properties.IDARESettingsManager;
 import idare.imagenode.Interfaces.DataSetReaders.IDAREDatasetReader;
 import idare.imagenode.Interfaces.DataSets.DataSet;
@@ -17,6 +18,7 @@ import idare.imagenode.internal.GUI.NetworkSetup.Tasks.NetworkSetupTaskFactory;
 import idare.imagenode.internal.ImageManagement.ActiveNodeManager;
 import idare.imagenode.internal.ImageManagement.ImageStorage;
 import idare.imagenode.internal.Layout.ImageNodeLayout;
+import idare.imagenode.internal.Layout.Resizer.ResizeNodeImageTaskFactory;
 import idare.imagenode.internal.Layout.io.LayoutIOManager;
 import idare.imagenode.internal.VisualStyle.IDAREVisualStyle;
 import idare.imagenode.internal.VisualStyle.StyleManager;
@@ -43,6 +45,7 @@ import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.task.NetworkViewTaskFactory;
+import org.cytoscape.task.NodeViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.VisualLexicon;
@@ -337,56 +340,28 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		
 		//The Network Setup Task Factory 
 		NetworkSetupTaskFactory nstf = new NetworkSetupTaskFactory(cyAppMgr);
-		Properties setupNetworkMenuProperties = new Properties();
-		setupNetworkMenuProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		setupNetworkMenuProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
-		setupNetworkMenuProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
-		setupNetworkMenuProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");		
-		setupNetworkMenuProperties.setProperty(ServiceProperties.TITLE, "Setup Network For IDARE");
-		setupNetworkMenuProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		setupNetworkMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);			
-		Properties setupNetworkContextProperties = new Properties();
-		setupNetworkContextProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		setupNetworkContextProperties.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.APPS_MENU);
-		setupNetworkContextProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
-		setupNetworkContextProperties.setProperty(ServiceProperties.IN_MENU_BAR, "false");
-		setupNetworkContextProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
-		setupNetworkContextProperties.setProperty(ServiceProperties.TITLE, "Setup Network For IDARE");		
-		setupNetworkContextProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		setupNetworkContextProperties.put("USE_CLASS", NetworkViewTaskFactory.class);
 		Vector<Properties> networkSetupProps = new Vector<Properties>();		
-		networkSetupProps.add(setupNetworkContextProperties);
-		networkSetupProps.add(setupNetworkMenuProperties);
+		networkSetupProps.add(buildImageResizeMenuProperties("Setup Network For IDARE", "Setup Network For IDARE", IDAREProperties.IDARE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "3.0"));
+		networkSetupProps.add(buildImageResizeContextProperties("Setup Network For IDARE", "Setup Network For IDARE", IDAREProperties.IDARE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "3.0"));		
 		taskFactories.put(nstf, networkSetupProps);
 		
 		
 
 		
 		CreateNodeImagesTaskFactory nodeImageFactory = new CreateNodeImagesTaskFactory(util, legend, nm, cySwingApp);
-		Properties createNodesImageMenuProperties = new Properties();
-		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		createNodesImageMenuProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
-		createNodesImageMenuProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
-		createNodesImageMenuProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");		
-		createNodesImageMenuProperties.setProperty(ServiceProperties.TITLE, "Create Images for current Legend");
-		createNodesImageMenuProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		createNodesImageMenuProperties.put("USE_CLASS",NetworkViewTaskFactory.class);			
-		Properties createNodesImageContextProperties = new Properties();
-		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		createNodesImageContextProperties.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.APPS_MENU);
-		createNodesImageContextProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
-		createNodesImageContextProperties.setProperty(ServiceProperties.IN_MENU_BAR, "false");
-		createNodesImageContextProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
-		createNodesImageContextProperties.setProperty(ServiceProperties.TITLE, "Create Node Images for current Legend");		
-		createNodesImageContextProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		createNodesImageContextProperties.put("USE_CLASS", NetworkViewTaskFactory.class);
-		Vector<Properties> nodeImageProps = new Vector<Properties>();		
-		nodeImageProps.add(createNodesImageMenuProperties);
-		nodeImageProps.add(createNodesImageContextProperties);
-		
+		Vector<Properties> nodeImageProps = new Vector<Properties>();	
+		nodeImageProps.add(buildImageResizeMenuProperties("Create Images for current Legend", "Create Images for current Legend", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "5.0"));
+		nodeImageProps.add(buildImageResizeContextProperties("Create Images for current Legend", "Create Images for current Legend", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "5.0"));				
 		taskFactories.put(nodeImageFactory, nodeImageProps);
 		
 	}
+	
+	
+	
 	/**
 	 * Create All Actions, and their associated factories if necessary.
 	 * @param dtm A DialogTaskmanager for the tasks
@@ -398,56 +373,124 @@ public class IDAREImageNodeApp implements SessionAboutToBeSavedListener{
 		styleManager.setAddNodesTaskFactory(addFactory);
 		//AddNodesToStyleAction addAction = new AddNodesToStyleAction(cyAppMgr, addFactory);
 		Vector<Properties> props = new Vector<Properties>();
-		Properties addNodesToStylePropertiesMenu = new Properties();
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.IN_MENU_BAR, "true");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.TITLE, "Add IDARE Images to Style");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.TOOLTIP, "Add IDARE Images");
-		addNodesToStylePropertiesMenu.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		addNodesToStylePropertiesMenu.put("USE_CLASS",NetworkViewTaskFactory.class);
-		props.add(addNodesToStylePropertiesMenu);
-		Properties addNodesToStylePropertiesTask = new Properties();
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.PREFERRED_MENU, ServiceProperties.NETWORK_APPS_MENU);
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_MENU_BAR, "false");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.TITLE, "Add IDARE Images");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.TOOLTIP, "Add IDARE Images to Style");
-		addNodesToStylePropertiesTask.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
-		addNodesToStylePropertiesTask.put("USE_CLASS", NetworkViewTaskFactory.class);
-		props.add(addNodesToStylePropertiesTask);
+		props.add(buildImageResizeMenuProperties("Add IDARE Images to Style", "Add IDARE Images", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		props.add(buildImageResizeContextProperties("Add IDARE Images to Style", "Add IDARE Images", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "1.0"));
 		taskFactories.put(addFactory,props);
 		//cyActions.add(addAction);
 		Vector<Properties> props2 = new Vector<Properties>();
 		RemoveNodesFromStyleTaskFactory remFactory = new RemoveNodesFromStyleTaskFactory(styleManager, dtm); 
 		//RemoveNodesFromStyleAction remAction = new RemoveNodesFromStyleAction(cyAppMgr, remFactory);
-		Properties removeNodesFromStyleProperties = new Properties();
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.PREFERRED_MENU, "Apps.IDARE");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.TITLE, "Remove IDARE Images from Style");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");		
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.TOOLTIP, "Remove IDARE Images");
-		removeNodesFromStyleProperties.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_ALWAYS);
-		removeNodesFromStyleProperties.put("USE_CLASS",NetworkViewTaskFactory.class);
-		Properties removeNodesFromStyleProperties2 = new Properties();
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.PREFERRED_MENU,ServiceProperties.NETWORK_APPS_MENU);
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.TITLE, "Remove IDARE Images ");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_MENU_BAR, "false");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.TOOLTIP, "Remove IDARE Images from Style");
-		removeNodesFromStyleProperties2.setProperty(ServiceProperties.ENABLE_FOR, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW);
-		removeNodesFromStyleProperties2.put("USE_CLASS",NetworkViewTaskFactory.class);
-		props2.add(removeNodesFromStyleProperties);
-		props2.add(removeNodesFromStyleProperties2);
-		taskFactories.put(remFactory,props2);		
+		props2.add(buildImageResizeMenuProperties("Remove IDARE Images from Style", "Remove IDARE Images", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "2.0"));
+		props2.add(buildImageResizeContextProperties("Remove IDARE Images from Style", "Remove IDARE Images", IDAREProperties.IDARE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		taskFactories.put(remFactory,props2);					
+	
+		// Size Increase
+		ResizeNodeImageTaskFactory AllImageSizeIncrease = new ResizeNodeImageTaskFactory(nm,2.0,true);
+		Vector<Properties> imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(AllImageSizeIncrease, imageProps);
+
+		//size decrease
+		ResizeNodeImageTaskFactory AllImageSizeDecrease= new ResizeNodeImageTaskFactory(nm,0.5,true);
+		imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(AllImageSizeDecrease, imageProps);
+
+
+		//size select
+		ResizeNodeImageTaskFactory AllImageScale= new ResizeNodeImageTaskFactory(nm,null,true);
+		imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_ALLNODES_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(AllImageScale, imageProps);
+
+				
+		// Size Increase
+		ResizeNodeImageTaskFactory IndividualImageSizeIncrease = new ResizeNodeImageTaskFactory(nm,2.0,false);
+		imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Increase Image Size(100%)", "Increase IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(IndividualImageSizeIncrease, imageProps);
+
+		//size decrease
+		ResizeNodeImageTaskFactory IndividualImageSizeDecrease= new ResizeNodeImageTaskFactory(nm,0.5,false);
+		imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Decrease Image Size(50%)", "Decrease IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(IndividualImageSizeDecrease, imageProps);
+
+
+		//size select
+		ResizeNodeImageTaskFactory IndividualImageSizeScale= new ResizeNodeImageTaskFactory(nm,null,true);
+		imageProps = new Vector<Properties>();
+		imageProps.add(buildImageResizeMenuProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_ALWAYS, "1.0"));
+		imageProps.add(buildImageResizeContextProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NetworkViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_NETWORK_AND_VIEW, "2.0"));
+		imageProps.add(buildImageResizeContextProperties("Change Image Size", "Change IDARE image sizes",IDAREProperties.IDARE_SELECTEDNODE_IMAGE_MENU_STRING,
+				NodeViewTaskFactory.class, ActionEnableSupport.ENABLE_FOR_SELECTED_NODES, "3.0"));
+		taskFactories.put(IndividualImageSizeScale, imageProps);
+
 	}
+	
+	public static Properties buildImageResizeMenuProperties(String Title, String ToolTip, String PreferredMenu, Class useClass, String support, String Gravity)
+	{
+		Properties imageProperties = new Properties();
+		imageProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		imageProperties.setProperty(ServiceProperties.PREFERRED_MENU, PreferredMenu);
+		imageProperties.setProperty(ServiceProperties.MENU_GRAVITY, Gravity);
+		imageProperties.setProperty(ServiceProperties.IN_MENU_BAR, "true");
+		imageProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "false");
+		imageProperties.setProperty(ServiceProperties.TITLE, Title );
+		imageProperties.setProperty(ServiceProperties.TOOLTIP, ToolTip);
+		imageProperties.setProperty(ServiceProperties.ENABLE_FOR, support);
+		imageProperties.put("USE_CLASS",useClass);
+		return imageProperties;
+	}
+	
+	public static Properties buildImageResizeContextProperties(String Title, String ToolTip, String PreferredMenu, Class useClass, String support, String Gravity)
+	{
+		Properties imageProperties = new Properties();
+		imageProperties.setProperty(ServiceProperties.PREFERRED_ACTION, "NEW");
+		imageProperties.setProperty(ServiceProperties.PREFERRED_MENU, PreferredMenu);
+		imageProperties.setProperty(ServiceProperties.MENU_GRAVITY, Gravity);
+		imageProperties.setProperty(ServiceProperties.IN_MENU_BAR, "false");
+		imageProperties.setProperty(ServiceProperties.IN_CONTEXT_MENU, "true");
+		imageProperties.setProperty(ServiceProperties.IN_TOOL_BAR, "false");
+		imageProperties.setProperty(ServiceProperties.TITLE, Title );
+		imageProperties.setProperty(ServiceProperties.TOOLTIP, ToolTip);
+		imageProperties.setProperty(ServiceProperties.ENABLE_FOR, support);
+		imageProperties.put("USE_CLASS",useClass);
+		return imageProperties;
+	}
+	
+	
 	/**
 	 * Get the Task Factories used in the App.
 	 * @return the TaskFactories produced by the IDARE App matched to all properties for which they should eb registered

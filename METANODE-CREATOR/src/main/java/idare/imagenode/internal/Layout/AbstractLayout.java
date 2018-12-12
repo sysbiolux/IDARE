@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -30,6 +32,7 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 
 	private Dimension imageDimension;
 	private boolean printLabel;
+	private Set<LayoutChangedListener> listeners;
 	
 	/**
 	 * Default layout, with default sizes, printing the label.
@@ -40,6 +43,7 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 		int height = IMAGENODEPROPERTIES.IMAGEHEIGHT;
 		printLabel = true;
 		imageDimension = new Dimension(width, height);
+		listeners = new HashSet<>();
 	}	
 	@Override
 	public abstract boolean isValid();
@@ -109,13 +113,15 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 	public void setImageDimension(Dimension imageDimension)
 	{
 		this.imageDimension = imageDimension;
+		fireLayoutChanged();
 	}
 		
 	@Override
-	public void  setImageIncludesLabel(boolean includeLabel)
+	public void setImageIncludesLabel(boolean includeLabel)
 	{
 		PrintFDebugger.Debugging(this, "Setting printlabel to " + includeLabel);
 		printLabel = includeLabel;
+		fireLayoutChanged();
 	}
 	
 	
@@ -176,5 +182,30 @@ public abstract class AbstractLayout implements ImageNodeLayout {
 		imageDim.setSize(width, height);
 		return imageDim;
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageNodeLayout#addLayoutListener(idare.imagenode.internal.Layout.LayoutChangedListener)
+	 */
+	public void addLayoutListener(LayoutChangedListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see idare.imagenode.internal.Layout.ImageNodeLayout#removeLayoutListener(idare.imagenode.internal.Layout.LayoutChangedListener)
+	 */
+	public void removeLayoutListener(LayoutChangedListener listener)
+	{
+		listeners.remove(listener);
+	}
+	
+	protected void fireLayoutChanged()
+	{
+		for(LayoutChangedListener listener: listeners)
+		{
+			listener.layoutsChanged(this);
+		}
+	}
 }
