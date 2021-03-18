@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.junit.validator.TestClassValidator;
 
 /**
  * An Abstract basis class for item based datasets.
@@ -465,7 +464,7 @@ public class ArrayDataSet extends DataSet{
 		}
 		else
 		{
-			throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers");
+			throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers but type was " + currentCellType + " \n for Cell with content: " + currentRow.getCell(0).getFormattedCellValue());
 		}		
 		if(useTwoColHeaders)
 		{
@@ -486,7 +485,7 @@ public class ArrayDataSet extends DataSet{
 			}
 			else
 			{
-				throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers");
+				throw new WrongFormat("Could not read headers, only Numeric and String values are allowed for headers but was " + currentCellType + " \n for Cell with content: " + currentRow.getCell(1).getFormattedCellValue());
 			}			
 		}
 		//System.out.println("Created NodeData with Label " + currentNodeData.getLabel() + " and ID " + currentNodeData.getID());
