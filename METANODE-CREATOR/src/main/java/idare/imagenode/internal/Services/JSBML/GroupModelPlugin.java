@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import idare.imagenode.internal.Debug.PrintFDebugger;
+
 public class GroupModelPlugin {
 	
 	Object SBMLGroupModel;

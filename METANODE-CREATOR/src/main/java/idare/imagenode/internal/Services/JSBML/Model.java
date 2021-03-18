@@ -15,7 +15,6 @@ public class Model {
 	private Method getExtension;
 	//private Method getListOfGeneProducts;
 	private Object SBMLModel;
-
 	public Model(Object o)
 	{
 		SBMLModel = o;
@@ -122,10 +121,18 @@ public class Model {
 	public GroupModelPlugin getGroupExtension()
 	{
 		try{
+			PrintFDebugger.Debugging(this, "Trying to get extension from Model " + SBMLModel.toString());
+			Object o = getExtension.invoke(SBMLModel, "groups");
+			if(o == null)
+			{
+				//There is no group extension in this Model.
+				return null;
+			}
 			return new GroupModelPlugin(getExtension.invoke(SBMLModel, "groups"));
 		}
 		catch(InvocationTargetException | IllegalAccessException e)
 		{
+			PrintFDebugger.Debugging(this, "Error cause by " + e.toString());
 			return null;
 		}
 	}
