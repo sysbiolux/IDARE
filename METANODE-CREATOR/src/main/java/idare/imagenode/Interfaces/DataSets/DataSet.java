@@ -29,8 +29,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.omg.IOP.CodecPackage.FormatMismatch;
-
 /**
  * A {@link DataSet} is a storage for data. This abstract class provides several utility methods which are common to most datasets (such as the determination of some properties for datasets).  
  * @author Thomas Pfau

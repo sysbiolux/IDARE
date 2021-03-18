@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -34,13 +33,9 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.basic.BasicDesktopPaneUI;
 
-import org.mortbay.jetty.servlet.HashSessionIdManager;
-
 import idare.imagenode.Interfaces.DataSets.DataSet;
-import idare.imagenode.Interfaces.Layout.ContainerLayout;
 import idare.imagenode.Properties.IMAGENODEPROPERTIES;
 import idare.imagenode.Utilities.GUI.MouseDraggingListener;
-import idare.imagenode.Utilities.GUI.MouseResizerListener;
 import idare.imagenode.exceptions.layout.ContainerUnplaceableExcpetion;
 import idare.imagenode.exceptions.layout.DimensionMismatchException;
 import idare.imagenode.exceptions.layout.TooManyItemsException;
