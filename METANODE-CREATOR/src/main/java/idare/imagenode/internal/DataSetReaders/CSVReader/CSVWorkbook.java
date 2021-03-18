@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -23,6 +25,7 @@ import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.SheetVisibility;
 import org.apache.poi.ss.usermodel.Workbook;
 
 /**
@@ -195,12 +198,6 @@ public class CSVWorkbook implements Workbook{
 		return null;
 	}
 
-	@Override
-	public Font findFont(short arg0, short arg1, short arg2, String arg3,
-			boolean arg4, boolean arg5, short arg6, byte arg7) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public int getActiveSheetIndex() {
@@ -399,26 +396,6 @@ public class CSVWorkbook implements Workbook{
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void setRepeatingRowsAndColumns(int arg0, int arg1, int arg2,
-			int arg3, int arg4) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setSelectedTab(int arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setSheetHidden(int arg0, boolean arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public void setSheetHidden(int arg0, int arg1) {
 		// TODO Auto-generated method stub
@@ -443,18 +420,6 @@ public class CSVWorkbook implements Workbook{
 
 	}
 
-	@Override
-	public CellStyle getCellStyleAt(short arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public short getNumCellStyles() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	public String toString()
 	{
 		StringBuffer res = new StringBuffer();
@@ -466,7 +431,7 @@ public class CSVWorkbook implements Workbook{
 			{
 				for(int i = 0; i < row.getLastCellNum(); i++)
 				{
-					Cell current = row.getCell(i, Row.CREATE_NULL_AS_BLANK);
+					Cell current = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 					DataFormatter df = new DataFormatter();
 					res.append(df.formatCellValue(current) + "\t");
 				}
@@ -478,6 +443,103 @@ public class CSVWorkbook implements Workbook{
 			e.printStackTrace(System.out);
 		}
 		return res.toString();
+	}
+
+	@Override
+	public Iterator<Sheet> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Sheet> sheetIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Font findFont(boolean bold, short color, short fontHeight, String name, boolean italic, boolean strikeout,
+			short typeOffset, byte underline) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CellStyle getCellStyleAt(int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<? extends Name> getNames(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<? extends Name> getAllNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeName(Name name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int linkExternalWorkbook(String name, Workbook workbook) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public SheetVisibility getSheetVisibility(int sheetIx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSheetVisibility(int sheetIx, SheetVisibility visibility) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SpreadsheetVersion getSpreadsheetVersion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int addOlePackage(byte[] oleData, String label, String fileName, String command) throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setSelectedTab(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getNumCellStyles() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setSheetHidden(int sheetIx, boolean hidden) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

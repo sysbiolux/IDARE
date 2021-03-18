@@ -1,8 +1,11 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.poi.hssf.util.PaneInformation;
@@ -16,11 +19,13 @@ import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.Header;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 /**
  * A Sheet implementation to be used for CSV files.
@@ -136,12 +141,6 @@ public class CSVSheet implements Sheet {
 	public boolean getAutobreaks() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Comment getCellComment(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -626,12 +625,6 @@ public class CSVSheet implements Sheet {
 	}
 
 	@Override
-	public void setZoom(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void shiftRows(int arg0, int arg1, int arg2) {
 		// TODO Auto-generated method stub
 		Collections.sort(rowpositions);
@@ -687,13 +680,7 @@ public class CSVSheet implements Sheet {
 	public void ungroupRow(int arg0, int arg1) {
 		// TODO Auto-generated method stub
 
-	}
-	@Override
-	public void showInPane(short arg0, short arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+	}	
 	/**
 	 * Row iteratro implementation to return the rows in the order they are in the sheet.
 	 * @author Thomas Pfau
@@ -723,6 +710,122 @@ public class CSVSheet implements Sheet {
 				return map.get(iter.next());
 			}
 			
+		
+	}
+
+	@Override
+	public float getColumnWidthInPixels(int columnIndex) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int addMergedRegionUnsafe(CellRangeAddress region) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void validateMergedRegions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void removeMergedRegions(Collection<Integer> indices) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public List<CellRangeAddress> getMergedRegions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public boolean isPrintRowAndColumnHeadings() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public void setPrintRowAndColumnHeadings(boolean show) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setZoom(int scale) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void showInPane(int toprow, int leftcol) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public Comment getCellComment(CellAddress ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Map<CellAddress, ? extends Comment> getCellComments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Drawing<?> getDrawingPatriarch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public List<? extends DataValidation> getDataValidations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public CellRangeAddress getRepeatingRows() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public CellRangeAddress getRepeatingColumns() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void setRepeatingRows(CellRangeAddress rowRangeRef) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setRepeatingColumns(CellRangeAddress columnRangeRef) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public int getColumnOutlineLevel(int columnIndex) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public Hyperlink getHyperlink(int row, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Hyperlink getHyperlink(CellAddress addr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public List<? extends Hyperlink> getHyperlinkList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public CellAddress getActiveCell() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void setActiveCell(CellAddress address) {
+		// TODO Auto-generated method stub
 		
 	}
 }

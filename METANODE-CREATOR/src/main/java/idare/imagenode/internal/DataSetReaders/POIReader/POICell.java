@@ -17,7 +17,7 @@ public class POICell implements IDARECell {
 
 	@Override
 	public CellType getCellType() {		
-		return POIToIDARETypes.POIToIDARE.get(cell.getCellType());
+		return POIToIDARETypes.POIToIDARE.get(cell.getCellTypeEnum());
 	}
 
 	@Override

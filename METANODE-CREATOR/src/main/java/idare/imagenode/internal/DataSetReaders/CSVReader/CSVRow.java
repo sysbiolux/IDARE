@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 /**
@@ -85,13 +86,13 @@ public class CSVRow implements Row {
 	@Override
 	public Cell createCell(int arg0) {
 
-		return createCell(arg0,Cell.CELL_TYPE_BLANK);
+		return createCell(arg0,CellType.BLANK);
 	}
 	
 
 	@Override
 	public Cell createCell(int arg0, int arg1) {
-		Cell newcell = new CSVCell(Cell.CELL_TYPE_BLANK,this);
+		Cell newcell = new CSVCell(CellType.BLANK,this);
 		if(!data.containsKey(arg0))
 		{
 			cellpositions.add(arg0);
@@ -107,6 +108,18 @@ public class CSVRow implements Row {
 	}
 
 	@Override
+	public Cell createCell(int column, CellType type) {		
+		return createCell(column,type.ordinal());
+	}
+
+
+	@Override
+	public int getOutlineLevel() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public Cell getCell(int arg0) {
 		// TODO Auto-generated method stub
 		return data.get(arg0);
@@ -114,14 +127,14 @@ public class CSVRow implements Row {
 
 	@Override
 	public Cell getCell(int arg0, MissingCellPolicy arg1) {
-		if(arg1 == Row.RETURN_BLANK_AS_NULL)
+		if(arg1 == Row.MissingCellPolicy.RETURN_BLANK_AS_NULL)
 		{
 			if(data.get(arg0).toString().equals(""))
 			{
 				return null;
 			}
 		}
-		if(arg1 == Row.CREATE_NULL_AS_BLANK)
+		if(arg1 == Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)
 		{
 			if(!data.containsKey(arg0))
 			{

@@ -6,11 +6,13 @@ import java.util.Date;
 import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 /**
@@ -22,7 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 public class CSVCell implements Cell {
 
 	
-	private int type; 
+	private CellType type; 
 	private Double numericValue = 0.;
 	private String StringValue = "";
 	private CSVRow row; 
@@ -32,13 +34,13 @@ public class CSVCell implements Cell {
 	 * @param type  the type of the row
 	 * @param row the {@link CSVRow} containing the cell
 	 */
-	public CSVCell(int type, CSVRow row)
+	public CSVCell(CellType type, CSVRow row)
 	{
 		
-		if(type == Cell.CELL_TYPE_BLANK || type == Cell.CELL_TYPE_NUMERIC || type == Cell.CELL_TYPE_STRING)
+		if(type == CellType.BLANK || type == CellType.NUMERIC || type == CellType.STRING)
 			this.type = type;
 		else 
-			this.type = CELL_TYPE_STRING;
+			this.type = CellType.STRING;
 		this.row = row;
 	}
 	
@@ -80,7 +82,7 @@ public class CSVCell implements Cell {
 
 	@Override
 	public int getCellType() {
-		return type;		
+		return type.ordinal();		
 	}
 
 	@Override
@@ -108,11 +110,11 @@ public class CSVCell implements Cell {
 
 	@Override
 	public double getNumericCellValue() {
-		if(type == Cell.CELL_TYPE_NUMERIC)
+		if(type == CellType.NUMERIC)
 		{
 			return numericValue;
 		}
-		else if(type == Cell.CELL_TYPE_BLANK)
+		else if(type == CellType.BLANK)
 			{
 			return 0;
 			}
@@ -125,7 +127,7 @@ public class CSVCell implements Cell {
 
 	@Override
 	public RichTextString getRichStringCellValue() {				
-		return type == Cell.CELL_TYPE_STRING ? new XSSFRichTextString(StringValue) : new XSSFRichTextString("");
+		return type == CellType.STRING ? new XSSFRichTextString(StringValue) : new XSSFRichTextString("");
 	}
 
 	@Override
@@ -148,11 +150,11 @@ public class CSVCell implements Cell {
 
 	@Override
 	public String getStringCellValue() {
-		if(type == Cell.CELL_TYPE_STRING)
+		if(type == CellType.STRING)
 		{
 			return StringValue;
 		}
-		else if(type == Cell.CELL_TYPE_BLANK)
+		else if(type == CellType.BLANK)
 			{
 			return "";
 			}
@@ -207,45 +209,45 @@ public class CSVCell implements Cell {
 
 	@Override
 	public void setCellType(int arg0) {
-		this.type = arg0;
+		this.type = CellType.values()[arg0];
 	}
 
 	@Override
 	public void setCellValue(double arg0) {
 		// TODO Auto-generated method stub
-		type = CELL_TYPE_NUMERIC;
+		type = CellType.NUMERIC;
 		numericValue = arg0;
 		StringValue = "";
 	}
 
 	@Override
 	public void setCellValue(Date arg0) {
-		type = CELL_TYPE_STRING;
+		type = CellType.STRING;
 		StringValue = arg0.toString();				
 	}
 
 	@Override
 	public void setCellValue(Calendar arg0) {
-		type = CELL_TYPE_STRING;
+		type = CellType.STRING;
 		StringValue = arg0.toString();		
 	}
 
 	@Override
 	public void setCellValue(RichTextString arg0) {
-		type = CELL_TYPE_STRING;
+		type = CellType.STRING;
 		StringValue = arg0.toString();	
 
 	}
 
 	@Override
 	public void setCellValue(String arg0) {
-		type = CELL_TYPE_STRING;
+		type = CellType.STRING;
 		StringValue = arg0;	
 	}
 
 	@Override
 	public void setCellValue(boolean arg0) {
-		type = CELL_TYPE_NUMERIC;
+		type = CellType.NUMERIC;
 		StringValue = "";
 		numericValue = arg0 ?  1. : 0.; 
 	}
@@ -259,11 +261,41 @@ public class CSVCell implements Cell {
 	public String toString()
 	{
 		String res = StringValue;
-		if(type == Cell.CELL_TYPE_NUMERIC)
+		if(type == CellType.NUMERIC)
 		{
 			res = Double.toString(numericValue);
 		}
 		return res;
+	}
+
+	@Override
+	public void setCellType(CellType cellType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CellType getCellTypeEnum() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CellType getCachedFormulaResultTypeEnum() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CellAddress getAddress() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeHyperlink() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
