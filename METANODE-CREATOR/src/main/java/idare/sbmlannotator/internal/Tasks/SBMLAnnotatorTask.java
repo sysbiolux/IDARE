@@ -14,6 +14,7 @@ import idare.imagenode.internal.Services.JSBML.Association;
 import idare.imagenode.internal.Services.JSBML.CVTerm;
 import idare.imagenode.internal.Services.JSBML.GeneProduct;
 import idare.imagenode.internal.Services.JSBML.Group;
+import idare.imagenode.internal.Services.JSBML.GroupModelPlugin;
 import idare.imagenode.internal.Services.JSBML.Member;
 import idare.imagenode.internal.Services.JSBML.Model;
 import idare.imagenode.internal.Services.JSBML.Reaction;
@@ -355,6 +356,12 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			//This should only happen if the annotation was done twice (for whatever reason)
 		}			
+		GroupModelPlugin plugin = doc.getModel().getGroupExtension();
+		if(plugin == null)
+		{
+			//The SBML does not have a group plugin, so don't do anything.
+			return;
+		}
 		List<Group> groupList = doc.getModel().getGroupExtension().getListOfGroups();
 		for(Group current : groupList )
 		{
