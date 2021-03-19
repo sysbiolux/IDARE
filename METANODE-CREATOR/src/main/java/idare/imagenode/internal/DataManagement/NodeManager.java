@@ -223,6 +223,7 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 	{
 		if(added)
 		{
+			//Creating Nodes for all elements of the Dataset
 			for(String currentID : ds.getNodeIDs())
 			{
 				if(!Nodes.containsKey(currentID))
@@ -234,20 +235,22 @@ public class NodeManager implements DataSetChangeListener, IDARENodeManager{
 		}
 		else
 		{
+			//Removing all elments of the Dataset
 			for(String currentID : ds.getNodeIDs())
 			{
 				if(activeLayouts.containsKey(currentID))
 				{
-					Nodes.get(currentID).removeData(ds);					
+					Nodes.get(currentID).removeData(ds);	
 					if(!activeLayouts.get(currentID).isValid())
 					{
 						//Nodes.remove(currentID);
 						activeLayouts.remove(currentID);
 					}
-					//if the last dataset pointing to this node was removed also remove the node.
+					//if the last dataset pointing to this node was removed also remove the node, and the Layout for this node.
 					if(!Nodes.get(currentID).isValid())
 					{
 						Nodes.remove(currentID);
+						activeLayouts.remove(currentID);
 					}
 
 				}
