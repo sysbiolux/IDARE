@@ -208,9 +208,11 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 		for(SimpleLink link : alignment)
 		{
 			NodeData cdata = nodeData.get(link.getDataSet());
-			
+			System.out.println("The current Dataset is: " + link.getDataSet());
 			cdata = cdata != null ? cdata : link.getDataSet().getDefaultData();
-			layouts.get(link).LayoutDataForNode(cdata, svg, legend, colors.get(link));			
+			System.out.println(link.position);
+			ContainerLayout cl = layouts.get(link);
+			cl.LayoutDataForNode(cdata, svg, legend, colors.get(link));			
 		}	
 		
 	}
@@ -225,6 +227,8 @@ public class ManualNodeLayout implements ImageNodeLayout,IDAREService {
 				layouts.remove(link);
 				labels.remove(link);
 				colors.remove(link);
+				//Remove the link from the alignment for layouting
+				alignment.remove(link);
 			}
 			linkmap.remove(ds);
 		}
