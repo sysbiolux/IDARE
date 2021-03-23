@@ -11,11 +11,11 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 
 ## Availability
 **Cytoscape App store**: http://apps.cytoscape.org/apps/IDARE  
-**Compiled JAR** http://idare.uni.lu/IDAREJars/IDARE-1.0.jar  
+**Compiled JAR** [https://github.com/sysbiolux/IDARE/releases/](https://github.com/sysbiolux/IDARE/releases/download/2.0/IDARE-2.0.jar)  
 **Current available plugins** https://sysbiolux.github.io/IDAREPlugins/  
 **User Manual** https://github.com/sysbiolux/IDARE/blob/master/UserManual.pdf  
 **Example/QuickStart** https://sysbiolux.github.io/IDARE-QuickStart  
-**API**: http://idare.uni.lu/IDAREDoc  
+**API**: [https://sysbiolux.github.io/IDARE/API](https://sysbiolux.github.io/IDARE/API/index.html?overview-summary.html)  
 **Source Code**: https://github.com/sysbiolux/IDARE  
 **Bug Tracker**: https://github.com/sysbiolux/IDARE/issues  
  
@@ -23,7 +23,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 There are three options available:
 * Use the Cytoscape Application manager. In Cytoscape open `Apps → App Manager → Install Apps` and search for `IDARE`. 
 * Download the Jar from the [Cytoscape App store](http://apps.cytoscape.org/apps/IDARE)
-* Download the Jar from the [University of Luxembourg](http://idare-server.uni.lu/IDAREJars/IDARE-1.0.jar)
+* Download the Jar from the [Github](https://github.com/sysbiolux/IDARE/releases/download/2.0/IDARE-2.0.jar)
 If you download it manually put it into the apps/installed folder of your Cytoscape configuration folder (commonly %HOME/CytoscapeConfiguration/3/apps/installed).
 
 ## Building
@@ -33,7 +33,7 @@ Determine the path of the jar file (likely in the CytoscapeConfiguration folder 
 ```
 mvn -e install:install-file -Dfile=cy3sbml-v0.2.X.jar -DgroupId=org.cysbml -DartifactId=cy3sbml -Dversion=0.2.1 -Dpackaging=jar
 ```
-Adjust the X to the version you downloaded. IDARE works with version 0.2.1 but we can't guarantee that it works with newer versions.
+Adjust the X to the version you downloaded. IDARE works with version 0.3.0 but we can't guarantee that it works with newer versions.
 
 To build IDARE:
 ```
@@ -44,14 +44,14 @@ mvn install
 ## Plugin Development
 
 To develop plugins, you will have to install the application into your maven repository.
-Navigate to the location of the IDARE-1.0.jar file and run
+Navigate to the location of the IDARE-2.0.jar file and run
 ```
-mvn -e install:install-file -Dfile=IDARE-1.0.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=1.0 -Dpackaging=jar
+mvn -e install:install-file -Dfile=IDARE-2.0.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=2.0 -Dpackaging=jar
 ```
 
 In your pom.xml add
 ```
-<Cytoscape-App-Dependencies>IDARE;1.0</Cytoscape-App-Dependencies>
+<Cytoscape-App-Dependencies>IDARE;2.0</Cytoscape-App-Dependencies>
 ```
 to the properties field.
 
@@ -60,7 +60,7 @@ The IDARE dependency is added as follows:
 <dependency>
 	<groupId>IDARE</groupId>
 	<artifactId>IDARE</artifactId>
-	<version>1.0</version>
+	<version>2.0</version>
 	<scope>provided</scope>	
 </dependency>
 ```
