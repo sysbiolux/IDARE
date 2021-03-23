@@ -23,7 +23,7 @@ IDARE is a Cytoscape 3 app (versions 3.4 and above), for subnetwork generation a
 There are three options available:
 * Use the Cytoscape Application manager. In Cytoscape open `Apps → App Manager → Install Apps` and search for `IDARE`. 
 * Download the Jar from the [Cytoscape App store](http://apps.cytoscape.org/apps/IDARE)
-* Download the Jar from the [Github](https://github.com/sysbiolux/IDARE/releases/download/2.0/IDARE-2.0.jar)
+* Download the Jar from the [Github](https://github.com/sysbiolux/IDARE/releases/download/2.0/IDARE-2.0.jar)  
 If you download it manually put it into the apps/installed folder of your Cytoscape configuration folder (commonly %HOME/CytoscapeConfiguration/3/apps/installed).
 
 ## Building
