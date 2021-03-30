@@ -59,8 +59,35 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.1</version>
 				<configuration>
-				<additionalOptions> --frames </additionalOptions>
-				<excludePackageNames>idare.imagenode.internal.*:*.internal.*</excludePackageNames>
+				<additionalOptions> --frames </additionalOptions>				
+				<excludePackageNames>idare.imagenode.internal.ColorManagement.*:
+									 idare.imagenode.internal.Debug:
+									 idare.imagenode.internal.DataManagement:
+									 idare.imagenode.internal.DataManagement.*:
+									 idare.imagenode.internal.Data.*:
+									 idare.imagenode.internal.DataSetReaders.*:
+									 idare.imagenode.internal.DataSetReaders:
+									 idare.imagenode.internal.exceptions.*:
+									 idare.imagenode.internal.GUI.*:
+									 idare.imagenode.internal.ImageManagement:
+									 idare.imagenode.internal.Layout:
+									 idare.imagenode.internal.Layout.*:
+									 idare.imagenode.internal.Services:
+									 idare.imagenode.internal.Services.*:
+									 idare.imagenode.internal.VisualStyle:
+									 idare.imagenode.internal.VisualStyle.*:
+									 idare.subnetwork.internal.*:
+									 idare.subnetwork.internal:
+									 idare.sbmlannotator.internal.*:
+									 idare.sbmlannotator.internal:
+									 idare.NodeDuplicator.internal.*:
+									 idare.NodeDuplicator.internal:
+									 idare.internal:
+									 idare.imagenode.internal.IDAREImageNodeApp
+				</excludePackageNames>
+				<sourceFileExcludes>
+					<exclude>src/main/java/idare/internal/IDAREImageNodeApp.java</exclude>
+				</sourceFileExcludes>									 
 				</configuration>
 			</plugin>
 			<!-- Generates the OSGi metadata based on the osgi.bnd file. -->
