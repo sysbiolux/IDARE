@@ -12,6 +12,7 @@ idare.imagenode.Interfaces.DataSetReaders.WorkBook.BasicImplementation
 idare.imagenode.Interfaces.DataSets
 idare.imagenode.Interfaces.Layout
 idare.imagenode.Interfaces.Plugin
+idare.imagenode.internal
 idare.imagenode.Properties
 idare.imagenode.Utilities
 idare.imagenode.Utilities.GUI
