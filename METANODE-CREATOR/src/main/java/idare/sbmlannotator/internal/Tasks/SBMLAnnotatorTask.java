@@ -165,7 +165,8 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 
 	boolean skipNodes = false;
 	String ErrorMessage = "";
-
+	String Warnings = "";
+	
 	IDARENodeManager nodemgr;
 	public SBMLAnnotatorTask(SBMLManagerHolder holder, CyNetwork network,
 			CyNetworkView networkView, IDARESettingsManager ism, CyServiceRegistrar reg, SBMLDocument doc) {
@@ -292,6 +293,11 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			taskMonitor.setStatusMessage("Annotating Genes");
 		}
+		if(!Warnings.isEmpty())
+		{
+			taskMonitor.setStatusMessage(Warnings);
+		}
+
 		createSpeciesGenes();
 		//FBCLogic >> COBRA Logic
 		taskMonitor.setStatusMessage("Parsing GPRs");
@@ -1593,6 +1599,15 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 									}
 									if(!geneMap.containsKey(cspec))
 									{
+										if(dbIDs.isEmpty())
+										{
+											//We got an issue here. This Gene has no DB annotations whatsoever, which is odd.
+											Warnings = Warnings + "Geneproduct with ID " + cspec.getId() + " has no associated databases. Using its ID for all databases\n";
+										}
+										for(String db : geneAnnotationDatabases)
+										{
+											dbIDs.put(db, cspec.getId());
+										}
 										geneMap.put(cspec,gm.getGene(dbIDs));
 									}
 									else
