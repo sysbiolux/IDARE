@@ -271,13 +271,13 @@ public class CSVCell implements Cell {
 	@Override
 	public void setCellType(CellType cellType) {
 		// TODO Auto-generated method stub
-		
+		this.type = cellType;
 	}
 
 	@Override
 	public CellType getCellTypeEnum() {
 		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public class CSVCell implements Cell {
 	@Override
 	public CellAddress getAddress() {
 		// TODO Auto-generated method stub
-		return null;
+		return new CellAddress(row.getRowNum(), row.getColumnNumber(this));
 	}
 
 	@Override

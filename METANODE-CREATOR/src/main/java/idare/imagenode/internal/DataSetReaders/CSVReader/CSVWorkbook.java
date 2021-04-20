@@ -52,7 +52,7 @@ public class CSVWorkbook implements Workbook{
 	 */
 	public CSVWorkbook(File F, String separator, int idColumnCount ) throws IOException, WrongFormat
 	{
-
+		PrintFDebugger.Debugging(this, "Starting to read File " + F.getName() + " with separator " + separator);
 		//create the sheet
 		currentSheet = new CSVSheet(this,F.getName());
 		int currentRowNumber = 0;
