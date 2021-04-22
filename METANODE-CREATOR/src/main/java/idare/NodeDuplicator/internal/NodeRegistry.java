@@ -31,6 +31,7 @@ public class NodeRegistry implements RowsSetListener,TaskFactory{
 	@Override
 	public void handleEvent(RowsSetEvent arg0) {
 		// TODO Auto-generated method stub
+		boolean thingsChanged = false;
 		if(!reactingToRowset)
 		{
 			reactingToRowset = true;
@@ -59,10 +60,14 @@ public class NodeRegistry implements RowsSetListener,TaskFactory{
 						
 					}
 					
-
+					thingsChanged = true;
 				}
-			}			
-			helper.flushPayloadEvents();
+			}		
+			if(thingsChanged)
+			{
+				helper.flushPayloadEvents();
+			}
+			
 			reactingToRowset = false;
 		}
 	}

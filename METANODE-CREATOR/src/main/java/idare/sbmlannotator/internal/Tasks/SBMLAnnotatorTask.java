@@ -407,7 +407,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		if(generateGeneNodes)
 		{
 			taskMonitor.setStatusMessage("Setting up Gene Nodes");
-
+			boolean thingsChanged = false;
 			for(CyNode reacNode : AssociatedGPRs.keySet())
 			{				
 				Set<GPRAssociation> reacGPRs = AssociatedGPRs.get(reacNode);
@@ -416,10 +416,22 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				}
 				for(GPRAssociation currentGPR : reacGPRs)
 				{
-					setupGPRAssociation(currentGPR, reacNode);								
+					if(setupGPRAssociation(currentGPR, reacNode))
+					{
+						thingsChanged = true;
+					}								
 				}
 			}
-			eventHelper.flushPayloadEvents();			
+			try {
+				if(thingsChanged)
+				{
+					eventHelper.flushPayloadEvents();			
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace(System.out);
+			}
 		}
 	}
 
@@ -690,8 +702,9 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 	}
 
 
-	private void setupGPRAssociation(GPRAssociation assoc, CyNode reacNode)
+	private boolean setupGPRAssociation(GPRAssociation assoc, CyNode reacNode)
 	{
+		boolean thingsChanged = false;
 		CyTable Tab = network.getDefaultNodeTable(); 
 		if(!assoc.getProteins().isEmpty())
 		{						
@@ -740,6 +753,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 					}
 					setupProteinNode(p,proteinNode);
 				}
+				thingsChanged = true;
 			}
 			else
 			{
@@ -750,6 +764,10 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				{
 					p = cp;
 				}
+				if(!proteinNodes.containsKey(p))
+				{
+					thingsChanged = true;
+				}
 				CyNode proteinNode = getProteinNode(p);
 				setupProteinNode(p,proteinNode);
 				reacNodeSources.get(reacNode).add(proteinNode);
@@ -757,6 +775,7 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 				if(!network.containsEdge(proteinNode, reacNode))
 				{
 					network.addEdge(proteinNode, reacNode, true);
+					thingsChanged = true;
 				}
 			}
 		}		
@@ -764,6 +783,10 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 		{
 			//This is a simple GPR with Genes in the association
 			Protein p = gm.getProtein(assoc);
+			if(!proteinNodes.containsKey(p))
+			{
+				thingsChanged = true;
+			}
 			CyNode proteinNode = getProteinNode(p);
 			setupProteinNode(p,proteinNode);
 			reacNodeSources.get(reacNode).add(proteinNode);
@@ -771,8 +794,10 @@ public class SBMLAnnotatorTask extends AbstractTask  implements RequestsUIHelper
 			if(!network.containsEdge(proteinNode, reacNode))
 			{
 				network.addEdge(proteinNode, reacNode, true);
+				thingsChanged = true;
 			}
 		}		
+		return thingsChanged;
 	}
 
 	private void setupProteinNode(Protein p, CyNode proteinNode)
