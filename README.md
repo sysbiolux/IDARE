@@ -65,7 +65,7 @@ The IDARE dependency is added as follows:
 </dependency>
 ```
 ### Existing Plugins
-Two plgins exist for the app:  
+Two plugins exist for the app:  
 A reader for GEO SOFT Files that converts them into a format useable by IDARE. The jar can be downloaded from [here](http://idare-server.uni.lu/IDAREJars/IDAREGEOSOFTPlugin.jar), the code can be found [here](https://github.com/sysbiolux/IDAREGEOSoftReader).  
 The second plugin allows to create BarCharts as visualisation option and can be downloaded from [here](http://idare-server.uni.lu/IDAREJars/IDAREBarChartPlugin.jar), with code available [here](https://github.com/sysbiolux/IDAREBarChartsPlugin)
 
