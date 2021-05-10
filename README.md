@@ -72,4 +72,6 @@ The second plugin allows to create BarCharts as visualisation option and can be 
 
 ### Relevant Literature
 Galhardo, M.; Sinkkonen, L.; Berninger, P.; Lin, J.; Sauter, T. & Heinäniemi, M. Integrated analysis of transcript-level regulation of metabolism reveals disease-relevant nodes of the human metabolic network. Nucleic Acids Res, 2014, 42, 1474-1496
-http://dx.doi.org/10.1093/nar/gkt998
+http://dx.doi.org/10.1093/nar/gkt998  
+Pfau, T.; Galhardo, M.; Lin, J.; Sauter, T. IDARE2—Simultaneous Visualisation of Multiomics Data in Cytoscape. Metabolites, 2021, 11, 300. https://doi.org/10.3390/metabo11050300 
+
