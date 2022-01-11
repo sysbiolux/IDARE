@@ -31,7 +31,7 @@ To build the app, you will need to also download the cy3sbml app (http://apps.cy
 Determine the path of the jar file (likely in the CytoscapeConfiguration folder in your home directory) and install it to your maven repository.
 
 ```
-mvn -e install:install-file -Dfile=cy3sbml-v0.2.X.jar -DgroupId=org.cysbml -DartifactId=cy3sbml -Dversion=0.2.1 -Dpackaging=jar
+mvn -e install:install-file -Dfile=cy3sbml-v0.3.0.jar -DgroupId=org.cysbml -DartifactId=cy3sbml -Dversion=0.3.0 -Dpackaging=jar
 ```
 Adjust the X to the version you downloaded. IDARE works with version 0.3.0 but we can't guarantee that it works with newer versions.
 
@@ -44,14 +44,14 @@ mvn install
 ## Plugin Development
 
 To develop plugins, you will have to install the application into your maven repository.
-Navigate to the location of the IDARE-2.0.jar file and run
+Navigate to the location of the IDARE-2.0.1.jar file and run
 ```
-mvn -e install:install-file -Dfile=IDARE-2.0.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=2.0 -Dpackaging=jar
+mvn -e install:install-file -Dfile=IDARE-2.0.1.jar -DgroupId=IDARE -DartifactId=IDARE -Dversion=2.0.1 -Dpackaging=jar
 ```
 
 In your pom.xml add
 ```
-<Cytoscape-App-Dependencies>IDARE;2.0</Cytoscape-App-Dependencies>
+<Cytoscape-App-Dependencies>IDARE;2.0.1</Cytoscape-App-Dependencies>
 ```
 to the properties field.
 
@@ -60,7 +60,7 @@ The IDARE dependency is added as follows:
 <dependency>
 	<groupId>IDARE</groupId>
 	<artifactId>IDARE</artifactId>
-	<version>2.0</version>
+	<version>2.0.1</version>
 	<scope>provided</scope>	
 </dependency>
 ```
