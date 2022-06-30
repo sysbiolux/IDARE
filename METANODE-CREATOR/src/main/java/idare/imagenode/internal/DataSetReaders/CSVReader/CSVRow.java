@@ -20,7 +20,7 @@ public class CSVRow implements Row {
 	HashMap<Integer,Cell> data;
 	HashMap<Cell,Integer> datapos;
 	int lastCellposition = -1;
-	Vector<Integer> cellpositions;
+	Vector<cellPosition> cellpositions;
 	CSVSheet sheet;
 	/**
 	 * Basic constructor with the enclosing sheet.
@@ -30,7 +30,7 @@ public class CSVRow implements Row {
 	{
 		this.data = new HashMap<Integer,Cell>();
 		this.sheet = sheet;
-		cellpositions = new Vector<Integer>();
+		cellpositions = new Vector<cellPosition>();
 		datapos = new HashMap<Cell, Integer>();
 	}
 	
@@ -47,16 +47,12 @@ public class CSVRow implements Row {
 		data.put(lastCellposition,current);		
 		if(numeric)
 		{
-			current.setCellType(Cell.CELL_TYPE_NUMERIC);
+			current.setCellValue(Double.parseDouble(value));
 		}
 		else
 		{
-			if(value != "")
-				current.setCellType(Cell.CELL_TYPE_STRING);
-			else
-				current.setCellType(Cell.CELL_TYPE_BLANK);
+			current.setCellValue(value);
 		}
-		current.setCellValue(value);
 		
 	}
 	
@@ -91,25 +87,20 @@ public class CSVRow implements Row {
 	
 
 	@Override
-	public Cell createCell(int arg0, int arg1) {
-		Cell newcell = new CSVCell(CellType.BLANK,this);
-		if(!data.containsKey(arg0))
+	public Cell createCell(int column, CellType type) {		
+		Cell newcell = new CSVCell(type,this);
+		if(!data.containsKey(column))
 		{
-			cellpositions.add(arg0);
+			cellpositions.add(new cellPosition(column));
 		}
 		else
 		{
 			//remove an old cell.
-			datapos.remove(data.get(arg0));
+			datapos.remove(data.get(column));
 		}
-		datapos.put(newcell, arg0);
-		data.put(arg0, newcell);
-		return newcell;
-	}
-
-	@Override
-	public Cell createCell(int column, CellType type) {		
-		return createCell(column,type.ordinal());
+		datapos.put(newcell, column);
+		data.put(column, newcell);
+		return newcell;			
 	}
 
 
@@ -168,7 +159,7 @@ public class CSVRow implements Row {
 		// TODO Auto-generated method stub
 		Collections.sort(cellpositions);
 		//Return the Last Cell num + 1 according to specification.
-		return (short)(cellpositions.lastElement() + 1);
+		return (short)(cellpositions.lastElement().position + 1);
 	}
 
 	@Override
@@ -293,6 +284,72 @@ public class CSVRow implements Row {
 		public Cell next() {
 			return map.get(iter.next());
 		}
+		
+	}
+
+	@Override
+	public void shiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step) {
+		if(firstShiftColumnIndex + step < 0 )
+		{
+			// do nothing if we try to shift "out of range"
+			return;
+		}
+		HashMap<Integer,Cell> cData = new HashMap<Integer, Cell>();
+		HashMap<Cell,Integer> cDatapos = new HashMap<Cell, Integer>();		
+		Vector<Integer> cCellpositions = new Vector<Integer>();
+		for(int i=firstShiftColumnIndex; i < lastShiftColumnIndex; i ++)
+		{
+			if(cellpositions.contains(i))
+			{
+				cData.put(i+step, data.get(i));
+				cDatapos.put( data.get(i),i+step);
+				cCellpositions.add(i+step);
+				datapos.remove(data.get(i));
+				data.remove(i);
+				cellpositions.remove(new cellPosition(i));
+			}
+			else
+			{
+				if(data.containsKey(i+step))
+				{
+					datapos.remove(data.get(i+step));				
+					data.remove(i+step);
+					cellpositions.remove(new cellPosition(i+step));
+				}
+			}
+		}
+		
+	}
+
+
+	@Override
+	public void shiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step) {
+		// a shift to the left is the same as a negative shift to the right...
+		shiftCellsRight(firstShiftColumnIndex, lastShiftColumnIndex, -step);
+		
+	}
+	private class cellPosition implements Comparable<cellPosition>
+	{
+		public Integer position;
+		public cellPosition(Integer position)
+		{
+			this.position = position;
+		}
+		
+		public boolean equals(Object o)
+		{
+			if(o instanceof cellPosition)
+			{
+				return ((cellPosition) o).position == this.position;
+			}
+			return false;
+		}
+		
+		@Override
+		public int compareTo(cellPosition o) {
+			// TODO Auto-generated method stub
+			return position.compareTo(o.position);
+		}		
 		
 	}
 }

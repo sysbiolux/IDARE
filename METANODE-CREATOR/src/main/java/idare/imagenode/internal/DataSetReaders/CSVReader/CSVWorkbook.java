@@ -119,18 +119,16 @@ public class CSVWorkbook implements Workbook{
 				if(StringUtils.isNumeric(cell))
 				{
 //					System.out.println("Creating numeric cell for value: " + cell);
-					currentcell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					currentcell.setCellValue(Double.parseDouble(cell));
 				}
 				else if(cell.equals(""))
 				{
 //					System.out.println("Creating blank cell for value: " + cell);
-					currentcell.setCellType(Cell.CELL_TYPE_BLANK);
+					currentcell.setCellValue("");
 				}
 				else 
 				{
-//					System.out.println("Creating string cell for value: " + cell);
-					currentcell.setCellType(Cell.CELL_TYPE_STRING);
+//					System.out.println("Creating string cell for value: " + cell);					
 					currentcell.setCellValue(cell);
 				}
 				cellpos++;
@@ -396,11 +394,6 @@ public class CSVWorkbook implements Workbook{
 		// TODO Auto-generated method stub
 
 	}
-	@Override
-	public void setSheetHidden(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void setSheetName(int arg0, String arg1) {
@@ -540,6 +533,18 @@ public class CSVWorkbook implements Workbook{
 	public void setSheetHidden(int sheetIx, boolean hidden) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getNumberOfFontsAsInt() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Font getFontAt(int idx) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

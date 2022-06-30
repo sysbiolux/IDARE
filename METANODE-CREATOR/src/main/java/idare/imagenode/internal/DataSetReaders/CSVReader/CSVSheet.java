@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.poi.hssf.util.PaneInformation;
 import org.apache.poi.ss.usermodel.AutoFilter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellRange;
@@ -28,6 +27,7 @@ import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.PaneInformation;
 /**
  * A Sheet implementation to be used for CSV files.
  * @author Thomas Pfau
@@ -826,6 +826,11 @@ public class CSVSheet implements Sheet {
 	}
 	@Override
 	public void setActiveCell(CellAddress address) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void shiftColumns(int startColumn, int endColumn, int n) {
 		// TODO Auto-generated method stub
 		
 	}

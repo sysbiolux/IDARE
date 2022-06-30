@@ -1,5 +1,6 @@
 package idare.imagenode.internal.DataSetReaders.CSVReader;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -57,12 +58,6 @@ public class CSVCell implements Cell {
 	}
 
 	@Override
-	public int getCachedFormulaResultType() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public Comment getCellComment() {
 		// TODO Auto-generated method stub
 		return null;
@@ -81,8 +76,8 @@ public class CSVCell implements Cell {
 	}
 
 	@Override
-	public int getCellType() {
-		return type.ordinal();		
+	public CellType getCellType() {
+		return type;		
 	}
 
 	@Override
@@ -208,11 +203,6 @@ public class CSVCell implements Cell {
 	}
 
 	@Override
-	public void setCellType(int arg0) {
-		this.type = CellType.values()[arg0];
-	}
-
-	@Override
 	public void setCellValue(double arg0) {
 		// TODO Auto-generated method stub
 		type = CellType.NUMERIC;
@@ -242,6 +232,10 @@ public class CSVCell implements Cell {
 	@Override
 	public void setCellValue(String arg0) {
 		type = CellType.STRING;
+		if(arg0 == "")
+		{
+			type = CellType.BLANK;	
+		}
 		StringValue = arg0;	
 	}
 
@@ -256,6 +250,11 @@ public class CSVCell implements Cell {
 	public void setHyperlink(Hyperlink arg0) {
 		// TODO Auto-generated method stub
 
+	}
+	@Override
+	public void setCellValue(LocalDateTime value) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public String toString()
@@ -296,6 +295,30 @@ public class CSVCell implements Cell {
 	public void removeHyperlink() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setBlank() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CellType getCachedFormulaResultType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeFormula() throws IllegalStateException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public LocalDateTime getLocalDateTimeCellValue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

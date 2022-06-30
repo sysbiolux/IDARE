@@ -16,13 +16,7 @@ public class POIReader extends IDAREDatasetReader{
 	
 	@Override
 	public IDAREWorkbook readData(File inputfile) throws WrongFormat,IOException {
-		try{
-			return new POIWorkBook(WorkbookFactory.create(inputfile));
-		}
-		catch(InvalidFormatException e)
-		{		
-			throw new WrongFormat(e.getMessage());
-		}		
+		return new POIWorkBook(WorkbookFactory.create(inputfile));
 	}
 
 	@Override
